@@ -2,7 +2,11 @@
   <section>
     <el-row :gutter="20">
       <el-col :span="15">
-        <transactions-card :transactions="transactions"/>
+        <transactions-card
+          :transactions="transactions"
+          v-on:accept-settlement="settlementForApproval = $event; approvalDialogVisible = true"
+          v-on:decline-settlement="settlementForDeclining = $event; decliningDialogVisible = true"
+        />
       </el-col>
       <el-col :span="9">
         <balance-card
@@ -54,6 +58,32 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <el-dialog
+      title="Accept settlement?"
+      :visible.sync="approvalDialogVisible"
+      width="500px"
+    >
+      <div v-if="settlementForApproval">
+        Are you sure want to exchange {{ settlementForApproval.offer_amount + settlementForApproval.offer_asset }}
+        for {{ settlementForApproval.request_amount + settlementForApproval.request_asset }} with {{ settlementForApproval.from }}?
+      </div>
+      <div slot="footer">
+        <el-button type="success">Accept</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="Decline settlement?"
+      :visible.sync="decliningDialogVisible"
+      width="500px"
+    >
+      <div v-if="settlementForDeclining">
+        Are you sure want to decline {{ settlementForDeclining.offer_amount + settlementForDeclining.offer_asset }}
+        for {{ settlementForDeclining.request_amount + settlementForDeclining.request_asset }} with {{ settlementForDeclining.from }}?
+      </div>
+      <div slot="footer">
+        <el-button type="danger">Decline</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -79,6 +109,12 @@ export default {
         amount: null,
         to: null
       },
+
+      approvalDialogVisible: false,
+      settlementForApproval: null,
+
+      decliningDialogVisible: false,
+      settlementForDeclining: null,
 
       withdrawalWallets: [
         'wallet1',
