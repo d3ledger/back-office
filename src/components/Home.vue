@@ -1,8 +1,10 @@
 <template>
   <el-container>
     <el-header>
-      <router-link to="/">Balance</router-link>
-      <router-link to="/settlements">Settlements</router-link>
+      <div>
+        <el-button plain round type="primary">New Settlement</el-button>
+        <el-button plain round type="primary">New Transaction</el-button>
+      </div>
     </el-header>
     <el-main>
       <router-view/>
@@ -22,7 +24,7 @@ export default {
 
 <style lang="scss" scoped>
 header {
-  background: #ddd;
+  background: white;
   display: flex;
   align-items: center;
 }
@@ -42,7 +44,7 @@ a {
   }
 }
 
-.router-link-active {
-  color: blue;
+a.router-link-exact-active {
+  color: #409EFF;
 }
 </style>
