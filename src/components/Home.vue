@@ -1,6 +1,10 @@
 <template>
   <el-container>
-    <el-header>
+    <el-header style="display: flex; justify-content: space-between">
+      <div>
+        <router-link to="/">Dashboard</router-link>
+        <router-link to="/settings">Settings</router-link>
+      </div>
       <div>
         <el-button plain round type="primary" @click="newSettlementVisible = true">New Settlement</el-button>
         <el-button plain round type="primary" @click="newTransferVisible = true">New Transfer</el-button>
@@ -84,7 +88,7 @@ export default {
   name: 'Home',
   data () {
     return {
-      newSettlementVisible: true,
+      newSettlementVisible: false,
       newSettlement: {
         to: null,
         request_amount: null,
@@ -92,7 +96,7 @@ export default {
         offer_amount: null,
         offer_asset: null
       },
-      newTransferVisible: true,
+      newTransferVisible: false,
       newTransfer: {
         to: null,
         offer_amount: null,
@@ -113,11 +117,16 @@ header {
 a {
   margin-right: 1rem;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 500;
+  color: black;
+  transition: opacity .15s ease-in-out;
 
   &:active {
-    color: black;
     text-decoration: none;
+  }
+
+  &:hover {
+    opacity: 0.8;
   }
 
   &:visited {
@@ -126,6 +135,6 @@ a {
 }
 
 a.router-link-exact-active {
-  color: #409EFF;
+  color: #409eff;
 }
 </style>

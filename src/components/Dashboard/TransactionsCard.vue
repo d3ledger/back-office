@@ -32,8 +32,20 @@
       >
           <template slot-scope="scope">
             <div v-if="scope.row.status === 'waiting' && scope.row.to === 'you'">
-              <el-button size="mini" plain type="danger">Decline</el-button>
-              <el-button size="mini" plain type="success">Accept</el-button>
+              <el-button
+                size="mini" plain
+                type="danger"
+                v-on:click="$emit('decline-settlement', scope.row)"
+              >
+                Decline
+              </el-button>
+              <el-button
+                size="mini"
+                plain type="success"
+                v-on:click="$emit('accept-settlement', scope.row)"
+              >
+                Accept
+              </el-button>
             </div>
           </template>
         </el-table-column>
