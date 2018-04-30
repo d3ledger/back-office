@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import BalancePage from '@/components/BalancePage'
-import SettlementsPage from '@/components/SettlementsPage'
+import Dashboard from '@/components/Dashboard/Dashboard'
 
 Vue.use(Router)
 
@@ -14,13 +13,8 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'balance-page',
-          component: BalancePage
-        },
-        {
-          path: '/settlements',
-          name: 'settlements-page',
-          component: SettlementsPage
+          name: 'dashboard',
+          component: Dashboard
         }
       ]
     },
