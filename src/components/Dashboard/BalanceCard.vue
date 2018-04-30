@@ -4,6 +4,11 @@
       :data="wallets"
       size="small"
     >
+      <el-table-column type="expand">
+          <template slot-scope="scope">
+            Address: {{ scope.row.address }}
+          </template>
+      </el-table-column>
       <el-table-column
         label="Name"
         min-width="90px"
@@ -25,8 +30,18 @@
         fixed="right"
       >
         <template slot-scope="scope">
-          <el-button size="small">Deposit</el-button>
-          <el-button size="small">Withdraw</el-button>
+          <el-button
+            size="small"
+            v-on:click="$emit('deposit-money', scope.row)"
+          >
+            Deposit
+          </el-button>
+          <el-button
+            size="small"
+            v-on:click="$emit('withdraw-money', scope.row)"
+          >
+            Withdraw
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
