@@ -5,7 +5,12 @@
         <h3 style="margin: 0">{{ title }}</h3>
       </div>
       <div>
-        <el-button type="primary" icon="el-icon-plus" circle />
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          circle
+          v-on:click="$emit('add-wallet')"
+        />
       </div>
     </div>
     <table>
