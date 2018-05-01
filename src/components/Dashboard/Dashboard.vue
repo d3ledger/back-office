@@ -88,8 +88,8 @@
 </template>
 
 <script>
-import BalanceCard from '@/components/Dashboard/BalanceCard'
-import TransactionsCard from '@/components/Dashboard/TransactionsCard'
+import BalanceCard from './BalanceCard'
+import TransactionsCard from './TransactionsCard'
 import mockTransactions from '@/mocks/transactions.json'
 
 export default {

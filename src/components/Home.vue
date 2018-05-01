@@ -8,6 +8,7 @@
       <div>
         <el-button plain round type="primary" @click="newSettlementVisible = true">New Settlement</el-button>
         <el-button plain round type="primary" @click="newTransferVisible = true">New Transfer</el-button>
+        <el-button plain round type="danger">Logout</el-button>
       </div>
     </el-header>
     <el-main>
