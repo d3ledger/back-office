@@ -2033,6 +2033,10 @@ data-urls@^1.0.0:
     whatwg-mimetype "^2.0.0"
     whatwg-url "^6.4.0"
 
+date-fns@^1.29.0:
+  version "1.29.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
+
 date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
@@ -2321,9 +2325,9 @@ electron-to-chromium@^1.2.7, electron-to-chromium@^1.3.30:
   version "1.3.44"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.44.tgz#ef6b150a60d523082388cadad88085ecd2fd4684"
 
-element-ui@^2.3.7:
-  version "2.3.7"
-  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-2.3.7.tgz#ae6f9987a30dcd2f2dd9f151eea53927b45670c9"
+element-ui@^2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-2.3.8.tgz#5d24ab1ea66363d7ffa651b7ec47b3f93cdffd7c"
   dependencies:
     async-validator "~1.8.1"
     babel-helper-vue-jsx-merge-props "^2.0.0"
