@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
-import Dashboard from '@/components/Dashboard/Dashboard'
+import WalletsPage from '@/components/Wallets/WalletsPage'
+import WalletPage from '@/components/WalletPage'
+import SettlementsPage from '@/components/Settlements/SettlementsPage'
+import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
+import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import SettingsPage from '@/components/Settings/SettingsPage'
 
 Vue.use(Router)
@@ -15,8 +19,25 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'dashboard',
-          component: Dashboard
+          name: 'wallets',
+          component: WalletsPage
+        },
+        {
+          path: 'settlements',
+          name: 'settlements-page',
+          component: SettlementsPage,
+          children: [
+            {
+              path: '',
+              name: 'settlements-waiting',
+              component: SettlementsWaiting
+            },
+            {
+              path: 'history',
+              name: 'settlements-history',
+              component: SettlementsHistory
+            }
+          ]
         },
         {
           path: 'settings',
@@ -24,6 +45,10 @@ export default new Router({
           component: SettingsPage
         }
       ]
+    },
+    {
+      path: '/wallet/:asset',
+      component: WalletPage
     },
     {
       path: '*',

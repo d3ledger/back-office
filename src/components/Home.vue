@@ -1,15 +1,14 @@
 <template>
   <el-container>
-    <el-header style="display: flex; justify-content: space-between">
-      <div>
-        <router-link to="/">Dashboard</router-link>
-        <router-link to="/settings">Settings</router-link>
-      </div>
-      <div>
-        <el-button plain round type="primary" @click="newSettlementVisible = true">New Settlement</el-button>
-        <el-button plain round type="primary" @click="newTransferVisible = true">New Transfer</el-button>
-        <el-button plain round type="danger">Logout</el-button>
-      </div>
+    <el-header class="header">
+      <el-menu
+        default-active="/"
+        :router="true"
+        mode="horizontal"
+      >
+        <el-menu-item index="/">Wallets</el-menu-item>
+          <el-menu-item index="/settlements">Settlements</el-menu-item>
+      </el-menu>
     </el-header>
     <el-main>
       <router-view/>
@@ -112,30 +111,7 @@ export default {
 header {
   background: white;
   display: flex;
-  align-items: center;
-}
-
-a {
-  margin-right: 1rem;
-  text-decoration: none;
-  font-weight: 500;
-  color: black;
-  transition: opacity .15s ease-in-out;
-
-  &:active {
-    text-decoration: none;
-  }
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:visited {
-    color: black;
-  }
-}
-
-a.router-link-exact-active {
-  color: #409eff;
+  justify-content: space-between;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08)
 }
 </style>

@@ -2,331 +2,172 @@
   {
     "id": 1,
     "from": "you",
-    "offer_amount": 0.350556,
-    "offer_asset": "WVS",
+    "amount": 0.350556,
     "to": "yuriy@ru",
-    "request_amount": 0.26483,
-    "request_asset": "ETH",
     "date": "2017-11-15T17:29:50Z",
+    "message": "hello",
     "status": "declined"
   },
   {
     "id": 2,
     "from": "yuriy@ru",
-    "offer_amount": 0.796463,
-    "offer_asset": "ETH",
+    "amount": 0.796463,
     "to": "you",
-    "request_amount": 0.212971,
-    "request_asset": "WVS",
     "date": "2018-03-24T00:19:35Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 3,
     "from": "test@ru",
-    "offer_amount": 0.442722,
-    "offer_asset": "WVS",
+    "amount": 0.442722,
     "to": "you",
-    "request_amount": 0.252603,
-    "request_asset": "ETH",
     "date": "2017-10-14T11:12:03Z",
-    "status": "accepted"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 4,
     "from": "test@ru",
-    "offer_amount": 0.283456,
-    "offer_asset": "ETH",
+    "amount": 0.283456,
     "to": "you",
-    "request_amount": 0.624359,
-    "request_asset": "WVS",
     "date": "2017-05-23T08:00:44Z",
-    "status": "accepted"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 5,
     "from": "admin@ru",
-    "offer_amount": 0.25946,
-    "offer_asset": "ETH",
+    "amount": 0.25946,
     "to": "you",
-    "request_amount": 0.058569,
-    "request_asset": "WVS",
     "date": "2017-08-22T19:56:27Z",
+    "message": "hello",
     "status": "declined"
   },
   {
     "id": 6,
     "from": "nikolay@ru",
-    "offer_amount": 0.129626,
-    "offer_asset": "ETH",
+    "amount": 0.129626,
     "to": "you",
-    "request_amount": 0.495323,
-    "request_asset": "WVS",
     "date": "2017-08-29T09:45:48Z",
+    "message": "hello",
     "status": "declined"
   },
   {
     "id": 7,
     "from": "admin@ru",
-    "offer_amount": 0.699506,
-    "offer_asset": "WVS",
+    "amount": 0.699506,
     "to": "you",
-    "request_amount": 0.063604,
-    "request_asset": "ETH",
     "date": "2017-08-19T11:49:59Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 8,
     "from": "admin@ru",
-    "offer_amount": 0.316812,
-    "offer_asset": "ETH",
+    "amount": 0.316812,
     "to": "you",
-    "request_amount": 0.756748,
-    "request_asset": "WVS",
     "date": "2017-11-09T22:05:58Z",
-    "status": "accepted"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 9,
     "from": "you",
-    "offer_amount": 0.520856,
-    "offer_asset": "WVS",
+    "amount": 0.520856,
     "to": "admin@ru",
-    "request_amount": 0.240376,
-    "request_asset": "ETH",
     "date": "2017-05-22T19:07:47Z",
-    "status": "accepted"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 10,
     "from": "you",
-    "offer_amount": 0.852744,
-    "offer_asset": "ETH",
+    "amount": 0.852744,
     "to": "test@ru",
-    "request_amount": 0.684818,
-    "request_asset": "WVS",
     "date": "2018-02-16T11:47:55Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 11,
     "from": "yuriy@ru",
-    "offer_amount": 0.19864,
-    "offer_asset": "WVS",
+    "amount": 0.19864,
     "to": "you",
-    "request_amount": 0.991999,
-    "request_asset": "ETH",
     "date": "2018-03-29T14:18:48Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 12,
     "from": "you",
-    "offer_amount": 0.665101,
-    "offer_asset": "WVS",
+    "amount": 0.665101,
     "to": "yuriy@ru",
-    "request_amount": 0.507691,
-    "request_asset": "ETH",
     "date": "2018-01-15T07:13:25Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 13,
     "from": "test@ru",
-    "offer_amount": 0.049468,
-    "offer_asset": "ETH",
+    "amount": 0.049468,
     "to": "you",
-    "request_amount": 0.394131,
-    "request_asset": "WVS",
     "date": "2017-07-03T11:49:34Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 14,
     "from": "you",
-    "offer_amount": 0.829115,
-    "offer_asset": "WVS",
+    "amount": 0.829115,
     "to": "yuriy@ru",
-    "request_amount": 0.227558,
-    "request_asset": "ETH",
     "date": "2018-03-06T12:18:58Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 15,
     "from": "you",
-    "offer_amount": 0.217472,
-    "offer_asset": "WVS",
+    "amount": 0.217472,
     "to": "admin@ru",
-    "request_amount": 0.081845,
-    "request_asset": "ETH",
     "date": "2017-10-18T11:27:19Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 16,
     "from": "you",
-    "offer_amount": 0.81711,
-    "offer_asset": "ETH",
+    "amount": 0.81711,
     "to": "admin@ru",
-    "request_amount": 0.300292,
-    "request_asset": "WVS",
     "date": "2017-10-22T01:39:24Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 17,
     "from": "you",
-    "offer_amount": 0.697086,
-    "offer_asset": "WVS",
+    "amount": 0.697086,
     "to": "nikolay@ru",
-    "request_amount": 0.174286,
-    "request_asset": "ETH",
     "date": "2017-11-04T11:55:53Z",
-    "status": "waiting"
+    "message": "hello",
+    "status": "done"
   },
   {
     "id": 18,
     "from": "nikolay@ru",
-    "offer_amount": 0.746103,
-    "offer_asset": "WVS",
+    "amount": 0.746103,
     "to": "you",
-    "request_amount": 0.035487,
-    "request_asset": "ETH",
     "date": "2017-05-21T10:58:59Z",
+    "message": "hello",
     "status": "declined"
   },
   {
     "id": 19,
     "from": "test@ru",
-    "offer_amount": 0.121857,
-    "offer_asset": "WVS",
+    "amount": 0.121857,
     "to": "you",
-    "request_amount": 0.242128,
-    "request_asset": "ETH",
     "date": "2017-06-01T08:04:00Z",
+    "message": "hello",
     "status": "declined"
-  },
-  {
-    "id": 20,
-    "from": "nikolay@ru",
-    "offer_amount": 0.136232,
-    "offer_asset": "WVS",
-    "to": "you",
-    "request_amount": 0.3383,
-    "request_asset": "ETH",
-    "date": "2017-09-16T08:45:49Z",
-    "status": "accepted"
-  },
-  {
-    "id": 21,
-    "from": "you",
-    "offer_amount": 0.872527,
-    "offer_asset": "ETH",
-    "to": "test@ru",
-    "request_amount": 0.266798,
-    "request_asset": "WVS",
-    "date": "2017-07-10T05:31:50Z",
-    "status": "waiting"
-  },
-  {
-    "id": 22,
-    "from": "nikolay@ru",
-    "offer_amount": 0.649115,
-    "offer_asset": "WVS",
-    "to": "you",
-    "request_amount": 0.738006,
-    "request_asset": "ETH",
-    "date": "2017-08-01T02:51:31Z",
-    "status": "declined"
-  },
-  {
-    "id": 23,
-    "from": "you",
-    "offer_amount": 0.803685,
-    "offer_asset": "WVS",
-    "to": "test@ru",
-    "request_amount": 0.443995,
-    "request_asset": "ETH",
-    "date": "2017-09-21T03:35:49Z",
-    "status": "declined"
-  },
-  {
-    "id": 24,
-    "from": "you",
-    "offer_amount": 0.725414,
-    "offer_asset": "WVS",
-    "to": "yuriy@ru",
-    "request_amount": 0.749066,
-    "request_asset": "ETH",
-    "date": "2017-10-17T04:15:13Z",
-    "status": "declined"
-  },
-  {
-    "id": 25,
-    "from": "test@ru",
-    "offer_amount": 0.032006,
-    "offer_asset": "ETH",
-    "to": "you",
-    "request_amount": 0.705129,
-    "request_asset": "WVS",
-    "date": "2018-01-23T11:51:04Z",
-    "status": "accepted"
-  },
-  {
-    "id": 26,
-    "from": "admin@ru",
-    "offer_amount": 0.115255,
-    "offer_asset": "WVS",
-    "to": "you",
-    "request_amount": 0.855741,
-    "request_asset": "ETH",
-    "date": "2017-07-07T14:29:18Z",
-    "status": "declined"
-  },
-  {
-    "id": 27,
-    "from": "you",
-    "offer_amount": 0.865554,
-    "offer_asset": "WVS",
-    "to": "nikolay@ru",
-    "request_amount": 0.829586,
-    "request_asset": "ETH",
-    "date": "2017-07-12T09:40:00Z",
-    "status": "waiting"
-  },
-  {
-    "id": 28,
-    "from": "yuriy@ru",
-    "offer_amount": 0.166118,
-    "offer_asset": "WVS",
-    "to": "you",
-    "request_amount": 0.674412,
-    "request_asset": "ETH",
-    "date": "2017-12-22T02:34:32Z",
-    "status": "accepted"
-  },
-  {
-    "id": 29,
-    "from": "you",
-    "offer_amount": 0.496343,
-    "offer_asset": "ETH",
-    "to": "yuriy@ru",
-    "request_amount": 0.387937,
-    "request_asset": "WVS",
-    "date": "2017-08-02T22:18:39Z",
-    "status": "declined"
-  },
-  {
-    "id": 30,
-    "from": "nikolay@ru",
-    "offer_amount": 0.242166,
-    "offer_asset": "ETH",
-    "to": "you",
-    "request_amount": 0.513064,
-    "request_asset": "WVS",
-    "date": "2017-11-10T15:33:44Z",
-    "status": "waiting"
   }
 ]
