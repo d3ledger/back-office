@@ -11,11 +11,23 @@
   {
     "id": 2,
     "from": "yuriy@ru",
-    "amount": 0.796463,
+    "amount": 0.26483,
     "to": "you",
     "date": "2018-03-24T00:19:35Z",
     "message": "hello",
-    "status": "done"
+    "status": "done",
+    "settlement": {
+      "id": 1,
+      "from": "you",
+      "offer_amount": 0.796463,
+      "offer_asset": "WVS",
+      "to": "yuriy@ru",
+      "request_amount": 0.26483,
+      "request_asset": "ETH",
+      "date": "2018-03-24T00:19:35Z",
+      "message": "hello",
+      "status": "accepted"
+    }
   },
   {
     "id": 3,

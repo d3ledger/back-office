@@ -5,103 +5,32 @@
         default-active="/"
         :router="true"
         mode="horizontal"
+        style="width: 100%"
       >
         <el-menu-item index="/">Wallets</el-menu-item>
-          <el-menu-item index="/settlements">Settlements</el-menu-item>
+        <el-menu-item index="/settlements">Settlements <span class="number-icon">2</span></el-menu-item>
+        <el-submenu index="user" style="float: right">
+          <template slot="title">user@domain</template>
+          <el-menu-item index="/settings">Settings</el-menu-item>
+          <el-menu-item index="/logout">Logout</el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-header>
     <el-main>
       <router-view/>
     </el-main>
-    <el-dialog
-      title="New Settlement"
-      :visible.sync="newSettlementVisible"
-      width="500px"
-    >
-      <el-form label-width="4rem">
-        <el-form-item label="I offer:" prop="amount">
-          <el-input name="amount" v-model="newSettlement.request_amount">
-            <el-select
-              v-model="newSettlement.request_asset"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option label="ETH" value="eth">ETH</el-option>
-              <el-option label="WVS" value="wvs">WVS</el-option>
-            </el-select>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="To">
-          <el-input v-model="newSettlement.to" placeholder="account id" />
-        </el-form-item>
-        <el-form-item label="For:" prop="amount">
-          <el-input name="amount" v-model="newSettlement.offer_amount">
-            <el-select
-              v-model="newSettlement.offer_asset"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option label="ETH" value="eth">ETH</el-option>
-              <el-option label="WVS" value="wvs">WVS</el-option>
-            </el-select>
-          </el-input>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button type="primary">Make offer</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-    <el-dialog
-      title="New Transfer"
-      :visible.sync="newTransferVisible"
-      width="500px"
-    >
-      <el-form label-width="4rem">
-        <el-form-item label="Transfer:" prop="amount">
-          <el-input name="amount" v-model="newTransfer.request_amount">
-            <el-select
-              v-model="newTransfer.offer_asset"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option label="ETH" value="eth">ETH</el-option>
-              <el-option label="WVS" value="wvs">WVS</el-option>
-            </el-select>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="To">
-          <el-input v-model="newTransfer.to" placeholder="account id" />
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button type="primary">Transfer</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </el-container>
 </template>
 
 <script>
+//TODO: Fix top navigation menu active
+//TODO: Fix number of settlements
+//TODO: Icons for every asset + color
+
 export default {
   name: 'Home',
   data () {
     return {
-      newSettlementVisible: false,
-      newSettlement: {
-        to: null,
-        request_amount: null,
-        request_asset: null,
-        offer_amount: null,
-        offer_asset: null
-      },
-      newTransferVisible: false,
-      newTransfer: {
-        to: null,
-        offer_amount: null,
-        offer_asset: null
-      }
     }
   }
 }
@@ -113,5 +42,12 @@ header {
   display: flex;
   justify-content: space-between;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08)
+}
+
+.number-icon {
+  background-color: #f56c6c;
+  color: white;
+  padding: .2rem .45rem;
+  border-radius: 20px;
 }
 </style>

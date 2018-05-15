@@ -32,7 +32,30 @@
             <div slot="header">
               History
             </div>
-            <el-table :data="transactions">
+            <el-table
+              :data="transactions"
+              ref="table"
+              @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
+              >
+              <el-table-column type="expand">
+                <template slot-scope="scope">
+                  <p>
+                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + asset}} to {{ scope.row.to }}
+                  </p>
+                  <div v-if="scope.row.settlement" style="background: #F8FFF0">
+                    <p>This transaction is a part of a succesfull setllement:</p>
+                    <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
+                    <p>Was <el-tag>created</el-tag> at {{ scope.row.settlement.date | formatDateLong}}</p>
+                    <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
+                    {{ scope.row.settlement.date | formatDateLong}}</p>
+                    <p>Message: {{ scope.row.settlement.message }}</p>
+                  </div>
+                  <div v-else>
+                    <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+                    <p>Message: {{ scope.row.message }}</p>
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column label="Amount" width="100">
                 <template slot-scope="scope">
                   {{ (scope.row.from === 'you' ? '- ' : '+ ') + scope.row.amount.toFixed(4)}}
@@ -53,7 +76,12 @@
                   {{ scope.row.date | formatDate }}
                 </template>
               </el-table-column>
-              <el-table-column prop="message" label="Message" min-width="200"/>
+              <el-table-column prop="message" label="Description" min-width="200">
+                <template slot-scope="scope">
+                  <div v-if="scope.row.settlement">Part of a settlement <i class="el-icon-refresh"></i></div>
+                  <div v-else>{{ scope.row.message }}</div>
+                </template>
+              </el-table-column>
             </el-table>
           </el-card>
         </el-col>
@@ -98,7 +126,6 @@
 </template>
 
 <script>
-// TODO: Settlements
 import dateFormat from '@/components/mixins/dateFormat'
 import mockTransactions from '@/mocks/transactions.json'
 
@@ -106,9 +133,9 @@ export default {
   mixins: [dateFormat],
   data () {
     return {
-      name: 'Bitcoin',
-      amount: 1.80368522,
-      asset: 'BTC',
+      name: 'Ethereum',
+      amount: 100.803685,
+      asset: 'ETH',
       address: '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
 
       transactions: mockTransactions,
@@ -120,12 +147,21 @@ export default {
         amount: 0
       }
     }
+  },
+  methods: {
+    tagType: function (val) {
+      val = val.toLowerCase()
+      if (val === 'accepted') return 'success'
+      if (val === 'rejected') return 'danger'
+      if (val === 'canceled') return 'info'
+      return ''
+    }
   }
 }
 </script>
 <style scoped>
 .header {
-  background-color: #ffb055;
+  background-color: #494949;
   padding: 30px 20px;
   color: white;
 }
