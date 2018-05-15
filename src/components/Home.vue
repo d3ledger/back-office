@@ -49,4 +49,8 @@ header {
   padding: .2rem .45rem;
   border-radius: 20px;
 }
+
+.el-menu-item {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 </style>
