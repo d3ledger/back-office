@@ -42,7 +42,6 @@
 </template>
 
 <script>
-// TODO: Mixin for date
 import dateFormat from '@/components/mixins/dateFormat'
 import mockSettlements from '@/mocks/settlements.json'
 
