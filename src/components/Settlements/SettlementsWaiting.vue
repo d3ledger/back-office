@@ -115,7 +115,6 @@
   </section>
 </template>
 <script>
-// import { format } from 'date-fns'
 import mockSettlements from '@/mocks/settlements.json'
 import dateFormat from '@/components/mixins/dateFormat'
 
