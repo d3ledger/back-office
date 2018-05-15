@@ -63,7 +63,7 @@
             <el-button
               size="mini" plain
               type="info"
-              @click="cancelationDialogVisible = true; settlementForCancelation = scope.row"
+              @click="cancellationDialogVisible = true; settlementForcancellation = scope.row"
             >
               Cancel
             </el-button>
@@ -99,14 +99,14 @@
     </el-dialog>
     <el-dialog
       title="Cancel settlement?"
-      :visible.sync="cancelationDialogVisible"
+      :visible.sync="cancellationDialogVisible"
       width="500px"
     >
-      <div v-if="settlementForCancelation">
-        Are you sure want to cancel {{ settlementForCancelation.offer_amount + settlementForCancelation.offer_asset }}
-        for {{ settlementForCancelation.request_amount + settlementForCancelation.request_asset }} with {{ settlementForCancelation.to }}?
+      <div v-if="settlementForcancellation">
+        Are you sure want to cancel {{ settlementForcancellation.offer_amount + settlementForcancellation.offer_asset }}
+        for {{ settlementForcancellation.request_amount + settlementForcancellation.request_asset }} with {{ settlementForcancellation.to }}?
         <el-alert
-          title="Note that we can't guarantee the success of cancelation."
+          title="Note that we can't guarantee the success of cancellation."
           type="warning"
           :closable="false"
           style="margin-top: 20px"
@@ -132,8 +132,8 @@ export default {
       rejectionDialogVisible: false,
       setttlementForRejection: null,
 
-      cancelationDialogVisible: false,
-      settlementForCancelation: null
+      cancellationDialogVisible: false,
+      settlementForcancellation: null
     }
   },
   computed: {
