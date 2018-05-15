@@ -1,5 +1,9 @@
 <template>
-  <el-table :data="settlements">
+  <el-table
+    :data="settlements"
+    ref="table"
+    @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
+  >
     <el-table-column type="expand">
       <template slot-scope="scope">
         <p>
@@ -9,13 +13,6 @@
         <p>Was <el-tag :type="tagType(scope.row.status)" >{{ scope.row.status }}</el-tag> at
         {{ scope.row.date | formatDateLong}}</p>
         <p>Message: {{ scope.row.message }}</p>
-      </template>
-    </el-table-column>
-    <el-table-column width="93">
-      <template slot-scope="scope">
-        <el-tag
-          :type="tagType(scope.row.status)"
-        >{{ scope.row.status }}</el-tag>
       </template>
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
@@ -36,6 +33,13 @@
     <el-table-column label="Date" width="120">
       <template slot-scope="scope">
         {{ scope.row.date | formatDate }}
+      </template>
+    </el-table-column>
+     <el-table-column width="93">
+      <template slot-scope="scope">
+        <el-tag
+          :type="tagType(scope.row.status)"
+        >{{ scope.row.status }}</el-tag>
       </template>
     </el-table-column>
   </el-table>

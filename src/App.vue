@@ -20,8 +20,10 @@ export default {
 }
 
 a {
+  color: black;
   transition: opacity .15s ease-in-out;
   cursor: pointer;
+  text-decoration: none;
 }
 
 a:hover {

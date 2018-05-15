@@ -1,6 +1,10 @@
 <template>
   <section>
-    <el-table :data="settlements">
+    <el-table
+      :data="settlements"
+      ref="table"
+      @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
+    >
       <el-table-column type="expand">
         <template slot-scope="scope">
           <p>

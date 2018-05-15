@@ -4,9 +4,9 @@
       <el-col :xs="24" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
         <el-card>
           <div slot="header" class="header">
-            <div>
-              <router-link to="/settlements/">Waiting</router-link>
-              <router-link to="/settlements/history">History</router-link>
+            <div style="display: flex">
+              <router-link class="navlink" to="/settlements/">Waiting</router-link>
+              <router-link class="navlink" to="/settlements/history">History</router-link>
             </div>
             <div>
               <el-button type="primary" @click="newSettlementFormVisible = true">New settlement</el-button>
@@ -83,5 +83,31 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.navlink {
+  display: inline-block;
+  color: #606266;
+  font-size: 14px;
+  line-height: 1;
+  padding: 12px 20px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+.navlink:first-child{
+  border-radius: 4px 0 0 4px;
+  border-right: none;
+}
+
+.navlink:last-child{
+  border-radius: 0 4px 4px 0;
+  border-left: none;
+}
+
+.navlink.router-link-exact-active{
+  color: white;
+  border: 1px solid #409EFF;
+  background: #409EFF;
 }
 </style>
