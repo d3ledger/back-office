@@ -5,9 +5,9 @@
         <p>
           {{ scope.row.from }} wanted to exchange {{ scope.row.offer_amount + ' ' + scope.row.offer_asset}} for {{ scope.row.request_amount + ' ' + scope.row.request_asset}} with {{ scope.row.to }}
         </p>
-        <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateFull}}</p>
+        <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
         <p>Was <el-tag :type="tagType(scope.row.status)" >{{ scope.row.status }}</el-tag> at
-        {{ scope.row.date | formatDateFull}}</p>
+        {{ scope.row.date | formatDateLong}}</p>
         <p>Message: {{ scope.row.message }}</p>
       </template>
     </el-table-column>
@@ -43,10 +43,11 @@
 
 <script>
 // TODO: Mixin for date
-import { format } from 'date-fns'
+import dateFormat from '@/components/mixins/dateFormat'
 import mockSettlements from '@/mocks/settlements.json'
 
 export default {
+  mixins: [dateFormat],
   data () {
     return {
 
@@ -54,10 +55,6 @@ export default {
   },
   computed: {
     settlements: () => mockSettlements.filter(x => x.status !== 'waiting')
-  },
-  filters: {
-    formatDate: date => format(date, 'MMM. D, HH:mm'),
-    formatDateFull: date => format(date, 'MMMM D, YYYY HH:mm:ss')
   },
   methods: {
     tagType: function (val) {
