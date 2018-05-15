@@ -99,10 +99,11 @@
 
 <script>
 // TODO: Settlements
-import { format } from 'date-fns'
+import dateFormat from '@/components/mixins/dateFormat'
 import mockTransactions from '@/mocks/transactions.json'
 
 export default {
+  mixins: [dateFormat],
   data () {
     return {
       name: 'Bitcoin',
@@ -119,9 +120,6 @@ export default {
         amount: 0
       }
     }
-  },
-  filters: {
-    formatDate: date => format(date, 'MMM. D, HH:mm')
   }
 }
 </script>

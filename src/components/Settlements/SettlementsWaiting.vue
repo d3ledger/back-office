@@ -7,7 +7,7 @@
             {{ scope.row.from }} want to exchange {{ scope.row.offer_amount + ' ' + scope.row.offer_asset}}
             for {{ scope.row.request_amount + ' ' + scope.row.request_asset}} with {{ scope.row.to }}
           </p>
-          <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateFull}}</p>
+          <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
           <p>Message: {{ scope.row.message }}</p>
         </template>
       </el-table-column>
@@ -115,10 +115,12 @@
   </section>
 </template>
 <script>
-import { format } from 'date-fns'
+// import { format } from 'date-fns'
 import mockSettlements from '@/mocks/settlements.json'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
+  mixins: [dateFormat],
   data () {
     return {
       acceptanceDialogVisible: false,
@@ -133,10 +135,6 @@ export default {
   },
   computed: {
     settlements: () => mockSettlements.filter(x => x.status === 'waiting')
-  },
-  filters: {
-    formatDate: date => format(date, 'MMM. D, HH:mm'),
-    formatDateFull: date => format(date, 'MMMM D, YYYY HH:mm:ss')
   }
 }
 </script>
