@@ -2,7 +2,7 @@
   <el-container>
     <el-header class="header">
       <el-menu
-        default-active="/"
+        :default-active="$router.history.current.path.includes('settlements') ? '/settlements' : $router.history.current.path"
         :router="true"
         mode="horizontal"
         style="width: 100%"
@@ -23,9 +23,8 @@
 </template>
 
 <script>
-//TODO: Fix top navigation menu active
-//TODO: Fix number of settlements
-//TODO: Icons for every asset + color
+// TODO: Fix number of settlements
+// TODO: Icons for every asset + color
 
 export default {
   name: 'Home',
