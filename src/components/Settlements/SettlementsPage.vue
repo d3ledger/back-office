@@ -110,4 +110,8 @@ export default {
   border: 1px solid #409EFF;
   background: #409EFF;
 }
+
+.el-select-dropdown__item {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
 </style>
