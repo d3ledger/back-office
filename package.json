@@ -10,6 +10,7 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "cryptocoins-icons": "^2.7.0",
     "date-fns": "^1.29.0",
     "element-ui": "^2.3.8",
     "normalize.css": "^8.0.0",
