@@ -10,7 +10,8 @@
         </el-col>
         <el-col :xs="24" :lg="16" :xl="14">
           <div class="title">
-            <img src="@/assets/icons/coins.svg" class="title-icon"/>
+            <i v-if="isIconPresent(asset)" :class="'title-icon cc ' + asset.toUpperCase()"></i>
+            <img v-else src="@/assets/icons/coins.svg" class="title-icon"/>
             <h1 class="title-text">
               {{ name }}
             </h1>
@@ -127,10 +128,11 @@
 
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
+import assetIcon from '@/components/mixins/assetIcon'
 import mockTransactions from '@/mocks/transactions.json'
 
 export default {
-  mixins: [dateFormat],
+  mixins: [dateFormat, assetIcon],
   data () {
     return {
       name: 'Ethereum',
@@ -190,6 +192,7 @@ a.back{
 
 .title-icon {
   width: 40px;
+  font-size: 40px;
   margin-right: 15px;
 }
 

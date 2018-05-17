@@ -15,7 +15,7 @@
 import WalletCard from '@/components/Wallets/WalletCard'
 
 export default {
-  name: 'wallets-card',
+  name: 'wallets-page',
   components: {
     WalletCard
   },
@@ -30,7 +30,7 @@ export default {
         },
         {
           name: 'Waves',
-          asset: 'WVS',
+          asset: 'WAVES',
           amount: 200.04,
           color: '0055fe'
         },
@@ -41,22 +41,28 @@ export default {
           color: '494949'
         },
         {
-          name: 'Bitcoin1',
-          asset: 'BTC',
-          amount: 1.80368522,
-          color: 'ffb055'
+          name: 'UnknownCoin',
+          asset: 'UKC',
+          amount: 200.01,
+          color: '7ED321'
         },
         {
-          name: 'Waves1',
-          asset: 'WVS',
-          amount: 200.04,
-          color: '0055fe'
+          name: 'EOS',
+          asset: 'EOS',
+          amount: 100.012,
+          color: '443F54'
         },
         {
-          name: 'Etherium1',
-          asset: 'ETH',
-          amount: 100.803685,
-          color: '494949'
+          name: 'DogeCoin',
+          asset: 'Doge',
+          amount: 123.456,
+          color: 'C6A600'
+        },
+        {
+          name: 'StrangeCoin',
+          asset: 'STRNG',
+          amount: 999.144,
+          color: '9013FE'
         }
       ]
     }
