@@ -24,7 +24,7 @@
 
 <script>
 // TODO: Fix number of settlements
-// TODO: Icons for every asset + color
+// TODO: Color for *every* asset
 
 export default {
   name: 'Home',
