@@ -16,7 +16,7 @@ export default {
       required: true
     },
     amount: {
-      type: Number,
+      type: String,
       required: true
     },
     asset: {

@@ -103,6 +103,10 @@ const getters = {
       return {
         id: a.accountAsset.assetId.replace(/#/g, '$'),
         name: a.accountAsset.assetId,
+        // TODO: set appropreate "asset" value
+        asset: a.accountAsset.assetId,
+        // TODO: set appropreate "color" value
+        // color: '',
         amount: amountToString(a.accountAsset.balance),
         precision: a.accountAsset.balance.precision
       }
