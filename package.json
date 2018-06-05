@@ -7,12 +7,15 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e"
+    "test:e2e": "vue-cli-service test:e2e",
+    "build:electron": "vue-cli-service build:electron",
+    "serve:electron": "vue-cli-service serve:electron"
   },
   "dependencies": {
     "date-fns": "^1.29.0",
     "element-ui": "^2.3.8",
     "normalize.css": "^8.0.0",
+    "source-map-support": "^0.5.4",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
@@ -27,9 +30,13 @@
     "@vue/test-utils": "^1.0.0-beta.10",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^22.0.4",
+    "electron": "^2.0.2",
+    "electron-builder": "^20.14.7",
+    "electron-webpack": "^2.1.2",
     "lint-staged": "^6.0.0",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
+    "vue-cli-plugin-electron-builder": "^0.3.2",
     "vue-template-compiler": "^2.5.13"
   },
   "browserslist": [
@@ -48,6 +55,25 @@
     "*.vue": [
       "vue-cli-service lint",
       "git add"
+    ]
+  },
+  "electronWebpack": {
+    "renderer": {
+      "sourceDirectory": "src",
+      "webpackConfig": "dist_electron/webpack.renderer.additions.js"
+    },
+    "main": {
+      "webpackConfig": "dist_electron/webpack.main.additions.js"
+    }
+  },
+  "build": {
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
     ]
   }
 }
