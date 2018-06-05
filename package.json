@@ -24,6 +24,8 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/polyfill": "^7.0.0-beta.49",
+    "@babel/preset-env": "^7.0.0-beta.49",
     "@vue/cli-plugin-babel": "3.0.0-beta.15",
     "@vue/cli-plugin-e2e-nightwatch": "3.0.0-beta.15",
     "@vue/cli-plugin-eslint": "3.0.0-beta.15",

@@ -1,5 +1,13 @@
 {
   "presets": [
-    "@vue/app"
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": 8
+        },
+        "useBuiltIns": "entry"
+      }
+    ]
   ]
 }
