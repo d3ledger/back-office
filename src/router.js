@@ -14,7 +14,7 @@ import Login from '@/components/Login'
 Vue.use(Router)
 
 const defaultRouter = new Router({
-  mode: 'history',
+  mode: 'hash',
   routes: [
     {
       path: '/',
