@@ -12,7 +12,7 @@
         <el-submenu index="user" style="float: right">
           <template slot="title">user@domain</template>
           <el-menu-item index="/settings">Settings</el-menu-item>
-          <el-menu-item index="/logout">Logout</el-menu-item>
+          <el-menu-item index="logout" @click="logout">Logout</el-menu-item>
         </el-submenu>
       </el-menu>
     </el-header>
@@ -30,6 +30,13 @@ export default {
   name: 'Home',
   data () {
     return {
+    }
+  },
+
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+        .then(() => this.$router.push('/login'))
     }
   }
 }

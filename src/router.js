@@ -55,6 +55,7 @@ const defaultRouter = new Router({
     },
     {
       path: '/login',
+      name: 'login',
       component: Login
     },
     {
@@ -65,12 +66,12 @@ const defaultRouter = new Router({
 })
 
 defaultRouter.beforeEach((to, from, next) => {
-  if (to.path === '/login') return next()
+  if (to.name === 'login') return next()
 
   if (irohaUtil.isLoggedIn()) {
     next()
   } else {
-    next('/login')
+    next({ name: 'login' })
   }
 })
 
