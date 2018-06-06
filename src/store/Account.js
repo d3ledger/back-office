@@ -4,10 +4,8 @@ import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
 
 // TODO: get assetIds via API in the future
-const DUMMY_ASSET_IDS = [
-  'coolcoin#test',
-  'hotcoin#test'
-]
+const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
+const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
 const types = {
   RESET: 'RESET',
@@ -53,17 +51,19 @@ const getters = {
 
         const {
           amount,
-          assetId,
           destAccountId,
-          srcAccountId
+          srcAccountId,
+          description
         } = c.transferAsset
 
         transfers.push({
-          from: srcAccountId,
-          to: destAccountId,
+          from: srcAccountId === state.accountId ? 'you' : srcAccountId,
+          to: destAccountId === state.accountId ? 'you' : destAccountId,
           amount: amountToString(amount),
-          currency: assetId,
-          date: createdTime
+          date: createdTime,
+          message: description,
+          // TODO: set correct status
+          status: 'accepted'
         })
       })
     })
