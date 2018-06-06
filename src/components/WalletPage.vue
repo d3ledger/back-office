@@ -58,7 +58,7 @@
               </el-table-column>
               <el-table-column label="Amount" width="100">
                 <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '- ' : '+ ') + scope.row.amount.toFixed(4)}}
+                  {{ (scope.row.from === 'you' ? '- ' : '+ ') + scope.row.amount}}
                 </template>
               </el-table-column>
               <el-table-column label="Address" min-width="120">
@@ -126,8 +126,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import mockTransactions from '@/mocks/transactions.json'
 
 export default {
   mixins: [dateFormat],
@@ -138,8 +138,6 @@ export default {
       asset: 'ETH',
       address: '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
 
-      transactions: mockTransactions,
-
       receiveFormVisible: false,
       sendFormVisible: false,
       sendForm: {
@@ -148,6 +146,14 @@ export default {
       }
     }
   },
+
+  computed: {
+    ...mapGetters({
+      // TODO: 'transfers' getter returns transactions of all assets. it needs to filter
+      transactions: 'transfers'
+    })
+  },
+
   methods: {
     tagType: function (val) {
       val = val.toLowerCase()
@@ -156,6 +162,10 @@ export default {
       if (val === 'canceled') return 'info'
       return ''
     }
+  },
+
+  created () {
+    this.$store.dispatch('getAccountTransactions')
   }
 }
 </script>
