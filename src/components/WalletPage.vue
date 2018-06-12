@@ -105,7 +105,13 @@
           <el-input v-model="sendForm.to" placeholder="account id or address" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
-          <el-button type="primary">Send</el-button>
+          <el-button
+            type="primary"
+            @click="onSubmit"
+            :loading="isSending"
+          >
+            Send
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -139,8 +145,9 @@ export default {
       sendFormVisible: false,
       sendForm: {
         to: '',
-        amount: 0
-      }
+        amount: '0'
+      },
+      isSending: false
     }
   },
 
@@ -171,6 +178,36 @@ export default {
         .then(() => {
           this.transactions = this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
         })
+    },
+
+    onSubmit () {
+      this.isSending = true
+      this.$store.dispatch('transferAsset', {
+        assetId: this.wallet.name,
+        to: this.sendForm.to,
+        amount: this.sendForm.amount
+      })
+        .then(() => {
+          this.$message({
+            message: 'Transfer successful!',
+            type: 'success'
+          })
+          this.resetSendForm()
+          this.fetchWallet()
+          this.sendFormVisible = false
+        })
+        .catch(err => {
+          console.error(err)
+          this.$alert(err.message, 'Transfer error', {
+            type: 'error'
+          })
+        })
+        .finally(() => { this.isSending = false })
+    },
+
+    resetSendForm () {
+      this.sendForm.to = ''
+      this.sendForm.amount = '0'
     }
   }
 }
