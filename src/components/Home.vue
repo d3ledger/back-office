@@ -10,7 +10,7 @@
         <el-menu-item index="/">Wallets</el-menu-item>
         <el-menu-item index="/settlements">Settlements <span class="number-icon">2</span></el-menu-item>
         <el-submenu index="user" style="float: right">
-          <template slot="title">user@domain</template>
+          <template slot="title">{{ accountId }}</template>
           <el-menu-item index="/settings">Settings</el-menu-item>
           <el-menu-item index="logout" @click="logout">Logout</el-menu-item>
         </el-submenu>
@@ -26,11 +26,15 @@
 // TODO: Fix number of settlements
 // TODO: Icons for every asset + color
 
+import { mapState } from 'vuex'
+
 export default {
   name: 'Home',
-  data () {
-    return {
-    }
+
+  computed: {
+    ...mapState({
+      accountId: (state) => state.Account.accountId
+    })
   },
 
   methods: {
