@@ -105,15 +105,20 @@ const state = initialState()
 const getters = {
   wallets (state) {
     return state.assets.map(a => {
+      // TODO: remove it after API is avialable
+      const DUMMY_ASSET = DUMMY_ASSETS.find(d => {
+        return (d.name.toLowerCase() === a.accountAsset.assetId.split('#')[0])
+      })
+
       return {
         id: a.accountAsset.assetId.replace(/#/g, '$'),
         assetId: a.accountAsset.assetId,
 
-        // TODO: get appropreate values from API and set them
-        name: a.accountAsset.assetId,
-        asset: a.accountAsset.assetId,
-        // color: '',
-        // address: '',
+        // TODO: change these to use API, not dummy
+        name: DUMMY_ASSET.name,
+        asset: DUMMY_ASSET.asset,
+        color: DUMMY_ASSET.color,
+        address: DUMMY_ASSET.address,
 
         amount: amountToString(a.accountAsset.balance),
         precision: a.accountAsset.balance.precision
