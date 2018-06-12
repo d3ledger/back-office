@@ -1,5 +1,5 @@
 <template>
-  <router-link class="card" :to="'/wallet/' + asset" :style="{ backgroundColor: '#' + color }">
+  <router-link class="card" :to="'/wallet/' + walletId" :style="{ backgroundColor: '#' + color }">
     <img src="@/assets/icons/coins.svg" class="icon"/>
     <div class="info-container">
       <div class="amount">{{ amount }}</div>
@@ -11,6 +11,10 @@
 <script>
 export default {
   props: {
+    walletId: {
+      type: String,
+      required: true
+    },
     name: {
       type: String,
       required: true

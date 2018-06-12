@@ -51,7 +51,7 @@ function initializeAssets () {
 function setupAccountTransactions (accountId, accountPrivKeyHex) {
   return irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
     .then(() => {
-      const transfers = []
+      const txs = []
 
       wallets.map(w => {
         const precision = String(w.amount).split('.')[1].length
@@ -64,11 +64,11 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
 
           const p = irohaUtil.transferAsset(from, to, `${w.name.toLowerCase()}#test`, message, amount).catch(() => {})
 
-          transfers.push(p)
+          txs.push(p)
         })
       })
 
-      return Promise.all(transfers)
+      return Promise.all(txs)
     })
     .then(() => irohaUtil.logout())
 }

@@ -50,7 +50,7 @@ const defaultRouter = new Router({
       ]
     },
     {
-      path: '/wallet/:asset',
+      path: '/wallet/:walletId',
       component: WalletPage
     },
     {

@@ -12,11 +12,11 @@
           <div class="title">
             <img src="@/assets/icons/coins.svg" class="title-icon"/>
             <h1 class="title-text">
-              {{ name }}
+              {{ wallet.name }}
             </h1>
           </div>
           <div class="bottom-wrapper">
-            <h2 class="amount"> {{ amount + ' ' + asset }}</h2>
+            <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
             <div>
               <el-button @click="sendFormVisible = true">Send</el-button>
               <el-button @click="receiveFormVisible = true">Receive</el-button>
@@ -40,7 +40,7 @@
               <el-table-column type="expand">
                 <template slot-scope="scope">
                   <p>
-                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + asset}} to {{ scope.row.to }}
+                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallet.asset}} to {{ scope.row.to }}
                   </p>
                   <div v-if="scope.row.settlement" style="background: #F8FFF0">
                     <p>This transaction is a part of a succesfull setllement:</p>
@@ -89,7 +89,7 @@
     </el-main>
 
     <el-dialog
-      :title="'Send ' + asset"
+      :title="'Send ' + wallet.asset"
       :visible.sync="sendFormVisible"
       width="500px"
     >
@@ -97,7 +97,7 @@
         <el-form-item label="Transfer:" prop="amount">
           <el-input name="amount" v-model="sendForm.amount">
             <div slot="append">
-              {{ asset }}
+              {{ wallet.asset }}
             </div>
           </el-input>
         </el-form-item>
@@ -118,7 +118,7 @@
       <div style="display: flex; align-items: center;">
         <img src="@/assets/qr.png" />
         <div style="padding-left: 20px">
-          Scan QR code or send your {{ asset }} to <strong> {{ address }}</strong>
+          Scan QR code or send your {{ wallet.asset }} to <strong> {{ wallet.address }}</strong>
         </div>
       </div>
     </el-dialog>
@@ -126,17 +126,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   mixins: [dateFormat],
   data () {
     return {
-      name: 'Ethereum',
-      amount: 100.803685,
-      asset: 'ETH',
-      address: '1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2',
+      wallet: {},
+      transactions: [],
 
       receiveFormVisible: false,
       sendFormVisible: false,
@@ -147,11 +144,14 @@ export default {
     }
   },
 
-  computed: {
-    ...mapGetters({
-      // TODO: 'transfers' getter returns transactions of all assets. it needs to filter
-      transactions: 'transfers'
-    })
+  watch: {
+    '$route' (to, from) {
+      this.fetchWallet()
+    }
+  },
+
+  created () {
+    this.fetchWallet()
   },
 
   methods: {
@@ -161,11 +161,17 @@ export default {
       if (val === 'rejected') return 'danger'
       if (val === 'canceled') return 'info'
       return ''
-    }
-  },
+    },
 
-  created () {
-    this.$store.dispatch('getAccountTransactions')
+    fetchWallet () {
+      const walletId = this.$route.params.walletId
+
+      this.wallet = this.$store.getters.wallets.find(w => (w.id === walletId))
+      this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
+        .then(() => {
+          this.transactions = this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
+        })
+    }
   }
 }
 </script>
