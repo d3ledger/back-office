@@ -255,6 +255,7 @@ function getAccountAssetTransactions (accountId, assetId) {
   )
 }
 
+// TODO: update parameters and how to handle responses to match the latest API
 /**
  * getAccountAssets https://hyperledger.github.io/iroha-api/#get-account-assets
  * @param {String} accountId

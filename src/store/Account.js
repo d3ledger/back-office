@@ -3,7 +3,10 @@ import grpc from 'grpc'
 import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
 
-// TODO: get assetIds via API in the future
+// TODO: To be removed. This is used for 2 reasons for now:
+//   1. to get assetIds, because previous GetAccountAssets API required a client
+//      to know assetIds in advance.
+//   2. to get asset's properties (e.g. color) which cannot be fetched from API.
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
@@ -64,7 +67,7 @@ function transformTransactions (transactions) {
         amount: amountToString(amount),
         date: createdTime,
         message: description,
-        // TODO: set correct status
+        // TODO: set appropreate tx status ('accepted', 'rejected', 'canceled')
         status: 'accepted'
       })
     })
@@ -105,7 +108,7 @@ const state = initialState()
 const getters = {
   wallets (state) {
     return state.assets.map(a => {
-      // TODO: remove it after API is avialable
+      // TODO: remove it after irohaUtil.getAccountAssets is updated
       const DUMMY_ASSET = DUMMY_ASSETS.find(d => {
         return (d.name.toLowerCase() === a.accountAsset.assetId.split('#')[0])
       })
@@ -249,7 +252,7 @@ const actions = {
   getAccountAssets ({ commit }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
-    // TODO: get assetIds via API in the future
+    // TODO: fix it after irohaUtil.getAccountAssets is updated
     const assetIds = DUMMY_ASSET_IDS
     const gettingAccountAssets = assetIds.map(assetId => {
       return irohaUtil.getAccountAssets(state.accountId, assetId)
