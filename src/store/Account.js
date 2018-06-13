@@ -234,7 +234,7 @@ const actions = {
       })
   },
 
-  getAccountAssetTransactions ({ commit }, { assetId }) {
+  getAccountAssetTransactions ({ commit, state }, { assetId }) {
     commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST)
 
     return irohaUtil.getAccountAssetTransactions(state.accountId, assetId)
@@ -250,7 +250,7 @@ const actions = {
       })
   },
 
-  getAccountAssets ({ commit }) {
+  getAccountAssets ({ commit, state }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
     // TODO: fix it after irohaUtil.getAccountAssets is updated
@@ -269,7 +269,7 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit }, { assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state }, { assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return irohaUtil.transferAsset(state.accountId, to, assetId, description, amount)
@@ -284,6 +284,7 @@ const actions = {
 }
 
 export default {
+  types,
   state,
   getters,
   mutations,
