@@ -15,9 +15,14 @@ const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, 'alice@test.priv'))
 const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
 
 const nodeIp = process.env.NODE_IP || 'localhost:50051'
-
+const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
 const accounts = ['admin@test', 'alice@test']
-const wallets = require('../src/mocks/wallets.json').wallets
+const wallets = require(DUMMY_FILE_PATH).wallets
+
+console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
+console.log(`accounts: ${accounts.join(', ')}`)
+console.log(`assets: ${wallets.map(w => w.name).join(', ')}`)
+console.log('')
 
 irohaUtil.login('admin@test', adminPrivKeyHex, nodeIp)
   .then(() => tryToCreateAccount('alice', 'test', alicePubKey))
@@ -25,6 +30,7 @@ irohaUtil.login('admin@test', adminPrivKeyHex, nodeIp)
   .then(() => irohaUtil.logout())
   .then(() => setupAccountTransactions('admin@test', adminPrivKeyHex))
   .then(() => setupAccountTransactions('alice@test', alicePrivKeyHex))
+  .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
 function initializeAssets () {
@@ -33,10 +39,18 @@ function initializeAssets () {
   const initializingAssets = wallets.map(w => {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
+    const assetName = w.name.toLowerCase()
+    const assetId = assetName + '#test'
 
-    return tryToCreateAsset(w.name.toLowerCase(), 'test', precision)
-      .then(() => irohaUtil.addAssetQuantity('admin@test', `${w.name.toLowerCase()}#test`, amount))
+    return tryToCreateAsset(assetName, 'test', precision)
       .then(() => {
+        console.log(`adding initial amount of ${assetId} to admin@test`)
+
+        return irohaUtil.addAssetQuantity('admin@test', `${w.name.toLowerCase()}#test`, amount)
+      })
+      .then(() => {
+        console.log(`distributing initial amount of ${assetId} to every account`)
+
         const transferringInitialAssets = _.without(accounts, 'admin@test').map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
@@ -51,7 +65,7 @@ function initializeAssets () {
 }
 
 function setupAccountTransactions (accountId, accountPrivKeyHex) {
-  console.log(`issuing account's transactions at random: ${accountId}`)
+  console.log(`issuing random tx from ${accountId} to another`)
 
   return irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
     .then(() => {
@@ -110,7 +124,7 @@ function tryToCreateAsset (assetName, domainId, precision) {
         irohaUtil.getAssetInfo(assetName + '#' + domainId)
           .then(info => {
             if (info.asset.precision === precision) {
-              console.log(`${assetName}#${domainId} (precision: ${precision}) already exist`)
+              console.log(`${assetName}#${domainId} (precision=${precision}) already exist`)
               resolve()
             } else {
               reject(new Error(`${assetName}#${domainId} is already used with different precision.`))
