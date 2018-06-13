@@ -138,9 +138,6 @@ export default {
   mixins: [dateFormat],
   data () {
     return {
-      wallet: {},
-      transactions: [],
-
       receiveFormVisible: false,
       sendFormVisible: false,
       sendForm: {
@@ -148,6 +145,20 @@ export default {
         amount: '0'
       },
       isSending: false
+    }
+  },
+
+  computed: {
+    wallet () {
+      const walletId = this.$route.params.walletId
+
+      return this.$store.getters.wallets.find(w => (w.id === walletId)) || {}
+    },
+
+    transactions () {
+      if (!this.wallet) return []
+
+      return this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
     }
   },
 
@@ -171,13 +182,8 @@ export default {
     },
 
     fetchWallet () {
-      const walletId = this.$route.params.walletId
-
-      this.wallet = this.$store.getters.wallets.find(w => (w.id === walletId))
-      this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
-        .then(() => {
-          this.transactions = this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
-        })
+      this.$store.dispatch('getAccountAssets')
+        .then(() => this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId }))
     },
 
     onSubmit () {

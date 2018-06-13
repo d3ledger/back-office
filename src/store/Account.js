@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import _ from 'lodash'
 import grpc from 'grpc'
 import irohaUtil from 'util/iroha-util'
@@ -181,7 +182,7 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    state.rawAssetTransactions[assetId] = transactions
+    Vue.set(state.rawAssetTransactions, assetId, transactions)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
