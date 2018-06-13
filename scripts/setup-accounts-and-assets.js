@@ -28,6 +28,8 @@ irohaUtil.login('admin@test', adminPrivKeyHex, nodeIp)
   .catch(err => console.error(err))
 
 function initializeAssets () {
+  console.log('initializing assets')
+
   const initializingAssets = wallets.map(w => {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
@@ -49,6 +51,8 @@ function initializeAssets () {
 }
 
 function setupAccountTransactions (accountId, accountPrivKeyHex) {
+  console.log(`issuing account's transactions at random: ${accountId}`)
+
   return irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
     .then(() => {
       const txs = []
@@ -74,6 +78,8 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
 }
 
 function tryToCreateAccount (accountName, domainId, publicKey) {
+  console.log(`trying to create an account: ${accountName}@${domainId}`)
+
   return new Promise((resolve, reject) => {
     irohaUtil.createAccount(accountName, domainId, publicKey)
       .then(() => {
@@ -92,6 +98,8 @@ function tryToCreateAccount (accountName, domainId, publicKey) {
 }
 
 function tryToCreateAsset (assetName, domainId, precision) {
+  console.log(`trying to create an asset: ${assetName}#${domainId} (precision=${precision})`)
+
   return new Promise((resolve, reject) => {
     irohaUtil.createAsset(assetName, domainId, precision)
       .then(() => {
