@@ -452,19 +452,6 @@ const actions = {
       })
   },
 
-  updateAccount ({ commit, state }) {
-    commit(types.UPDATE_ACCOUNT_REQUEST)
-
-    return irohaUtil.getAccount(state.accountId)
-      .then((account) => {
-        commit(types.UPDATE_ACCOUNT_SUCCESS, { account })
-      })
-      .catch(err => {
-        commit(types.UPDATE_ACCOUNT_FAILURE, err)
-        throw err
-      })
-  },
-
   getAccountAssetTransactions ({ commit, state }, { assetId }) {
     commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST)
 
@@ -494,61 +481,7 @@ const actions = {
       })
   },
 
-  getAccountTransactions ({ commit, state }) {
-    commit(types.GET_ACCOUNT_TRANSACTIONS_REQUEST)
-
-    return irohaUtil.getAccountTransactions(state.accountId)
-      .then(transactions => {
-        commit(types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, transactions)
-      })
-      .catch(err => {
-        commit(types.GET_ACCOUNT_TRANSACTIONS_FAILURE, err)
-        throw err
-      })
-  },
-
-  getAllUnsignedTransactions ({ commit, state }) {
-    commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
-    return irohaUtil.getPendingTransactions()
-      .then(transactions => {
-        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, transactions)
-      })
-      .catch(err => {
-        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
-        throw err
-      })
-  },
-
-  getAllAssetTransactions ({ commit, dispatch, state }) {
-    commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
-    return new Promise((resolve, reject) => {
-      state.assets.map(({ assetId }) => {
-        dispatch('getAccountAssetTransactions', { assetId })
-          .then(() => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
-            resolve()
-          })
-          .catch((err) => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE)
-            reject(err)
-            throw err
-          })
-      })
-    })
-  },
-
-  getPendingTransactions ({ commit }) {
-    commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
-
-    return irohaUtil.getPendingTransactions()
-      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
-      .catch(err => {
-        commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
-        throw err
-      })
-  },
-
-  transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state }, { assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
