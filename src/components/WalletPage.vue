@@ -183,7 +183,7 @@ export default {
     onSubmit () {
       this.isSending = true
       this.$store.dispatch('transferAsset', {
-        assetId: this.wallet.name,
+        assetId: this.wallet.assetId,
         to: this.sendForm.to,
         amount: this.sendForm.amount
       })
