@@ -1,32 +1,92 @@
 [
   {
-    "assetId": "omisego#test",
-    "accountId": "admin@test",
-    "balance": "10.80368522"
+    "accountAsset": {
+      "assetId": "bitcoin#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 969303764
+        },
+        "precision": 8
+      }
+    }
   },
   {
-    "assetId": "augur#test",
-    "accountId": "admin@test",
-    "balance": "1000.02"
+    "accountAsset": {
+      "assetId": "waves#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 19900
+        },
+        "precision": 2
+      }
+    }
   },
   {
-    "assetId": "bytom#test",
-    "accountId": "admin@test",
-    "balance": "10.25"
+    "accountAsset": {
+      "assetId": "etherium#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 97008515
+        },
+        "precision": 6
+      }
+    }
   },
   {
-    "assetId": "eos#test",
-    "accountId": "admin@test",
-    "balance":  "10.80368522"
+    "accountAsset": {
+      "assetId": "bitcoin1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 980067150
+        },
+        "precision": 8
+      }
+    }
   },
   {
-    "assetId": "golem#test",
-    "accountId": "admin@test",
-    "balance": "200.04"
+    "accountAsset": {
+      "assetId": "waves1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 19687
+        },
+        "precision": 2
+      }
+    }
   },
   {
-    "assetId": "dgd#test",
-    "accountId": "admin@test",
-    "balance": "30.03"
+    "accountAsset": {
+      "assetId": "etherium1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 99371984
+        },
+        "precision": 6
+      }
+    }
   }
 ]
