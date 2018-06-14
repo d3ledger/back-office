@@ -4,6 +4,9 @@
       "payload": {
         "commandsList": [
           {
+            "setQUorum": {}
+          },
+          {
             "transferAsset": {
               "srcAccountId": "alice@test",
               "destAccountId": "admin@test",

@@ -52,18 +52,30 @@ describe('Account store', () => {
   describe('Mutations', () => {
     function testErrorHandling (type) {
       const codes = ['UNAVAILABLE', 'CANCELLED']
+
       codes.forEach(codeName => {
         it(`${type} should treat grpc ${codeName} as a connection error`, () => {
           const grpc = require('grpc')
           const state = {}
           const error = { code: grpc.status[codeName] }
 
-          expect(state.connectionError).to.be.undefined
+          expect(state.connectionError).to.not.exist
 
           mutations[types[type]](state, error)
 
           expect(state.connectionError).to.equal(error)
         })
+      })
+
+      it(`${type} should not treat other errors as a connection error`, () => {
+        const state = {}
+        const error = new Error()
+
+        expect(state.connectionError).to.not.exist
+
+        mutations[types[type]](state, error)
+
+        expect(state.connectionError).to.not.exist
       })
     }
 
@@ -100,6 +112,7 @@ describe('Account store', () => {
     })
 
     testErrorHandling('LOGIN_FAILURE')
+    testErrorHandling('LOGOUT_FAILURE')
 
     it('GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS should set transactions to state', () => {
       const state = { rawAssetTransactions: {} }
@@ -247,13 +260,20 @@ describe('Account store', () => {
 
     describe('getTransactionsByAssetId', () => {
       it('should return transformed transactions', () => {
-        const state = { rawAssetTransactions: MOCK_TRANSACTIONS }
+        const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
         const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'status']
 
         expect(result)
           .to.be.an('array')
           .which.contains.something.that.has.all.keys(expectedKeys)
+      })
+
+      it('should return an empty array if there is no transactions', () => {
+        const state = { rawAssetTransactions: {} }
+        const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
+
+        expect(result).to.be.an('array').which.is.empty
       })
     })
   })
