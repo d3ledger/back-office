@@ -57,8 +57,10 @@
     "electron-builder": "^20.14.7",
     "electron-webpack": "^2.1.2",
     "inject-loader": "^4.0.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "lint-staged": "^6.0.0",
     "node-sass": "^4.7.2",
+    "nyc": "^12.0.2",
     "sass-loader": "^6.0.6",
     "sinon": "^6.0.0",
     "vue-cli-plugin-electron-builder": "^0.3.2",
@@ -82,10 +84,28 @@
       "git add"
     ]
   },
+  "electronWebpack": {
+    "renderer": {
+      "sourceDirectory": "src",
+      "webpackConfig": "dist_electron/webpack.renderer.additions.js"
+    },
+    "main": {
+      "webpackConfig": "dist_electron/webpack.main.additions.js"
+    }
+  },
+  "build": {
+    "directories": {
+      "output": "dist_electron"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ]
+  },
   "nyc": {
     "include": [
-      "src/store/**/*.js",
-      "src/util/report-util.js"
+      "src/store/**/*.js"
     ],
     "instrument": false,
     "sourceMap": false
