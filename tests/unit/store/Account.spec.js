@@ -1,22 +1,55 @@
-const chai = require('chai')
-const AccountInjector = require('inject-loader!../../../src/store/Account.js')
+import chai from 'chai'
+import sinon from 'sinon'
+import AccountInjector from 'inject-loader!../../../src/store/Account.js'
+import helper from '../helper'
+
+const {
+  randomHex,
+  randomAccountId,
+  randomAssetId,
+  randomNodeIp,
+  randomPrivateKey,
+  randomObject,
+  randomAmount
+} = helper
 const expect = chai.expect
 
 chai.use(require('chai-things'))
 
-const DUMMY_ASSETS = require('../fixtures/assets.json')
-const DUMMY_TRANSACTIONS = require('../fixtures/transactions.json')
-const DUMMY_NODE_IP = 'DUMMY_NODE_IP'
-
-const irohaUtil = require('../../../src/util/iroha-util')
-const irohaUtilMock = Object.assign(irohaUtil, {
-  getStoredNodeIp: () => DUMMY_NODE_IP
-})
-
 describe('Account store', () => {
-  describe('mutations', () => {
-    let types, mutations
+  /*
+   * Mock irohaUtil so that unit tests can work without irohad
+   */
+  const MOCK_ASSETS = require('../fixtures/assets.json')
+  const MOCK_ASSET_TRANSACTIONS = require('../fixtures/transactions.json')
+  const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['bitcoin#test']
+  const MOCK_NODE_IP = 'MOCK_NODE_IP'
+  const MOCK_ACCOUNT_RESPONSE = { accountId: randomAccountId() }
+  const irohaUtil = require('../../../src/util/iroha-util')
+  const irohaUtilMock = Object.assign(irohaUtil, {
+    getStoredNodeIp: () => MOCK_NODE_IP,
+    login: (username, privateKey, nodeIp) => Promise.resolve(MOCK_ACCOUNT_RESPONSE),
+    logout: () => Promise.resolve(),
+    getAccountAssetTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
 
+    // TODO: fix it after irohaUtil.getAccountAssets is updated
+    getAccountAssets: (accountId, assetId) => {
+      return Promise.resolve(MOCK_ASSETS.find(a => a.accountAsset.assetId === assetId))
+    },
+
+    transferAsset: () => Promise.resolve()
+  })
+
+  let types, mutations, actions, getters
+
+  beforeEach(() => {
+    ({ types, mutations, actions, getters } = AccountInjector({
+      'util/iroha-util': irohaUtilMock,
+      'util/iroha-amount': require('../../../src/util/iroha-amount')
+    }).default)
+  })
+
+  describe('Mutations', () => {
     function testErrorHandling (type) {
       const codes = ['UNAVAILABLE', 'CANCELLED']
       codes.forEach(codeName => {
@@ -34,28 +67,18 @@ describe('Account store', () => {
       })
     }
 
-    beforeEach(() => {
-      const Account = AccountInjector({
-        'util/iroha-util': irohaUtilMock,
-        'util/iroha-amount': require('../../../src/util/iroha-amount')
-      }).default
-
-      types = Account.types
-      mutations = Account.mutations
-    })
-
     it('RESET should reset the state', () => {
       const state = {
-        accountId: 'a',
-        nodeIp: 'a',
-        accountInfo: { a: 1 },
-        rawAssetTransactions: { a: 1 },
-        assets: [1],
-        connectionError: 1
+        accountId: randomAccountId(),
+        nodeIp: randomNodeIp(),
+        accountInfo: randomObject(),
+        rawAssetTransactions: randomObject(),
+        assets: randomObject(),
+        connectionError: new Error()
       }
       const expectedState = {
         accountId: '',
-        nodeIp: DUMMY_NODE_IP,
+        nodeIp: MOCK_NODE_IP,
         accountInfo: {},
         rawAssetTransactions: {},
         assets: [],
@@ -67,9 +90,9 @@ describe('Account store', () => {
       expect(state).to.deep.equal(expectedState)
     })
 
-    it('LOGIN_SUCCESS should set an accountId', () => {
+    it('LOGIN_SUCCESS should set an accountId to state', () => {
       const state = {}
-      const account = { accountId: 'a@b' }
+      const account = { accountId: randomAccountId() }
 
       mutations[types.LOGIN_SUCCESS](state, account)
 
@@ -78,10 +101,10 @@ describe('Account store', () => {
 
     testErrorHandling('LOGIN_FAILURE')
 
-    it('GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS should set transactions', () => {
+    it('GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS should set transactions to state', () => {
       const state = { rawAssetTransactions: {} }
-      const assetId = 'a#b'
-      const transactions = [Math.random()]
+      const assetId = randomAssetId()
+      const transactions = MOCK_TRANSACTIONS
 
       mutations[types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS](state, { assetId, transactions })
 
@@ -92,9 +115,9 @@ describe('Account store', () => {
 
     testErrorHandling('GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE')
 
-    it('GET_ACCOUNT_ASSETS_SUCCESS should set assets', () => {
+    it('GET_ACCOUNT_ASSETS_SUCCESS should set assets to state', () => {
       const state = {}
-      const assets = [Math.random()]
+      const assets = MOCK_ASSETS
 
       mutations[types.GET_ACCOUNT_ASSETS_SUCCESS](state, assets)
 
@@ -102,45 +125,117 @@ describe('Account store', () => {
     })
 
     testErrorHandling('GET_ACCOUNT_ASSETS_FAILURE')
-
     testErrorHandling('TRANSFER_ASSET_FAILURE')
   })
 
-  describe('actions', () => {
-    let actions
+  describe('Actions', () => {
+    describe('login', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const params = {
+          username: randomAccountId(),
+          privateKey: randomPrivateKey(),
+          nodeIp: randomNodeIp()
+        }
 
-    beforeEach(() => {
-      const Account = AccountInjector({
-        'util/iroha-util': irohaUtilMock,
-        'util/iroha-amount': require('../../../src/util/iroha-amount')
-      }).default
-
-      actions = Account.actions
+        actions.login({ commit }, params)
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.LOGIN_REQUEST],
+              [types.LOGIN_SUCCESS, MOCK_ACCOUNT_RESPONSE]
+            ])
+            done()
+          })
+          .catch(done)
+      })
     })
 
-    // TODO: write tests
-    it('', () => {
-      actions
+    describe('logout', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+
+        actions.logout({ commit })
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.LOGOUT_REQUEST],
+              [types.RESET],
+              [types.LOGOUT_SUCCESS]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
+    describe('getAccountAssetTransactions', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const state = { accountId: randomAccountId() }
+        const params = { assetId: randomAssetId() }
+        const expectedResponse = {
+          assetId: params.assetId,
+          transactions: MOCK_TRANSACTIONS
+        }
+
+        actions.getAccountAssetTransactions({ commit, state }, params)
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST],
+              [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS, expectedResponse]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
+    // TODO: fix it after irohaUtil.getAccountAssets is updated
+    describe('getAccountAssets', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const state = { accountId: randomAccountId() }
+        const expectedResponse = MOCK_ASSETS
+
+        actions.getAccountAssets({ commit, state })
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.GET_ACCOUNT_ASSETS_REQUEST],
+              [types.GET_ACCOUNT_ASSETS_SUCCESS, expectedResponse]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
+    describe('transferAsset', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const state = { accountId: randomAccountId() }
+        const params = {
+          assetId: randomAssetId(),
+          to: randomAccountId(),
+          description: randomHex(10),
+          amount: randomAmount()
+        }
+
+        actions.transferAsset({ commit, state }, params)
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.TRANSFER_ASSET_REQUEST],
+              [types.TRANSFER_ASSET_SUCCESS]
+            ])
+            done()
+          })
+          .catch(done)
+      })
     })
   })
 
-  describe('getters', () => {
-    let getters
-
-    beforeEach(() => {
-      const Account = AccountInjector({
-        'util/iroha-util': irohaUtilMock,
-        'util/iroha-amount': require('../../../src/util/iroha-amount')
-      }).default
-
-      getters = Account.getters
-    })
-
+  describe('Getters', () => {
     describe('wallets', () => {
       it('should return wallets transformed from raw assets', () => {
-        const state = {
-          assets: DUMMY_ASSETS
-        }
+        const state = { assets: MOCK_ASSETS }
         const result = getters.wallets(state)
         const expectedKeys = ['id', 'assetId', 'name', 'asset', 'color', 'address', 'amount', 'precision']
 
@@ -151,10 +246,8 @@ describe('Account store', () => {
     })
 
     describe('getTransactionsByAssetId', () => {
-      it('should return transformed transactions filtered by assetId', () => {
-        const state = {
-          rawAssetTransactions: DUMMY_TRANSACTIONS
-        }
+      it('should return transformed transactions', () => {
+        const state = { rawAssetTransactions: MOCK_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
         const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'status']
 
