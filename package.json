@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "build:electron": "vue-cli-service build:electron",
     "serve:electron": "vue-cli-service serve:electron",
@@ -43,8 +43,10 @@
     "electron-builder": "^20.14.7",
     "electron-webpack": "^2.1.2",
     "inject-loader": "^4.0.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "lint-staged": "^6.0.0",
     "node-sass": "^4.7.2",
+    "nyc": "^12.0.2",
     "sass-loader": "^6.0.6",
     "sinon": "^6.0.0",
     "vue-cli-plugin-electron-builder": "^0.3.2",
@@ -86,5 +88,12 @@
       "node_modules/**/*",
       "package.json"
     ]
+  },
+  "nyc": {
+    "include": [
+      "src/store/**/*.js"
+    ],
+    "instrument": false,
+    "sourceMap": false
   }
 }
