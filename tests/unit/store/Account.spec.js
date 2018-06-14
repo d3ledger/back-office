@@ -1,7 +1,13 @@
-import { expect } from 'chai'
-import AccountInjector from 'inject-loader!../../../src/store/Account.js'
+const chai = require('chai')
+const AccountInjector = require('inject-loader!../../../src/store/Account.js')
+const expect = chai.expect
 
+chai.use(require('chai-things'))
+
+const DUMMY_ASSETS = require('../fixtures/assets.json')
+const DUMMY_TRANSACTIONS = require('../fixtures/transactions.json')
 const DUMMY_NODE_IP = 'DUMMY_NODE_IP'
+
 const irohaUtil = require('../../../src/util/iroha-util')
 const irohaUtilMock = Object.assign(irohaUtil, {
   getStoredNodeIp: () => DUMMY_NODE_IP
@@ -130,9 +136,32 @@ describe('Account store', () => {
       getters = Account.getters
     })
 
-    // TODO: write tests
-    it('', () => {
-      getters
+    describe('wallets', () => {
+      it('should return wallets transformed from raw assets', () => {
+        const state = {
+          assets: DUMMY_ASSETS
+        }
+        const result = getters.wallets(state)
+        const expectedKeys = ['id', 'assetId', 'name', 'asset', 'color', 'address', 'amount', 'precision']
+
+        expect(result)
+          .to.be.an('array')
+          .which.contains.something.that.has.all.keys(expectedKeys)
+      })
+    })
+
+    describe('getTransactionsByAssetId', () => {
+      it('should return transformed transactions filtered by assetId', () => {
+        const state = {
+          rawAssetTransactions: DUMMY_TRANSACTIONS
+        }
+        const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
+        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'status']
+
+        expect(result)
+          .to.be.an('array')
+          .which.contains.something.that.has.all.keys(expectedKeys)
+      })
     })
   })
 })

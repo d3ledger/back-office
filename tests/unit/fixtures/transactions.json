@@ -1,0 +1,283 @@
+{
+  "bitcoin#test": [
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "admin@test",
+              "assetId": "bitcoin#test",
+              "description": "hello",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 39600075
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "alice@test",
+        "createdTime": 1528872321913
+      },
+      "signaturesList": [
+        {
+          "pubkey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
+          "signature": "itKfWVrUYPlyuEHWOr1vpvnYdldTjYIDN80EWHPYXNOwHqapwHhi87zpB01SjetCE7GNPlR8O0mFN8db+yV6Aw=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "admin@test",
+              "assetId": "bitcoin#test",
+              "description": "hi",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 44646002
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "alice@test",
+        "createdTime": 1528872321922
+      },
+      "signaturesList": [
+        {
+          "pubkey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
+          "signature": "gm1PodpdMZaR9MdStXePVlWBLX9gKcvadKpnMrFAglNF1mvpmHwnzmQgHs9Px4DX/bpx2xyb/86Lt4edO6jVBg=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "admin@test",
+              "assetId": "bitcoin#test",
+              "description": "",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 99913421
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "alice@test",
+        "createdTime": 1528872321919
+      },
+      "signaturesList": [
+        {
+          "pubkey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
+          "signature": "4/Jg1rEQ/5pB/QVwAliXNuGW7p7UsRzzL/E0oGZUobLWrk19+JQap0eQT4dZX3S4rncuIatR3VrJIbXuk1vGAw=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "admin@test",
+              "assetId": "bitcoin#test",
+              "description": "hi",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 47356821
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "alice@test",
+        "createdTime": 1528872321916
+      },
+      "signaturesList": [
+        {
+          "pubkey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
+          "signature": "aGIFM5GuGoLkkJboOSjevo3aFDAZInBXPGy8alpbtocx/ehc3a9/MQNhHRh8Ij0y6jjCId4PAaljnEEuYa7KCQ=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "admin@test",
+              "destAccountId": "alice@test",
+              "assetId": "bitcoin#test",
+              "description": "initial tx",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 166206859
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "admin@test",
+        "createdTime": 1528872311159
+      },
+      "signaturesList": [
+        {
+          "pubkey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
+          "signature": "iT7mbbOgAo+70PWSS8CLB3JFuw+yIpcpDzOW/utwi5oaGTW6Be7b81E3o6EXgvgwtcNasYOGT3TQNbfXdeYBCA=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "admin@test",
+              "destAccountId": "alice@test",
+              "assetId": "bitcoin#test",
+              "description": "hi",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 28568069
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "admin@test",
+        "createdTime": 1528872316349
+      },
+      "signaturesList": [
+        {
+          "pubkey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
+          "signature": "ztbSgcqouCm9IxOAfrYCh+64txNHh2JvrSUQHd4w2yh42WsbOt6Rc7ADhiDH3GQpRUVp+XyohyX57rcMosx9CQ=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "admin@test",
+              "destAccountId": "alice@test",
+              "assetId": "bitcoin#test",
+              "description": "",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 77628717
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "admin@test",
+        "createdTime": 1528872316354
+      },
+      "signaturesList": [
+        {
+          "pubkey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
+          "signature": "4DqLDA8JZwh/jwkn2QTBW1xV+kcaZOLhHSqM64ER99PcLXjJYboTMWm5cQKLl9LbpfjmCl2N1x5POvD2LjPYCQ=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "admin@test",
+              "destAccountId": "alice@test",
+              "assetId": "bitcoin#test",
+              "description": "hi",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 58337340
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "admin@test",
+        "createdTime": 1528872316358
+      },
+      "signaturesList": [
+        {
+          "pubkey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
+          "signature": "5AlFKbIXwI0oNn4XzNDOENfgACDTkMCnzQWIxWMkACT6+thtqRjHOFxF4LfVcI/Z/2bSErHZxW7Tn8x1a3LQAw=="
+        }
+      ]
+    },
+    {
+      "payload": {
+        "commandsList": [
+          {
+            "transferAsset": {
+              "srcAccountId": "admin@test",
+              "destAccountId": "alice@test",
+              "assetId": "bitcoin#test",
+              "description": "hello",
+              "amount": {
+                "value": {
+                  "first": 0,
+                  "second": 0,
+                  "third": 0,
+                  "fourth": 11840092
+                },
+                "precision": 8
+              }
+            }
+          }
+        ],
+        "creatorAccountId": "admin@test",
+        "createdTime": 1528872316346
+      },
+      "signaturesList": [
+        {
+          "pubkey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
+          "signature": "TewmkTNWgeT/YneVcSX5X7eNWo5XXriLW/8MnpoYu5+Q3jy1ZcysOVTcafRCNDMP797i1/oK3HtX0tQdKFGfDA=="
+        }
+      ]
+    }
+  ]
+}
