@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import irohaUtil from 'util/iroha-util'
 
 import Home from '@/components/Home'
 import WalletsPage from '@/components/Wallets/WalletsPage'
@@ -8,11 +9,12 @@ import SettlementsPage from '@/components/Settlements/SettlementsPage'
 import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import SettingsPage from '@/components/Settings/SettingsPage'
+import Login from '@/components/Login'
 
 Vue.use(Router)
 
-export default new Router({
-  mode: 'history',
+const defaultRouter = new Router({
+  mode: 'hash',
   routes: [
     {
       path: '/',
@@ -48,8 +50,13 @@ export default new Router({
       ]
     },
     {
-      path: '/wallet/:asset',
+      path: '/wallet/:walletId',
       component: WalletPage
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     },
     {
       path: '*',
@@ -57,3 +64,15 @@ export default new Router({
     }
   ]
 })
+
+defaultRouter.beforeEach((to, from, next) => {
+  if (to.name === 'login') return next()
+
+  if (irohaUtil.isLoggedIn()) {
+    next()
+  } else {
+    next({ name: 'login' })
+  }
+})
+
+export default defaultRouter

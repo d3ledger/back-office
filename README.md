@@ -8,11 +8,15 @@
 # install dependencies
 yarn
 
-# serve with hot reload at localhost:8080
-yarn serve
+# rebuild native modules for Electron environment
+yarn rebuild
 
-# build for production with minification
-yarn build
+# serve with hot reload
+yarn serve:electron
+
+# build electron application for production
+# See [electron-builder docs](https://www.electron.build/multi-platform-build) for multi platform build
+yarn build:electron
 
 # run unit tests
 yarn run unit
