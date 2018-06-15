@@ -58,7 +58,7 @@
               </el-table-column>
               <el-table-column label="Amount" width="100">
                 <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '- ' : '+ ') + scope.row.amount}}
+                  {{ (scope.row.from === 'you' ? '- ' : '+ ') + parseFloat(scope.row.amount).toFixed(4)}}
                 </template>
               </el-table-column>
               <el-table-column label="Address" min-width="120">
