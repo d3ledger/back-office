@@ -58,6 +58,16 @@ a:hover {
   opacity: 0.8;
 }
 
+.clickable {
+  transition: opacity .15s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.clickable:hover {
+  opacity: 0.8;
+}
+
 .column-fullheight {
   height: 100vh;
   overflow: scroll;
