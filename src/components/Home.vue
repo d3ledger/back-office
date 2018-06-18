@@ -3,7 +3,7 @@
     <div
       class="side-menu"
     >
-      <h1 style="color: white; display: block; text-align: center;">D3</h1>
+      <h1 class="logo">D3</h1>
       <el-menu
         :collapse="isCollapsed"
         class="el-side-menu"
@@ -17,9 +17,9 @@
           <i class="el-icon-menu" />
           <span slot="title">Dashboard</span>
         </el-menu-item>
-        <el-menu-item index="/wallet">
+        <el-menu-item index="/wallets">
           <i class="el-icon-news" />
-          <span slot="title">Wallet</span>
+          <span slot="title">Wallets</span>
         </el-menu-item>
         <el-menu-item index="/settlement">
           <i class="el-icon-refresh" />
@@ -43,160 +43,9 @@
         style="margin-left: 25px"
       />
     </div>
-    <el-main :class="isCollapsed ? 'main-collapsed' : 'main'">
+    <main style="width: 100%; height: 100vh;">
       <router-view/>
-    </el-main>
-    <el-dialog
-      title="Exchange"
-      width="500px"
-      top="2vh"
-      :visible="exchangeDialogVisible"
-      @close="closeExchangeDialogWith()"
-      center
-    >
-      <el-form ref="exchangeForm" :model="exchangeForm" class="exchange_form" :rules="rules">
-        <el-form-item label="I send" prop="offer_amount" >
-          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
-            <el-select
-              v-model="exchangeDialogOfferAsset"
-              @change="getOfferToRequestPrice()"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="wallet in wallets"
-                :key="wallet.id"
-                :label="wallet.asset"
-                :value="wallet.asset">
-                  <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
-              </el-option>
-            </el-select>
-          </el-input>
-        </el-form-item>
-        <span class="form-item-text">
-          Available balance:
-          <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
-          </span>
-          <span v-else>...</span>
-        </span>
-        <el-form-item label="I receive" prop="request_amount">
-          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
-            <el-select
-              v-model="exchangeDialogRequestAsset"
-              @change="getOfferToRequestPrice()"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="wallet in wallets"
-                :key="wallet.id"
-                :label="wallet.asset"
-                :value="wallet.asset">
-                  <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
-              </el-option>
-            </el-select>
-          </el-input>
-        </el-form-item>
-        <span class="form-item-text">
-          Market price:
-          <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-            1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
-          </span>
-          <span v-else>...</span>
-        </span>
-        <el-form-item label="Counterparty" prop="to">
-          <el-input v-model="exchangeForm.to" placeholder="Account id" />
-        </el-form-item>
-        <el-form-item label="Additional information">
-          <el-input
-            type="textarea"
-            :rows="2"
-            v-model="exchangeForm.description"
-            placeholder="Description"
-            resize="none"
-          />
-        </el-form-item>
-      </el-form>
-      <el-button
-        class="fullwidth black clickable"
-        @click="onSubmitExchangeDialog()"
-        style="margin-top: 40px"
-        :loading="isExchangeSending"
-      >
-        EXCHANGE
-      </el-button>
-    </el-dialog>
-    <el-dialog
-      id="approval-dialog"
-      title="Confirm the transaction"
-      width="500px"
-      :visible="approvalDialogVisible"
-      @close="closeApprovalDialogWith()"
-      center
-    >
-      <el-form ref="approvalForm" :model="approvalForm" class="approval_form" @validate="updateNumberOfValidKeys">
-        <el-form-item>
-          <el-row class="approval_form-desc">
-            <p>
-              Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-              <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
-                You need to enter at least {{ approvalDialogMinAmountKeys }} key.
-              </span>
-            </p>
-            <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
-          </el-row>
-        </el-form-item>
-
-        <el-form-item
-          v-for="(key, index) in approvalForm.privateKeys"
-          :key="index"
-          :prop="`privateKeys.${index}.hex`"
-          :rules="rules.repeatingPrivateKey"
-        >
-          <el-row type="flex" justify="space-between">
-            <el-col :span="20">
-              <el-input
-                placeholder="Your private key"
-                v-model="key.hex"
-                :class="{ 'is-empty': !key.hex }"
-              />
-            </el-col>
-
-            <el-upload
-              action=""
-              :auto-upload="false"
-              :show-file-list="false"
-              :on-change="(f, l) => onFileChosen(f, l, key)"
-              >
-              <el-button>
-                <fa-icon icon="upload" />
-              </el-button>
-            </el-upload>
-          </el-row>
-        </el-form-item>
-
-        <el-form-item v-if="accountQuorum > 1">
-          <el-row type="flex" justify="center">
-            <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
-              {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
-            </div>
-          </el-row>
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            id="confirm-approval-form"
-            class="fullwidth black clickable"
-            @click="submitApprovalDialog()"
-            :disabled="disableConfig()"
-            >
-            Confirm
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    </main>
   </el-container>
 </template>
 
@@ -435,54 +284,15 @@ export default {
 }
 </script>
 
-<style>
-
-.item__private-keys {
-  width: 40px;
-  height: 40px;
-  border-radius: 24px;
-  border: solid 1px #cccccc;
-  display: flex;
-  justify-content: center;
-}
-
-.item__private-keys-success {
-  border: solid 1px #67c23a;
-}
-
-/* in order not to make a border green when a private key is empty */
-.el-form-item.is-success .el-input.is-empty .el-input__inner {
-  border-color: #dcdfe6;
-}
-.approval_form-desc {
-  text-align: center;
-}
-</style>
-
-<style scoped>
-.exchange_form >>> .el-form-item__label::before,
-.approval_form >>> .el-form-item__label::before {
-  content: '';
-}
-
-.main {
-  margin-left: 200px;
-  transition: margin 400ms;
-}
-
-.main-collapsed {
-  margin-left: 65px;
-  transition: margin 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+<style lang="scss">
+.el-menu-item {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .side-menu {
-  height: 100vh;
   background-color: #2d2d2d;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: scroll;
 }
 
 .el-side-menu:not(.el-menu--collapse) {
@@ -491,5 +301,12 @@ export default {
 
 .el-side-menu > .el-menu-item.is-active{
   background: #669dd5 !important;
+}
+
+.logo {
+  color: white;
+  display: block;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>

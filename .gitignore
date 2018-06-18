@@ -29,6 +29,5 @@ yarn-error.log*
 *.sln
 *.sw*
 
-# Cypress
-/tests/e2e/screenshots
-/tests/e2e/videos
+/.nyc_output
+/coverage
