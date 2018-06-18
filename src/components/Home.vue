@@ -1,26 +1,48 @@
 <template>
   <el-container>
-    <el-header class="header">
+    <div
+      class="side-menu"
+    >
+      <h1 style="color: white; display: block; text-align: center;">D3</h1>
       <el-menu
-        :default-active="$router.history.current.path.includes('settlements') ? '/settlements' : $router.history.current.path"
+        :collapse="isCollapse"
+        class="el-side-menu"
         :router="true"
-        mode="horizontal"
-        style="width: 100%"
+        background-color="#2d2d2d"
+        text-color="#a2a2a2"
+        active-text-color="#fff"
+        :default-active="$router.history.current.path"
       >
-        <el-menu-item index="/">Wallets</el-menu-item>
-        <el-menu-item index="/settlements">
-          Settlements
-          <span class="number-icon" v-if="numberOfSettlements >= 1">
-            {{ numberOfSettlements }}
-          </span>
+        <el-menu-item index="/">
+          <i class="el-icon-menu" />
+          <span slot="title">Dashboard</span>
         </el-menu-item>
-        <el-submenu index="user" style="float: right">
-          <template slot="title">{{ accountId }}</template>
-          <el-menu-item index="/settings">Settings</el-menu-item>
-          <el-menu-item index="logout" @click="logout">Logout</el-menu-item>
-        </el-submenu>
+        <el-menu-item index="/wallet">
+          <i class="el-icon-news" />
+          <span slot="title">Wallet</span>
+        </el-menu-item>
+        <el-menu-item index="/settlement">
+          <i class="el-icon-refresh" />
+          <span slot="title">Settlement</span>
+        </el-menu-item>
+        <el-menu-item index="/transfer">
+          <i class="el-icon-d-arrow-right" />
+          <span slot="title">Transfer</span>
+        </el-menu-item>
+        <el-menu-item index="/report">
+          <i class="el-icon-tickets" />
+          <span slot="title">Report</span>
+        </el-menu-item>
+        <el-menu-item index="/user">
+          <i class="el-icon-setting" />
+          <span slot="title">Profile</span>
+        </el-menu-item>
       </el-menu>
-    </el-header>
+      <el-checkbox
+        v-model="isCollapse"
+        style="margin-left: 25px"
+      />
+    </div>
     <el-main>
       <router-view/>
     </el-main>
@@ -35,6 +57,12 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
+
+  data () {
+    return {
+      isCollapse: false
+    }
+  },
 
   computed: {
     numberOfSettlements () {
@@ -76,5 +104,18 @@ header {
 
 .el-menu-item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.side-menu {
+  height: 100vh;
+  background-color: #2d2d2d;
+}
+
+.el-side-menu:not(.el-menu--collapse) {
+  width: 200px;
+}
+
+.el-side-menu > .el-menu-item.is-active{
+  background: #669dd5 !important;
 }
 </style>
