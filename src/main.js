@@ -8,6 +8,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
+import 'cryptocoins-icons/webfont/cryptocoins.css'
 
 // TODO: import only necessary components
 Vue.use(ElementUI, { locale })

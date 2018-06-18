@@ -1,8 +1,10 @@
 <template>
-  <div class="column-fullheight">
-    <el-card>
-      Portfolio :)
-    </el-card>
+  <div style="padding: 20px;">
+    <div class="column-fullheight">
+      <el-card>
+        Portfolio :) also, cool stats
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -17,4 +19,5 @@ export default {
 </script>
 
 <style scoped>
+
 </style>

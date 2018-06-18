@@ -1,6 +1,7 @@
 <template>
   <router-link class="card" :to="'/wallets/' + walletId">
-    <img src="@/assets/icons/coins.svg" class="icon"/>
+    <i v-if="isIconPresent(asset)" :class="'icon cc ' + asset.toUpperCase()"></i>
+    <img v-else src="@/assets/icons/coins.svg" class="icon"/>
     <div class="info-container">
       <div class="label">{{ name }}</div>
       <div class="asset">{{ asset }}</div>
@@ -9,7 +10,10 @@
 </template>
 
 <script>
+import assetIcon from '@/components/mixins/assetIcon'
+
 export default {
+  mixins: [assetIcon],
   props: {
     walletId: {
       type: String,
@@ -46,6 +50,7 @@ export default {
 .icon {
   width: 24px;
   margin-right: 20px;
+  font-size: 24px;
 }
 
 .info-container {
