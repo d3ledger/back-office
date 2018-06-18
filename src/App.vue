@@ -60,7 +60,6 @@ a:hover {
 
 .column-fullheight {
   height: 100vh;
-  padding: 20px;
   overflow: scroll;
 }
 </style>

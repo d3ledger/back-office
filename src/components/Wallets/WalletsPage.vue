@@ -7,8 +7,6 @@
         :walletId="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
-        :amount="wallet.amount"
-        :color="wallet.color"
       />
     </div>
     <div class="column-fullheight wallet">
