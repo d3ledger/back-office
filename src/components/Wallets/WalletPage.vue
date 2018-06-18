@@ -1,92 +1,122 @@
 <template>
-  <el-container>
-    <el-header height="auto" class="header">
-      <el-row>
-        <el-col :xs="24" :lg="4" :xl="5">
-          <router-link to="/" class="back">
-            <i class="el-icon-back" style="margin-right: 5px"></i>
-            <span>Wallets</span>
-          </router-link>
-        </el-col>
-        <el-col :xs="24" :lg="16" :xl="14">
-          <div class="title">
-            <img src="@/assets/icons/coins.svg" class="title-icon"/>
-            <h1 class="title-text">
-              {{ wallet.name }}
-            </h1>
+  <div>
+    <el-row style="margin-bottom: 20px">
+      <el-col :xs="24" :lg="{ span: 20, offset: 2 }" :xl="{ span: 18, offset: 3 }">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-card>
+              <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
+              <div>
+                <el-button type="primary" @click="receiveFormVisible = true" plain>
+                  Deposit
+                  <i class="el-icon-arrow-down"></i>
+                </el-button>
+                <el-button type="primary" @click="sendFormVisible = true" plain>
+                  Withdraw
+                  <i class="el-icon-arrow-up"></i>
+                </el-button>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :span="12">
+            <el-card>
+              <div slot="header" class="card-header">
+                <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
+                <i class="el-icon-more-outline" />
+              </div>
+              <div class="card-info">
+              <el-row style="margin-bottom: 20px">
+                <el-col :span="12">
+                  <p class="card-info-amount">{{ assetInfo.current.rur }} ₽</p>
+                  <p style="color: green">{{ assetInfo.current.rur_change }}</p>
+                </el-col>
+                <el-col :span="12">
+                  <p class="card-info-amount">{{ assetInfo.current.btc }} BTC</p>
+                  <p style="color: green">{{ assetInfo.current.btc_change }}</p>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="8">
+                  <p class="card-info-title">Market Cap</p>
+                  <p>{{ assetInfo.market.cap.rur }} ₽</p>
+                  <p>{{ assetInfo.market.cap.btc }} BTC</p>
+                </el-col>
+                <el-col :span="8">
+                  <p class="card-info-title">Volume (24h)</p>
+                  <p>{{ assetInfo.market.volume.rur }} ₽</p>
+                  <p>{{ assetInfo.market.volume.btc }} BTC</p>
+                </el-col>
+                <el-col :span="8">
+                  <p class="card-info-title">Circulating Supply</p>
+                  <p> {{ assetInfo.market.supply + ' ' + wallet.asset }} </p>
+                </el-col>
+              </el-row>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :xs="24" :lg="{ span: 20, offset: 2 }" :xl="{ span: 18, offset: 3 }">
+        <el-card>
+          <div slot="header">
+            History
           </div>
-          <div class="bottom-wrapper">
-            <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
-            <div>
-              <el-button @click="sendFormVisible = true">Send</el-button>
-              <el-button @click="receiveFormVisible = true">Receive</el-button>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </el-header>
-    <el-main>
-      <el-row>
-        <el-col :xs="24" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
-          <el-card>
-            <div slot="header">
-              History
-            </div>
-            <el-table
-              :data="transactions"
-              ref="table"
-              @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
-              >
-              <el-table-column type="expand">
-                <template slot-scope="scope">
-                  <p>
-                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallet.asset}} to {{ scope.row.to }}
-                  </p>
-                  <div v-if="scope.row.settlement" style="background: #F8FFF0">
-                    <p>This transaction is a part of a succesfull setllement:</p>
-                    <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
-                    <p>Was <el-tag>created</el-tag> at {{ scope.row.settlement.date | formatDateLong}}</p>
-                    <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
-                    {{ scope.row.settlement.date | formatDateLong}}</p>
-                    <p>Message: {{ scope.row.settlement.message }}</p>
-                  </div>
-                  <div v-else>
-                    <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
-                    <p>Message: {{ scope.row.message }}</p>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="Amount" width="100">
-                <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '- ' : '+ ') + parseFloat(scope.row.amount).toFixed(4)}}
-                </template>
-              </el-table-column>
-              <el-table-column label="Address" min-width="120">
-                <template slot-scope="scope">
-                  <div v-if="scope.row.from === 'you'">
-                    to {{ scope.row.to }}
-                  </div>
-                  <div v-else>
-                    from {{ scope.row.from }}
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="Date" width="120">
-                <template slot-scope="scope">
-                  {{ scope.row.date | formatDate }}
-                </template>
-              </el-table-column>
-              <el-table-column prop="message" label="Description" min-width="200">
-                <template slot-scope="scope">
-                  <div v-if="scope.row.settlement">Part of a settlement <i class="el-icon-refresh"></i></div>
-                  <div v-else>{{ scope.row.message }}</div>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </el-col>
-      </el-row>
-    </el-main>
+          <el-table
+            :data="transactions"
+            ref="table"
+            @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
+            >
+            <el-table-column type="expand">
+              <template slot-scope="scope">
+                <p>
+                  {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallet.asset}} to {{ scope.row.to }}
+                </p>
+                <div v-if="scope.row.settlement" style="background: #F8FFF0">
+                  <p>This transaction is a part of a succesfull setllement:</p>
+                  <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
+                  <p>Was <el-tag>created</el-tag> at {{ scope.row.settlement.date | formatDateLong}}</p>
+                  <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
+                  {{ scope.row.settlement.date | formatDateLong}}</p>
+                  <p>Message: {{ scope.row.settlement.message }}</p>
+                </div>
+                <div v-else>
+                  <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+                  <p>Message: {{ scope.row.message }}</p>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Amount" width="100">
+              <template slot-scope="scope">
+                {{ (scope.row.from === 'you' ? '- ' : '+ ') + Number(scope.row.amount).toFixed(4)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="Address" min-width="120">
+              <template slot-scope="scope">
+                <div v-if="scope.row.from === 'you'">
+                  to {{ scope.row.to }}
+                </div>
+                <div v-else>
+                  from {{ scope.row.from }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Date" width="120">
+              <template slot-scope="scope">
+                {{ scope.row.date | formatDate }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="message" label="Description" min-width="200">
+              <template slot-scope="scope">
+                <div v-if="scope.row.settlement">Part of a settlement <i class="el-icon-refresh"></i></div>
+                <div v-else>{{ scope.row.message }}</div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
 
     <el-dialog
       :title="'Send ' + wallet.asset"
@@ -128,7 +158,7 @@
         </div>
       </div>
     </el-dialog>
-  </el-container>
+  </div>
 </template>
 
 <script>
@@ -144,7 +174,26 @@ export default {
         to: '',
         amount: '0'
       },
-      isSending: false
+      isSending: false,
+      assetInfo: {
+        current: {
+          rur: 37705.68,
+          rur_change: '+450 ₽ (1.02 %)',
+          btc: 0.07928230,
+          btc_change: '+0.0000043 ₽ (0.28 %)'
+        },
+        market: {
+          cap: {
+            rur: 3769370874535,
+            btc: 7927895
+          },
+          volume: {
+            rur: 1544690000,
+            btc: 202340
+          },
+          supply: 99968544
+        }
+      }
     }
   },
 
@@ -252,17 +301,37 @@ a.back{
   margin-right: 15px;
 }
 
-.bottom-wrapper {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
 .amount {
   font-size: 2rem;
   margin: 0;
   margin-right: 20px;
   font-weight: bold;
   display: block;
+  margin-bottom: 20px;
 }
+
+.card-header {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-info {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.card-info-title {
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 4px;
+}
+
+.card-info-amount {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
 </style>
