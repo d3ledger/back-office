@@ -38,10 +38,9 @@
           <span slot="title">Profile</span>
         </el-menu-item>
       </el-menu>
-      <el-checkbox
-        v-model="isCollapsed"
-        style="margin-left: 25px"
-      />
+      <div class="expand-button clickable" @click="isCollapsed = !isCollapsed">
+        <i :class="isCollapsed ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"></i>
+      </div>
     </div>
     <main style="width: 100%; height: 100vh;">
       <router-view/>
@@ -50,10 +49,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
-import inputValidation from '@/components/mixins/inputValidation'
-import numberFormat from '@/components/mixins/numberFormat'
+import { mapState } from 'vuex'
 
 // TODO: Validate lack of selected asset
 export default {
@@ -285,6 +281,20 @@ export default {
 </script>
 
 <style lang="scss">
+.expand-button {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #669dd5;
+  font-size: 18px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .el-menu-item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -293,6 +303,7 @@ export default {
   background-color: #2d2d2d;
   height: 100vh;
   overflow: scroll;
+  position: relative;
 }
 
 .el-side-menu:not(.el-menu--collapse) {
