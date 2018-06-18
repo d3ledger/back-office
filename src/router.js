@@ -3,8 +3,9 @@ import Router from 'vue-router'
 import irohaUtil from 'util/iroha-util'
 
 import Home from '@/components/Home'
+import DashboardPage from '@/components/dashboard/DashboardPage'
 import WalletsPage from '@/components/Wallets/WalletsPage'
-import WalletPage from '@/components/WalletPage'
+import WalletPage from '@/components/Wallets/WalletPage'
 import SettlementsPage from '@/components/Settlements/SettlementsPage'
 import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
@@ -26,16 +27,16 @@ const defaultRouter = new Router({
         {
           path: '',
           name: 'dashboard',
-          component: lazyComponent('Dashboard/DashboardPage')
+          component: DashboardPage
         },
         {
           path: 'wallets',
           name: 'wallets',
-          component: lazyComponent('Wallets/WalletsPage'),
+          component: WalletsPage,
           children: [
             {
               path: ':walletId',
-              component: lazyComponent('Wallets/Wallet')
+              component: WalletPage
             }
           ]
         },
