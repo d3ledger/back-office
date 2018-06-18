@@ -3,7 +3,7 @@
     <div
       class="side-menu"
     >
-      <h1 style="color: white; display: block; text-align: center;">D3</h1>
+      <h1 class="logo">D3</h1>
       <el-menu
         :collapse="isCollapsed"
         class="el-side-menu"
@@ -17,9 +17,9 @@
           <i class="el-icon-menu" />
           <span slot="title">Dashboard</span>
         </el-menu-item>
-        <el-menu-item index="/wallet">
+        <el-menu-item index="/wallets">
           <i class="el-icon-news" />
-          <span slot="title">Wallet</span>
+          <span slot="title">Wallets</span>
         </el-menu-item>
         <el-menu-item index="/settlement">
           <i class="el-icon-refresh" />
@@ -43,9 +43,9 @@
         style="margin-left: 25px"
       />
     </div>
-    <el-main :class="isCollapsed ? 'main-collapsed' : 'main'">
+    <main style="width: 100%; height: 100vh;">
       <router-view/>
-    </el-main>
+    </main>
   </el-container>
 </template>
 
@@ -87,43 +87,15 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-header {
-  background: white;
-  display: flex;
-  justify-content: space-between;
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08)
-}
-
-.number-icon {
-  background-color: #f56c6c;
-  color: white;
-  padding: .2rem .45rem;
-  border-radius: 20px;
-}
-
+<style lang="scss">
 .el-menu-item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.main {
-  margin-left: 200px;
-  transition: margin 400ms;
-}
-
-.main-collapsed {
-  margin-left: 65px;
-  transition: margin 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
 .side-menu {
-  height: 100vh;
   background-color: #2d2d2d;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: scroll;
 }
 
 .el-side-menu:not(.el-menu--collapse) {
@@ -132,5 +104,12 @@ header {
 
 .el-side-menu > .el-menu-item.is-active{
   background: #669dd5 !important;
+}
+
+.logo {
+  color: white;
+  display: block;
+  text-align: center;
+  margin: 20px 0;
 }
 </style>

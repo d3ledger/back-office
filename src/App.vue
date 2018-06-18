@@ -30,8 +30,13 @@ export default {
 </script>
 
 <style>
-html,
-body {
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -39,7 +44,7 @@ body {
 
 #app {
   min-height: 100vh;
-  background: #F9FBFF;
+  background: #f4f4f4;
 }
 
 a {
@@ -51,5 +56,11 @@ a {
 
 a:hover {
   opacity: 0.8;
+}
+
+.column-fullheight {
+  height: 100vh;
+  padding: 20px;
+  overflow: scroll;
 }
 </style>
