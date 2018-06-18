@@ -11,7 +11,7 @@
         background-color="#2d2d2d"
         text-color="#a2a2a2"
         active-text-color="#fff"
-        :default-active="$router.history.current.path.contains('wallets') ? '/wallets' : $router.history.current.path"
+        :default-active="$router.history.current.path.includes('wallets') ? '/wallets' : $router.history.current.path"
       >
         <el-menu-item index="/">
           <i class="el-icon-menu" />

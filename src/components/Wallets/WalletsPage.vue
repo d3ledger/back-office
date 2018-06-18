@@ -45,6 +45,7 @@ export default {
 }
 
 .wallet {
-  width: 100%
+  width: 100%;
+  padding: 20px;
 }
 </style>

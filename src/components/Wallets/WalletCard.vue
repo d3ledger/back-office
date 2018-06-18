@@ -19,10 +19,6 @@ export default {
       type: String,
       required: true
     },
-    amount: {
-      type: String,
-      required: true
-    },
     asset: {
       type: String,
       required: true
@@ -35,6 +31,7 @@ export default {
 .card {
   display: flex;
   width: 100%;
+  font-size: 14px;
   text-decoration: none;
   align-items: center;
   padding: 15px 20px;
@@ -62,7 +59,6 @@ export default {
 .label {
   color: rgba(0, 0, 0, 0.87);
   font-size: 14px;
-  font-size: 1rem;
 }
 
 .card.router-link-active > .info-container > .label {
@@ -71,7 +67,5 @@ export default {
 
 .asset {
   color: rgba(0, 0, 0, 0.6);
-  font-size: 14px;
-  font-size: 1rem;
 }
 </style>
