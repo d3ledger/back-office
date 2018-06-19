@@ -1,11 +1,18 @@
 <template>
   <el-container class="signup-container">
-    <div style="margin-top: 4rem">
-      <h1 class="signup-title">Sign Up</h1>
-    </div>
     <el-card class="signup-form-container">
+      <div slot="header" class="clearfix">
+        <router-link
+          class="login-button"
+          to="/login"
+        >
+          <i class="el-icon-arrow-left"></i>
+          Login
+        </router-link>
+      </div>
+
       <el-form class="signup-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Username:" prop="username">
+        <el-form-item label="username:" prop="username">
           <el-input
             name="username"
             v-model="form.username"
@@ -15,64 +22,10 @@
             <template slot="append">@{{ predefinedDomain }}</template>
           </el-input>
         </el-form-item>
-        <el-form-item label="Whitelist address:" prop="newAddress" ref="newAddress">
-          <el-input
-            name="newAddress"
-            v-model="form.newAddress"
-            placeholder="Wallet address"
-            style="width: 355px"
-          >
-          </el-input>
-          <el-button
-            class="blue"
-            type="primary"
-            @click="onClickAddAddressToWhiteList"
-            :loading="isLoading"
-            style="margin-left: 10px; float: right;"
-          >
-            <span v-if="!isLoading">
-              ADD
-            </span>
-          </el-button>
-        </el-form-item>
-        <el-form-item v-if="form.whitelist.length">
-          <p>You will be allowed to withdraw to these addresses:</p>
-          <el-tag
-            v-for="(item, idx) in form.whitelist"
-            :key="item"
-            size="default"
-            type="success"
-            closable
-            @close="() => onClickRemoveItemFromWitelist(idx)"
-          >
-            {{ item }}
-          </el-tag>
-        </el-form-item>
-        <el-form-item
-          label="Registration ip:"
-          prop="nodeIp"
-        >
-          <el-select
-            v-model="form.nodeIp"
-            :disabled="isLoading"
-            style="width: 100%;"
-            filterable
-            allow-create
-            @change="selectNotaryIp"
-          >
-            <el-option
-              v-for="node in registrationIPs"
-              :key="node.value"
-              :label="node.label"
-              :value="node.value">
-              <span class="option left">{{ node.label }}</span>
-              <span class="option right">{{ node.value }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
+
         <el-form-item class="signup-button-container">
           <el-button
-            class="fullwidth black"
+            class="signup-button"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -81,15 +34,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <div style="margin-top: 3rem">
-        <p style="margin-bottom: 1rem">Already have an account?</p>
-        <router-link
-          to="/login"
-          class="el-button fullwidth primary"
-        >
-          Login
-        </router-link>
-      </div>
     </el-card>
 
     <el-dialog
@@ -98,19 +42,15 @@
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
-      width="400px"
-      center
     >
-      <div class="dialog-content">
-        <span>Download your private key and keep it secret!</span>
-      </div>
+      <span>Download your private key and keep it secret!</span>
+
       <span slot="footer" class="dialog-footer">
         <el-button
           type="primary"
-          class="black"
           @click="onClickDownload"
         >
-          <fa-icon icon="download"/>
+          <i class="el-icon-download"></i>
           Download
         </el-button>
 
@@ -127,30 +67,23 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import FileSaver from 'file-saver'
-import inputValidation from '@/components/mixins/inputValidation'
-import { registrationIPs } from '@/data/urls'
+const FileSaver = require('file-saver')
 
 export default {
   name: 'signup',
-  mixins: [
-    inputValidation({
-      username: 'name',
-      newAddress: 'walletAddress',
-      nodeIp: 'nodeIp'
-    })
-  ],
+
   data () {
     return {
-      registrationIPs,
       isLoading: false,
-      predefinedDomain: 'd3',
+      predefinedDomain: 'test',
       form: {
-        username: '',
-        newAddress: '',
-        whitelist: [],
-        nodeIp: registrationIPs[0].value
+        username: ''
+      },
+      rules: {
+        username: [
+          { required: true, message: 'Please input username', trigger: 'change' },
+          { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-Z_0-9]{1,32}', trigger: 'change' }
+        ]
       },
       dialogVisible: false,
       dialog: {
@@ -161,25 +94,15 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.updateWhiteListValidationRules()
-  },
-
   methods: {
-    ...mapActions([
-      'setNotaryIp'
-    ]),
-
     onSubmit () {
-      this.$refs['newAddress'].clearValidate()
-      this.$refs['form'].validateField('username', (usernameErrorMessage) => {
-        if (usernameErrorMessage) return false
+      this.$refs['form'].validate((valid) => {
+        if (!valid) return false
 
         this.isLoading = true
 
         this.$store.dispatch('signup', {
-          username: this.form.username,
-          whitelist: this.form.whitelist
+          username: this.form.username
         })
           .then(({ username, privateKey }) => {
             this.dialog.username = username
@@ -213,63 +136,21 @@ export default {
       FileSaver.saveAs(blob, filename)
 
       this.downloaded = true
-    },
-
-    onClickAddAddressToWhiteList () {
-      this.$refs['form'].validateField('newAddress', (errorMessage) => {
-        if (errorMessage) return
-
-        this.form.whitelist.push(this.form.newAddress)
-        this.$refs['newAddress'].resetField()
-
-        this.updateWhiteListValidationRules()
-      })
-    },
-
-    onClickRemoveItemFromWitelist (index) {
-      this.form.whitelist.splice(index, 1)
-
-      /*
-        Update validation rules + re-validate inserted field
-      */
-      this.updateWhiteListValidationRules()
-      this.$refs['form'].validateField('newAddress')
-    },
-
-    updateWhiteListValidationRules () {
-      this._refreshRules({
-        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
-      })
-    },
-    selectNotaryIp () {
-      this.setNotaryIp({ ip: this.form.nodeIp })
     }
   }
 }
 </script>
 
 <style scoped>
-  .signup-title {
-    font-size: 2.5rem;
-    color: #ffffff;
-  }
   .signup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
   }
 
   .signup-form-container {
     position: relative;
     width: 30rem;
     overflow: visible;
-    margin-top: 3rem;
-  }
-
-  .dialog-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 5rem;
   }
 
   /*
@@ -281,28 +162,37 @@ export default {
     line-height: 1;
   }
 
-  .signup-form >>> .el-form-item__label::before {
-    content: '';
+  .logo {
+    width: 10rem;
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    z-index: 100;
+    top: -5rem;
   }
 
-  .el-tag {
-    margin-right: 10px;
+  .signup-button-container {
+    text-align: center;
+    margin: 30px 0 10px;
   }
 
-  .signup-settings {
-    float: right;
-    cursor: pointer;
-    line-height: 1;
-    margin-bottom: 10px;
+  .signup-button {
+    height: 3rem;
+    width: 8rem;
   }
 
-  .option.left {
+  .login-button {
     float: left;
   }
 
-  .option.right {
-    float: right;
-    font-size: 0.8rem;
-    color: #8492a6;
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
   }
 </style>

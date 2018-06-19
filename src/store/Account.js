@@ -1,52 +1,40 @@
 import Vue from 'vue'
-import map from 'lodash/fp/map'
-import flatMap from 'lodash/fp/flatMap'
-import concat from 'lodash/fp/concat'
-import fromPairs from 'lodash/fp/fromPairs'
-import flow from 'lodash/fp/flow'
-import find from 'lodash/fp/find'
-import cloneDeep from 'lodash/fp/cloneDeep'
-import flatten from 'lodash/fp/flatten'
-import { grpc } from 'grpc-web-client'
-import irohaUtil from '@util/iroha'
-import notaryUtil from '@util/notary-util'
-import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
-import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes } from '@/data/enums'
+import _ from 'lodash'
+import grpc from 'grpc'
+import irohaUtil from 'util/iroha-util'
+import { amountToString } from 'util/iroha-amount'
 
-// TODO: Move it into notary's API so we have the same list
-const ASSETS = require('@util/crypto-list.json')
+// TODO: To be removed. This is used for 2 reasons for now:
+//   1. to get assetIds, because previous GetAccountAssets API required a client
+//      to know assetIds in advance.
+//   2. to get asset's properties (e.g. color) which cannot be fetched from API.
+const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
+const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
-const types = flow(
-  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
-  concat([
-    'RESET',
-    'SET_NOTARY_IP'
-  ]),
-  map(x => [x, x]),
-  fromPairs
-)([
-  'SIGNUP',
-  'LOGIN',
-  'LOGOUT',
-  'UPDATE_ACCOUNT',
-  'GET_ACCOUNT_TRANSACTIONS',
-  'GET_ACCOUNT_ASSET_TRANSACTIONS',
-  'GET_ACCOUNT_ASSETS',
-  'GET_ALL_ASSET_TRANSACTIONS',
-  'GET_ACCOUNT_SIGNATORIES',
-  'GET_ALL_UNSIGNED_TRANSACTIONS',
-  'GET_PENDING_TRANSACTIONS',
-  'ADD_ACCOUNT_SIGNATORY',
-  'REMOVE_ACCOUNT_SIGNATORY',
-  'TRANSFER_ASSET',
-  'CREATE_SETTLEMENT',
-  'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT',
-  'SIGN_PENDING',
-  'EDIT_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_QUORUM'
-])
+const types = {
+  RESET: 'RESET',
+  SIGNUP_REQUEST: 'SIGNUP_REQUEST',
+  SIGNUP_SUCCESS: 'SIGNUP_SUCCESS',
+  SIGNUP_FAILURE: 'SIGNUP_FAILURE',
+  LOGIN_REQUEST: 'LOGIN_REQUEST',
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'LOGIN_FAILURE',
+  LOGOUT_REQUEST: 'LOGOUT_REQUEST',
+  LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
+  LOGOUT_FAILURE: 'LOGOUT_FAILURE',
+  GET_ACCOUNT_TRANSACTIONS_REQUEST: 'GET_ACCOUNT_TRANSACTIONS_REQUEST',
+  GET_ACCOUNT_TRANSACTIONS_SUCCESS: 'GET_ACCOUNT_TRANSACTIONS_SUCCESS',
+  GET_ACCOUNT_TRANSACTIONS_FAILURE: 'GET_ACCOUNT_TRANSACTIONS_FAILURE',
+  GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST: 'GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST',
+  GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS: 'GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS',
+  GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE: 'GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE',
+  GET_ACCOUNT_ASSETS_REQUEST: 'GET_ACCOUNT_ASSETS_REQUEST',
+  GET_ACCOUNT_ASSETS_SUCCESS: 'GET_ACCOUNT_ASSETS_SUCCESS',
+  GET_ACCOUNT_ASSETS_FAILURE: 'GET_ACCOUNT_ASSETS_FAILURE',
+  TRANSFER_ASSET_REQUEST: 'TRANSFER_ASSET_REQUEST',
+  TRANSFER_ASSET_SUCCESS: 'TRANSFER_ASSET_SUCCESS',
+  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE'
+}
 
 function initialState () {
   return {
@@ -211,7 +199,8 @@ const mutations = {
 
   [types.SIGNUP_REQUEST] (state) {},
 
-  [types.SIGNUP_SUCCESS] (state, params) {
+  [types.SIGNUP_SUCCESS] (state, account) {
+    state.accountId = account.accountId
   },
 
   [types.SIGNUP_FAILURE] (state, err) {
@@ -394,31 +383,21 @@ const mutations = {
 }
 
 const actions = {
-  setNotaryIp ({ commit }, { ip }) {
-    commit(types.SET_NOTARY_IP, ip)
-  },
-
-  signup ({ commit }, { username, whitelist }) {
+  signup ({ commit }, { username }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, whitelist, publicKey)
-      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
-      .then(() => ({ username, privateKey }))
-      .catch(err => {
-        commit(types.SIGNUP_FAILURE, err)
-        throw err
-      })
-  },
+    // TODO: POST data to registration API
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log('signing up...')
+        console.log('username:', username)
+        console.log('publicKey:', publicKey)
 
-  addNetwork ({ commit, state }, { privateKeys }) {
-    commit(types.SIGNUP_REQUEST)
-    const username = state.accountId.split('@')[0]
-    const privateKey = privateKeys[0]
-    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
-
-    return notaryUtil.signup(username, [], publicKey)
+        resolve()
+      }, 1000)
+    })
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {

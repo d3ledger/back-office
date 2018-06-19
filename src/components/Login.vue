@@ -4,15 +4,33 @@
       <img src="@/assets/logo.svg" alt="D3"/>
     </div>
     <el-card class="login-form-container">
-      <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Private key:" prop="privateKey">
+      <div slot="header" class="clearfix">
+        <router-link
+          class="signup-button"
+          to="/signup"
+        >
+          Sign Up
+          <i class="el-icon-arrow-right"></i>
+        </router-link>
+      </div>
+
+      <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
+        <el-form-item label="username:" prop="username">
+          <el-input
+            name="username"
+            v-model="form.username"
+            :disabled="isLoading"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="private key:" prop="privateKey">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
               <el-input
                 name="privateKey"
                 v-model="form.privateKey"
                 :disabled="isLoading"
-              />
+              ></el-input>
             </el-col>
 
             <el-upload
@@ -23,40 +41,22 @@
               :disabled="isLoading"
             >
               <el-button>
-                <fa-icon icon="upload" />
+                <i class="el-icon-upload2"></i>
               </el-button>
             </el-upload>
           </el-row>
         </el-form-item>
-        <el-form-item label="Username:" prop="username">
+
+        <el-form-item label="node ip:" prop="nodeIp">
           <el-input
-            name="username"
-            v-model="form.username"
-            :disabled="isLoading"
-          />
-        </el-form-item>
-        <el-form-item label="Node ip:" prop="nodeIp">
-          <el-select
             v-model="form.nodeIp"
             :disabled="isLoading"
-            style="width: 100%;"
-            filterable
-            allow-create
-          >
-            <el-option
-              v-for="node in listOfNodes"
-              :key="node.value"
-              :label="node.label"
-              :value="node.value">
-              <span class="option left">{{ node.label }}</span>
-              <span class="option right">{{ node.value }}</span>
-            </el-option>
-          </el-select>
+          ></el-input>
         </el-form-item>
 
         <el-form-item class="login-button-container">
           <el-button
-            class="fullwidth black"
+            class="login-button"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -65,15 +65,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <div style="margin-top: 3rem">
-        <p style="margin-bottom: 1rem">Don't have an account?</p>
-        <router-link
-          to="/signup"
-          class="el-button fullwidth primary"
-        >
-          Sign Up
-        </router-link>
-      </div>
     </el-card>
   </el-container>
 </template>
@@ -156,7 +147,7 @@ export default {
     position: relative;
     width: 30rem;
     overflow: visible;
-    margin-top: 3rem;
+    margin-top: 5rem;
   }
 
   /*
@@ -180,5 +171,18 @@ export default {
     float: right;
     font-size: 0.8rem;
     color: #8492a6;
+  }
+
+  .signup-button {
+    float: right;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
   }
 </style>
