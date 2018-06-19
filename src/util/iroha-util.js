@@ -106,6 +106,17 @@ function isLoggedIn () {
   return !!cache.username
 }
 
+/**
+ * generate new keypair
+ */
+function generateKeypair () {
+  const keypair = crypto.generateKeypair()
+  const publicKey = keypair.publicKey().hex()
+  const privateKey = keypair.privateKey().hex()
+
+  return { publicKey, privateKey }
+}
+
 /*
  * ===== queries =====
  */
@@ -550,6 +561,7 @@ module.exports = {
   login,
   logout,
   isLoggedIn,
+  generateKeypair,
 
   // queries
   getAccount,

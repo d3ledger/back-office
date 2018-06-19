@@ -13,6 +13,9 @@ const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
 const types = {
   RESET: 'RESET',
+  SIGNUP_REQUEST: 'SIGNUP_REQUEST',
+  SIGNUP_SUCCESS: 'SIGNUP_SUCCESS',
+  SIGNUP_FAILURE: 'SIGNUP_FAILURE',
   LOGIN_REQUEST: 'LOGIN_REQUEST',
   LOGIN_SUCCESS: 'LOGIN_SUCCESS',
   LOGIN_FAILURE: 'LOGIN_FAILURE',
@@ -161,6 +164,16 @@ const mutations = {
     })
   },
 
+  [types.SIGNUP_REQUEST] (state) {},
+
+  [types.SIGNUP_SUCCESS] (state, account) {
+    state.accountId = account.accountId
+  },
+
+  [types.SIGNUP_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.LOGIN_REQUEST] (state) {},
 
   [types.LOGIN_SUCCESS] (state, account) {
@@ -209,6 +222,29 @@ const mutations = {
 }
 
 const actions = {
+  signup ({ commit }, { username }) {
+    commit(types.SIGNUP_REQUEST)
+
+    const { publicKey, privateKey } = irohaUtil.generateKeypair()
+
+    // TODO: POST data to registration API
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log('signing up...')
+        console.log('username:', username)
+        console.log('publicKey:', publicKey)
+
+        resolve()
+      }, 1000)
+    })
+      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
+      .then(() => ({ username, privateKey }))
+      .catch(err => {
+        commit(types.SIGNUP_FAILURE, err)
+        throw err
+      })
+  },
+
   login ({ commit }, { username, privateKey, nodeIp }) {
     commit(types.LOGIN_REQUEST)
 
