@@ -99,7 +99,7 @@ describe('Account store', () => {
 
       mutations[types.RESET](state)
 
-      expect(state).to.deep.equal(expectedState)
+      expect(state).to.be.deep.equal(expectedState)
     })
 
     it('LOGIN_SUCCESS should set an accountId to state', () => {
@@ -123,7 +123,7 @@ describe('Account store', () => {
 
       expect(state.rawAssetTransactions)
         .to.have.property(assetId)
-        .that.deep.equal(transactions)
+        .that.is.deep.equal(transactions)
     })
 
     testErrorHandling('GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE')
