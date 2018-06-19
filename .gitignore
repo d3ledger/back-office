@@ -5,6 +5,8 @@ dist_electron
 
 /tests/e2e/reports/
 selenium-debug.log
+/coverage/
+/.nyc_output/
 
 .nyc_output
 coverage
