@@ -1,6 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import irohaUtil from '@util/iroha'
+import irohaUtil from 'util/iroha-util'
+
+import Home from '@/components/Home'
+import WalletsPage from '@/components/Wallets/WalletsPage'
+import WalletPage from '@/components/WalletPage'
+import SettlementsPage from '@/components/Settlements/SettlementsPage'
+import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
+import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
+import SettingsPage from '@/components/Settings/SettingsPage'
+import Login from '@/components/Login'
+import Signup from '@/components/Signup'
 
 Vue.use(Router)
 
@@ -77,6 +87,11 @@ const defaultRouter = new Router({
       path: '/signup',
       name: 'signup',
       component: lazyComponent('Signup')
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: Signup
     },
     {
       path: '*',
