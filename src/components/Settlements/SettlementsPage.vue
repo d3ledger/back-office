@@ -1,21 +1,16 @@
 <template>
-  <section>
-    <el-row>
-      <el-col :xs="24" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
-        <el-card>
-          <div slot="header" class="header">
-            <div style="display: flex">
-              <router-link class="navlink" to="/settlements/">Waiting</router-link>
-              <router-link class="navlink" to="/settlements/history">History</router-link>
-            </div>
-            <div>
-              <el-button type="primary" @click="newSettlementFormVisible = true">New settlement</el-button>
-            </div>
-          </div>
-          <router-view />
-        </el-card>
-      </el-col>
-    </el-row>
+  <section class="column-fullheight">
+
+    <div class="header">
+      <div style="display: flex">
+        <router-link class="navlink" to="/settlements">History</router-link>
+        <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
+        <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
+      </div>
+    </div>
+    <el-card style="margin: 20px">
+      <router-view />
+    </el-card>
 
      <el-dialog
       title="New Settlement"
@@ -108,35 +103,24 @@ export default {
 
 <style scoped>
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: white;
+  display: block;
+  width: 100%;
+  box-shadow: 0 1px 1px 0 #efefef
 }
 
 .navlink {
   display: inline-block;
-  color: #606266;
+  color: rgba(0,0,0,0.32);
   font-size: 14px;
   line-height: 1;
-  padding: 12px 20px;
-  border: 1px solid #dcdfe6;
-  border-radius: 4px;
-}
-
-.navlink:first-child{
-  border-radius: 4px 0 0 4px;
-  border-right: none;
-}
-
-.navlink:last-child{
-  border-radius: 0 4px 4px 0;
-  border-left: none;
+  padding: 25px 50px;
+  border-right: 1px solid #f4f4f4;
 }
 
 .navlink.router-link-exact-active{
-  color: white;
-  border: 1px solid #409EFF;
-  background: #409EFF;
+  color: black;
+  background: #f4f4f4;
 }
 
 .el-select-dropdown__item {

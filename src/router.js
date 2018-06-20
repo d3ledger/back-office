@@ -7,7 +7,8 @@ import DashboardPage from '@/components/dashboard/DashboardPage'
 import WalletsPage from '@/components/Wallets/WalletsPage'
 import Wallet from '@/components/Wallets/Wallet'
 import SettlementsPage from '@/components/Settlements/SettlementsPage'
-import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
+import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
+import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import SettingsPage from '@/components/Settings/SettingsPage'
 import Login from '@/components/Login'
@@ -45,13 +46,18 @@ const defaultRouter = new Router({
           children: [
             {
               path: '',
-              name: 'settlements-waiting',
-              component: SettlementsWaiting
-            },
-            {
-              path: 'history',
               name: 'settlements-history',
               component: SettlementsHistory
+            },
+            {
+              path: 'incoming',
+              name: 'settlements-incoming',
+              component: SettlementsIncoming
+            },
+            {
+              path: 'outgoing',
+              name: 'settlements-outgoing',
+              component: SettlementsOutgoing
             }
           ]
         },

@@ -26,10 +26,7 @@
       </el-table-column>
       <el-table-column label="Counterparty" min-width="150">
         <template slot-scope="scope">
-          <div v-if="scope.row.from === 'you'">
-            to {{ scope.row.to }}
-          </div>
-          <div v-else>
+          <div>
             from {{ scope.row.from }}
           </div>
         </template>
@@ -43,7 +40,7 @@
         width="180px"
       >
         <template slot-scope="scope">
-          <div v-if="scope.row.to === 'you'" style="text-align: right">
+          <div style="text-align: right">
             <el-button
               size="mini"
               plain type="primary"
@@ -57,15 +54,6 @@
               @click="rejectionDialogVisible = true; settlementForRejection = scope.row"
             >
               Reject
-            </el-button>
-          </div>
-          <div v-else style="text-align: right">
-            <el-button
-              size="mini" plain
-              type="info"
-              @click="cancellationDialogVisible = true; settlementForcancellation = scope.row"
-            >
-              Cancel
             </el-button>
           </div>
         </template>
@@ -95,25 +83,6 @@
       </div>
       <div slot="footer">
         <el-button type="danger" @click="onReject">Reject</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      title="Cancel settlement?"
-      :visible.sync="cancellationDialogVisible"
-      width="500px"
-    >
-      <div v-if="settlementForcancellation">
-        Are you sure want to cancel {{ settlementForcancellation.offer_amount + settlementForcancellation.offer_asset }}
-        for {{ settlementForcancellation.request_amount + settlementForcancellation.request_asset }} with {{ settlementForcancellation.to }}?
-        <el-alert
-          title="Note that we can't guarantee the success of cancellation."
-          type="warning"
-          :closable="false"
-          style="margin-top: 20px"
-        />
-      </div>
-      <div slot="footer">
-        <el-button type="danger" @click="onCancel">Cancel</el-button>
       </div>
     </el-dialog>
   </section>
