@@ -43,9 +43,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   mixins: [
@@ -57,15 +56,11 @@ export default {
   },
   computed: {
     ...mapGetters({
-      settlements: 'resolvedSettlements',
-      wallets: 'wallets'
+      settlements: 'resolvedSettlements'
     })
   },
   created () {
-    Promise.all([
-      this.getAccountAssets(),
-      this.getAllAssetTransactions()
-    ])
+    this.$store.dispatch('getAllUnsignedTransactions')
   },
   methods: {
     ...mapActions([
