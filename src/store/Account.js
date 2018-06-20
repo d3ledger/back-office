@@ -31,9 +31,15 @@ const types = {
   GET_ACCOUNT_ASSETS_REQUEST: 'GET_ACCOUNT_ASSETS_REQUEST',
   GET_ACCOUNT_ASSETS_SUCCESS: 'GET_ACCOUNT_ASSETS_SUCCESS',
   GET_ACCOUNT_ASSETS_FAILURE: 'GET_ACCOUNT_ASSETS_FAILURE',
+  GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST: 'GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST',
+  GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS: 'GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS',
+  GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE: 'GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE',
   TRANSFER_ASSET_REQUEST: 'TRANSFER_ASSET_REQUEST',
   TRANSFER_ASSET_SUCCESS: 'TRANSFER_ASSET_SUCCESS',
-  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE'
+  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE',
+  CREATE_SETTLEMENT_REQUEST: 'CREATE_SETTLEMENT_REQUEST',
+  CREATE_SETTLEMENT_SUCCESS: 'CREATE_SETTLEMENT_SUCCESS',
+  CREATE_SETTLEMENT_FAILURE: 'CREATE_SETTLEMENT_FAILURE'
 }
 
 function initialState () {
@@ -42,6 +48,7 @@ function initialState () {
     nodeIp: irohaUtil.getStoredNodeIp(),
     accountInfo: {},
     rawAssetTransactions: {},
+    rawUnsignedTransactions: [],
     assets: [],
     connectionError: null
   }
@@ -212,11 +219,29 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST] (state) {},
+
+  [types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS] (state, transactions) {
+    state.rawUnsignedTransactions = transactions
+  },
+
+  [types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.TRANSFER_ASSET_REQUEST] (state) {},
 
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
 
   [types.TRANSFER_ASSET_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.CREATE_SETTLEMENT_REQUEST] (state) {},
+
+  [types.CREATE_SETTLEMENT_SUCCESS] (state) {},
+
+  [types.CREATE_SETTLEMENT_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -305,6 +330,20 @@ const actions = {
       })
   },
 
+  getAllUnsignedTransactions ({ commit, state }) {
+    commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
+
+    // return irohaUtil.getAllUnsignedTransactions(state.accountId)
+    return Promise.resolve([])
+      .then(responses => {
+        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
+      })
+      .catch(err => {
+        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
+  },
+
   transferAsset ({ commit, state }, { assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
@@ -314,6 +353,31 @@ const actions = {
       })
       .catch(err => {
         commit(types.TRANSFER_ASSET_FAILURE, err)
+        throw err
+      })
+  },
+
+  createSettlement (
+    { commit, state },
+    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description }
+  ) {
+    commit(types.CREATE_SETTLEMENT_REQUEST)
+
+    // return irohaUtil.createSettlement(
+    //   state.accountId,
+    //   to,
+    //   offerAssetId,
+    //   offerAmount,
+    //   requestAssetId,
+    //   requestAmount,
+    //   description
+    // )
+    return Promise.resolve()
+      .then(() => {
+        commit(types.CREATE_SETTLEMENT_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.CREATE_SETTLEMENT_FAILURE, err)
         throw err
       })
   }
