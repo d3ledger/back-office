@@ -11,6 +11,9 @@ import { amountToString } from 'util/iroha-amount'
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
+// TODO: To be removed.
+const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
+
 const types = {
   RESET: 'RESET',
   SIGNUP_REQUEST: 'SIGNUP_REQUEST',
@@ -142,6 +145,16 @@ const getters = {
 
   getTransactionsByAssetId: (state) => (assetId) => {
     return transformTransactions(state.rawAssetTransactions[assetId])
+  },
+
+  waitingSettlements () {
+    // TODO: transform rawUnsignedTransactions and return
+    return DUMMY_SETTLEMENTS.filter(x => x.status === 'waiting')
+  },
+
+  resolvedSettlements () {
+    // TODO: return real data
+    return DUMMY_SETTLEMENTS.filter(x => x.status !== 'waiting')
   }
 }
 
@@ -333,8 +346,9 @@ const actions = {
   getAllUnsignedTransactions ({ commit, state }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
 
+    // TODO: use irohaUtil
     // return irohaUtil.getAllUnsignedTransactions(state.accountId)
-    return Promise.resolve([])
+    return Promise.resolve()
       .then(responses => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
       })
@@ -363,6 +377,7 @@ const actions = {
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
+    // TODO: use irohaUtil
     // return irohaUtil.createSettlement(
     //   state.accountId,
     //   to,

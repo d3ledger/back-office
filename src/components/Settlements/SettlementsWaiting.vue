@@ -119,7 +119,7 @@
   </section>
 </template>
 <script>
-import mockSettlements from '@/mocks/settlements.json'
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
@@ -137,7 +137,12 @@ export default {
     }
   },
   computed: {
-    settlements: () => mockSettlements.filter(x => x.status === 'waiting')
+    ...mapGetters({
+      settlements: 'waitingSettlements'
+    })
+  },
+  created () {
+    this.$store.dispatch('getAllUnsignedTransactions')
   }
 }
 </script>
