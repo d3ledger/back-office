@@ -1,8 +1,9 @@
 <template>
   <div style="display: flex; fled-direction: row;">
     <div class="column-fullheight wallets-menu">
+      <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
-        v-for="wallet in wallets"
+        v-for="wallet in filteredWallets"
         :key="wallet.name"
         :walletId="wallet.id"
         :name="wallet.name"
@@ -25,10 +26,19 @@ export default {
     WalletMenuItem
   },
 
+  data () {
+    return {
+      search: ''
+    }
+  },
+
   computed: {
     ...mapGetters({
       wallets: 'wallets'
-    })
+    }),
+    filteredWallets: function () {
+      return this.search ? this.wallets.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1) : this.wallets
+    }
   },
 
   created () {
