@@ -7,7 +7,7 @@
       background-color="#2d2d2d"
       text-color="#a2a2a2"
       active-text-color="#fff"
-      :default-active="$router.history.current.path.includes('wallets') ? '/wallets' : $router.history.current.path"
+      :default-active="currentActiveMenu"
     >
       <h1 class="logo">D3</h1>
       <el-menu-item index="/">
@@ -18,9 +18,9 @@
         <i class="el-icon-news" />
         <span slot="title">Wallets</span>
       </el-menu-item>
-      <el-menu-item index="/settlement">
+      <el-menu-item index="/settlements">
         <i class="el-icon-refresh" />
-        <span slot="title">Settlement</span>
+        <span slot="title">Settlements</span>
       </el-menu-item>
       <el-menu-item index="/transfer">
         <i class="el-icon-d-arrow-right" />
@@ -92,58 +92,11 @@ export default {
     ...mapState({
       accountId: (state) => state.Account.accountId
     }),
-
-    exchangeDialogOfferAsset: {
-      get () {
-        return this.$store.getters.exchangeDialogOfferAsset
-      },
-      set (asset) {
-        this.$store.commit('SET_EXCHANGE_DIALOG_OFFER_ASSET', asset)
-      }
-    },
-
-    exchangeDialogRequestAsset: {
-      get () {
-        return this.$store.getters.exchangeDialogRequestAsset
-      },
-      set (asset) {
-        this.$store.commit('SET_EXCHANGE_DIALOG_REQUEST_ASSET', asset)
-      }
-    },
-
-    numberOfSettlements () {
-      return this.$store.getters.incomingSettlements.length
+    currentActiveMenu: function () {
+      if (this.$router.history.current.path.includes('wallets')) return '/wallets'
+      if (this.$router.history.current.path.includes('settlements')) return '/settlements'
+      return this.$router.history.current.path
     }
-  },
-
-  watch: {
-    approvalDialogVisible (isVisible) {
-      if (isVisible) this.beforeOpenApprovalDialog()
-    }
-  },
-
-  created () {
-    this.$store.dispatch('getAllUnsignedTransactions')
-    this.$store.dispatch('loadSettings')
-  },
-
-  beforeUpdate () {
-    const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
-    const { amount, precision } = wallet || { amount: 0, precision: 0 }
-    this._refreshRules({
-      offer_amount: {
-        pattern: 'tokensAmount',
-        amount: amount,
-        precision: precision,
-        asset: this.exchangeDialogOfferAsset
-      },
-      request_amount: {
-        pattern: 'tokensAmount',
-        amount: Number.MAX_SAFE_INTEGER,
-        precision: precision,
-        asset: this.exchangeDialogRequestAsset
-      }
-    })
   },
 
   created () {
