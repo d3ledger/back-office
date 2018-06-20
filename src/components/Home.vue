@@ -98,6 +98,11 @@ export default {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.el-side-menu {
+  height: 100vh;
+  overflow-y: auto;
+}
+
 .el-side-menu.el-menu--collapse {
   min-width: 62px;
 }
