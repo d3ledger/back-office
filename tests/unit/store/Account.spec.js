@@ -85,6 +85,7 @@ describe('Account store', () => {
         nodeIp: randomNodeIp(),
         accountInfo: randomObject(),
         rawAssetTransactions: randomObject(),
+        rawUnsignedTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -93,6 +94,7 @@ describe('Account store', () => {
         nodeIp: MOCK_NODE_IP,
         accountInfo: {},
         rawAssetTransactions: {},
+        rawUnsignedTransactions: [],
         assets: [],
         connectionError: null
       }
@@ -221,6 +223,10 @@ describe('Account store', () => {
       })
     })
 
+    describe('getAllUnsignedTransactions', () => {
+      it.skip('should call mutations in correct order')
+    })
+
     describe('transferAsset', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
@@ -242,6 +248,10 @@ describe('Account store', () => {
           })
           .catch(done)
       })
+    })
+
+    describe('createSettlement', () => {
+      it.skip('should call mutations in correct order')
     })
   })
 

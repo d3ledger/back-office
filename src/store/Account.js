@@ -31,9 +31,15 @@ const types = {
   GET_ACCOUNT_ASSETS_REQUEST: 'GET_ACCOUNT_ASSETS_REQUEST',
   GET_ACCOUNT_ASSETS_SUCCESS: 'GET_ACCOUNT_ASSETS_SUCCESS',
   GET_ACCOUNT_ASSETS_FAILURE: 'GET_ACCOUNT_ASSETS_FAILURE',
+  GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST: 'GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST',
+  GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS: 'GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS',
+  GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE: 'GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE',
   TRANSFER_ASSET_REQUEST: 'TRANSFER_ASSET_REQUEST',
   TRANSFER_ASSET_SUCCESS: 'TRANSFER_ASSET_SUCCESS',
-  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE'
+  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE',
+  CREATE_SETTLEMENT_REQUEST: 'CREATE_SETTLEMENT_REQUEST',
+  CREATE_SETTLEMENT_SUCCESS: 'CREATE_SETTLEMENT_SUCCESS',
+  CREATE_SETTLEMENT_FAILURE: 'CREATE_SETTLEMENT_FAILURE'
 }
 
 function initialState () {
@@ -46,8 +52,6 @@ function initialState () {
     accountSignatories: [],
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
-    rawTransactions: [],
-    rawPendingTransactions: null,
     assets: [],
     connectionError: null
   }
@@ -259,26 +263,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.GET_ACCOUNT_TRANSACTIONS_REQUEST] (state) {},
-
-  [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawTransactions = transactions
-  },
-
-  [types.GET_ACCOUNT_TRANSACTIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_ACCOUNT_SIGNATORIES_REQUEST] (state) {},
-
-  [types.GET_ACCOUNT_SIGNATORIES_SUCCESS] (state, signatories) {
-    state.accountSignatories = signatories
-  },
-
-  [types.GET_ACCOUNT_SIGNATORIES_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS] (state, transactions) {
@@ -286,16 +270,6 @@ const mutations = {
   },
 
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
-
-  [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawPendingTransactions = transactions
-  },
-
-  [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -307,77 +281,11 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SIGN_PENDING_REQUEST] (state) {},
-
-  [types.SIGN_PENDING_SUCCESS] (state) {},
-
-  [types.SIGN_PENDING_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
   [types.CREATE_SETTLEMENT_REQUEST] (state) {},
 
   [types.CREATE_SETTLEMENT_SUCCESS] (state) {},
 
   [types.CREATE_SETTLEMENT_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {},
-
-  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {},
-
-  [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.REJECT_SETTLEMENT_REQUEST] (state) {},
-
-  [types.REJECT_SETTLEMENT_SUCCESS] (state) {},
-
-  [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_ALL_ASSET_TRANSACTIONS_REQUEST] (state) {},
-
-  [types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS] (state) {},
-
-  [types.GET_ALL_ASSET_TRANSACTIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
-
-  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
-
-  [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.REMOVE_ACCOUNT_SIGNATORY_REQUEST] (state) {},
-
-  [types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
-
-  [types.REMOVE_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.EDIT_ACCOUNT_QUORUM_REQUEST] (state) {},
-
-  [types.EDIT_ACCOUNT_QUORUM_SUCCESS] (state) {},
-
-  [types.EDIT_ACCOUNT_QUORUM_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
-
-  [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
-    state.accountQuorum = quorum
-  },
-
-  [types.GET_ACCOUNT_QUORUM_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -460,6 +368,20 @@ const actions = {
       })
   },
 
+  getAllUnsignedTransactions ({ commit, state }) {
+    commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
+
+    // return irohaUtil.getAllUnsignedTransactions(state.accountId)
+    return Promise.resolve([])
+      .then(responses => {
+        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
+      })
+      .catch(err => {
+        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
+  },
+
   transferAsset ({ commit, state }, { assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
@@ -473,124 +395,27 @@ const actions = {
       })
   },
 
-  signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
-    commit(types.SIGN_PENDING_REQUEST)
-
-    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
-      .then(() => {
-        commit(types.SIGN_PENDING_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.SIGN_PENDING_FAILURE, err)
-        throw err
-      })
-  },
-
   createSettlement (
     { commit, state },
-    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
-    return irohaUtil.createSettlement(
-      privateKeys,
-      state.accountId,
-      state.accountQuorum,
-      offerAssetId,
-      offerAmount,
-      description,
-      to,
-      1,
-      requestAssetId,
-      requestAmount
-    )
+    // return irohaUtil.createSettlement(
+    //   state.accountId,
+    //   to,
+    //   offerAssetId,
+    //   offerAmount,
+    //   requestAssetId,
+    //   requestAmount,
+    //   description
+    // )
+    return Promise.resolve()
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
       })
       .catch(err => {
         commit(types.CREATE_SETTLEMENT_FAILURE, err)
-        throw err
-      })
-  },
-
-  acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
-    commit(types.ACCEPT_SETTLEMENT_REQUEST)
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    return irohaUtil.acceptSettlement(privateKeys, batch)
-      .then(() => {
-        commit(types.ACCEPT_SETTLEMENT_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.ACCEPT_SETTLEMENT_FAILURE, err)
-        throw err
-      })
-  },
-
-  rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
-    commit(types.REJECT_SETTLEMENT_REQUEST)
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(state.accountQuorum)
-      .fill('1234567890123456789012345678901234567890123456789012345678901234')
-    return irohaUtil.rejectSettlement(fake, batch)
-      .then(() => {
-        commit(types.REJECT_SETTLEMENT_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.REJECT_SETTLEMENT_FAILURE, err)
-        throw err
-      })
-  },
-
-  addSignatory ({ commit, state }, privateKeys) {
-    commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
-
-    const { privateKey } = irohaUtil.generateKeypair()
-    const publicKeyBuffer = derivePublicKey(Buffer.from(privateKey, 'hex'))
-    return irohaUtil.addSignatory(privateKeys, state.accountId, publicKeyBuffer, state.accountQuorum)
-      .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
-      .then(() => ({ username: state.accountId, privateKey }))
-      .catch(err => {
-        commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
-        throw err
-      })
-  },
-
-  removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
-    commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, state.accountId, publicKey, state.accountQuorum)
-      .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
-      .catch(err => {
-        commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
-        throw err
-      })
-  },
-
-  getSignatories ({ commit, state }) {
-    commit(types.GET_ACCOUNT_SIGNATORIES_REQUEST)
-    return irohaUtil.getSignatories(state.accountId)
-      .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
-      .catch(err => {
-        commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
-        throw err
-      })
-  },
-
-  editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
-    commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, state.accountId, quorum, state.accountQuorum)
-      .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
-      .catch(err => {
-        commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
-        throw err
-      })
-  },
-
-  getAccountQuorum ({ commit, state }) {
-    commit(types.GET_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.getAccount(state.accountId)
-      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
-      .catch(err => {
-        commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
       })
   }
