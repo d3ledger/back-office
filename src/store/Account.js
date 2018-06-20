@@ -11,6 +11,9 @@ import { amountToString } from 'util/iroha-amount'
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
+// TODO: To be removed.
+const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
+
 const types = {
   RESET: 'RESET',
   SIGNUP_REQUEST: 'SIGNUP_REQUEST',
@@ -83,90 +86,17 @@ const getters = {
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
-    const resolvedSettlements = getters.resolvedSettlements(state)
-    return getTransferAssetsFrom(
-      state.rawAssetTransactions[assetId],
-      state.accountId,
-      resolvedSettlements
-    )
-  },
-
-  allAssetTransactions () {
-    return flatten(Object.values(state.rawAssetTransactions))
-  },
-
-  allPendingTransactions: (state) => {
-    let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
-    return pendingTransactionsCopy ? getTransferAssetsFrom(
-      pendingTransactionsCopy.toObject().transactionsList,
-      state.accountId
-    ).filter(tx => tx.from === 'you') : []
+    return transformTransactions(state.rawAssetTransactions[assetId])
   },
 
   waitingSettlements () {
-    let rawUnsignedTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
-    return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
-      rawUnsignedTransactionsCopy.toObject().transactionsList,
-      state.accountId
-    ) : []
+    // TODO: transform rawUnsignedTransactions and return
+    return DUMMY_SETTLEMENTS.filter(x => x.status === 'waiting')
   },
 
-  incomingSettlements () {
-    return getters.waitingSettlements().filter(pair => {
-      return pair.to.signatures.length > 0
-    })
-  },
-
-  outgoingSettlements () {
-    return getters.waitingSettlements().filter(pair => {
-      return pair.from.signatures.length > 0
-    })
-  },
-
-  resolvedSettlements (state) {
-    let allAssetTransactionsCopy = getters.allAssetTransactions()
-    return getSettlementsFrom(
-      allAssetTransactionsCopy,
-      state.accountId
-    )
-  },
-
-  walletType (state) {
-    const walletType = []
-    if (find('ethereum_wallet', state.accountInfo)) {
-      walletType.push(WalletTypes.ETH)
-    }
-
-    if (find('bitcoin', state.accountInfo)) {
-      walletType.push(WalletTypes.BTC)
-    }
-
-    return walletType
-  },
-
-  ethWalletAddress (state) {
-    const ethWallet = find('ethereum_wallet', state.accountInfo)
-
-    return ethWallet ? ethWallet.ethereum_wallet : null
-  },
-
-  btcWalletAddress (state) {
-    const btcWallet = find('bitcoin', state.accountInfo)
-
-    return btcWallet ? btcWallet.bitcoin : null
-  },
-
-  withdrawWalletAddresses (state) {
-    const wallet = find('eth_whitelist', state.accountInfo)
-    return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
-  },
-
-  accountQuorum (state) {
-    return state.accountQuorum
-  },
-
-  accountSignatories (state) {
-    return state.accountSignatories.map((s) => Buffer.from(s, 'base64').toString('hex'))
+  resolvedSettlements () {
+    // TODO: return real data
+    return DUMMY_SETTLEMENTS.filter(x => x.status !== 'waiting')
   }
 }
 
@@ -371,8 +301,9 @@ const actions = {
   getAllUnsignedTransactions ({ commit, state }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
 
+    // TODO: use irohaUtil
     // return irohaUtil.getAllUnsignedTransactions(state.accountId)
-    return Promise.resolve([])
+    return Promise.resolve()
       .then(responses => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
       })
@@ -401,6 +332,7 @@ const actions = {
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
+    // TODO: use irohaUtil
     // return irohaUtil.createSettlement(
     //   state.accountId,
     //   to,

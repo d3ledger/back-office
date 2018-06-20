@@ -286,5 +286,13 @@ describe('Account store', () => {
         expect(result).to.be.an('array').which.is.empty
       })
     })
+
+    describe('waitingSettlements', () => {
+      it.skip('should return only waiting settlements')
+    })
+
+    describe('resolvedSettlements', () => {
+      it.skip('should return only resolved settlements')
+    })
   })
 })
