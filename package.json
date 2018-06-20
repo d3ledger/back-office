@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "build:electron": "vue-cli-service build:electron",
     "serve:electron": "vue-cli-service serve:electron",
@@ -30,18 +30,23 @@
     "@vue/cli-plugin-babel": "3.0.0-beta.15",
     "@vue/cli-plugin-e2e-nightwatch": "3.0.0-beta.15",
     "@vue/cli-plugin-eslint": "3.0.0-beta.15",
-    "@vue/cli-plugin-unit-jest": "3.0.0-beta.15",
+    "@vue/cli-plugin-unit-mocha": "^3.0.0-beta.16",
     "@vue/cli-service": "3.0.0-beta.15",
     "@vue/eslint-config-standard": "3.0.0-beta.15",
-    "@vue/test-utils": "1.0.0-beta.16",
+    "@vue/test-utils": "^1.0.0-beta.16",
     "babel-core": "^7.0.0-0",
-    "babel-jest": "^22.0.4",
+    "chai": "^4.1.2",
+    "chai-things": "^0.2.0",
     "electron": "^2.0.2",
     "electron-builder": "^20.14.7",
     "electron-webpack": "^2.1.2",
+    "inject-loader": "^4.0.1",
+    "istanbul-instrumenter-loader": "^3.0.1",
     "lint-staged": "^6.0.0",
     "node-sass": "^4.7.2",
+    "nyc": "^12.0.2",
     "sass-loader": "^6.0.6",
+    "sinon": "^6.0.0",
     "vue-cli-plugin-electron-builder": "^0.3.2",
     "vue-template-compiler": "^2.5.13"
   },
@@ -81,5 +86,12 @@
       "node_modules/**/*",
       "package.json"
     ]
+  },
+  "nyc": {
+    "include": [
+      "src/store/**/*.js"
+    ],
+    "instrument": false,
+    "sourceMap": false
   }
 }

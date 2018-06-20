@@ -5,6 +5,8 @@ node_modules
 
 /tests/e2e/reports/
 selenium-debug.log
+/coverage/
+/.nyc_output/
 
 # local env files
 .env.local

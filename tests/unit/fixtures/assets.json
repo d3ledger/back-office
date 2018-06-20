@@ -1,0 +1,92 @@
+[
+  {
+    "accountAsset": {
+      "assetId": "bitcoin#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 969303764
+        },
+        "precision": 8
+      }
+    }
+  },
+  {
+    "accountAsset": {
+      "assetId": "waves#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 19900
+        },
+        "precision": 2
+      }
+    }
+  },
+  {
+    "accountAsset": {
+      "assetId": "etherium#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 97008515
+        },
+        "precision": 6
+      }
+    }
+  },
+  {
+    "accountAsset": {
+      "assetId": "bitcoin1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 980067150
+        },
+        "precision": 8
+      }
+    }
+  },
+  {
+    "accountAsset": {
+      "assetId": "waves1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 19687
+        },
+        "precision": 2
+      }
+    }
+  },
+  {
+    "accountAsset": {
+      "assetId": "etherium1#test",
+      "accountId": "admin@test",
+      "balance": {
+        "value": {
+          "first": 0,
+          "second": 0,
+          "third": 0,
+          "fourth": 99371984
+        },
+        "precision": 6
+      }
+    }
+  }
+]
