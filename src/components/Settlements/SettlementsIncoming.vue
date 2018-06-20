@@ -3,218 +3,166 @@
     <el-table
       :data="settlements"
       ref="table"
-      class="settlements_table"
       @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
     >
       <el-table-column type="expand">
         <template slot-scope="scope">
-          <div class="transaction_details">
-            <el-row>
-              <el-col :span="6">{{ formatDateLong(scope.row.to.date) }}</el-col>
-              <el-col :span="6" class="transaction_details-amount">
-                <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
-                <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
-              </el-col>
-              <el-col :span="6">{{ scope.row.from.message }}</el-col>
-              <el-col :span="6">{{ scope.row.from.to }}</el-col>
-            </el-row>
-          </div>
+          <p>
+            {{ scope.row.from }} want to exchange {{ scope.row.offer_amount + ' ' + scope.row.offer_asset}}
+            for {{ scope.row.request_amount + ' ' + scope.row.request_asset}} with {{ scope.row.to }}
+          </p>
+          <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+          <p>Message: {{ scope.row.message }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="Amount" min-width="200">
+      <el-table-column label="Amount" min-width="220">
         <template slot-scope="scope">
-          {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
-          {{ '→' }}
-          {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
+          {{
+            scope.row.offer_amount.toFixed(4) + ' ' + scope.row.offer_asset
+            + ' → ' +
+            scope.row.request_amount.toFixed(4) + ' ' + scope.row.request_asset
+          }}
         </template>
       </el-table-column>
-      <el-table-column label="Counterparty" min-width="120">
+      <el-table-column label="Counterparty" min-width="150">
         <template slot-scope="scope">
           <div>
-            from {{ scope.row.from.to }}
+            from {{ scope.row.from }}
           </div>
         </template>
       </el-table-column>
       <el-table-column label="Date" width="120">
         <template slot-scope="scope">
-          {{ formatDate(scope.row.from.date) }}
+          {{ scope.row.date | formatDate }}
         </template>
       </el-table-column>
-      <el-table-column width="200">
+      <el-table-column
+        width="180px"
+      >
         <template slot-scope="scope">
-          <div class="list_actions">
+          <div style="text-align: right">
             <el-button
-              plain
-              size="medium"
-              type="primary"
+              size="mini"
+              plain type="primary"
               @click="acceptanceDialogVisible = true; settlementForAcceptance = scope.row"
             >
               Accept
             </el-button>
             <el-button
-              plain
-              size="medium"
+              size="mini" plain
               type="danger"
               @click="rejectionDialogVisible = true; settlementForRejection = scope.row"
             >
-              Decline
+              Reject
             </el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog
+     <el-dialog
       title="Accept settlement?"
       :visible.sync="acceptanceDialogVisible"
       width="500px"
-      center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange
-        {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
-        for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }}
-        with {{ settlementForAcceptance.to.from }}?
+        Are you sure want to exchange {{ settlementForAcceptance.offer_amount + settlementForAcceptance.offer_asset }}
+        for {{ settlementForAcceptance.request_amount + settlementForAcceptance.request_asset }} with {{ settlementForAcceptance.from }}?
       </div>
       <div slot="footer">
-        <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
+        <el-button type="primary" @click="onAccept">Accept</el-button>
       </div>
     </el-dialog>
     <el-dialog
       title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
       width="500px"
-      center
     >
       <div v-if="settlementForRejection">
-        Are you sure want to reject
-        {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
-        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }}
-        with {{ settlementForRejection.to.from }}?
+        Are you sure want to reject {{ settlementForRejection.offer_amount + settlementForRejection.offer_asset }}
+        for {{ settlementForRejection.request_amount + settlementForRejection.request_asset }} with {{ settlementForRejection.from }}?
       </div>
       <div slot="footer">
-        <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
+        <el-button type="danger" @click="onReject">Reject</el-button>
       </div>
     </el-dialog>
   </section>
 </template>
 <script>
-// TODO: Add approval here as well
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
-  mixins: [
-    dateFormat,
-    currencySymbol
-  ],
-
+  mixins: [dateFormat],
   data () {
     return {
       acceptanceDialogVisible: false,
       settlementForAcceptance: null,
 
       rejectionDialogVisible: false,
-      settlementForRejection: null
+      settlementForRejection: null,
+
+      cancellationDialogVisible: false,
+      settlementForcancellation: null
     }
   },
-
   computed: {
     ...mapGetters({
-      settlements: 'incomingSettlements',
-      wallets: 'wallets',
-      accountQuorum: 'accountQuorum'
+      settlements: 'waitingSettlements'
     })
   },
-
   created () {
-    this.getAllUnsignedTransactions()
+    this.fetchAllUnsignedTransactions()
   },
 
   methods: {
-    ...mapActions([
-      'openApprovalDialog',
-      'getAllUnsignedTransactions',
-      'acceptSettlement',
-      'rejectSettlement'
-    ]),
+    fetchAllUnsignedTransactions () {
+      this.$store.dispatch('getAllUnsignedTransactions')
+    },
 
     onAccept () {
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          return this.acceptSettlement({
-            privateKeys,
-            settlementBatch: this.settlementForAcceptance.from.batch
-          })
-            .then(() => {
-              this.$message.success('Accepted')
-            })
-            .catch(err => {
-              console.error(err)
-              this.$message.error('Failed to accept')
-            })
-            .finally(() => {
-              this.acceptanceDialogVisible = false
-              this.getAllUnsignedTransactions()
-            })
+      this.$store.dispatch('acceptSettlement', {
+        settlementHash: this.settlementForAcceptance.id
+      })
+        .then(() => {
+          this.$message('Accepted')
+          this.fetchAllUnsignedTransactions()
         })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to accept')
+        })
+        .finally(() => { this.acceptanceDialogVisible = false })
     },
 
     onReject () {
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          return this.rejectSettlement({
-            privateKeys,
-            settlementBatch: this.settlementForRejection.from.batch
-          })
-            .then(() => {
-              this.$message.success('Rejected')
-            })
-            .catch(err => {
-              console.error(err)
-              this.$message.error('Failed to reject')
-            })
-            .finally(() => {
-              this.rejectionDialogVisible = false
-              this.getAllUnsignedTransactions()
-            })
+      this.$store.dispatch('rejectSettlement', {
+        settlementHash: this.settlementForRejection.id
+      })
+        .then(() => {
+          this.$message('Rejected')
+          this.fetchAllUnsignedTransactions()
         })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to reject')
+        })
+        .finally(() => { this.rejectionDialogVisible = false })
+    },
+
+    onCancel () {
+      this.$store.dispatch('cancelSettlement', {
+        settlementHash: this.settlementForcancellation.id
+      })
+        .then(() => {
+          this.$message('Canceled')
+          this.fetchAllUnsignedTransactions()
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to cancel')
+        })
+        .finally(() => { this.cancellationDialogVisible = false })
     }
   }
 }
 </script>
-
-<style scoped>
-.list_actions {
-  display: flex;
-  justify-content: space-between;
-}
-.list_actions >>> button {
-  background: #ffffff;
-  text-transform: uppercase;
-  padding: 0.7rem;
-}
-.settlements_table >>> .el-table__header th {
-  font-weight: 500;
-}
-.settlements_table >>> .el-table__row td .cell {
-  color: #000000;
-}
-.settlements_table >>> .el-table__expanded-cell {
-  padding: 0rem 1rem 1rem;
-}
-.transaction_details {
-  font-size: 0.8rem;
-  color: #000000;
-  background-color: #f4f4f4;
-  padding: 1rem;
-}
-.transaction_details-amount {
-  flex-wrap: wrap;
-  font-weight: 600;
-}
-</style>
