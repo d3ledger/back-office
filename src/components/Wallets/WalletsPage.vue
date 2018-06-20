@@ -1,8 +1,9 @@
 <template>
   <div style="display: flex; fled-direction: row;">
     <div class="column-fullheight wallets-menu">
+      <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
-        v-for="wallet in wallets"
+        v-for="wallet in filteredWallets"
         :key="wallet.name"
         :walletId="wallet.id"
         :name="wallet.name"
@@ -25,35 +26,18 @@ export default {
     WalletMenuItem
   },
 
-  computed: {
-    ...mapGetters({
-      wallets: 'wallets',
-      portfolioPercent: 'portfolioPercent',
-      currentCriterion: 'walletsSortCriterion'
-    }),
-    walletsWithFiatPrice () {
-      return this.wallets.map((x, i) => {
-        x.fiat = this.portfolioPercent[i].price
-        return x
-      })
-    },
-    filteredWallets () {
-      return this.search
-        ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
-        : this.walletsWithFiatPrice
-    },
-    sortedWallets () {
-      const { numeric, key, desc } = this.currentCriterion
-      const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredWallets)
-      return desc ? sorted.reverse() : sorted
+  data () {
+    return {
+      search: ''
     }
   },
 
-  watch: {
-    '$route' (to, from) {
-      if (to.name === 'wallets' && this.wallets.length) {
-        this.$router.push(`/wallets/${this.wallets[0].id}`)
-      }
+  computed: {
+    ...mapGetters({
+      wallets: 'wallets'
+    }),
+    filteredWallets: function () {
+      return this.search ? this.wallets.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1) : this.wallets
     }
   },
 
