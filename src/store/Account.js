@@ -57,6 +57,26 @@ function initialState () {
   }
 }
 
+// TODO: check if transferAsset is a part of a settlement by meta info.
+function getSettlementOfTransaction (transferAsset) {
+  if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') {
+    return null
+  }
+
+  return {
+    'id': 1,
+    'from': 'you',
+    'offer_amount': 0.796463,
+    'offer_asset': 'WVS',
+    'to': 'yuriy@ru',
+    'request_amount': 0.26483,
+    'request_asset': 'ETH',
+    'date': '2018-03-24T00:19:35Z',
+    'message': 'Hello. This is a settlement.',
+    'status': 'accepted'
+  }
+}
+
 function transformTransactions (transactions) {
   if (!transactions) return []
 
@@ -75,7 +95,7 @@ function transformTransactions (transactions) {
         description
       } = c.transferAsset
 
-      transformed.push({
+      const tx = {
         from: srcAccountId === state.accountId ? 'you' : srcAccountId,
         to: destAccountId === state.accountId ? 'you' : destAccountId,
         amount: amountToString(amount),
@@ -83,7 +103,13 @@ function transformTransactions (transactions) {
         message: description,
         // TODO: set appropreate tx status ('accepted', 'rejected', 'canceled')
         status: 'accepted'
-      })
+      }
+
+      const settlement = getSettlementOfTransaction(c.transferAsset)
+
+      if (settlement) tx.settlement = settlement
+
+      transformed.push(tx)
     })
   })
 
