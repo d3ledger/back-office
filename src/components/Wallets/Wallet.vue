@@ -4,22 +4,28 @@
       <el-col :xs="24" :lg="{ span: 20, offset: 2 }" :xl="{ span: 18, offset: 3 }">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-card>
-              <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
-              <div>
-                <el-button type="primary" @click="receiveFormVisible = true" plain>
-                  Deposit
-                  <i class="el-icon-arrow-down"></i>
-                </el-button>
-                <el-button type="primary" @click="sendFormVisible = true" plain>
-                  Withdraw
-                  <i class="el-icon-arrow-up"></i>
-                </el-button>
+            <el-card body-style="height: 160px;">
+              <div slot="header" class="card-header">
+                <div>{{ wallet.name }}</div>
+                <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+              </div>
+              <div class="top-left-card-body">
+                <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
+                <div>
+                  <el-button type="primary" @click="receiveFormVisible = true" plain>
+                    Deposit
+                    <i class="el-icon-arrow-down"></i>
+                  </el-button>
+                  <el-button type="primary" @click="sendFormVisible = true" plain>
+                    Withdraw
+                    <i class="el-icon-arrow-up"></i>
+                  </el-button>
+                </div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card>
+            <el-card body-style="height: 160px;">
               <div slot="header" class="card-header">
                 <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
                 <i class="el-icon-more-outline" />
@@ -162,10 +168,15 @@
 </template>
 
 <script>
+import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
+  name: 'wallet',
   mixins: [dateFormat],
+  components: {
+    AssetIcon
+  },
   data () {
     return {
       receiveFormVisible: false,
@@ -307,7 +318,13 @@ a.back{
   margin-right: 20px;
   font-weight: bold;
   display: block;
-  margin-bottom: 20px;
+}
+
+.top-left-card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .card-header {
@@ -334,4 +351,8 @@ a.back{
   margin-bottom: 4px;
 }
 
+.icon {
+  width: 17x;
+  font-size: 17px;
+}
 </style>

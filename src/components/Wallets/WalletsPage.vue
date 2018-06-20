@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex; fled-direction: row;">
     <div class="column-fullheight wallets-menu">
-      <wallet-card
+      <wallet-menu-item
         v-for="wallet in wallets"
         :key="wallet.name"
         :walletId="wallet.id"
@@ -17,12 +17,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import WalletCard from '@/components/Wallets/WalletCard'
+import WalletMenuItem from '@/components/Wallets/WalletMenuItem'
 
 export default {
-  name: 'wallets-card',
+  name: 'wallets-page',
   components: {
-    WalletCard
+    WalletMenuItem
   },
 
   computed: {

@@ -1,6 +1,6 @@
 <template>
-  <div style="padding: 20px;">
-    <div class="column-fullheight">
+  <div>
+    <div class="column-fullheight" style="padding: 20px;">
       <el-card>
         Portfolio :) also, cool stats
       </el-card>

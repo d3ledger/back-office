@@ -5,7 +5,7 @@ import irohaUtil from 'util/iroha-util'
 import Home from '@/components/Home'
 import DashboardPage from '@/components/dashboard/DashboardPage'
 import WalletsPage from '@/components/Wallets/WalletsPage'
-import WalletPage from '@/components/Wallets/WalletPage'
+import Wallet from '@/components/Wallets/Wallet'
 import SettlementsPage from '@/components/Settlements/SettlementsPage'
 import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
@@ -34,7 +34,7 @@ const defaultRouter = new Router({
           children: [
             {
               path: ':walletId',
-              component: WalletPage
+              component: Wallet
             }
           ]
         },
