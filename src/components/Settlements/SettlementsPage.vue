@@ -1,18 +1,22 @@
 <template>
-  <section class="column-fullheight">
+  <div style="display: flex; flex-direction: row;">
+    <!-- <section class="column-fullheight" style="width: 300px; background: #669dd5;">
+      Keppa
+    </section> -->
+    <section class="column-fullheight" style="width: 100%">
 
-    <div class="header">
-      <div style="display: flex">
-        <router-link class="navlink" to="/settlements">History</router-link>
-        <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
-        <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
+      <div class="header">
+        <div style="display: flex">
+          <router-link class="navlink" to="/settlements">History</router-link>
+          <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
+          <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
+        </div>
       </div>
-    </div>
-    <el-card style="margin: 20px">
-      <router-view />
-    </el-card>
+      <el-card style="margin: 20px">
+        <router-view />
+      </el-card>
 
-     <el-dialog
+    <el-dialog
       title="New Settlement"
       :visible.sync="newSettlementFormVisible"
       width="500px"
@@ -54,6 +58,7 @@
     </el-dialog>
 
   </section>
+  </div>
 </template>
 
 <script>
@@ -122,5 +127,7 @@ export default {
 .navlink.router-link-exact-active{
   color: black;
   background: #f4f4f4;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #2d2d2d;
 }
 </style>
