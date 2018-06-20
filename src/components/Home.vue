@@ -1,47 +1,43 @@
 <template>
   <el-container>
-    <div
-      class="side-menu"
+    <el-menu
+      :collapse="isCollapsed"
+      class="el-side-menu"
+      :router="true"
+      background-color="#2d2d2d"
+      text-color="#a2a2a2"
+      active-text-color="#fff"
+      :default-active="$router.history.current.path.includes('wallets') ? '/wallets' : $router.history.current.path"
     >
       <h1 class="logo">D3</h1>
-      <el-menu
-        :collapse="isCollapsed"
-        class="el-side-menu"
-        :router="true"
-        background-color="#2d2d2d"
-        text-color="#a2a2a2"
-        active-text-color="#fff"
-        :default-active="$router.history.current.path.includes('wallets') ? '/wallets' : $router.history.current.path"
-      >
-        <el-menu-item index="/">
-          <i class="el-icon-menu" />
-          <span slot="title">Dashboard</span>
-        </el-menu-item>
-        <el-menu-item index="/wallets">
-          <i class="el-icon-news" />
-          <span slot="title">Wallets</span>
-        </el-menu-item>
-        <el-menu-item index="/settlement">
-          <i class="el-icon-refresh" />
-          <span slot="title">Settlement</span>
-        </el-menu-item>
-        <el-menu-item index="/transfer">
-          <i class="el-icon-d-arrow-right" />
-          <span slot="title">Transfer</span>
-        </el-menu-item>
-        <el-menu-item index="/report">
-          <i class="el-icon-tickets" />
-          <span slot="title">Report</span>
-        </el-menu-item>
-        <el-menu-item index="/user">
-          <i class="el-icon-setting" />
-          <span slot="title">Profile</span>
-        </el-menu-item>
-      </el-menu>
+      <el-menu-item index="/">
+        <i class="el-icon-menu" />
+        <span slot="title">Dashboard</span>
+      </el-menu-item>
+      <el-menu-item index="/wallets">
+        <i class="el-icon-news" />
+        <span slot="title">Wallets</span>
+      </el-menu-item>
+      <el-menu-item index="/settlement">
+        <i class="el-icon-refresh" />
+        <span slot="title">Settlement</span>
+      </el-menu-item>
+      <el-menu-item index="/transfer">
+        <i class="el-icon-d-arrow-right" />
+        <span slot="title">Transfer</span>
+      </el-menu-item>
+      <el-menu-item index="/report">
+        <i class="el-icon-tickets" />
+        <span slot="title">Report</span>
+      </el-menu-item>
+      <el-menu-item index="/user">
+        <i class="el-icon-setting" />
+        <span slot="title">Profile</span>
+      </el-menu-item>
       <div class="expand-button clickable" @click="isCollapsed = !isCollapsed">
         <i :class="isCollapsed ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"></i>
       </div>
-    </div>
+    </el-menu>
     <main style="width: 100%; height: 100vh;">
       <router-view/>
     </main>
@@ -102,11 +98,8 @@ export default {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-.side-menu {
-  background-color: #2d2d2d;
-  height: 100vh;
-  overflow: scroll;
-  position: relative;
+.el-side-menu.el-menu--collapse {
+  min-width: 62px;
 }
 
 .el-side-menu:not(.el-menu--collapse) {
