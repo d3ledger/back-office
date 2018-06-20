@@ -118,13 +118,11 @@ export default {
   line-height: 1;
   padding: 25px 50px;
   border-right: 1px solid #f4f4f4;
+  font-weight: 500;
 }
 
 .navlink.router-link-exact-active{
   color: black;
   background: #f4f4f4;
-}
-.exchange_button-icon {
-  margin-right: 0.7rem;
 }
 </style>
