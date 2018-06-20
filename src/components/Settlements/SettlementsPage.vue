@@ -116,14 +116,11 @@ export default {
   line-height: 1;
   padding: 25px 50px;
   border-right: 1px solid #f4f4f4;
+  font-weight: 500;
 }
 
 .navlink.router-link-exact-active{
   color: black;
   background: #f4f4f4;
-}
-
-.el-select-dropdown__item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 </style>

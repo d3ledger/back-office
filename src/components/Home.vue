@@ -1,8 +1,7 @@
 <template>
   <el-container>
     <el-menu
-      :collapse="isCollapsed"
-      class="el-side-menu"
+      :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
       :router="true"
       background-color="#2d2d2d"
       text-color="#a2a2a2"
@@ -26,9 +25,9 @@
         <i class="el-icon-d-arrow-right" />
         <span slot="title">Transfer</span>
       </el-menu-item>
-      <el-menu-item index="/report">
+      <el-menu-item index="/reports">
         <i class="el-icon-tickets" />
-        <span slot="title">Report</span>
+        <span slot="title">Reports</span>
       </el-menu-item>
       <el-menu-item index="/user">
         <i class="el-icon-setting" />
@@ -106,6 +105,7 @@ export default {
 .el-side-menu {
   height: 100vh;
   overflow-y: auto;
+  transition: min-width .5s ease;
 }
 
 .el-side-menu.el-menu--collapse {
@@ -113,7 +113,7 @@ export default {
 }
 
 .el-side-menu:not(.el-menu--collapse) {
-  width: 200px;
+  min-width: 160px;
 }
 
 .el-side-menu > .el-menu-item.is-active{
