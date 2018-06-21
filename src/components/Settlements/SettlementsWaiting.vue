@@ -54,7 +54,7 @@
             <el-button
               size="mini" plain
               type="danger"
-              @click="rejectionDialogVisible = true; setttlementForRejection = scope.row"
+              @click="rejectionDialogVisible = true; settlementForRejection = scope.row"
             >
               Reject
             </el-button>
@@ -81,7 +81,7 @@
         for {{ settlementForAcceptance.request_amount + settlementForAcceptance.request_asset }} with {{ settlementForAcceptance.from }}?
       </div>
       <div slot="footer">
-        <el-button type="primary">Accept</el-button>
+        <el-button type="primary" @click="onAccept">Accept</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -89,12 +89,12 @@
       :visible.sync="rejectionDialogVisible"
       width="500px"
     >
-      <div v-if="setttlementForRejection">
-        Are you sure want to reject {{ setttlementForRejection.offer_amount + setttlementForRejection.offer_asset }}
-        for {{ setttlementForRejection.request_amount + setttlementForRejection.request_asset }} with {{ setttlementForRejection.from }}?
+      <div v-if="settlementForRejection">
+        Are you sure want to reject {{ settlementForRejection.offer_amount + settlementForRejection.offer_asset }}
+        for {{ settlementForRejection.request_amount + settlementForRejection.request_asset }} with {{ settlementForRejection.from }}?
       </div>
       <div slot="footer">
-        <el-button type="danger">Reject</el-button>
+        <el-button type="danger" @click="onReject">Reject</el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -113,7 +113,7 @@
         />
       </div>
       <div slot="footer">
-        <el-button type="danger">Cancel</el-button>
+        <el-button type="danger" @click="onCancel">Cancel</el-button>
       </div>
     </el-dialog>
   </section>
@@ -130,7 +130,7 @@ export default {
       settlementForAcceptance: null,
 
       rejectionDialogVisible: false,
-      setttlementForRejection: null,
+      settlementForRejection: null,
 
       cancellationDialogVisible: false,
       settlementForcancellation: null
@@ -142,7 +142,58 @@ export default {
     })
   },
   created () {
-    this.$store.dispatch('getAllUnsignedTransactions')
+    this.fetchAllUnsignedTransactions()
+  },
+
+  methods: {
+    fetchAllUnsignedTransactions () {
+      this.$store.dispatch('getAllUnsignedTransactions')
+    },
+
+    onAccept () {
+      this.$store.dispatch('acceptSettlement', {
+        settlementHash: this.settlementForAcceptance.id
+      })
+        .then(() => {
+          this.$message('Accepted')
+          this.fetchAllUnsignedTransactions()
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to accept')
+        })
+        .finally(() => { this.acceptanceDialogVisible = false })
+    },
+
+    onReject () {
+      this.$store.dispatch('rejectSettlement', {
+        settlementHash: this.settlementForRejection.id
+      })
+        .then(() => {
+          this.$message('Rejected')
+          this.fetchAllUnsignedTransactions()
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to reject')
+        })
+        .finally(() => { this.rejectionDialogVisible = false })
+    },
+
+    onCancel () {
+      this.$store.dispatch('cancelSettlement', {
+        settlementHash: this.settlementForcancellation.id
+      })
+        .then(() => {
+          this.$message('Canceled')
+          this.fetchAllUnsignedTransactions()
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to cancel')
+        })
+        .finally(() => { this.cancellationDialogVisible = false })
+    }
   }
 }
 </script>

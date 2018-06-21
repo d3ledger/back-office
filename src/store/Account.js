@@ -12,36 +12,25 @@ import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
-const types = {
-  RESET: 'RESET',
-  SIGNUP_REQUEST: 'SIGNUP_REQUEST',
-  SIGNUP_SUCCESS: 'SIGNUP_SUCCESS',
-  SIGNUP_FAILURE: 'SIGNUP_FAILURE',
-  LOGIN_REQUEST: 'LOGIN_REQUEST',
-  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-  LOGIN_FAILURE: 'LOGIN_FAILURE',
-  LOGOUT_REQUEST: 'LOGOUT_REQUEST',
-  LOGOUT_SUCCESS: 'LOGOUT_SUCCESS',
-  LOGOUT_FAILURE: 'LOGOUT_FAILURE',
-  GET_ACCOUNT_TRANSACTIONS_REQUEST: 'GET_ACCOUNT_TRANSACTIONS_REQUEST',
-  GET_ACCOUNT_TRANSACTIONS_SUCCESS: 'GET_ACCOUNT_TRANSACTIONS_SUCCESS',
-  GET_ACCOUNT_TRANSACTIONS_FAILURE: 'GET_ACCOUNT_TRANSACTIONS_FAILURE',
-  GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST: 'GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST',
-  GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS: 'GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS',
-  GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE: 'GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE',
-  GET_ACCOUNT_ASSETS_REQUEST: 'GET_ACCOUNT_ASSETS_REQUEST',
-  GET_ACCOUNT_ASSETS_SUCCESS: 'GET_ACCOUNT_ASSETS_SUCCESS',
-  GET_ACCOUNT_ASSETS_FAILURE: 'GET_ACCOUNT_ASSETS_FAILURE',
-  GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST: 'GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST',
-  GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS: 'GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS',
-  GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE: 'GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE',
-  TRANSFER_ASSET_REQUEST: 'TRANSFER_ASSET_REQUEST',
-  TRANSFER_ASSET_SUCCESS: 'TRANSFER_ASSET_SUCCESS',
-  TRANSFER_ASSET_FAILURE: 'TRANSFER_ASSET_FAILURE',
-  CREATE_SETTLEMENT_REQUEST: 'CREATE_SETTLEMENT_REQUEST',
-  CREATE_SETTLEMENT_SUCCESS: 'CREATE_SETTLEMENT_SUCCESS',
-  CREATE_SETTLEMENT_FAILURE: 'CREATE_SETTLEMENT_FAILURE'
-}
+const types = _([
+  'SIGNUP',
+  'LOGIN',
+  'LOGOUT',
+  'GET_ACCOUNT_TRANSACTIONS',
+  'GET_ACCOUNT_ASSET_TRANSACTIONS',
+  'GET_ACCOUNT_ASSETS',
+  'GET_ALL_UNSIGNED_TRANSACTIONS',
+  'TRANSFER_ASSET',
+  'CREATE_SETTLEMENT',
+  'ACCEPT_SETTLEMENT',
+  'REJECT_SETTLEMENT',
+  'CANCEL_SETTLEMENT'
+]).chain()
+  .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
+  .concat(['RESET'])
+  .map(x => [x, x])
+  .fromPairs()
+  .value()
 
 function initialState () {
   return {
@@ -208,6 +197,30 @@ const mutations = {
 
   [types.CREATE_SETTLEMENT_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {},
+
+  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {},
+
+  [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.REJECT_SETTLEMENT_REQUEST] (state) {},
+
+  [types.REJECT_SETTLEMENT_SUCCESS] (state) {},
+
+  [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.CANCEL_SETTLEMENT_REQUEST] (state) {},
+
+  [types.CANCEL_SETTLEMENT_SUCCESS] (state) {},
+
+  [types.CANCEL_SETTLEMENT_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -362,6 +375,57 @@ const actions = {
       })
       .catch(err => {
         commit(types.CREATE_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  acceptSettlement ({ commit, state }, { settlementHash }) {
+    commit(types.ACCEPT_SETTLEMENT_REQUEST, settlementHash)
+
+    // TODO: use irohaUtil
+    // return irohaUtil.signSettlement({ settlementHash })
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 500)
+    })
+      .then(() => {
+        commit(types.ACCEPT_SETTLEMENT_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.ACCEPT_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  rejectSettlement ({ commit, state }, { settlementHash }) {
+    commit(types.REJECT_SETTLEMENT_REQUEST, settlementHash)
+
+    // TODO: use irohaUtil
+    // return irohaUtil.signSettlement({ settlementHash })
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 500)
+    })
+      .then(() => {
+        commit(types.REJECT_SETTLEMENT_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.REJECT_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  cancelSettlement ({ commit, state }, { settlementHash }) {
+    commit(types.CANCEL_SETTLEMENT_REQUEST, settlementHash)
+
+    // TODO: use irohaUtil
+    // return irohaUtil.signSettlement({ settlementHash })
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 500)
+    })
+      .then(() => {
+        commit(types.CANCEL_SETTLEMENT_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.CANCEL_SETTLEMENT_FAILURE, err)
         throw err
       })
   }
