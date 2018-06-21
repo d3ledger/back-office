@@ -8,7 +8,12 @@
         style="width: 100%"
       >
         <el-menu-item index="/">Wallets</el-menu-item>
-        <el-menu-item index="/settlements">Settlements <span class="number-icon">2</span></el-menu-item>
+        <el-menu-item index="/settlements">
+          Settlements
+          <span class="number-icon" v-if="numberOfSettlements >= 1">
+            {{ numberOfSettlements }}
+          </span>
+        </el-menu-item>
         <el-submenu index="user" style="float: right">
           <template slot="title">{{ accountId }}</template>
           <el-menu-item index="/settings">Settings</el-menu-item>
@@ -32,9 +37,17 @@ export default {
   name: 'Home',
 
   computed: {
+    numberOfSettlements () {
+      return this.$store.getters.waitingSettlements.length || 0
+    },
+
     ...mapState({
       accountId: (state) => state.Account.accountId
     })
+  },
+
+  created () {
+    this.$store.dispatch('getAllUnsignedTransactions')
   },
 
   methods: {
