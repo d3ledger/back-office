@@ -70,7 +70,7 @@
     </el-aside>
 
     <el-container class="column-fullheight">
-      <el-header height="60px" class="header">
+      <el-header height="59px" class="header">
         <div style="display: flex">
           <router-link class="navlink" to="/settlements">History</router-link>
           <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
