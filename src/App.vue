@@ -30,10 +30,14 @@ export default {
 </script>
 
 <style>
-#app {
+html,
+body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
   min-height: 100vh;
   background: #F9FBFF;
 }
