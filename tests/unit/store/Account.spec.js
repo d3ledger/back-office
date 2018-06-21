@@ -45,7 +45,8 @@ describe('Account store', () => {
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
       'util/iroha-util': irohaUtilMock,
-      'util/iroha-amount': require('../../../src/util/iroha-amount')
+      'util/iroha-amount': require('../../../src/util/iroha-amount'),
+      'util/store-util': require('../../../src/util/store-util')
     }).default)
   })
 
@@ -86,6 +87,7 @@ describe('Account store', () => {
         accountInfo: randomObject(),
         rawAssetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
+        rawTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -95,6 +97,7 @@ describe('Account store', () => {
         accountInfo: {},
         rawAssetTransactions: {},
         rawUnsignedTransactions: [],
+        rawTransactions: [],
         assets: [],
         connectionError: null
       }
@@ -140,6 +143,17 @@ describe('Account store', () => {
     })
 
     testErrorHandling('GET_ACCOUNT_ASSETS_FAILURE')
+
+    it('GET_ACCOUNT_TRANSACTIONS_SUCCESS should set transactions to state', () => {
+      const state = { rawTransactions: {} }
+      const transactions = MOCK_TRANSACTIONS
+
+      mutations[types.GET_ACCOUNT_TRANSACTIONS_SUCCESS](state, transactions)
+
+      expect(state.rawTransactions).to.deep.equal(transactions)
+    })
+
+    testErrorHandling('GET_ACCOUNT_TRANSACTIONS_FAILURE')
     testErrorHandling('TRANSFER_ASSET_FAILURE')
   })
 
@@ -221,6 +235,10 @@ describe('Account store', () => {
           })
           .catch(done)
       })
+    })
+
+    describe('getAccountTransactions', () => {
+      it.skip('should call mutations in correct order')
     })
 
     describe('getAllUnsignedTransactions', () => {

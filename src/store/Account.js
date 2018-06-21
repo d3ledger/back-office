@@ -3,6 +3,7 @@ import _ from 'lodash'
 import grpc from 'grpc'
 import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
+import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
 
 // TODO: To be removed. This is used for 2 reasons for now:
 //   1. to get assetIds, because previous GetAccountAssets API required a client
@@ -10,9 +11,6 @@ import { amountToString } from 'util/iroha-amount'
 //   2. to get asset's properties (e.g. color) which cannot be fetched from API.
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
-
-// TODO: To be removed.
-const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
 
 const types = {
   RESET: 'RESET',
@@ -52,95 +50,10 @@ function initialState () {
     accountInfo: {},
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
+    rawTransactions: [],
     assets: [],
     connectionError: null
   }
-}
-
-// TODO: check if transferAsset is a part of a settlement by meta info.
-function getSettlementOfTransaction (transferAsset) {
-  if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') {
-    return null
-  }
-
-  return {
-    'id': 1,
-    'from': 'you',
-    'offer_amount': 0.796463,
-    'offer_asset': 'WVS',
-    'to': 'yuriy@ru',
-    'request_amount': 0.26483,
-    'request_asset': 'ETH',
-    'date': '2018-03-24T00:19:35Z',
-    'message': 'Hello. This is a settlement.',
-    'status': 'accepted'
-  }
-}
-
-function transformTransactions (transactions) {
-  if (!transactions) return []
-
-  const transformed = []
-
-  transactions.forEach(t => {
-    const { commandsList, createdTime } = t.payload
-
-    commandsList.forEach(c => {
-      if (!c.transferAsset) return
-
-      const {
-        amount,
-        destAccountId,
-        srcAccountId,
-        description
-      } = c.transferAsset
-
-      const tx = {
-        from: srcAccountId === state.accountId ? 'you' : srcAccountId,
-        to: destAccountId === state.accountId ? 'you' : destAccountId,
-        amount: amountToString(amount),
-        date: createdTime,
-        message: description,
-        // TODO: set appropreate tx status ('accepted', 'rejected', 'canceled')
-        status: 'accepted'
-      }
-
-      const settlement = getSettlementOfTransaction(c.transferAsset)
-
-      if (settlement) tx.settlement = settlement
-
-      transformed.push(tx)
-    })
-  })
-
-  /*
-   * As actions.getAccountTransactions() does, we fetch account's txs
-   * by multiple getAccount*Asset*Transactions calls.
-   *
-   * Also, getAccount*Asset*Transactions returns txs each of which includes
-   * one or more command(s), which possibly includes also commands issued
-   * against different asset.
-   *
-   * Therefore, when merging transactions for multiple assets, duplication
-   * possibly occurs.
-   * e.g.
-   *    accountAssetTransactions_of_asset_A = [
-   *      { commands: [command_for_asset_A_1, command_for_asset_B_1] },
-   *      { commands: [command_for_asset_A_2] }
-   *    ]
-   *    accountAssetTransactions_of_asset_B = [
-   *      { commands: [command_for_asset_A_1, command_for_asset_B_1] }
-   *    ]
-   *    // -> command_for_asset_A_1 and B_1 duplicates!
-   *
-   * To avoid it, we uniq the transactions.
-   */
-  return _(transformed)
-    .chain()
-    .uniqWith(_.isEqual)
-    .sortBy('date')
-    .reverse()
-    .value()
 }
 
 const state = initialState()
@@ -170,17 +83,20 @@ const getters = {
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
-    return transformTransactions(state.rawAssetTransactions[assetId])
+    return getTransferAssetsFrom(
+      state.rawAssetTransactions[assetId],
+      state.accountId
+    )
   },
 
   waitingSettlements () {
-    // TODO: transform rawUnsignedTransactions and return
-    return DUMMY_SETTLEMENTS.filter(x => x.status === 'waiting')
+    return getSettlementsFrom(state.rawUnsignedTransactions)
+      .filter(x => x.status === 'waiting')
   },
 
-  resolvedSettlements () {
-    // TODO: return real data
-    return DUMMY_SETTLEMENTS.filter(x => x.status !== 'waiting')
+  resolvedSettlements (state) {
+    return getSettlementsFrom(state.rawTransactions)
+      .filter(x => x.status !== 'waiting')
   }
 }
 
@@ -255,6 +171,16 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_ASSETS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_TRANSACTIONS_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS] (state, transactions) {
+    state.rawTransactions = transactions
+  },
+
+  [types.GET_ACCOUNT_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -369,12 +295,27 @@ const actions = {
       })
   },
 
+  getAccountTransactions ({ commit, state }) {
+    commit(types.GET_ACCOUNT_TRANSACTIONS_REQUEST)
+
+    return irohaUtil.getAccountTransactions(state.accountId)
+      .then(transactions => {
+        commit(types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, transactions)
+      })
+      .catch(err => {
+        commit(types.GET_ACCOUNT_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
+  },
+
   getAllUnsignedTransactions ({ commit, state }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
 
     // TODO: use irohaUtil
     // return irohaUtil.getAllUnsignedTransactions(state.accountId)
-    return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(['DUMMY']), 500)
+    })
       .then(responses => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
       })
@@ -413,7 +354,9 @@ const actions = {
     //   requestAmount,
     //   description
     // )
-    return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), 500)
+    })
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
       })

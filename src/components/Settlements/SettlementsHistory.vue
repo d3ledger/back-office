@@ -62,7 +62,7 @@ export default {
     })
   },
   created () {
-    this.$store.dispatch('getAllUnsignedTransactions')
+    this.$store.dispatch('getAccountTransactions')
   },
   methods: {
     tagType: function (val) {
