@@ -37,6 +37,7 @@ describe('Account store', () => {
       return Promise.resolve(MOCK_ASSETS.find(a => a.accountAsset.assetId === assetId))
     },
 
+    getAccountTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
     transferAsset: () => Promise.resolve()
   })
 
@@ -243,7 +244,21 @@ describe('Account store', () => {
     })
 
     describe('getAccountTransactions', () => {
-      it.skip('should call mutations in correct order')
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const state = { accountId: randomAccountId() }
+        const expectedResponse = MOCK_TRANSACTIONS
+
+        actions.getAccountTransactions({ commit, state })
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.GET_ACCOUNT_TRANSACTIONS_REQUEST],
+              [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, expectedResponse]
+            ])
+            done()
+          })
+          .catch(done)
+      })
     })
 
     describe('getAllUnsignedTransactions', () => {
@@ -307,7 +322,7 @@ describe('Account store', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
-        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'status']
+        const expectedKeys = ['amount', 'date', 'from', 'to', 'message']
 
         expect(result)
           .to.be.an('array')
