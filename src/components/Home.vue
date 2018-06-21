@@ -1,8 +1,28 @@
 <template>
   <el-container>
-    <Menu :quorum='accountQuorum'/>
-    <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
-      <router-view />
+    <el-header class="header">
+      <el-menu
+        :default-active="$router.history.current.path.includes('settlements') ? '/settlements' : $router.history.current.path"
+        :router="true"
+        mode="horizontal"
+        style="width: 100%"
+      >
+        <el-menu-item index="/">Wallets</el-menu-item>
+        <el-menu-item index="/settlements">
+          Settlements
+          <span class="number-icon" v-if="numberOfSettlements >= 1">
+            {{ numberOfSettlements }}
+          </span>
+        </el-menu-item>
+        <el-submenu index="user" style="float: right">
+          <template slot="title">{{ accountId }}</template>
+          <el-menu-item index="/settings">Settings</el-menu-item>
+          <el-menu-item index="logout" @click="logout">Logout</el-menu-item>
+        </el-submenu>
+      </el-menu>
+    </el-header>
+    <el-main>
+      <router-view/>
     </el-main>
     <el-dialog
       title="Exchange"
@@ -196,15 +216,9 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'wallets',
-      'approvalDialogVisible',
-      'approvalDialogSignatures',
-      'approvalDialogMinAmountKeys',
-      'exchangeDialogVisible',
-      'exchangeDialogPrice',
-      'accountQuorum'
-    ]),
+    numberOfSettlements () {
+      return this.$store.getters.waitingSettlements.length || 0
+    },
 
     ...mapState({
       accountId: (state) => state.Account.accountId
@@ -263,10 +277,8 @@ export default {
     })
   },
 
-  updated () {
-    if (this.$refs.exchangeForm && !this.exchangeDialogVisible) {
-      this.$refs.exchangeForm.resetFields()
-    }
+  created () {
+    this.$store.dispatch('getAllUnsignedTransactions')
   },
 
   methods: {
