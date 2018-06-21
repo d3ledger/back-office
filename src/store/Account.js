@@ -353,7 +353,7 @@ const actions = {
 
   createSettlement (
     { commit, state },
-    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description }
+    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
