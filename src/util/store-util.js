@@ -46,9 +46,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         to: destAccountId === accountId ? 'you' : destAccountId,
         amount: amountToString(amount),
         date: createdTime,
-        message: description,
-        // TODO: set appropreate tx status ('accepted', 'rejected', 'canceled')
-        status: 'accepted'
+        message: description
       }
 
       const settlement = findSettlementOfTransaction(settlements, c.transferAsset)
