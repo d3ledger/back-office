@@ -1,26 +1,35 @@
-import flow from 'lodash/fp/flow'
-import isEmpty from 'lodash/fp/isEmpty'
-import isEqual from 'lodash/fp/isEqual'
-import uniqWith from 'lodash/fp/uniqWith'
-import sortBy from 'lodash/fp/sortBy'
-import reverse from 'lodash/fp/reverse'
-import groupBy from 'lodash/fp/groupBy'
-import filter from 'lodash/fp/filter'
-import values from 'lodash/fp/values'
-import map from 'lodash/fp/map'
-import chunk from 'lodash/fp/chunk'
-import cloneDeep from 'lodash/fp/cloneDeep'
+import _ from 'lodash'
+import { amountToString } from './iroha-amount'
 
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
+// TODO: To be removed.
+const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
+
+// TODO: check if transferAsset is a part of a settlement by meta info.
+function findSettlementOfTransaction (settlements = [], transferAsset) {
+  if (!transferAsset) return null
+  if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') return null
+
+  return {
+    'id': 1,
+    'from': 'you',
+    'offer_amount': 0.796463,
+    'offer_asset': 'WVS',
+    'to': 'yuriy@ru',
+    'request_amount': 0.26483,
+    'request_asset': 'ETH',
+    'date': '2018-03-24T00:19:35Z',
+    'message': 'Hello. This is a settlement.',
+    'status': 'accepted'
+  }
+}
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
-  if (isEmpty(transactions)) return []
+  if (_.isEmpty(transactions)) return []
+
   const transformed = []
 
-  transactions.forEach((t, idx) => {
-    const batch = t.payload.batch
-    const { commandsList, createdTime } = t.payload.reducedPayload
-    const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
+  transactions.forEach(t => {
+    const { commandsList, createdTime } = t.payload
 
     commandsList.forEach(c => {
       if (!c.transferAsset) return
@@ -29,33 +38,24 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         amount,
         destAccountId,
         srcAccountId,
-        description,
-        assetId
+        description
       } = c.transferAsset
 
       const tx = {
-        from: match(srcAccountId)
-          .on(x => x === accountId, () => 'you')
-          .on(x => x === notaryAccount, () => 'notary')
-          .otherwise(x => x),
-        to: match(destAccountId)
-          .on(x => x === accountId, () => 'you')
-          .on(x => x === notaryAccount, () => 'notary')
-          .otherwise(x => x),
-        amount: amount,
+        from: srcAccountId === accountId ? 'you' : srcAccountId,
+        to: destAccountId === accountId ? 'you' : destAccountId,
+        amount: amountToString(amount),
         date: createdTime,
         message: description,
-        batch,
-        signatures,
-        id: idx,
-        assetId
+        // TODO: set appropreate tx status ('accepted', 'rejected', 'canceled')
+        status: 'accepted'
       }
-      const settlement = findSettlementByBatch(tx, settlements)
-      if (settlement) {
-        transformed.push(settlement)
-      } else {
-        transformed.push(tx)
-      }
+
+      const settlement = findSettlementOfTransaction(settlements, c.transferAsset)
+
+      if (settlement) tx.settlement = settlement
+
+      transformed.push(tx)
     })
   })
 
@@ -81,92 +81,18 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
     *
     * To avoid it, we uniq the transactions.
     */
-  return flow(
-    uniqWith(isEqual),
-    sortBy('date'),
-    reverse
-  )(transformed)
+  return _(transformed)
+    .chain()
+    .uniqWith(_.isEqual)
+    .sortBy('date')
+    .reverse()
+    .value()
 }
 
-// TODO: think about to use hashMap
-export function getSettlementsFrom (transactions, accountId) {
-  if (isEmpty(transactions)) return []
-  const settlements = flow([
-    filter(tr => tr.payload.batch),
-    map(tr => {
-      const commands = []
-      const { commandsList, createdTime } = tr.payload.reducedPayload
-      const batch = tr.payload.batch
-      const signatures = tr.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
-      commandsList.forEach(c => {
-        if (!c.transferAsset) return
-        const {
-          amount,
-          destAccountId,
-          srcAccountId,
-          description,
-          assetId
-        } = c.transferAsset
+// TODO: extract settlements from raw transactions and return
+// TODO: might be able to put together with getTransferAssetsFrom
+export function getSettlementsFrom (transactions) {
+  if (_.isEmpty(transactions)) return []
 
-        const tx = {
-          from: srcAccountId,
-          to: destAccountId,
-          amount: amount,
-          date: createdTime,
-          message: description,
-          signatures,
-          assetId,
-          batch
-        }
-        commands.push(tx)
-      })
-      if (commands.length > 1) return
-      return commands[0]
-    }),
-    groupBy(tr => tr.batch.reducedHashesList),
-    values,
-    map(tr => {
-      let from = {}
-      let to = {}
-      tr.forEach(obj => { obj.to === accountId ? to = obj : from = obj })
-      return { from, to }
-    }),
-    filter(tr => tr.from.from),
-    sortBy(tr => tr.from.date)
-  ])(transactions)
-  return settlements
+  return DUMMY_SETTLEMENTS
 }
-
-export function getSettlementsRawPair (transactions) {
-  if (isEmpty(transactions)) return []
-  // convert elements to pairs by two elements in pair
-  const settlements = chunk(2)(transactions.getTransactionsList())
-  return settlements
-}
-
-export function findBatchFromRaw (rawUnsignedTransactions, settlement) {
-  let rawUnsignedTransactionsCopy = cloneDeep(rawUnsignedTransactions)
-  const rawPairs = getSettlementsRawPair(rawUnsignedTransactionsCopy)
-  let batch = rawPairs.find(tr => {
-    return isEqual(tr[0].toObject().payload.batch, settlement) || isEqual(tr[1].toObject().payload.batch, settlement)
-  }) || []
-  return batch
-}
-
-function findSettlementByBatch (tx, settlements) {
-  const s = filter(
-    s => isEqual(s.from.batch)(tx.batch)
-  )(settlements)
-  return s[0]
-}
-
-// Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c
-const matched = x => ({
-  on: () => matched(x),
-  otherwise: () => x
-})
-
-const match = x => ({
-  on: (pred, fn) => (pred(x) ? matched(fn(x)) : match(x)),
-  otherwise: fn => fn(x)
-})
