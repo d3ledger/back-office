@@ -155,6 +155,11 @@ describe('Account store', () => {
 
     testErrorHandling('GET_ACCOUNT_TRANSACTIONS_FAILURE')
     testErrorHandling('TRANSFER_ASSET_FAILURE')
+
+    it.skip('CREATE_SETTLEMENT')
+    it.skip('ACCEPT_SETTLEMENT')
+    it.skip('REJECT_SETTLEMENT')
+    it.skip('CANCEL_SETTLEMENT')
   })
 
   describe('Actions', () => {
@@ -269,6 +274,18 @@ describe('Account store', () => {
     })
 
     describe('createSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('acceptSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('rejectSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('cancelSettlement', () => {
       it.skip('should call mutations in correct order')
     })
   })
