@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside class="column-fullheight settlement-form-wrapper" width="400px">
+    <el-aside class="column-fullheight blue-form-wrapper" width="400px">
       <el-form style="width: 100%">
         <h2 style="margin-bottom: 40px">New Settlement</h2>
         <el-form-item label="I send" prop="amount">
@@ -66,7 +66,7 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="clickable">EXCHANGE</el-button>
+      <el-button class="clickable" style="min-height: 40px;">EXCHANGE</el-button>
     </el-aside>
 
     <el-container class="column-fullheight">
@@ -153,62 +153,5 @@ export default {
   background: #f4f4f4;
   padding-bottom: 24px;
   border-bottom: 1px solid #2d2d2d;
-}
-
-.settlement-form-wrapper {
-  background: #669dd5;
-  color: white;
-  padding: 20px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.form-item-text {
-  font-size: 14px;
-  opacity: 0.7;
-}
-
-.form-item-text-amount {
-  font-weight: 500;
-}
-
-.settlement-form-wrapper >>> .el-form-item__label {
-  color: white;
-}
-
-/* For some reason, '.settlement-form-wrapper >>> .el-input__inner, .el-textarea__inner' isn't working :( */
-.settlement-form-wrapper >>> .el-input__inner {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: #669dd5;
-  color: white;
-}
-
-.settlement-form-wrapper >>> .el-textarea__inner {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: #669dd5;
-  color: white;
-}
-
-.settlement-form-wrapper >>> .el-input__inner:focus {
-  border-color: white !important;
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.settlement-form-wrapper >>> .el-textarea__inner:focus {
-  border-color: white !important;
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.settlement-form-wrapper >>> .el-input--suffix {
-  color: black;
-}
-
-.settlement-form-wrapper >>> .el-button {
-  color: white;
-  background: #041820;
-  border: 1px solid #041820;
-  width: 100%;
 }
 </style>
