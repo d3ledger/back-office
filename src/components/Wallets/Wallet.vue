@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row style="margin-bottom: 20px">
-      <el-col :xs="24" :lg="{ span: 20, offset: 2 }" :xl="{ span: 18, offset: 3 }">
+      <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
           <el-col :span="12">
             <el-card body-style="height: 160px;">
@@ -64,7 +64,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :xs="24" :lg="{ span: 20, offset: 2 }" :xl="{ span: 18, offset: 3 }">
+      <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-card>
           <div slot="header">
             History

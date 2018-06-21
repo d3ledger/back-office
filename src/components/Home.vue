@@ -112,7 +112,7 @@ export default {
 .el-side-menu {
   height: 100vh;
   overflow-y: auto;
-  transition: width .5s ease;
+  transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-right: none;
   position: fixed;
   z-index: 100;
