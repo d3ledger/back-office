@@ -38,7 +38,7 @@ export default {
 
   computed: {
     numberOfSettlements () {
-      return this.$store.getters.waitingSettlements.length || 0
+      return this.$store.getters.waitingSettlements.length
     },
 
     ...mapState({
