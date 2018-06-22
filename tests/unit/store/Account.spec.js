@@ -339,10 +339,24 @@ describe('Account store', () => {
 
     describe('waitingSettlements', () => {
       it.skip('should return only waiting settlements')
+
+      it('should return an empty array if there is no transactions', () => {
+        const state = { rawUnsignedTransactions: [] }
+        const result = getters.waitingSettlements(state)
+
+        expect(result).to.be.an('array').which.is.empty
+      })
     })
 
     describe('resolvedSettlements', () => {
       it.skip('should return only resolved settlements')
+
+      it('should return an empty array if there is no transactions', () => {
+        const state = { rawTransactions: [] }
+        const result = getters.resolvedSettlements(state)
+
+        expect(result).to.be.an('array').which.is.empty
+      })
     })
   })
 })
