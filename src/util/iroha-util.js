@@ -117,6 +117,33 @@ function generateKeypair () {
   return { publicKey, privateKey }
 }
 
+// TODO: implement it
+function acceptSettlement () {
+  debug('starting acceptSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
+// TODO: implement it
+function rejectSettlement () {
+  debug('starting rejectSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
+// TODO: implement it
+function cancelSettlement () {
+  debug('starting cancelSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
 /*
  * ===== queries =====
  */
@@ -328,6 +355,15 @@ function getAssetInfo (assetId) {
   )
 }
 
+// TODO: implement it
+function getAllUnsignedTransactions (accountId) {
+  debug('starting getAllUnsignedTransactions...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(['DUMMY']), 500)
+  })
+}
+
 /*
  * ===== commands =====
  */
@@ -491,6 +527,15 @@ function transferAsset (srcAccountId, destAccountId, assetId, description, amoun
   )
 }
 
+// TODO: implement it
+function createSettlement () {
+  debug('starting createSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
 /*
  *  ===== utilities ===
  */
@@ -562,6 +607,9 @@ module.exports = {
   logout,
   isLoggedIn,
   generateKeypair,
+  acceptSettlement,
+  rejectSettlement,
+  cancelSettlement,
 
   // queries
   getAccount,
@@ -569,10 +617,12 @@ module.exports = {
   getAccountAssetTransactions,
   getAccountTransactions,
   getAssetInfo,
+  getAllUnsignedTransactions,
 
   // commands
   createAccount,
   createAsset,
   transferAsset,
-  addAssetQuantity
+  addAssetQuantity,
+  createSettlement
 }

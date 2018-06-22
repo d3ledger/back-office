@@ -324,11 +324,7 @@ const actions = {
   getAllUnsignedTransactions ({ commit, state }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
 
-    // TODO: use irohaUtil
-    // return irohaUtil.getAllUnsignedTransactions(state.accountId)
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(['DUMMY']), 500)
-    })
+    return irohaUtil.getAllUnsignedTransactions(state.accountId)
       .then(responses => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
       })
@@ -357,19 +353,15 @@ const actions = {
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
-    // TODO: use irohaUtil
-    // return irohaUtil.createSettlement(
-    //   state.accountId,
-    //   to,
-    //   offerAssetId,
-    //   offerAmount,
-    //   requestAssetId,
-    //   requestAmount,
-    //   description
-    // )
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 500)
-    })
+    return irohaUtil.createSettlement(
+      state.accountId,
+      to,
+      offerAssetId,
+      offerAmount,
+      requestAssetId,
+      requestAmount,
+      description
+    )
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
       })
@@ -382,11 +374,7 @@ const actions = {
   acceptSettlement ({ commit, state }, { settlementHash }) {
     commit(types.ACCEPT_SETTLEMENT_REQUEST, settlementHash)
 
-    // TODO: use irohaUtil
-    // return irohaUtil.signSettlement({ settlementHash })
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 500)
-    })
+    return irohaUtil.acceptSettlement()
       .then(() => {
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
@@ -399,11 +387,7 @@ const actions = {
   rejectSettlement ({ commit, state }, { settlementHash }) {
     commit(types.REJECT_SETTLEMENT_REQUEST, settlementHash)
 
-    // TODO: use irohaUtil
-    // return irohaUtil.signSettlement({ settlementHash })
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 500)
-    })
+    return irohaUtil.rejectSettlement()
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)
       })
@@ -416,11 +400,7 @@ const actions = {
   cancelSettlement ({ commit, state }, { settlementHash }) {
     commit(types.CANCEL_SETTLEMENT_REQUEST, settlementHash)
 
-    // TODO: use irohaUtil
-    // return irohaUtil.signSettlement({ settlementHash })
-    return new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), 500)
-    })
+    return irohaUtil.cancelSettlement()
       .then(() => {
         commit(types.CANCEL_SETTLEMENT_SUCCESS)
       })
