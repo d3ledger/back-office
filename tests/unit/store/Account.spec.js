@@ -8,6 +8,7 @@ const {
   randomAccountId,
   randomAssetId,
   randomNodeIp,
+  randomPublicKey,
   randomPrivateKey,
   randomObject,
   randomAmount
@@ -25,11 +26,17 @@ describe('Account store', () => {
   const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['bitcoin#test']
   const MOCK_NODE_IP = 'MOCK_NODE_IP'
   const MOCK_ACCOUNT_RESPONSE = { accountId: randomAccountId() }
+  const MOCK_KEYPAIR = {
+    publicKey: randomPublicKey(),
+    privateKey: randomPrivateKey()
+  }
   const irohaUtil = require('../../../src/util/iroha-util')
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
+    signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
     login: (username, privateKey, nodeIp) => Promise.resolve(MOCK_ACCOUNT_RESPONSE),
     logout: () => Promise.resolve(),
+    generateKeypair: () => MOCK_KEYPAIR,
     getAccountAssetTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
     getAccountAssets: (accountId) => Promise.resolve(MOCK_ASSETS),
     getAccountTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
@@ -103,6 +110,22 @@ describe('Account store', () => {
       expect(state).to.be.deep.equal(expectedState)
     })
 
+    it('SIGNUP_SUCCESS should not change the state', () => {
+      const state = {}
+      const params = {
+        username: randomAccountId().split('@')[1],
+        publicKey: randomPublicKey(),
+        privateKey: randomPrivateKey()
+      }
+      const expectedState = {}
+
+      mutations[types.SIGNUP_SUCCESS](state, params)
+
+      expect(state).to.deep.equal(expectedState)
+    })
+
+    testErrorHandling('SIGNUP_FAILURE')
+
     it('LOGIN_SUCCESS should set an accountId to state', () => {
       const state = {}
       const account = { accountId: randomAccountId() }
@@ -159,6 +182,26 @@ describe('Account store', () => {
   })
 
   describe('Actions', () => {
+    describe('signup', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const params = { username: randomAccountId().split('@')[1] }
+
+        actions.signup({ commit }, params)
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.SIGNUP_REQUEST],
+              [types.SIGNUP_SUCCESS, {
+                username: params.username,
+                ...MOCK_KEYPAIR
+              }]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
     describe('login', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
