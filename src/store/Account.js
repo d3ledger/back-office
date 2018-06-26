@@ -5,12 +5,9 @@ import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
 import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
 
-// TODO: To be removed. This is used for 2 reasons for now:
-//   1. to get assetIds, because previous GetAccountAssets API required a client
-//      to know assetIds in advance.
-//   2. to get asset's properties (e.g. color) which cannot be fetched from API.
+// TODO: To be removed. This is used for the following reason for now:
+//   1. to get asset's properties (e.g. color) which cannot be fetched from API.
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
-const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
 const types = _([
   'SIGNUP',
@@ -54,21 +51,22 @@ const getters = {
   wallets (state) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
-      const ASSET = ASSETS.find(d => {
-        return (d.name.toLowerCase() === a.assetId.split('#')[0].toLowerCase() || d.asset.toLowerCase() === a.assetId.split('#')[0].toLowerCase())
+      const DUMMY_ASSET = DUMMY_ASSETS.find(d => {
+        return (d.name.toLowerCase() === a.assetId.split('#')[0])
       })
 
       return {
         id: a.assetId.replace(/#/g, '$'),
         assetId: a.assetId,
-        domain: a.assetId.split('#')[1],
 
-        name: ASSET.name,
-        asset: ASSET.asset,
-        color: ASSET.color,
+        // TODO: get these info from appropreate sources.
+        name: DUMMY_ASSET.name,
+        asset: DUMMY_ASSET.asset,
+        color: DUMMY_ASSET.color,
+        address: DUMMY_ASSET.address,
 
-        amount: a.balance,
-        precision: a.balance.split('.')[1] ? a.balance.split('.')[1].length : 0
+        amount: amountToString(a.balance),
+        precision: a.balance.precision
       }
     })
   },
