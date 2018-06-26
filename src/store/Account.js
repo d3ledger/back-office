@@ -122,8 +122,7 @@ const mutations = {
 
   [types.SIGNUP_REQUEST] (state) {},
 
-  [types.SIGNUP_SUCCESS] (state, account) {
-    state.accountId = account.accountId
+  [types.SIGNUP_SUCCESS] (state, params) {
   },
 
   [types.SIGNUP_FAILURE] (state, err) {
