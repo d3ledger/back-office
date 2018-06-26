@@ -5,12 +5,9 @@ import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
 import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
 
-// TODO: To be removed. This is used for 2 reasons for now:
-//   1. to get assetIds, because previous GetAccountAssets API required a client
-//      to know assetIds in advance.
-//   2. to get asset's properties (e.g. color) which cannot be fetched from API.
+// TODO: To be removed. This is used for the following reason for now:
+//   1. to get asset's properties (e.g. color) which cannot be fetched from API.
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
-const DUMMY_ASSET_IDS = DUMMY_ASSETS.map(a => `${a.name.toLowerCase()}#test`)
 
 const types = _([
   'SIGNUP',
@@ -50,23 +47,23 @@ const state = initialState()
 const getters = {
   wallets (state) {
     return state.assets.map(a => {
-      // TODO: remove it after irohaUtil.getAccountAssets is updated
+      // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
       const DUMMY_ASSET = DUMMY_ASSETS.find(d => {
-        return (d.name.toLowerCase() === a.accountAsset.assetId.split('#')[0])
+        return (d.name.toLowerCase() === a.assetId.split('#')[0])
       })
 
       return {
-        id: a.accountAsset.assetId.replace(/#/g, '$'),
-        assetId: a.accountAsset.assetId,
+        id: a.assetId.replace(/#/g, '$'),
+        assetId: a.assetId,
 
-        // TODO: change these to use API, not dummy
+        // TODO: get these info from appropreate sources.
         name: DUMMY_ASSET.name,
         asset: DUMMY_ASSET.asset,
         color: DUMMY_ASSET.color,
         address: DUMMY_ASSET.address,
 
-        amount: amountToString(a.accountAsset.balance),
-        precision: a.accountAsset.balance.precision
+        amount: amountToString(a.balance),
+        precision: a.balance.precision
       }
     })
   },
@@ -292,15 +289,9 @@ const actions = {
   getAccountAssets ({ commit, state }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
-    // TODO: fix it after irohaUtil.getAccountAssets is updated
-    const assetIds = DUMMY_ASSET_IDS
-    const gettingAccountAssets = assetIds.map(assetId => {
-      return irohaUtil.getAccountAssets(state.accountId, assetId)
-    })
-
-    return Promise.all(gettingAccountAssets)
-      .then(responses => {
-        commit(types.GET_ACCOUNT_ASSETS_SUCCESS, _.flatten(responses))
+    return irohaUtil.getAccountAssets(state.accountId)
+      .then(assets => {
+        commit(types.GET_ACCOUNT_ASSETS_SUCCESS, assets)
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_ASSETS_FAILURE, err)
