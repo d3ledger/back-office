@@ -31,12 +31,7 @@ describe('Account store', () => {
     login: (username, privateKey, nodeIp) => Promise.resolve(MOCK_ACCOUNT_RESPONSE),
     logout: () => Promise.resolve(),
     getAccountAssetTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
-
-    // TODO: fix it after irohaUtil.getAccountAssets is updated
-    getAccountAssets: (accountId, assetId) => {
-      return Promise.resolve(MOCK_ASSETS.find(a => a.accountAsset.assetId === assetId))
-    },
-
+    getAccountAssets: (accountId) => Promise.resolve(MOCK_ASSETS),
     getAccountTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
     transferAsset: () => Promise.resolve()
   })
@@ -224,7 +219,6 @@ describe('Account store', () => {
       })
     })
 
-    // TODO: fix it after irohaUtil.getAccountAssets is updated
     describe('getAccountAssets', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
