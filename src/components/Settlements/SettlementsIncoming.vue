@@ -63,36 +63,40 @@
       title="Accept settlement?"
       :visible.sync="acceptanceDialogVisible"
       width="500px"
+      center
     >
       <div v-if="settlementForAcceptance">
         Are you sure want to exchange {{ settlementForAcceptance.offer_amount + settlementForAcceptance.offer_asset }}
         for {{ settlementForAcceptance.request_amount + settlementForAcceptance.request_asset }} with {{ settlementForAcceptance.from }}?
       </div>
       <div slot="footer">
-        <el-button type="primary" @click="onAccept">Accept</el-button>
+        <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
       </div>
     </el-dialog>
     <el-dialog
       title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
       width="500px"
+      center
     >
       <div v-if="settlementForRejection">
         Are you sure want to reject {{ settlementForRejection.offer_amount + settlementForRejection.offer_asset }}
         for {{ settlementForRejection.request_amount + settlementForRejection.request_asset }} with {{ settlementForRejection.from }}?
       </div>
       <div slot="footer">
-        <el-button type="danger" @click="onReject">Reject</el-button>
+        <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
       </div>
     </el-dialog>
   </section>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+// TODO: Add approval here as well
+import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   mixins: [dateFormat],
+
   data () {
     return {
       acceptanceDialogVisible: false,
@@ -105,16 +109,22 @@ export default {
       settlementForcancellation: null
     }
   },
+
   computed: {
     ...mapGetters({
-      settlements: 'waitingSettlements'
+      settlements: 'incomingSettlements'
     })
   },
+
   created () {
     this.fetchAllUnsignedTransactions()
   },
 
   methods: {
+    ...mapActions([
+      'openApprovalDialog'
+    ]),
+
     fetchAllUnsignedTransactions () {
       this.$store.dispatch('getAllUnsignedTransactions')
     },

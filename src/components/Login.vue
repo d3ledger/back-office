@@ -1,26 +1,16 @@
 <template>
   <el-container class="login-container">
-    <div style="margin-top: 2.5rem">
-      <img src="@/assets/logo.svg" alt="D3"/>
+    <div style="margin-top: 4rem">
+      <h1 style="font-size: 2.5rem">Login</h1>
     </div>
     <el-card class="login-form-container">
-      <div slot="header" class="clearfix">
-        <router-link
-          class="signup-button"
-          to="/signup"
-        >
-          Sign Up
-          <i class="el-icon-arrow-right"></i>
-        </router-link>
-      </div>
-
       <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
             name="username"
             v-model="form.username"
             :disabled="isLoading"
-          ></el-input>
+          />
         </el-form-item>
 
         <el-form-item label="private key:" prop="privateKey">
@@ -30,7 +20,7 @@
                 name="privateKey"
                 v-model="form.privateKey"
                 :disabled="isLoading"
-              ></el-input>
+              />
             </el-col>
 
             <el-upload
@@ -56,7 +46,7 @@
 
         <el-form-item class="login-button-container">
           <el-button
-            class="login-button"
+            class="fullwidth black"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -65,6 +55,15 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <div style="margin-top: 3rem">
+        <p style="margin-bottom: 1rem">Don't have an account?</p>
+        <router-link
+          to="/signup"
+          class="el-button fullwidth el-button--info is-plain"
+        >
+          Sign Up
+        </router-link>
+      </div>
     </el-card>
   </el-container>
 </template>
@@ -147,7 +146,7 @@ export default {
     position: relative;
     width: 30rem;
     overflow: visible;
-    margin-top: 5rem;
+    margin-top: 3rem;
   }
 
   /*
@@ -157,32 +156,5 @@ export default {
   */
   .login-form >>> .el-form-item__label {
     line-height: 1;
-  }
-
-  .login-form >>> .el-form-item__label::before {
-    content: '';
-  }
-
-  .option.left {
-    float: left;
-  }
-
-  .option.right {
-    float: right;
-    font-size: 0.8rem;
-    color: #8492a6;
-  }
-
-  .signup-button {
-    float: right;
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
   }
 </style>

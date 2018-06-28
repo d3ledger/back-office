@@ -62,9 +62,7 @@ a:hover {
 }
 
 .clickable {
-  transition: opacity .15s ease-in-out;
   cursor: pointer;
-  text-decoration: none;
 }
 
 .clickable:hover {
@@ -89,55 +87,19 @@ a:hover {
   font-weight: 500;
 }
 
-.blue-form-wrapper {
-  background: #1B2936;
-  background: #669dd5;
-
-  color: white;
-  padding: 20px 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+.fullwidth.el-button {
+  width: 100%;
+  min-height: 40px;
+  text-transform: uppercase;
 }
 
-.blue-form-wrapper .el-form-item__label {
-  color: white;
-}
-
-.blue-form-wrapper .el-input__inner, .blue-form-wrapper .el-textarea__inner {
-  border-color: #ffffff80;
-  background: transparent;
-  color: white;
-}
-
-.blue-form-wrapper .el-input__inner:focus, .blue-form-wrapper .el-textarea__inner:focus {
-  border-color: white !important;
-  background-color: rgba(255, 255, 255, 0.08);
-}
-
-.blue-form-wrapper .el-input--suffix {
-  color: black;
-}
-
-.button-black.el-button {
+.black.el-button {
   color: white;
   background: #041820;
   border: 1px solid #041820;
-  width: 100%;
-  min-height: 40px;
 }
 
-.blue-form-wrapper .el-range-input {
-  color: white;
-  background: transparent;
-}
-
-.blue-form-wrapper .el-range-separator, .blue-form-wrapper .el-input__icon  .el-range__close-icon {
-  color: white;
-}
-
-.blue-form-wrapper .el-range-input {
-  width: 50% !important;
+.black.el-button:hover {
+  opacity: 0.8;
 }
 </style>

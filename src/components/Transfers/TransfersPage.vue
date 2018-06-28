@@ -41,7 +41,7 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="button-black clickable" @click="approvalDialog = true">TRANSFER</el-button>
+      <el-button class="fullwidth black clickable" @click="openApprovalDialog">TRANSFER</el-button>
     </el-aside>
     <el-main>
       <el-card>
@@ -106,40 +106,12 @@
         </el-table>
       </el-card>
     </el-main>
-
-    <el-dialog
-      title="Approve transaction"
-      :visible.sync="approvalDialog"
-      width="500px"
-    >
-      <el-form>
-        <el-form-item>
-          Please enter your private key to confirm transaction
-        </el-form-item>
-        <el-form-item label="Private key">
-          <el-input
-            type="textarea"
-            :rows="2"
-            v-model="privateKey"
-            placeholder="Your private key"
-            resize="none"
-          />
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            class="button-black clickable"
-            @click="$emit('nice')"
-          >
-            Confirm
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
   </el-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
@@ -147,8 +119,6 @@ export default {
   mixins: [dateFormat],
   data () {
     return {
-      privateKey: null,
-      approvalDialog: false,
       transferForm: {
         to: null,
         send_amount: null,
@@ -170,6 +140,11 @@ export default {
   },
   created () {
     this.$store.dispatch('getAccountAssets')
+  },
+  methods: {
+    ...mapActions([
+      'openApprovalDialog'
+    ])
   }
 }
 </script>

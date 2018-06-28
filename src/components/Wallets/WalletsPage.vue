@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside class="column-fullheight wallets-menu" width="352px">
+    <el-aside class="column-fullheight wallets-menu" width="280px">
       <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
         v-for="wallet in filteredWallets"

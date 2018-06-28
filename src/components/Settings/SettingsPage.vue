@@ -179,10 +179,18 @@
       title="Edit Quorum"
       :visible.sync="quorumFormVisible"
       width="500px"
-      center>
-      <el-form ref="editQuorumForm" class="quorum_form" :model="quorumForm">
-        <el-form-item>
-          <el-input-number v-model="quorumForm.amount" :min="1" :max="accountSignatories.length"></el-input-number>
+      center
+    >
+      <el-form
+        label-width="4rem"
+      >
+        <el-form-item label="Name:" prop="amount">
+          <el-input name="amount" v-model="newWallet.name">
+            <template slot="append">{{ newWallet.type }}</template>
+          </el-input>
+        </el-form-item>
+        <el-form-item label="Address:" prop="to">
+          <el-input name="address" v-model="newWallet.address" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
