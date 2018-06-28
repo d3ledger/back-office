@@ -18,6 +18,7 @@
       title="Add a wallet"
       :visible.sync="newWalletForm"
       width="500px"
+      center
     >
       <el-form
         label-width="4rem"

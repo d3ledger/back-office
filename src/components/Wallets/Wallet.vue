@@ -20,7 +20,7 @@
                     Withdraw
                     <i class="el-icon-arrow-up"></i>
                   </el-button>
-                  <el-button type="primary" @click="withdrawFormVisible = true" plain>
+                  <el-button type="primary" @click="transferFormVisible = true" plain>
                     Transfer
                     <i class="el-icon-arrow-up"></i>
                   </el-button>
@@ -132,23 +132,31 @@
       :title="'Withdraw ' + wallet.asset"
       :visible.sync="withdrawFormVisible"
       width="500px"
+      center
     >
-      <el-form label-width="4rem">
-        <el-form-item label="Withdraw:" prop="amount">
+      <el-form>
+        <el-form-item label="Send" prop="amount">
           <el-input name="amount" v-model="sendForm.amount">
             <div slot="append">
               {{ wallet.asset }}
             </div>
           </el-input>
+          <span class="form-item-text">
+            Available balance:
+            <span class="form-item-text-amount">
+              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+            </span>
+          </span>
         </el-form-item>
-        <el-form-item label="To">
+        <el-form-item label="Address">
           <el-input v-model="sendForm.to" placeholder="withdrawal address" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
-            class="button-black clickable"
-            @click="approvalDialog = true"
+            class="fullwidth black clickable"
+            @click="openApprovalDialog"
             :loading="isSending"
+            style="margin-top: 40px"
           >
             Withdraw
           </el-button>
@@ -157,72 +165,38 @@
     </el-dialog>
 
     <el-dialog
-      title="Receive"
+      title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="500px"
+      width="350px"
+      center
     >
-      <div style="display: flex; align-items: center;">
-        <img src="@/assets/qr.png" />
-        <div style="padding-left: 20px">
-          Scan QR code or send your {{ wallet.asset }} to <strong> {{ wallet.address }}</strong>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="text-align: center; margin-bottom: 20px">
+          <p>Scan QR code or send your {{ wallet.asset }} to</p>
+          <p><strong> {{ wallet.address }}</strong></p>
         </div>
+        <img src="@/assets/qr.png" style="width: 270px"/>
       </div>
     </el-dialog>
 
     <el-dialog
-      title="Approve transaction"
-      :visible.sync="approvalDialog"
+      title="Transfer"
+      :visible.sync="transferFormVisible"
       width="500px"
+      center
     >
-      <el-form>
-        <el-form-item>
-          Please enter your private key to confirm transaction
-        </el-form-item>
-        <el-form-item label="Private key">
-          <el-input
-            type="textarea"
-            :rows="2"
-            v-model="privateKey"
-            placeholder="Your private key"
-            resize="none"
-          />
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            class="button-black clickable"
-          >
-            Confirm
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-
-    <el-dialog>
       <el-form style="width: 100%">
-        <h2 style="margin-bottom: 40px">New Transfer</h2>
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="transferForm.send_amount" placeholder="0">
-            <el-select
-              v-model="transferForm.send_asset"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="wallet in wallets"
-                :key="wallet.asset"
-                :label="wallet.asset"
-                :value="wallet.asset">
-                  <span style="float: left">{{ wallet.name + ' (' + wallet.asset + ')' }}</span>
-              </el-option>
-            </el-select>
+            <div slot="append">
+              {{ wallet.asset }}
+            </div>
           </el-input>
           <span class="form-item-text">
             Available balance:
-            <span v-if="transferForm.send_asset" class="form-item-text-amount">
-              {{ wallets.filter(x => x.asset === transferForm.send_asset)[0].amount  + ' ' + transferForm.send_asset.toUpperCase() }}
+            <span class="form-item-text-amount">
+              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
             </span>
-            <span v-else>...</span>
           </span>
         </el-form-item>
         <el-form-item label="Counterparty">
@@ -238,12 +212,15 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="button-black clickable" @click="approvalDialog = true">TRANSFER</el-button>
+      <el-button class="fullwidth black clickable" @click="openApprovalDialog" style="margin-top: 40px">TRANSFER</el-button>
     </el-dialog>
   </div>
 </template>
 
 <script>
+// TODO: Transfer form all assets
+import { mapActions } from 'vuex'
+
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 
@@ -255,8 +232,6 @@ export default {
   },
   data () {
     return {
-      privateKey: null,
-      approvalDialog: false,
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
@@ -318,6 +293,10 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'openApprovalDialog'
+    ]),
+
     tagType: function (val) {
       val = val.toLowerCase()
       if (val === 'accepted') return 'success'

@@ -7,7 +7,7 @@
         :router="true"
         text-color="#a2a2a2"
         background-color="#2D2D2D"
-        active-text-color="#fff"
+        active-text-color="#000"
         :default-active="currentActiveMenu"
       >
         <h1 class="logo">D3</h1>
@@ -23,10 +23,6 @@
           <i class="el-icon-refresh" />
           <span slot="title">Settlements</span>
         </el-menu-item>
-        <el-menu-item index="/transfers">
-          <i class="el-icon-d-arrow-right" />
-          <span slot="title">Transfers</span>
-        </el-menu-item>
         <el-menu-item index="/reports">
           <i class="el-icon-tickets" />
           <span slot="title">Reports</span>
@@ -35,26 +31,51 @@
           <i class="el-icon-arrow-left" />
           <span slot="title">Logout</span>
         </el-menu-item>
-        <!-- <div class="expand-button clickable">
-          <i :class="isCollapsed ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"></i>
-        </div> -->
       </el-menu>
     </div>
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
       <router-view />
     </el-main>
+    <el-dialog
+     title="Approve transaction"
+     :visible="approvalDialogVisible"
+     width="500px"
+     @close="closeApprovalDialog"
+     center
+   >
+     <el-form>
+       <el-form-item>
+         Please enter your private key to confirm transaction
+       </el-form-item>
+       <el-form-item label="Private key">
+         <el-input
+           type="textarea"
+           :rows="2"
+           v-model="privateKey"
+           placeholder="Your private key"
+           resize="none"
+         />
+       </el-form-item>
+       <el-form-item style="margin-bottom: 0;">
+         <el-button
+           class="fullwidth black clickable"
+         >
+           Confirm
+         </el-button>
+       </el-form-item>
+     </el-form>
+   </el-dialog>
   </el-container>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'Home',
 
   data () {
     return {
-      approvalDialog: false,
       privateKey: null,
       isCollapsed: true
     }
@@ -66,8 +87,10 @@ export default {
     },
 
     ...mapState({
-      accountId: (state) => state.Account.accountId
+      accountId: (state) => state.Account.accountId,
+      approvalDialogVisible: (state) => state.App.approvalDialogVisible
     }),
+
     currentActiveMenu: function () {
       if (this.$router.history.current.path.includes('wallets')) return '/wallets'
       if (this.$router.history.current.path.includes('settlements')) return '/settlements'
@@ -80,6 +103,10 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'closeApprovalDialog'
+    ]),
+
     logout () {
       this.$store.dispatch('logout')
         .then(() => this.$router.push('/login'))
@@ -92,17 +119,6 @@ export default {
 </script>
 
 <style lang="scss">
-.expand-button {
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: #669dd5;
-  font-size: 18px;
-  color: white;
-}
-
 .el-menu-item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -125,10 +141,8 @@ export default {
 }
 
 .el-side-menu > .el-menu-item.is-active{
-  background: #1B2936 !important;
-  background: #669dd5 !important;
-
-  // border-right: 1px solid white;
+  background: white !important;
+  color: black;
 }
 
 .logo {

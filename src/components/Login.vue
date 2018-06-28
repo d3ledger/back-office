@@ -1,23 +1,16 @@
 <template>
   <el-container class="login-container">
+    <div style="margin-top: 4rem">
+      <h1 style="font-size: 2.5rem">Login</h1>
+    </div>
     <el-card class="login-form-container">
-      <div slot="header" class="clearfix">
-        <router-link
-          class="signup-button"
-          to="/signup"
-        >
-          Sign Up
-          <i class="el-icon-arrow-right"></i>
-        </router-link>
-      </div>
-
       <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
             name="username"
             v-model="form.username"
             :disabled="isLoading"
-          ></el-input>
+          />
         </el-form-item>
 
         <el-form-item label="private key:" prop="privateKey">
@@ -27,7 +20,7 @@
                 name="privateKey"
                 v-model="form.privateKey"
                 :disabled="isLoading"
-              ></el-input>
+              />
             </el-col>
 
             <el-upload
@@ -53,7 +46,7 @@
 
         <el-form-item class="login-button-container">
           <el-button
-            class="login-button"
+            class="fullwidth black"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -62,6 +55,15 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <div style="margin-top: 3rem">
+        <p style="margin-bottom: 1rem">Don't have an account?</p>
+        <router-link
+          to="/signup"
+          class="el-button fullwidth el-button--info is-plain"
+        >
+          Sign Up
+        </router-link>
+      </div>
     </el-card>
   </el-container>
 </template>
@@ -138,14 +140,16 @@ export default {
 
 <style scoped>
   .login-container {
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .login-form-container {
     position: relative;
     width: 30rem;
     overflow: visible;
-    margin-top: 5rem;
+    margin-top: 3rem;
   }
 
   /*
@@ -155,39 +159,5 @@ export default {
   */
   .login-form >>> .el-form-item__label {
     line-height: 1;
-  }
-
-  .logo {
-    width: 10rem;
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: 100;
-    top: -5rem;
-  }
-
-  .login-button-container {
-    text-align: center;
-    margin: 30px 0 10px;
-  }
-
-  .login-button {
-    height: 3rem;
-    width: 8rem;
-  }
-
-  .signup-button {
-    float: right;
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
   }
 </style>

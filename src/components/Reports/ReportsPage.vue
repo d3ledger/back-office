@@ -1,10 +1,24 @@
 <template>
   <div>
-    <el-aside class="column-fullheight blue-form-wrapper" width="400px">
+    <el-main>
+      <el-row>
+        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
+          <el-card>
+            <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Reports</span>
+              <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-main>
+    <el-dialog
+      :visible.sync="reportFormVisible"
+      title="Report"
+      width="400px"
+      center
+    >
       <el-form style="width: 100%">
-        <h2 style="margin-bottom: 40px">
-          New report
-        </h2>
         <el-form-item label="Wallets">
           <el-select
             v-model="selectedWallets"
@@ -33,21 +47,24 @@
       </el-form>
       <el-button
         icon="el-icon-download"
-        class="button-black clickable"
+        class="fullwidth black clickable"
+        style="margin-top: 40px;"
       >
         DOWNLOAD REPORT
       </el-button>
-    </el-aside>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// TODO: mock everything
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'reports-page',
   data () {
     return {
+      reportFormVisible: false,
       selectedWallets: [],
       date: ''
     }
@@ -62,6 +79,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

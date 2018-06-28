@@ -1,16 +1,9 @@
 <template>
   <el-container class="signup-container">
+    <div style="margin-top: 4rem">
+      <h1 style="font-size: 2.5rem">Sign Up</h1>
+    </div>
     <el-card class="signup-form-container">
-      <div slot="header" class="clearfix">
-        <router-link
-          class="login-button"
-          to="/login"
-        >
-          <i class="el-icon-arrow-left"></i>
-          Login
-        </router-link>
-      </div>
-
       <el-form class="signup-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
@@ -25,7 +18,7 @@
 
         <el-form-item class="signup-button-container">
           <el-button
-            class="signup-button"
+            class="fullwidth black"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -34,6 +27,15 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <div style="margin-top: 3rem">
+        <p style="margin-bottom: 1rem">Already have an account?</p>
+        <router-link
+          to="/login"
+          class="el-button fullwidth el-button--info is-plain"
+        >
+          Login
+        </router-link>
+      </div>
     </el-card>
 
     <el-dialog
@@ -42,12 +44,14 @@
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
+      center
     >
       <span>Download your private key and keep it secret!</span>
 
       <span slot="footer" class="dialog-footer">
         <el-button
           type="primary"
+          class="black"
           @click="onClickDownload"
         >
           <i class="el-icon-download"></i>
@@ -143,14 +147,16 @@ export default {
 
 <style scoped>
   .signup-container {
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .signup-form-container {
     position: relative;
     width: 30rem;
     overflow: visible;
-    margin-top: 5rem;
+    margin-top: 3rem;
   }
 
   /*
@@ -173,26 +179,7 @@ export default {
     top: -5rem;
   }
 
-  .signup-button-container {
-    text-align: center;
-    margin: 30px 0 10px;
-  }
+  .header {
 
-  .signup-button {
-    height: 3rem;
-    width: 8rem;
-  }
-
-  .login-button {
-    float: left;
-  }
-
-  .clearfix:before,
-  .clearfix:after {
-    display: table;
-    content: "";
-  }
-  .clearfix:after {
-    clear: both
   }
 </style>

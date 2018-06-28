@@ -38,17 +38,31 @@
   </section>
 </template>
 <script>
-import mockSettlements from '@/mocks/settlements.json'
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   mixins: [dateFormat],
+
   data () {
     return {
     }
   },
+
   computed: {
-    settlements: () => mockSettlements.filter(x => x.status === 'waiting' && x.from === 'you')
+    ...mapGetters({
+      settlements: 'outgoingSettlements'
+    })
+  },
+
+  created () {
+    this.fetchAllUnsignedTransactions()
+  },
+
+  methods: {
+    fetchAllUnsignedTransactions () {
+      this.$store.dispatch('getAllUnsignedTransactions')
+    }
   }
 }
 </script>
