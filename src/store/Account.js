@@ -80,6 +80,8 @@ const getters = {
       .filter(x => x.status === 'waiting')
   },
 
+  // todo: 'you' -> accountId :)
+
   incomingSettlements () {
     return getters.waitingSettlements().filter(x => x.to === 'you')
   },
