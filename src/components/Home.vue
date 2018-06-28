@@ -1,12 +1,12 @@
 <template>
   <el-container>
-    <div @mouseenter="isCollapsed = false" @mouseleave="isCollapsed = true">
+    <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
       <el-menu
         :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
         @mouseenter="isCollapsed = !isCollapsed"
         :router="true"
-        background-color="#2d2d2d"
         text-color="#a2a2a2"
+        background-color="#2D2D2D"
         active-text-color="#fff"
         :default-active="currentActiveMenu"
       >
@@ -23,17 +23,17 @@
           <i class="el-icon-refresh" />
           <span slot="title">Settlements</span>
         </el-menu-item>
-        <el-menu-item index="/transfer">
+        <el-menu-item index="/transfers">
           <i class="el-icon-d-arrow-right" />
-          <span slot="title">Transfer</span>
+          <span slot="title">Transfers</span>
         </el-menu-item>
         <el-menu-item index="/reports">
           <i class="el-icon-tickets" />
           <span slot="title">Reports</span>
         </el-menu-item>
-        <el-menu-item index="/user">
-          <i class="el-icon-setting" />
-          <span slot="title">Profile</span>
+        <el-menu-item index="/logout" @click="logout">
+          <i class="el-icon-arrow-left" />
+          <span slot="title">Logout</span>
         </el-menu-item>
         <!-- <div class="expand-button clickable">
           <i :class="isCollapsed ? 'el-icon-d-arrow-right' : 'el-icon-d-arrow-left'"></i>
@@ -41,7 +41,7 @@
       </el-menu>
     </div>
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
-      <router-view/>
+      <router-view />
     </el-main>
   </el-container>
 </template>
@@ -82,6 +82,8 @@ export default {
 
   data () {
     return {
+      approvalDialog: false,
+      privateKey: null,
       isCollapsed: true
     }
   },
@@ -112,7 +114,6 @@ export default {
     },
     mouseOver: function () {
       this.isCollapsed = !this.isCollapsed
-      console.log('flag ' + this.isCollapsed)
     }
   }
 }
@@ -128,9 +129,6 @@ export default {
   background: #669dd5;
   font-size: 18px;
   color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .el-menu-item {
@@ -155,8 +153,10 @@ export default {
 }
 
 .el-side-menu > .el-menu-item.is-active{
+  background: #1B2936 !important;
   background: #669dd5 !important;
-  border-right: 1px solid white;
+
+  // border-right: 1px solid white;
 }
 
 .logo {

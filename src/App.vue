@@ -30,10 +30,13 @@ export default {
 </script>
 
 <style>
-* {
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
 }
 
 #app {
@@ -87,7 +90,9 @@ a:hover {
 }
 
 .blue-form-wrapper {
+  background: #1B2936;
   background: #669dd5;
+
   color: white;
   padding: 20px 30px;
   display: flex;
@@ -101,8 +106,8 @@ a:hover {
 }
 
 .blue-form-wrapper .el-input__inner, .blue-form-wrapper .el-textarea__inner {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: #669dd5;
+  border-color: #ffffff80;
+  background: transparent;
   color: white;
 }
 
@@ -115,16 +120,17 @@ a:hover {
   color: black;
 }
 
-.blue-form-wrapper .el-button {
+.button-black.el-button {
   color: white;
   background: #041820;
   border: 1px solid #041820;
   width: 100%;
+  min-height: 40px;
 }
 
 .blue-form-wrapper .el-range-input {
   color: white;
-  background: #669dd5;
+  background: transparent;
 }
 
 .blue-form-wrapper .el-range-separator, .blue-form-wrapper .el-input__icon  .el-range__close-icon {
