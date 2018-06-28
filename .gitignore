@@ -5,8 +5,9 @@ dist_electron
 
 /tests/e2e/reports/
 selenium-debug.log
-/coverage/
-/.nyc_output/
+
+.nyc_output
+coverage
 
 .nyc_output
 coverage
@@ -28,6 +29,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-
-/.nyc_output
-/coverage
