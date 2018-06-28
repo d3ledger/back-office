@@ -1,9 +1,7 @@
 <template>
   <div>
     <div class="column-fullheight" style="padding: 20px;">
-      <el-card>
-        Portfolio :) also, cool stats
-      </el-card>
+      <img src="@/assets/card.png" style="display: block; width: 100%; margin-bottom: 20px"/>
     </div>
   </div>
 </template>

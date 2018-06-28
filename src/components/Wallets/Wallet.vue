@@ -16,8 +16,12 @@
                     Deposit
                     <i class="el-icon-arrow-down"></i>
                   </el-button>
-                  <el-button type="primary" @click="sendFormVisible = true" plain>
+                  <el-button type="primary" @click="withdrawFormVisible = true" plain>
                     Withdraw
+                    <i class="el-icon-arrow-up"></i>
+                  </el-button>
+                  <el-button type="primary" @click="withdrawFormVisible = true" plain>
+                    Transfer
                     <i class="el-icon-arrow-up"></i>
                   </el-button>
                 </div>
@@ -125,12 +129,12 @@
     </el-row>
 
     <el-dialog
-      :title="'Send ' + wallet.asset"
-      :visible.sync="sendFormVisible"
+      :title="'Withdraw ' + wallet.asset"
+      :visible.sync="withdrawFormVisible"
       width="500px"
     >
       <el-form label-width="4rem">
-        <el-form-item label="Transfer:" prop="amount">
+        <el-form-item label="Withdraw:" prop="amount">
           <el-input name="amount" v-model="sendForm.amount">
             <div slot="append">
               {{ wallet.asset }}
@@ -138,15 +142,15 @@
           </el-input>
         </el-form-item>
         <el-form-item label="To">
-          <el-input v-model="sendForm.to" placeholder="account id or address" />
+          <el-input v-model="sendForm.to" placeholder="withdrawal address" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
-            type="primary"
-            @click="onSubmit"
+            class="button-black clickable"
+            @click="approvalDialog = true"
             :loading="isSending"
           >
-            Send
+            Withdraw
           </el-button>
         </el-form-item>
       </el-form>
@@ -164,6 +168,78 @@
         </div>
       </div>
     </el-dialog>
+
+    <el-dialog
+      title="Approve transaction"
+      :visible.sync="approvalDialog"
+      width="500px"
+    >
+      <el-form>
+        <el-form-item>
+          Please enter your private key to confirm transaction
+        </el-form-item>
+        <el-form-item label="Private key">
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="privateKey"
+            placeholder="Your private key"
+            resize="none"
+          />
+        </el-form-item>
+        <el-form-item style="margin-bottom: 0;">
+          <el-button
+            class="button-black clickable"
+          >
+            Confirm
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+    <el-dialog>
+      <el-form style="width: 100%">
+        <h2 style="margin-bottom: 40px">New Transfer</h2>
+        <el-form-item label="I send" prop="amount">
+          <el-input name="amount" v-model="transferForm.send_amount" placeholder="0">
+            <el-select
+              v-model="transferForm.send_asset"
+              slot="append"
+              placeholder="asset"
+              style="width: 100px"
+            >
+              <el-option
+                v-for="wallet in wallets"
+                :key="wallet.asset"
+                :label="wallet.asset"
+                :value="wallet.asset">
+                  <span style="float: left">{{ wallet.name + ' (' + wallet.asset + ')' }}</span>
+              </el-option>
+            </el-select>
+          </el-input>
+          <span class="form-item-text">
+            Available balance:
+            <span v-if="transferForm.send_asset" class="form-item-text-amount">
+              {{ wallets.filter(x => x.asset === transferForm.send_asset)[0].amount  + ' ' + transferForm.send_asset.toUpperCase() }}
+            </span>
+            <span v-else>...</span>
+          </span>
+        </el-form-item>
+        <el-form-item label="Counterparty">
+          <el-input v-model="transferForm.to" placeholder="Account id" />
+        </el-form-item>
+        <el-form-item label="Additional information">
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="transferForm.description"
+            placeholder="Account id"
+            resize="none"
+          />
+        </el-form-item>
+      </el-form>
+      <el-button class="button-black clickable" @click="approvalDialog = true">TRANSFER</el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,13 +255,22 @@ export default {
   },
   data () {
     return {
+      privateKey: null,
+      approvalDialog: false,
       receiveFormVisible: false,
-      sendFormVisible: false,
+      withdrawFormVisible: false,
+      transferFormVisible: false,
       sendForm: {
         to: '',
         amount: '0'
       },
       isSending: false,
+      transferForm: {
+        to: null,
+        send_amount: null,
+        send_asset: null,
+        description: null
+      },
       assetInfo: {
         current: {
           rur: 37705.68,
@@ -260,7 +345,7 @@ export default {
           })
           this.resetSendForm()
           this.fetchWallet()
-          this.sendFormVisible = false
+          this.withdrawFormVisible = false
         })
         .catch(err => {
           console.error(err)
