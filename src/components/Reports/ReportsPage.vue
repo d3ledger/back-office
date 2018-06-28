@@ -32,10 +32,10 @@
         </el-form-item>
       </el-form>
       <el-button
-        type="primary"
         icon="el-icon-download"
+        class="button-black clickable"
       >
-        Download report
+        DOWNLOAD REPORT
       </el-button>
     </el-aside>
   </div>

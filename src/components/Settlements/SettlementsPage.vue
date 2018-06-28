@@ -66,7 +66,7 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="clickable" style="min-height: 40px;">EXCHANGE</el-button>
+      <el-button class="button-black clickable" @click="approvalDialog=true">EXCHANGE</el-button>
     </el-aside>
 
     <el-container class="column-fullheight">
@@ -81,6 +81,34 @@
         <router-view />
       </el-main>
     </el-container>
+
+    <el-dialog
+      title="Approve transaction"
+      :visible.sync="approvalDialog"
+      width="500px"
+    >
+      <el-form>
+        <el-form-item>
+          Please enter your private key to confirm transaction
+        </el-form-item>
+        <el-form-item label="Private key">
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="privateKey"
+            placeholder="Your private key"
+            resize="none"
+          />
+        </el-form-item>
+        <el-form-item style="margin-bottom: 0;">
+          <el-button
+            class="button-black clickable"
+          >
+            Confirm
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -90,6 +118,8 @@ import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
+      approvalDialog: false,
+      privateKey: null,
       settlementForm: {
         to: null,
         request_amount: null,
