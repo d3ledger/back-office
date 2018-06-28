@@ -1,12 +1,13 @@
 .DS_Store
 node_modules
-/dist
-/dist_electron
+dist
+dist_electron
 
 /tests/e2e/reports/
 selenium-debug.log
-/coverage/
-/.nyc_output/
+
+.nyc_output
+coverage
 
 # local env files
 .env.local
@@ -25,6 +26,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-
-/.nyc_output
-/coverage
