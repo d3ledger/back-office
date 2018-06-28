@@ -1,8 +1,39 @@
 <template>
-  <el-container>
-    <el-aside class="column-fullheight blue-form-wrapper" width="400px">
+    <el-container class="column-fullheight">
+      <el-header height="59px" class="header">
+        <el-row>
+          <el-col :xs="24" :md="{ span: 20, offset: 2 }" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }"
+            style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
+          >
+            <div style="display: flex;">
+              <router-link class="navlink" to="/settlements">History</router-link>
+              <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
+              <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
+            </div>
+            <div>
+              <el-button type="primary" @click="settlementFormVisible = true" plain>
+                Exchange
+                <i class="el-icon-arrow-up"></i>
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </el-header>
+      <el-main>
+        <el-row>
+          <el-col :xs="24" :md="{ span: 20, offset: 2 }" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
+            <router-view />
+          </el-col>
+        </el-row>
+      </el-main>
+    <el-container>
+    <el-dialog
+      title="Exchange"
+      width="400px"
+      :visible.sync="settlementFormVisible"
+      center
+    >
       <el-form style="width: 100%">
-        <h2 style="margin-bottom: 40px">New Settlement</h2>
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="settlementForm.request_amount" placeholder="0">
             <el-select
@@ -66,60 +97,25 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="button-black clickable" @click="approvalDialog=true">EXCHANGE</el-button>
-    </el-aside>
-
-    <el-container class="column-fullheight">
-      <el-header height="59px" class="header">
-        <div style="display: flex">
-          <router-link class="navlink" to="/settlements">History</router-link>
-          <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
-          <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
-        </div>
-      </el-header>
-      <el-main>
-        <router-view />
-      </el-main>
-    </el-container>
-
-    <el-dialog
-      title="Approve transaction"
-      :visible.sync="approvalDialog"
-      width="500px"
-    >
-      <el-form>
-        <el-form-item>
-          Please enter your private key to confirm transaction
-        </el-form-item>
-        <el-form-item label="Private key">
-          <el-input
-            type="textarea"
-            :rows="2"
-            v-model="privateKey"
-            placeholder="Your private key"
-            resize="none"
-          />
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            class="button-black clickable"
-          >
-            Confirm
-          </el-button>
-        </el-form-item>
-      </el-form>
+      <el-button
+        class="fullwidth black clickable"
+        @click="openApprovalDialog"
+        style="margin-top: 40px"
+      >
+        EXCHANGE
+      </el-button>
     </el-dialog>
+    </el-container>
   </el-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   data () {
     return {
-      approvalDialog: false,
-      privateKey: null,
+      settlementFormVisible: false,
       settlementForm: {
         to: null,
         request_amount: null,
@@ -131,7 +127,16 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters({
+      wallets: 'wallets'
+    })
+  },
+
   methods: {
+    ...mapActions([
+      'openApprovalDialog'
+    ]),
     onCreateSettlement () {
       const s = this.newSettlementForm
 
@@ -164,8 +169,8 @@ export default {
 <style scoped>
 .header {
   background: white;
-  padding: 0;
-  box-shadow: 0 1px 1px 0 #efefef
+  padding: 0 20px;
+  box-shadow: 0 1px 1px 0 #efefef;
 }
 
 .navlink {
