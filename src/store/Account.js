@@ -83,6 +83,14 @@ const getters = {
       .filter(x => x.status === 'waiting')
   },
 
+  incomingSettlements () {
+    return getters.waitingSettlements().filter(x => x.to === 'you')
+  },
+
+  outgoingSettlements () {
+    return getters.waitingSettlements().filter(x => x.from === 'you')
+  },
+
   resolvedSettlements (state) {
     return getSettlementsFrom(state.rawTransactions)
       .filter(x => x.status !== 'waiting')
