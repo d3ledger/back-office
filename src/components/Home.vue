@@ -2,33 +2,33 @@
   <el-container>
     <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
       <el-menu
-        :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
-        @mouseenter="isCollapsed = !isCollapsed"
         :router="true"
+        @mouseenter="isCollapsed = !isCollapsed"
+        :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
         text-color="#a2a2a2"
         background-color="#2D2D2D"
         active-text-color="#000"
         :default-active="currentActiveMenu"
       >
-        <h1 class="logo">D3</h1>
+        <h1 class="logo">D3</h1>]
         <el-menu-item index="/">
-          <i class="el-icon-menu" />
+          <fa-icon icon="chart-line" class="menu-icon" />
           <span slot="title">Dashboard</span>
         </el-menu-item>
         <el-menu-item index="/wallets">
-          <i class="el-icon-news" />
+          <fa-icon icon="wallet" class="menu-icon" />
           <span slot="title">Wallets</span>
         </el-menu-item>
         <el-menu-item index="/settlements">
-          <i class="el-icon-refresh" />
+          <fa-icon icon="exchange-alt" class="menu-icon" />
           <span slot="title">Settlements</span>
         </el-menu-item>
         <el-menu-item index="/reports">
-          <i class="el-icon-tickets" />
+          <fa-icon icon="file-invoice" class="menu-icon" />
           <span slot="title">Reports</span>
         </el-menu-item>
         <el-menu-item index="/logout" @click="logout">
-          <i class="el-icon-arrow-left" />
+          <fa-icon icon="sign-out-alt" class="menu-icon" />
           <span slot="title">Logout</span>
         </el-menu-item>
       </el-menu>
@@ -178,5 +178,14 @@ export default {
   display: block;
   text-align: center;
   margin: 20px 0;
+}
+
+.menu-icon {
+  margin-left: 2px;
+  margin-right: 8px;
+  width: 24px;
+  text-align: center;
+  font-size: 18px;
+  vertical-align: middle;
 }
 </style>

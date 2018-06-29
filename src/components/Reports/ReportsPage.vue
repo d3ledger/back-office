@@ -46,10 +46,10 @@
         </el-form-item>
       </el-form>
       <el-button
-        icon="el-icon-download"
         class="fullwidth black clickable"
         style="margin-top: 40px;"
       >
+        <fa-icon icon="download"/>
         DOWNLOAD REPORT
       </el-button>
     </el-dialog>

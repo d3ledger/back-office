@@ -31,7 +31,7 @@
               :disabled="isLoading"
             >
               <el-button>
-                <i class="el-icon-upload2"></i>
+                <fa-icon icon="upload" />
               </el-button>
             </el-upload>
           </el-row>
