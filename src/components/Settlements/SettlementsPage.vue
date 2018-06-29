@@ -12,8 +12,10 @@
             </div>
             <div>
               <el-button type="primary" @click="settlementFormVisible = true" plain>
-                Exchange
-                <i class="el-icon-arrow-up"></i>
+                <span style="vertical-align: middle;">
+                  <fa-icon icon="exchange-alt" />
+                  Exchange
+                </span>
               </el-button>
             </div>
           </el-col>
