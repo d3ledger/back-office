@@ -10,7 +10,6 @@ import SettlementsPage from '@/components/Settlements/SettlementsPage'
 import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
 import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
-import TransfersPage from '@/components/Transfers/TransfersPage'
 import ReportsPage from '@/components/Reports/ReportsPage'
 import SettingsPage from '@/components/Settings/SettingsPage'
 import Login from '@/components/Login'
@@ -64,11 +63,6 @@ const defaultRouter = new Router({
               component: SettlementsOutgoing
             }
           ]
-        },
-        {
-          path: 'transfers',
-          name: 'transfers',
-          component: TransfersPage
         },
         {
           path: 'reports',
