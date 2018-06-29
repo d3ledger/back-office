@@ -1,58 +1,68 @@
 <template>
   <el-container class="login-container">
     <el-card class="login-form-container">
-        <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
-          <el-form-item label="username:" prop="username">
-            <el-input
-              name="username"
-              v-model="form.username"
-              :disabled="isLoading"
-            ></el-input>
-          </el-form-item>
+      <div slot="header" class="clearfix">
+        <router-link
+          class="signup-button"
+          to="/signup"
+        >
+          Sign Up
+          <i class="el-icon-arrow-right"></i>
+        </router-link>
+      </div>
 
-          <el-form-item label="private key:" prop="privateKey">
-            <el-row type="flex" justify="space-between">
-              <el-col :span="20">
-                <el-input
-                  name="privateKey"
-                  v-model="form.privateKey"
-                  :disabled="isLoading"
-                ></el-input>
-              </el-col>
+      <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
+        <el-form-item label="username:" prop="username">
+          <el-input
+            name="username"
+            v-model="form.username"
+            :disabled="isLoading"
+          ></el-input>
+        </el-form-item>
 
-              <el-upload
-                action=""
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="onFileChosen"
+        <el-form-item label="private key:" prop="privateKey">
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                name="privateKey"
+                v-model="form.privateKey"
                 :disabled="isLoading"
-              >
-                <el-button>
-                  <i class="el-icon-upload2"></i>
-                </el-button>
-              </el-upload>
-            </el-row>
-          </el-form-item>
+              ></el-input>
+            </el-col>
 
-          <el-form-item label="node ip:" prop="nodeIp">
-            <el-input
-              v-model="form.nodeIp"
+            <el-upload
+              action=""
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="onFileChosen"
               :disabled="isLoading"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item class="login-button-container">
-            <el-button
-              class="login-button"
-              type="primary"
-              @click="onSubmit"
-              :loading="isLoading"
             >
-              Login
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </el-card>
+              <el-button>
+                <i class="el-icon-upload2"></i>
+              </el-button>
+            </el-upload>
+          </el-row>
+        </el-form-item>
+
+        <el-form-item label="node ip:" prop="nodeIp">
+          <el-input
+            v-model="form.nodeIp"
+            :disabled="isLoading"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item class="login-button-container">
+          <el-button
+            class="login-button"
+            type="primary"
+            @click="onSubmit"
+            :loading="isLoading"
+          >
+            Login
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
   </el-container>
 </template>
 
@@ -135,7 +145,6 @@ export default {
     position: relative;
     width: 30rem;
     overflow: visible;
-    padding-top: 4rem;
     margin-top: 5rem;
   }
 
@@ -167,5 +176,18 @@ export default {
   .login-button {
     height: 3rem;
     width: 8rem;
+  }
+
+  .signup-button {
+    float: right;
+  }
+
+  .clearfix:before,
+  .clearfix:after {
+    display: table;
+    content: "";
+  }
+  .clearfix:after {
+    clear: both
   }
 </style>

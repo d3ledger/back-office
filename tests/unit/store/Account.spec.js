@@ -8,6 +8,7 @@ const {
   randomAccountId,
   randomAssetId,
   randomNodeIp,
+  randomPublicKey,
   randomPrivateKey,
   randomObject,
   randomAmount
@@ -25,18 +26,20 @@ describe('Account store', () => {
   const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['bitcoin#test']
   const MOCK_NODE_IP = 'MOCK_NODE_IP'
   const MOCK_ACCOUNT_RESPONSE = { accountId: randomAccountId() }
+  const MOCK_KEYPAIR = {
+    publicKey: randomPublicKey(),
+    privateKey: randomPrivateKey()
+  }
   const irohaUtil = require('../../../src/util/iroha-util')
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
+    signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
     login: (username, privateKey, nodeIp) => Promise.resolve(MOCK_ACCOUNT_RESPONSE),
     logout: () => Promise.resolve(),
+    generateKeypair: () => MOCK_KEYPAIR,
     getAccountAssetTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
-
-    // TODO: fix it after irohaUtil.getAccountAssets is updated
-    getAccountAssets: (accountId, assetId) => {
-      return Promise.resolve(MOCK_ASSETS.find(a => a.accountAsset.assetId === assetId))
-    },
-
+    getAccountAssets: (accountId) => Promise.resolve(MOCK_ASSETS),
+    getAccountTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
     transferAsset: () => Promise.resolve()
   })
 
@@ -45,7 +48,8 @@ describe('Account store', () => {
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
       'util/iroha-util': irohaUtilMock,
-      'util/iroha-amount': require('../../../src/util/iroha-amount')
+      'util/iroha-amount': require('../../../src/util/iroha-amount'),
+      'util/store-util': require('../../../src/util/store-util')
     }).default)
   })
 
@@ -85,6 +89,8 @@ describe('Account store', () => {
         nodeIp: randomNodeIp(),
         accountInfo: randomObject(),
         rawAssetTransactions: randomObject(),
+        rawUnsignedTransactions: [randomObject()],
+        rawTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -93,6 +99,8 @@ describe('Account store', () => {
         nodeIp: MOCK_NODE_IP,
         accountInfo: {},
         rawAssetTransactions: {},
+        rawUnsignedTransactions: [],
+        rawTransactions: [],
         assets: [],
         connectionError: null
       }
@@ -101,6 +109,22 @@ describe('Account store', () => {
 
       expect(state).to.be.deep.equal(expectedState)
     })
+
+    it('SIGNUP_SUCCESS should not change the state', () => {
+      const state = {}
+      const params = {
+        username: randomAccountId().split('@')[1],
+        publicKey: randomPublicKey(),
+        privateKey: randomPrivateKey()
+      }
+      const expectedState = {}
+
+      mutations[types.SIGNUP_SUCCESS](state, params)
+
+      expect(state).to.deep.equal(expectedState)
+    })
+
+    testErrorHandling('SIGNUP_FAILURE')
 
     it('LOGIN_SUCCESS should set an accountId to state', () => {
       const state = {}
@@ -138,10 +162,46 @@ describe('Account store', () => {
     })
 
     testErrorHandling('GET_ACCOUNT_ASSETS_FAILURE')
+
+    it('GET_ACCOUNT_TRANSACTIONS_SUCCESS should set transactions to state', () => {
+      const state = { rawTransactions: {} }
+      const transactions = MOCK_TRANSACTIONS
+
+      mutations[types.GET_ACCOUNT_TRANSACTIONS_SUCCESS](state, transactions)
+
+      expect(state.rawTransactions).to.deep.equal(transactions)
+    })
+
+    testErrorHandling('GET_ACCOUNT_TRANSACTIONS_FAILURE')
     testErrorHandling('TRANSFER_ASSET_FAILURE')
+
+    it.skip('CREATE_SETTLEMENT')
+    it.skip('ACCEPT_SETTLEMENT')
+    it.skip('REJECT_SETTLEMENT')
+    it.skip('CANCEL_SETTLEMENT')
   })
 
   describe('Actions', () => {
+    describe('signup', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const params = { username: randomAccountId().split('@')[1] }
+
+        actions.signup({ commit }, params)
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.SIGNUP_REQUEST],
+              [types.SIGNUP_SUCCESS, {
+                username: params.username,
+                ...MOCK_KEYPAIR
+              }]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
     describe('login', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
@@ -202,7 +262,6 @@ describe('Account store', () => {
       })
     })
 
-    // TODO: fix it after irohaUtil.getAccountAssets is updated
     describe('getAccountAssets', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
@@ -219,6 +278,28 @@ describe('Account store', () => {
           })
           .catch(done)
       })
+    })
+
+    describe('getAccountTransactions', () => {
+      it('should call mutations in correct order', done => {
+        const commit = sinon.spy()
+        const state = { accountId: randomAccountId() }
+        const expectedResponse = MOCK_TRANSACTIONS
+
+        actions.getAccountTransactions({ commit, state })
+          .then(() => {
+            expect(commit.args).to.deep.equal([
+              [types.GET_ACCOUNT_TRANSACTIONS_REQUEST],
+              [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, expectedResponse]
+            ])
+            done()
+          })
+          .catch(done)
+      })
+    })
+
+    describe('getAllUnsignedTransactions', () => {
+      it.skip('should call mutations in correct order')
     })
 
     describe('transferAsset', () => {
@@ -243,6 +324,22 @@ describe('Account store', () => {
           .catch(done)
       })
     })
+
+    describe('createSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('acceptSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('rejectSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
+
+    describe('cancelSettlement', () => {
+      it.skip('should call mutations in correct order')
+    })
   })
 
   describe('Getters', () => {
@@ -262,7 +359,7 @@ describe('Account store', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
-        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'status']
+        const expectedKeys = ['amount', 'date', 'from', 'to', 'message']
 
         expect(result)
           .to.be.an('array')
@@ -272,6 +369,28 @@ describe('Account store', () => {
       it('should return an empty array if there is no transactions', () => {
         const state = { rawAssetTransactions: {} }
         const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
+
+        expect(result).to.be.an('array').which.is.empty
+      })
+    })
+
+    describe('waitingSettlements', () => {
+      it.skip('should return only waiting settlements')
+
+      it('should return an empty array if there is no transactions', () => {
+        const state = { rawUnsignedTransactions: [] }
+        const result = getters.waitingSettlements(state)
+
+        expect(result).to.be.an('array').which.is.empty
+      })
+    })
+
+    describe('resolvedSettlements', () => {
+      it.skip('should return only resolved settlements')
+
+      it('should return an empty array if there is no transactions', () => {
+        const state = { rawTransactions: [] }
+        const result = getters.resolvedSettlements(state)
 
         expect(result).to.be.an('array').which.is.empty
       })

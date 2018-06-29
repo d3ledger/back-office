@@ -46,8 +46,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import mockSettlements from '@/mocks/settlements.json'
 
 export default {
   mixins: [dateFormat],
@@ -57,7 +57,12 @@ export default {
     }
   },
   computed: {
-    settlements: () => mockSettlements.filter(x => x.status !== 'waiting')
+    ...mapGetters({
+      settlements: 'resolvedSettlements'
+    })
+  },
+  created () {
+    this.$store.dispatch('getAccountTransactions')
   },
   methods: {
     tagType: function (val) {

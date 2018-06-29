@@ -53,7 +53,7 @@
           </el-input>
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
-          <el-button type="primary">Create settlement</el-button>
+          <el-button type="primary" @click="onCreateSettlement">Create settlement</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -73,6 +73,34 @@ export default {
         offer_amount: null,
         offer_asset: null
       }
+    }
+  },
+
+  methods: {
+    onCreateSettlement () {
+      const s = this.newSettlementForm
+
+      this.$store.dispatch('createSettlement', {
+        to: s.to,
+        offerAssetId: s.offer_asset,
+        offerAmount: s.offer_amount,
+        requestAssetId: s.request_asset,
+        requestAmount: s.request_amount
+      })
+        .then(() => {
+          this.$message('New settlement has successfully been created')
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message('Failed to create new settlement')
+        })
+        .finally(() => {
+          Object.assign(
+            this.$data.newSettlementForm,
+            this.$options.data().newSettlementForm
+          )
+          this.newSettlementFormVisible = false
+        })
     }
   }
 }

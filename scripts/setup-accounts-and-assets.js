@@ -77,7 +77,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
         _.times(_.random(3, 5), () => {
           const from = accountId
           const to = _.sample(_.without(accounts, from))
-          const message = _.sample(['hello', 'hi', ''])
+          const message = _.sample(['hello', 'hi', '', 'PART_OF_DUMMY_SETTLEMENT'])
           const amount = String(Math.random()).substr(0, precision + 2)
 
           const p = irohaUtil.transferAsset(from, to, `${w.name.toLowerCase()}#test`, message, amount).catch(() => {})

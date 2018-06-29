@@ -10,6 +10,7 @@ import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import SettingsPage from '@/components/Settings/SettingsPage'
 import Login from '@/components/Login'
+import Signup from '@/components/Signup'
 
 Vue.use(Router)
 
@@ -59,6 +60,11 @@ const defaultRouter = new Router({
       component: Login
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: Signup
+    },
+    {
       path: '*',
       redirect: '/'
     }
@@ -66,7 +72,7 @@ const defaultRouter = new Router({
 })
 
 defaultRouter.beforeEach((to, from, next) => {
-  if (to.name === 'login') return next()
+  if (to.name === 'login' || to.name === 'signup') return next()
 
   if (irohaUtil.isLoggedIn()) {
     next()
