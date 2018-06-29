@@ -4,26 +4,32 @@
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-card body-style="height: 160px;">
+            <el-card body-style="height: 160px; padding: 0;">
               <div slot="header" class="card-header">
                 <div>{{ wallet.name }}</div>
                 <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
               </div>
-              <div class="top-left-card-body">
-                <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
-                <div>
-                  <el-button type="primary" @click="receiveFormVisible = true" plain>
-                    Deposit
-                    <i class="el-icon-arrow-down"></i>
-                  </el-button>
-                  <el-button type="primary" @click="withdrawFormVisible = true" plain>
-                    Withdraw
-                    <i class="el-icon-arrow-up"></i>
-                  </el-button>
-                  <el-button type="primary" @click="transferFormVisible = true" plain>
-                    Transfer
-                    <i class="el-icon-arrow-up"></i>
-                  </el-button>
+              <div class="top-left-card">
+                <div style="margin: 20px">
+                  <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
+                </div>
+                <div style="width: 100%; display: flex;">
+                  <div role="button" class="button"  @click="receiveFormVisible = true">
+                    <fa-icon icon="angle-double-down" />
+                    <span>Deposit</span>
+                  </div>
+                  <div role="button" class="button" @click="withdrawFormVisible = true">
+                    <fa-icon icon="angle-double-up" />
+                    <span>Withdraw</span>
+                  </div>
+                  <div role="button" class="button" @click="transferFormVisible = true">
+                    <fa-icon icon="arrow-right" />
+                    <span>Transfer</span>
+                  </div>
+                  <div role="button" class="button">
+                    <fa-icon icon="exchange-alt" />
+                    <span>Exchange</span>
+                  </div>
                 </div>
               </div>
             </el-card>
@@ -119,7 +125,7 @@
             </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
               <template slot-scope="scope">
-                <div v-if="scope.row.settlement">Part of a settlement <i class="el-icon-refresh"></i></div>
+                <div v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></div>
                 <div v-else>{{ scope.row.message }}</div>
               </template>
             </el-table-column>
@@ -349,16 +355,6 @@ export default {
   color: white;
 }
 
-a.back{
-  color: white;
-  text-decoration: none;
-  display: inline-block;
-  font-weight: bold;
-  margin-bottom: 20px;
-  width: auto;
-  padding: 5px;
-}
-
 .title {
   display: flex;
   align-items: center;
@@ -384,11 +380,36 @@ a.back{
   display: block;
 }
 
-.top-left-card-body {
+.top-left-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+}
+
+.top-left-card >>> .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 15px 10px;
+  border-top: 1px solid #e8e8e8;
+  flex-grow: 1;
+  color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.top-left-card >>> .button:hover {
+  color: rgba(0, 0, 0, .8);
+  background: #e8e8e8;
+}
+
+.top-left-card >>> .button>span{
+ margin-top: 5px;
+}
+
+.top-left-card >>> .button+.button {
+  border-left: 1px solid #e8e8e8;
 }
 
 .card-header {

@@ -54,7 +54,7 @@
           class="black"
           @click="onClickDownload"
         >
-          <i class="el-icon-download"></i>
+          <fa-icon icon="download"/>
           Download
         </el-button>
 
