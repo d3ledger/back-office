@@ -1,6 +1,6 @@
 {
   "name": "back-office",
-  "productName": "D3: Back Office",
+  "productName": "D3 Back Office",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -79,7 +79,7 @@
       "webpackConfig": "dist_electron/webpack.renderer.additions.js"
     },
     "main": {
-      "webpackConfig": "dist_electron/webpack.main.additions.js"
+      "webpackConfig": "webpack.main.additions.js"
     }
   },
   "build": {
