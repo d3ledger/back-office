@@ -6,7 +6,7 @@
             style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
           >
             <div style="display: flex;">
-              <router-link class="navlink" to="/settlements">History</router-link>
+              <router-link class="navlink" to="/settlements/history">History</router-link>
               <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
               <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
             </div>
@@ -37,31 +37,6 @@
     >
       <el-form style="width: 100%">
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="settlementForm.request_amount" placeholder="0">
-            <el-select
-              v-model="settlementForm.request_asset"
-              slot="append"
-              placeholder="asset"
-              style="width: 100px"
-            >
-              <el-option
-                v-for="wallet in wallets"
-                :key="wallet.asset"
-                :label="wallet.asset"
-                :value="wallet.asset">
-                  <span style="float: left">{{ wallet.name + ' (' + wallet.asset + ')' }}</span>
-              </el-option>
-            </el-select>
-          </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span v-if="settlementForm.request_asset" class="form-item-text-amount">
-              {{ wallets.filter(x => x.asset === settlementForm.request_asset)[0].amount  + ' ' + settlementForm.request_asset.toUpperCase() }}
-            </span>
-            <span v-else>...</span>
-          </span>
-        </el-form-item>
-        <el-form-item label="I receive" prop="amount">
           <el-input name="amount" v-model="settlementForm.offer_amount" placeholder="0">
             <el-select
               v-model="settlementForm.offer_asset"
@@ -79,9 +54,34 @@
             </el-select>
           </el-input>
           <span class="form-item-text">
+            Available balance:
+            <span v-if="settlementForm.offer_asset" class="form-item-text-amount">
+              {{ wallets.filter(x => x.asset === settlementForm.offer_asset)[0].amount  + ' ' + settlementForm.offer_asset.toUpperCase() }}
+            </span>
+            <span v-else>...</span>
+          </span>
+        </el-form-item>
+        <el-form-item label="I receive" prop="amount">
+          <el-input name="amount" v-model="settlementForm.request_amount" placeholder="0">
+            <el-select
+              v-model="settlementForm.request_asset"
+              slot="append"
+              placeholder="asset"
+              style="width: 100px"
+            >
+              <el-option
+                v-for="wallet in wallets"
+                :key="wallet.asset"
+                :label="wallet.asset"
+                :value="wallet.asset">
+                  <span style="float: left">{{ wallet.name + ' (' + wallet.asset + ')' }}</span>
+              </el-option>
+            </el-select>
+          </el-input>
+          <span class="form-item-text">
             Market price:
             <span v-if="settlementForm.request_asset && settlementForm.offer_asset" class="form-item-text-amount">
-              1 {{ settlementForm.request_asset.toUpperCase() }} ≈ 0.774231451 {{ settlementForm.offer_asset.toUpperCase() }}
+              1 {{ settlementForm.offer_asset.toUpperCase() }} ≈ 0.774231451 {{ settlementForm.request_asset.toUpperCase() }}
             </span>
             <span v-else>...</span>
           </span>
@@ -112,6 +112,7 @@
 </template>
 
 <script>
+// TODO: Mirror everything onto query params
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -133,6 +134,13 @@ export default {
     ...mapGetters({
       wallets: 'wallets'
     })
+  },
+
+  mounted () {
+    if (this.$route.query.exchange) {
+      this.settlementFormVisible = true
+      this.settlementForm.offer_asset = this.$route.query.offer_asset
+    }
   },
 
   methods: {
@@ -185,7 +193,7 @@ export default {
   font-weight: 500;
 }
 
-.navlink.router-link-exact-active {
+.navlink.router-link-active {
   color: black;
   background: #f4f4f4;
   padding-bottom: 24px;

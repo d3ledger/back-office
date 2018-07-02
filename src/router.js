@@ -48,7 +48,7 @@ const defaultRouter = new Router({
           component: lazyComponent('Settlements/SettlementsPage'),
           children: [
             {
-              path: '',
+              path: 'history',
               name: 'settlements-history',
               component: SettlementsHistory
             },
