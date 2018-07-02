@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import _ from 'lodash'
-import grpc from 'grpc'
+import grpc from 'util/grpc-util'
 import irohaUtil from 'util/iroha-util'
 import { amountToString } from 'util/iroha-amount'
 
