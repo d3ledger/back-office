@@ -19,7 +19,7 @@
           <fa-icon icon="wallet" class="menu-icon" />
           <span slot="title">Wallets</span>
         </el-menu-item>
-        <el-menu-item index="/settlements">
+        <el-menu-item index="/settlements/history">
           <fa-icon icon="exchange-alt" class="menu-icon" />
           <span slot="title">Settlements</span>
         </el-menu-item>
@@ -59,6 +59,7 @@
        <el-form-item style="margin-bottom: 0;">
          <el-button
            class="fullwidth black clickable"
+           @click="closeApprovalDialog"
          >
            Confirm
          </el-button>
@@ -120,9 +121,9 @@ export default {
     }),
 
     currentActiveMenu: function () {
-      if (this.$router.history.current.path.includes('wallets')) return '/wallets'
-      if (this.$router.history.current.path.includes('settlements')) return '/settlements'
-      return this.$router.history.current.path
+      if (this.$route.path.includes('wallets')) return '/wallets'
+      if (this.$route.path.includes('settlements')) return '/settlements/history'
+      return this.$route.path
     }
   },
 
