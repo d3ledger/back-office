@@ -26,10 +26,10 @@
                     <fa-icon icon="arrow-right" />
                     <span>Transfer</span>
                   </div>
-                  <div role="button" class="button">
+                  <router-link class="button" :to="{ path: '/settlements/outgoing', query: { exchange: true, offer_asset: wallet.asset } }" >
                     <fa-icon icon="exchange-alt" />
                     <span>Exchange</span>
-                  </div>
+                  </router-link>
                 </div>
               </div>
             </el-card>
@@ -142,7 +142,7 @@
     >
       <el-form>
         <el-form-item label="Send" prop="amount">
-          <el-input name="amount" v-model="sendForm.amount">
+          <el-input name="amount" v-model="transferForm.amount">
             <div slot="append">
               {{ wallet.asset }}
             </div>
@@ -155,7 +155,7 @@
           </span>
         </el-form-item>
         <el-form-item label="Address">
-          <el-input v-model="sendForm.to" placeholder="withdrawal address" />
+          <el-input v-model="transferForm.to" placeholder="withdrawal address" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
@@ -193,7 +193,7 @@
     >
       <el-form style="width: 100%">
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="transferForm.send_amount" placeholder="0">
+          <el-input name="amount" v-model="transferForm.amount" placeholder="0">
             <div slot="append">
               {{ wallet.asset }}
             </div>
@@ -213,12 +213,12 @@
             type="textarea"
             :rows="2"
             v-model="transferForm.description"
-            placeholder="Account id"
+            placeholder="Details"
             resize="none"
           />
         </el-form-item>
       </el-form>
-      <el-button class="fullwidth black clickable" @click="openApprovalDialog" style="margin-top: 40px">TRANSFER</el-button>
+      <el-button class="fullwidth black clickable" @click="() => {openApprovalDialog(); onSubmit();}" style="margin-top: 40px" :loading="isSending">TRANSFER</el-button>
     </el-dialog>
   </div>
 </template>
@@ -241,15 +241,10 @@ export default {
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
-      sendForm: {
-        to: '',
-        amount: '0'
-      },
       isSending: false,
       transferForm: {
         to: null,
-        send_amount: null,
-        send_asset: null,
+        amount: null,
         description: null
       },
       assetInfo: {
@@ -320,17 +315,17 @@ export default {
       this.isSending = true
       this.$store.dispatch('transferAsset', {
         assetId: this.wallet.assetId,
-        to: this.sendForm.to,
-        amount: this.sendForm.amount
+        to: this.transferForm.to,
+        amount: this.transferForm.amount
       })
         .then(() => {
           this.$message({
             message: 'Transfer successful!',
             type: 'success'
           })
-          this.resetSendForm()
+          this.resetTransferForm()
           this.fetchWallet()
-          this.withdrawFormVisible = false
+          this.transferFormVisible = false
         })
         .catch(err => {
           console.error(err)
@@ -341,9 +336,9 @@ export default {
         .finally(() => { this.isSending = false })
     },
 
-    resetSendForm () {
-      this.sendForm.to = ''
-      this.sendForm.amount = '0'
+    resetTransferForm () {
+      this.transferForm.to = ''
+      this.transferForm.amount = '0'
     }
   }
 }

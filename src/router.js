@@ -46,7 +46,7 @@ const defaultRouter = new Router({
           component: SettlementsPage,
           children: [
             {
-              path: '',
+              path: 'history',
               name: 'settlements-history',
               component: SettlementsHistory
             },

@@ -8,6 +8,28 @@
               <span>Reports</span>
               <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
             </div>
+            <el-table :data="mockReports">
+              <el-table-column label="date" prop="date"></el-table-column>
+              <el-table-column label="wallet" prop="wallet"></el-table-column>
+              <el-table-column label="download" width="160px">
+                <template slot-scope="scope">
+                  <div>
+                    <el-button
+                      size="mini"
+                      plain type="primary"
+                    >
+                      PDF
+                    </el-button>
+                    <el-button
+                      size="mini"
+                      type="primary"
+                    >
+                      CSV
+                    </el-button>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
           </el-card>
         </el-col>
       </el-row>
@@ -30,7 +52,7 @@
             <el-option
               v-for="wallet in wallets"
               :key="wallet.name"
-              :label="wallet.name + ' (' + wallet.asset + ')'"
+              :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
               :value="wallet.name">
             </el-option>
           </el-select>
@@ -57,7 +79,6 @@
 </template>
 
 <script>
-// TODO: mock everything
 import { mapGetters } from 'vuex'
 
 export default {
@@ -72,7 +93,13 @@ export default {
   computed: {
     ...mapGetters({
       wallets: 'wallets'
-    })
+    }),
+    mockReports: function () {
+      return this.wallets.map(x => ({
+        wallet: `${x.name} (${x.asset.toUpperCase()})`,
+        date: 'DEC 3, 2017 — JAN 3, 2018'
+      }))
+    }
   },
   created () {
     this.$store.dispatch('getAccountAssets')
