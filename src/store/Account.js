@@ -2,6 +2,7 @@ import Vue from 'vue'
 import _ from 'lodash'
 import grpc from 'grpc'
 import irohaUtil from 'util/iroha-util'
+import notaryUtil from 'util/notary-util'
 import { amountToString } from 'util/iroha-amount'
 import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
 
@@ -258,16 +259,7 @@ const actions = {
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    // TODO: POST data to registration API
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log('signing up...')
-        console.log('username:', username)
-        console.log('publicKey:', publicKey)
-
-        resolve()
-      }, 1000)
-    })
+    notaryUtil.signup(username, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
