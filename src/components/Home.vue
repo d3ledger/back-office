@@ -3,14 +3,13 @@
     <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
       <el-menu
         :router="true"
-        @mouseenter="isCollapsed = !isCollapsed"
         :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
         text-color="#a2a2a2"
         background-color="#2D2D2D"
         active-text-color="#000"
         :default-active="currentActiveMenu"
       >
-        <h1 class="logo">D3</h1>]
+        <h1 class="logo">D3</h1>
         <el-menu-item index="/">
           <fa-icon icon="chart-line" class="menu-icon" />
           <span slot="title">Dashboard</span>
@@ -111,9 +110,6 @@ export default {
     logout () {
       this.$store.dispatch('logout')
         .then(() => this.$router.push('/login'))
-    },
-    mouseOver: function () {
-      this.isCollapsed = !this.isCollapsed
     }
   }
 }
