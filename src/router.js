@@ -11,7 +11,6 @@ import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
 import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import ReportsPage from '@/components/Reports/ReportsPage'
-import SettingsPage from '@/components/Settings/SettingsPage'
 import Login from '@/components/Login'
 import Signup from '@/components/Signup'
 
@@ -68,11 +67,6 @@ const defaultRouter = new Router({
           path: 'reports',
           name: 'reports',
           component: ReportsPage
-        },
-        {
-          path: 'settings',
-          name: 'settings',
-          component: lazyComponent('Settings/SettingsPage')
         }
       ]
     },
