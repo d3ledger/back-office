@@ -167,19 +167,4 @@ export default {
   .signup-form >>> .el-form-item__label {
     line-height: 1;
   }
-
-  .logo {
-    width: 10rem;
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: auto;
-    z-index: 100;
-    top: -5rem;
-  }
-
-  .header {
-
-  }
 </style>
