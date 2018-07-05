@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import irohaUtil from 'util/iroha-util'
 
 import Home from '@/components/Home'
-import DashboardPage from '@/components/dashboard/DashboardPage'
+import DashboardPage from '@/components/Dashboard/DashboardPage'
 import WalletsPage from '@/components/Wallets/WalletsPage'
 import Wallet from '@/components/Wallets/Wallet'
 import SettlementsPage from '@/components/Settlements/SettlementsPage'
