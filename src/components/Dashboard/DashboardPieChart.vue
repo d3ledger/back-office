@@ -1,22 +1,21 @@
 <template>
   <el-card class="card">
+    <div slot="header">
+      Portfolio structure
+    </div>
     <el-row>
-      <el-col :span="11">
+      <el-col :span="10">
         <div class="list_crypto">
-          <div class="list_crypto-content">
-            <div v-for="(item, index) in portfolio"
-              :key="index"
-              class="list_crypto-content-item"
-              >
-              <span class="list_crypto-content-color"
-                :style="{ backgroundColor: `#${item.color}` }"></span>
-              <p class="list_crypto-content-asset">{{item.asset}}</p>
-            </div>
-          </div>
+          <p v-for="(item, index) in wallets"
+            :key="index"
+            >
+            <span class="list_crypto-color"
+              :style="{ backgroundColor: `#${item.color}` }"></span> {{item.asset}}
+          </p>
         </div>
       </el-col>
-      <el-col :span="13">
-        <donat-chart style="donat-chart" :height="200" :data="portfolio"/>
+      <el-col :span="14">
+        <donat-chart :height="100" :width="100" :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
@@ -31,8 +30,12 @@ export default {
     DonatChart
   },
   props: {
-    portfolio: {
+    wallets: {
       type: Array,
+      requires: true
+    },
+    portfolio: {
+      type: Object,
       requires: true
     }
   },
@@ -48,42 +51,26 @@ export default {
 }
 
 .list_crypto {
-  height: 190px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.list_crypto-content {
   display: flex;
   flex-wrap: wrap;
-  align-content: flex-start;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  padding-right: 17px;
-  box-sizing: content-box;
 }
 
-.list_crypto-content .list_crypto-content-item {
-  margin-right: 5px;
-  margin-bottom: 5px;
+.list_crypto p {
+  width: 90px;
+  margin-bottom: 1.7rem;
 }
 
-.list_crypto-content-color {
+.list_crypto p:nth-child(3n) {
+  margin-bottom: 0rem;
+}
+
+.list_crypto-color {
   width: 1rem;
   height: 1rem;
   margin-right: 5px;
   border-radius: 1rem;
   display: inline-block;
-  background-color: #445886;
-}
-
-.list_crypto-content-asset {
-  float: right;
-}
-
-.donat-chart {
-  margin-top: -0.5rem
+  background-color: #5a85e8;
 }
 
 </style>

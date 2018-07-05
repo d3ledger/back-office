@@ -1,28 +1,29 @@
 <template>
-  <el-container v-loading.fullscreen.lock="dashboardLoading">
-    <el-main class="column-fullheight">
+  <div>
+    <div class="column-fullheight" style="padding: 20px;">
+      <!-- <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 20px;">
+        <img src="@/assets/portfolio.png" style="display: block; width: 61%; height: 100%;"/>
+        <img src="@/assets/structure.png" style="display: block; width: 35%; height: 100%;"/>
+      </div>
+      <img src="@/assets/card.png" style="display: block; width: 100%; margin-bottom: 20px"/> -->
       <el-row class="card_margin-bottom">
         <el-col :span="16">
-          <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
+          <dashboard-portfolio :price="portfolioPrice"/>
         </el-col>
         <el-col :span="8">
-          <dashboard-pie-chart :portfolio="portfolioPercent"/>
+          <dashboard-pie-chart :wallets="wallets" :portfolio="portfolioPercent"/>
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="24">
-          <el-row>
-            <el-col :span="8">
-              <dashboard-table :portfolio="portfolioList"/>
-            </el-col>
-            <el-col :span="16">
-              <dashboard-chart />
-            </el-col>
-          </el-row>
+        <el-col :span="10" class="portfolio_card-padding">
+          <dashboard-table/>
+        </el-col>
+        <el-col :span="14">
+          <dashboard-chart/>
         </el-col>
       </el-row>
-    </el-main>
-  </el-container>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -41,18 +42,17 @@ export default {
     DashboardChart
   },
   data () {
-    return {}
+    return {
+    }
   },
   mounted () {
-    this.$store.dispatch('loadDashboard')
+    this.$store.dispatch('getMultuplePrice')
   },
   computed: {
     ...mapGetters([
+      'wallets',
       'portfolioPrice',
-      'portfolioPercent',
-      'portfolioHistory',
-      'portfolioList',
-      'dashboardLoading'
+      'portfolioPercent'
     ])
   }
 }
