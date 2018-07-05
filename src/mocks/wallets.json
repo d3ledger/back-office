@@ -8,8 +8,8 @@
       "address": "d8e18bb63161f6e4ee173d2408f2cccd75"
     },
     {
-      "name": "Waves",
-      "asset": "WVS",
+      "name": "UnknownCoin",
+      "asset": "UKC",
       "amount": 200.04,
       "color": "0055fe",
       "address": "8cddd8adc2b68bae49252fa890a782b8f4"
@@ -22,22 +22,22 @@
       "address": "3a31544553484cc7702685c57327378dc6"
     },
     {
-      "name": "Bitcoin1",
-      "asset": "BTC",
+      "name": "EOS",
+      "asset": "EOS",
       "amount": 10.80368522,
       "color": "ffb055",
       "address": "2daf13ad98241dcc51324253fc7767ef4b"
     },
     {
-      "name": "Waves1",
-      "asset": "WVS",
+      "name": "DogeCoin",
+      "asset": "Doge",
       "amount": 200.04,
       "color": "0055fe",
       "address": "63a06e61df809b1c50b53d577dff64102b"
     },
     {
-      "name": "Etherium1",
-      "asset": "ETH",
+      "name": "StrangeCoin",
+      "asset": "STRNG",
       "amount": 100.803685,
       "color": "494949",
       "address": "c32fd5538a577fc9033363bd6f137d977f"

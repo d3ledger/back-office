@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu, dialog } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
@@ -10,7 +10,11 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let mainWindow
 
 function createMainWindow () {
-  const window = new BrowserWindow()
+  const window = new BrowserWindow({
+    height: 700,
+    useContentSize: true,
+    width: 1200
+  })
 
   if (isDevelopment) {
     window.webContents.openDevTools()
@@ -39,6 +43,8 @@ function createMainWindow () {
     })
   })
 
+  addEditMenu(window)
+
   return window
 }
 
@@ -61,3 +67,70 @@ app.on('activate', () => {
 app.on('ready', () => {
   mainWindow = createMainWindow()
 })
+
+/**
+ * enable copy & paste
+ * c.f. https://github.com/electron/electron/issues/4068
+ */
+function addEditMenu (window) {
+  const appMenu = Menu.buildFromTemplate([
+    {
+      label: 'Application',
+      submenu: [
+        { role: 'about' },
+        {
+          label: 'Version',
+          click () {
+            dialog.showMessageBox({
+              type: 'info',
+              title: 'Version',
+              message: `commit hash: ${process.env.COMMIT_HASH} (${process.env.COMMIT_HASH_SHORT})`
+            })
+          }
+        },
+        { type: 'separator' },
+        { role: 'quit' }
+      ]
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' },
+        { role: 'redo' },
+        { type: 'separator' },
+        { role: 'cut' },
+        { role: 'copy' },
+        { role: 'paste' },
+        { role: 'selectAll' }
+      ]
+    }
+  ])
+
+  const selectionMenu = Menu.buildFromTemplate([
+    {role: 'copy'},
+    {type: 'separator'},
+    {role: 'selectall'}
+  ])
+
+  const inputMenu = Menu.buildFromTemplate([
+    {role: 'undo'},
+    {role: 'redo'},
+    {type: 'separator'},
+    {role: 'cut'},
+    {role: 'copy'},
+    {role: 'paste'},
+    {type: 'separator'},
+    {role: 'selectall'}
+  ])
+
+  Menu.setApplicationMenu(appMenu)
+
+  window.webContents.on('context-menu', (e, props) => {
+    const { selectionText, isEditable } = props
+    if (isEditable) {
+      inputMenu.popup(window)
+    } else if (selectionText && selectionText.trim() !== '') {
+      selectionMenu.popup(window)
+    }
+  })
+}

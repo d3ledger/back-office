@@ -26,10 +26,7 @@
       </el-table-column>
       <el-table-column label="Counterparty" min-width="150">
         <template slot-scope="scope">
-          <div v-if="scope.row.from === 'you'">
-            to {{ scope.row.to }}
-          </div>
-          <div v-else>
+          <div>
             from {{ scope.row.from }}
           </div>
         </template>
@@ -43,7 +40,7 @@
         width="180px"
       >
         <template slot-scope="scope">
-          <div v-if="scope.row.to === 'you'" style="text-align: right">
+          <div style="text-align: right">
             <el-button
               size="mini"
               plain type="primary"
@@ -59,15 +56,6 @@
               Reject
             </el-button>
           </div>
-          <div v-else style="text-align: right">
-            <el-button
-              size="mini" plain
-              type="info"
-              @click="cancellationDialogVisible = true; settlementForcancellation = scope.row"
-            >
-              Cancel
-            </el-button>
-          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -75,55 +63,40 @@
       title="Accept settlement?"
       :visible.sync="acceptanceDialogVisible"
       width="500px"
+      center
     >
       <div v-if="settlementForAcceptance">
         Are you sure want to exchange {{ settlementForAcceptance.offer_amount + settlementForAcceptance.offer_asset }}
         for {{ settlementForAcceptance.request_amount + settlementForAcceptance.request_asset }} with {{ settlementForAcceptance.from }}?
       </div>
       <div slot="footer">
-        <el-button type="primary" @click="onAccept">Accept</el-button>
+        <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
       </div>
     </el-dialog>
     <el-dialog
       title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
       width="500px"
+      center
     >
       <div v-if="settlementForRejection">
         Are you sure want to reject {{ settlementForRejection.offer_amount + settlementForRejection.offer_asset }}
         for {{ settlementForRejection.request_amount + settlementForRejection.request_asset }} with {{ settlementForRejection.from }}?
       </div>
       <div slot="footer">
-        <el-button type="danger" @click="onReject">Reject</el-button>
-      </div>
-    </el-dialog>
-    <el-dialog
-      title="Cancel settlement?"
-      :visible.sync="cancellationDialogVisible"
-      width="500px"
-    >
-      <div v-if="settlementForcancellation">
-        Are you sure want to cancel {{ settlementForcancellation.offer_amount + settlementForcancellation.offer_asset }}
-        for {{ settlementForcancellation.request_amount + settlementForcancellation.request_asset }} with {{ settlementForcancellation.to }}?
-        <el-alert
-          title="Note that we can't guarantee the success of cancellation."
-          type="warning"
-          :closable="false"
-          style="margin-top: 20px"
-        />
-      </div>
-      <div slot="footer">
-        <el-button type="danger" @click="onCancel">Cancel</el-button>
+        <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
       </div>
     </el-dialog>
   </section>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+// TODO: Add approval here as well
+import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   mixins: [dateFormat],
+
   data () {
     return {
       acceptanceDialogVisible: false,
@@ -136,16 +109,22 @@ export default {
       settlementForcancellation: null
     }
   },
+
   computed: {
     ...mapGetters({
-      settlements: 'waitingSettlements'
+      settlements: 'incomingSettlements'
     })
   },
+
   created () {
     this.fetchAllUnsignedTransactions()
   },
 
   methods: {
+    ...mapActions([
+      'openApprovalDialog'
+    ]),
+
     fetchAllUnsignedTransactions () {
       this.$store.dispatch('getAllUnsignedTransactions')
     },

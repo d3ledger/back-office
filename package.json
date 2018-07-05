@@ -1,5 +1,6 @@
 {
   "name": "back-office",
+  "productName": "D3 Back Office",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,13 +14,16 @@
     "rebuild": "node-pre-gyp --target=2.0.1 --runtime=electron --fallback-to-build --directory node_modules/grpc install"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.0",
+    "@fortawesome/free-solid-svg-icons": "^5.1.0",
+    "@fortawesome/vue-fontawesome": "^0.1.0",
+    "cryptocoins-icons": "^2.7.0",
     "date-fns": "^1.29.0",
     "element-ui": "^2.3.8",
     "file-saver": "^1.3.8",
     "grpc": "^1.12.2",
     "iroha-lib": "0.1.7",
     "lodash": "^4.17.10",
-    "normalize.css": "^8.0.0",
     "source-map-support": "^0.5.4",
     "vue": "^2.5.16",
     "vue-router": "^3.0.1",
@@ -75,7 +79,7 @@
       "webpackConfig": "dist_electron/webpack.renderer.additions.js"
     },
     "main": {
-      "webpackConfig": "dist_electron/webpack.main.additions.js"
+      "webpackConfig": "webpack.main.additions.js"
     }
   },
   "build": {

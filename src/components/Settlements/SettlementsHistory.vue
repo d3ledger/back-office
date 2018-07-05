@@ -20,7 +20,7 @@
         {{ scope.row.offer_amount.toFixed(4) + ' ' + scope.row.offer_asset + ' → ' + scope.row.request_amount.toFixed(4) + ' ' + scope.row.request_asset }}
       </template>
     </el-table-column>
-    <el-table-column label="Counterparty" min-width="150">
+    <el-table-column label="Counterparty" width="150">
       <template slot-scope="scope">
         <div v-if="scope.row.from === 'you'">
           to {{ scope.row.to }}
@@ -30,7 +30,7 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Date" width="120">
+    <el-table-column label="Date" min-width="120">
       <template slot-scope="scope">
         {{ scope.row.date | formatDate }}
       </template>

@@ -3,12 +3,14 @@ import Router from 'vue-router'
 import irohaUtil from 'util/iroha-util'
 
 import Home from '@/components/Home'
+import DashboardPage from '@/components/Dashboard/DashboardPage'
 import WalletsPage from '@/components/Wallets/WalletsPage'
-import WalletPage from '@/components/WalletPage'
+import Wallet from '@/components/Wallets/Wallet'
 import SettlementsPage from '@/components/Settlements/SettlementsPage'
-import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
+import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
+import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
 import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
-import SettingsPage from '@/components/Settings/SettingsPage'
+import ReportsPage from '@/components/Reports/ReportsPage'
 import Login from '@/components/Login'
 import Signup from '@/components/Signup'
 
@@ -23,8 +25,19 @@ const defaultRouter = new Router({
       children: [
         {
           path: '',
+          name: 'dashboard',
+          component: DashboardPage
+        },
+        {
+          path: 'wallets',
           name: 'wallets',
-          component: WalletsPage
+          component: WalletsPage,
+          children: [
+            {
+              path: ':walletId',
+              component: Wallet
+            }
+          ]
         },
         {
           path: 'settlements',
@@ -32,27 +45,28 @@ const defaultRouter = new Router({
           component: SettlementsPage,
           children: [
             {
-              path: '',
-              name: 'settlements-waiting',
-              component: SettlementsWaiting
-            },
-            {
               path: 'history',
               name: 'settlements-history',
               component: SettlementsHistory
+            },
+            {
+              path: 'incoming',
+              name: 'settlements-incoming',
+              component: SettlementsIncoming
+            },
+            {
+              path: 'outgoing',
+              name: 'settlements-outgoing',
+              component: SettlementsOutgoing
             }
           ]
         },
         {
-          path: 'settings',
-          name: 'settings-page',
-          component: SettingsPage
+          path: 'reports',
+          name: 'reports',
+          component: ReportsPage
         }
       ]
-    },
-    {
-      path: '/wallet/:walletId',
-      component: WalletPage
     },
     {
       path: '/login',

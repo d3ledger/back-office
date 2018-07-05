@@ -1,31 +1,44 @@
 <template>
-  <el-row :gutter="40">
-    <el-col v-for="wallet in wallets" :xs="24" :md="8" :lg="6" :xl="4" :key="wallet.name">
-      <wallet-card
+  <el-container>
+    <el-aside class="column-fullheight wallets-menu" width="280px">
+      <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
+      <wallet-menu-item
+        v-for="wallet in filteredWallets"
+        :key="wallet.name"
         :walletId="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
-        :amount="wallet.amount"
-        :color="wallet.color"
       />
-    </el-col>
-  </el-row>
+    </el-aside>
+    <el-main class="column-fullheight wallet">
+      <router-view :key="$route.params.walletId"></router-view>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import WalletCard from '@/components/Wallets/WalletCard'
+import WalletMenuItem from '@/components/Wallets/WalletMenuItem'
 
 export default {
-  name: 'wallets-card',
+  name: 'wallets-page',
   components: {
-    WalletCard
+    WalletMenuItem
+  },
+
+  data () {
+    return {
+      search: ''
+    }
   },
 
   computed: {
     ...mapGetters({
       wallets: 'wallets'
-    })
+    }),
+    filteredWallets: function () {
+      return this.search ? this.wallets.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1) : this.wallets
+    }
   },
 
   created () {
@@ -33,3 +46,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.wallets-menu {
+  background: white;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08);
+}
+</style>
