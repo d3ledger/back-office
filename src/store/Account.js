@@ -237,7 +237,7 @@ const actions = {
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    notaryUtil.signup(username, publicKey)
+    return notaryUtil.signup(username, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
