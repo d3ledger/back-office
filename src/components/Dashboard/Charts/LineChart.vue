@@ -1,21 +1,16 @@
 <script>
-import { Doughnut } from 'vue-chartjs'
+import { Line } from 'vue-chartjs'
 
 export default {
-  extends: Doughnut,
-  props: {
-    data: {
-      type: Object,
-      required: true
-    }
-  },
+  extends: Line,
   data () {
     return {
       chartData: {
-        labels: this.data.map(c => c.asset),
+        labels: ['January', 'February'],
         datasets: [{
-          data: this.data.map(c => c.value.toFixed(2)),
-          backgroundColor: this.data.map(c => `#${c.color}`)
+          label: 'Data One',
+          backgroundColor: '#f87979',
+          data: [40, 20]
         }]
       }
     }

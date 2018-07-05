@@ -13,20 +13,20 @@
             </el-row>
           </div>
           <div class="portfolio_current-price">
-            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} ₽</p>
+            <p class="portfolio_current-price_value" justify="center">{{ price }} ₽</p>
           </div>
-          <div class="portfolio_diff-price">
-            <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatNumberPercentDiff }}</p>
+          <div>
+            <p style="color: green">+ 1003 ₽ (9.4 %)</p>
           </div>
         </el-card>
     </el-col>
     <el-col :span="15">
-        <el-card class="card" :body-style="{ padding: 0 }">
+        <el-card class="card">
           <div slot="header">
             Market
           </div>
           <div>
-            <line-chart-portfolio chart-type="portfolio" :data="chartData"/>
+            <line-chart :height="150" :width="100"/>
           </div>
         </el-card>
     </el-col>
@@ -34,24 +34,16 @@
 </template>
 
 <script>
-import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio'
-import numberFormat from '@/components/mixins/numberFormat'
+import LineChart from '@/components/Dashboard/Charts/LineChart'
 
 export default {
   name: 'dashboard-portfolio',
   components: {
-    LineChartPortfolio
+    LineChart
   },
-  mixins: [
-    numberFormat
-  ],
   props: {
     price: {
-      type: Object,
-      required: true
-    },
-    chartData: {
-      type: Array,
+      type: Number,
       required: true
     }
   }
@@ -60,7 +52,11 @@ export default {
 
 <style scoped>
 .portfolio_left {
-  margin-right: 20px;
+  margin-right: 30px;
+
+}
+.portfolio_card-padding {
+  padding-right: 10px;
 }
 .card {
   height: 14rem;
@@ -75,12 +71,5 @@ export default {
 .portfolio_current-price_value {
   font-size: 2rem;
   font-weight: bold;
-}
-.portfolio_diff-price .uptrend {
-  color: #06b023;
-}
-
-.portfolio_diff-price .downtrend {
-  color: #ff1339;
 }
 </style>
