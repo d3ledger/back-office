@@ -16,6 +16,8 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
     "@fortawesome/free-solid-svg-icons": "^5.1.0",
     "@fortawesome/vue-fontawesome": "^0.1.0",
+    "axios": "^0.18.0",
+    "chart.js": "^2.7.2",
     "cryptocoins-icons": "^2.7.0",
     "date-fns": "^1.29.0",
     "element-ui": "^2.3.8",
@@ -25,6 +27,7 @@
     "lodash": "^4.17.10",
     "source-map-support": "^0.5.4",
     "vue": "^2.5.16",
+    "vue-chartjs": "^3.3.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },
