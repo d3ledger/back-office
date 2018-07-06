@@ -10,7 +10,7 @@
     {
       "name": "Bytecoin",
       "asset": "BCN",
-      "amount": 1000,
+      "amount": 1000.02,
       "color": "0055fe",
       "address": "8cddd8adc2b68bae49252fa890a782b8f4"
     },
@@ -38,7 +38,7 @@
     {
       "name": "Aeon",
       "asset": "AEON",
-      "amount": 30,
+      "amount": 30.03,
       "color": "494949",
       "address": "c32fd5538a577fc9033363bd6f137d977f"
     }
