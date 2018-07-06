@@ -40,35 +40,35 @@
                 <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
                 <i class="el-icon-more-outline" />
               </div>
-              <div class="card-info" v-loading="cryptoInfo.isLoading">
+              <div class="card-info">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} ₽</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur }} ₽</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
-                      {{ cryptoInfo.current.rur_change | formatNumberShort }}
+                      {{ cryptoInfo.current.rur_change }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} BTC</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} {{ wallet.asset }}</p>
                     <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
-                      {{ cryptoInfo.current.crypto_change | formatPercent }}
+                      {{ cryptoInfo.current.crypto_change }}
                     </p>
                   </el-col>
                 </el-row>
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} ₽</p>
-                    <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p>{{ cryptoInfo.market.cap.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.cap.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} ₽</p>
-                    <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p>{{ cryptoInfo.market.volume.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.volume.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Circulating Supply</p>
-                    <p> {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p> {{ cryptoInfo.market.supply }} {{ wallet.asset }}</p>
                   </el-col>
                 </el-row>
               </div>
@@ -267,8 +267,7 @@ export default {
 
   computed: {
     ...mapGetters([
-      'cryptoInfo',
-      'settingsView'
+      'cryptoInfo'
     ]),
     wallet () {
       const walletId = this.$route.params.walletId

@@ -1,6 +1,5 @@
-import Vue from 'vue'
 import _ from 'lodash'
-import cryptoCompareUtil from 'util/cryptoApi-axios-util'
+import axios from 'util/cryptoApi-axios-util'
 
 const types = _([
   'GET_CRYPTO_FULL_DATA'
@@ -32,8 +31,7 @@ function initialState () {
           crypto: 0
         },
         supply: 0
-      },
-      isLoading: false
+      }
     },
     connectionError: null
   }
@@ -64,50 +62,43 @@ const mutations = {
     })
   },
 
-  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {
-    Vue.set(state.cryptoInfo, 'isLoading', true)
-  },
+  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {},
 
   [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
-    const compareToRUB = Object.values(RAW)[0].RUB
-    const compareToCrypto = Object.values(RAW)[0].BTC
-    Vue.set(state, 'cryptoInfo', {
+    const crypto = Object.values(RAW)[0].RUB
+    const assetInfo = {
       current: {
-        rur: compareToRUB.PRICE,
-        rur_change: compareToRUB.CHANGEDAY,
-        crypto: compareToCrypto.PRICE,
-        crypto_change: compareToCrypto.CHANGEPCTDAY
+        rur: crypto.PRICE,
+        rur_change: crypto.CHANGEDAY,
+        crypto: 'xxx xxx',
+        crypto_change: crypto.CHANGEPCTDAY
       },
       market: {
         cap: {
-          rur: compareToRUB.MKTCAP,
-          crypto: compareToRUB.SUPPLY
+          rur: crypto.MKTCAP,
+          crypto: crypto.SUPPLY
         },
         volume: {
-          rur: compareToRUB.TOTALVOLUME24HTO,
-          crypto: compareToRUB.TOTALVOLUME24H
+          rur: crypto.TOTALVOLUME24HTO,
+          crypto: crypto.TOTALVOLUME24H
         },
-        supply: compareToRUB.SUPPLY
-      },
-      isLoading: false
-    })
+        supply: crypto.SUPPLY
+      }
+    }
+    state.cryptoInfo = assetInfo
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
-    Vue.set(state.cryptoInfo, 'isLoading', false)
     handleError(state, err)
   }
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { asset }) {
+  getCryptoFullData ({ commit, dispatch, getters }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
-    return cryptoCompareUtil.loadFullData(asset)
+    axios.loadFullData(asset)
       .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
-      .catch(err => {
-        commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
-        throw err
-      })
+      .catch(err => commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err))
   }
 }
 
