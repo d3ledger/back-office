@@ -6,7 +6,7 @@
     <el-row>
       <el-col :span="10">
         <div class="list_crypto">
-          <p v-for="(item, index) in wallets"
+          <p v-for="(item, index) in portfolio"
             :key="index"
             >
             <span class="list_crypto-color"
@@ -30,12 +30,8 @@ export default {
     DonatChart
   },
   props: {
-    wallets: {
-      type: Array,
-      requires: true
-    },
     portfolio: {
-      type: Object,
+      type: Array,
       requires: true
     }
   },
