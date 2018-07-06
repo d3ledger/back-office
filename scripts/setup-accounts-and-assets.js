@@ -14,9 +14,9 @@ const adminPubKey = crypto.fromPrivateKey(adminPrivKeyHex).publicKey()
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, 'alice@test.priv')).toString().trim()
 const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
 
-const nodeIp = process.env.NODE_IP || 'localhost:50051'
+const nodeIp = process.env.NODE_IP || '127.0.0.1:50051'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
-const accounts = ['admin@test', 'alice@test']
+const accounts = ['test@notary', 'alice@notary']
 const wallets = require(DUMMY_FILE_PATH).wallets
 
 console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
@@ -24,12 +24,12 @@ console.log(`accounts: ${accounts.join(', ')}`)
 console.log(`assets: ${wallets.map(w => w.name).join(', ')}`)
 console.log('')
 
-irohaUtil.login('admin@test', adminPrivKeyHex, nodeIp)
-  .then(() => tryToCreateAccount('alice', 'test', alicePubKey))
+irohaUtil.login('test@notary', adminPrivKeyHex, nodeIp)
+  .then(() => tryToCreateAccount('alice', 'notary', alicePubKey))
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
-  .then(() => setupAccountTransactions('admin@test', adminPrivKeyHex))
-  .then(() => setupAccountTransactions('alice@test', alicePrivKeyHex))
+  .then(() => setupAccountTransactions('test@notary', adminPrivKeyHex))
+  .then(() => setupAccountTransactions('alice@notary', alicePrivKeyHex))
   .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
@@ -40,21 +40,21 @@ function initializeAssets () {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
     const assetName = w.name.toLowerCase()
-    const assetId = assetName + '#test'
+    const assetId = assetName + '#notary'
 
-    return tryToCreateAsset(assetName, 'test', precision)
+    return tryToCreateAsset(assetName, 'notary', precision)
       .then(() => {
-        console.log(`adding initial amount of ${assetId} to admin@test`)
+        console.log(`adding initial amount of ${assetId} to test@notary`)
 
-        return irohaUtil.addAssetQuantity('admin@test', `${w.name.toLowerCase()}#test`, amount)
+        return irohaUtil.addAssetQuantity('test@notary', `${w.name.toLowerCase()}#notary`, amount)
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)
 
-        const transferringInitialAssets = _.without(accounts, 'admin@test').map(accountId => {
+        const transferringInitialAssets = _.without(accounts, 'test@notary').map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
-          return irohaUtil.transferAsset('admin@test', accountId, `${w.name.toLowerCase()}#test`, 'initial tx', amount).catch(() => {})
+          return irohaUtil.transferAsset('test@notary', accountId, `${w.name.toLowerCase()}#notary`, 'initial tx', amount).catch(() => {})
         })
 
         return Promise.all(transferringInitialAssets)
@@ -80,7 +80,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
           const message = _.sample(['hello', 'hi', '', 'PART_OF_DUMMY_SETTLEMENT'])
           const amount = String(Math.random()).substr(0, precision + 2)
 
-          const p = irohaUtil.transferAsset(from, to, `${w.name.toLowerCase()}#test`, message, amount).catch(() => {})
+          const p = irohaUtil.transferAsset(from, to, `${w.name.toLowerCase()}#notary`, message, amount).catch(() => {})
 
           txs.push(p)
         })
