@@ -2,27 +2,21 @@
 /*
  * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup.js
  */
+const fs = require('fs')
+const path = require('path')
+const _ = require('lodash')
+const iroha = require('iroha-lib')
+const irohaUtil = require('../src/util/iroha-util')
 
-import fs from 'fs'
-import path from 'path'
-import _ from 'lodash'
-import irohaUtil from '../src/util/iroha'
-import { derivePublicKey } from 'ed25519.js'
+const crypto = new iroha.ModelCrypto()
+const adminPrivKeyHex = fs.readFileSync(path.join(__dirname, 'admin@test.priv')).toString().trim()
+const adminPubKey = crypto.fromPrivateKey(adminPrivKeyHex).publicKey()
+const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, 'alice@test.priv')).toString().trim()
+const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
 
-const irohaDomain = 'd3'
-const testAccName = 'test'
-const aliceAccName = 'alice'
-const testAccFull = `${testAccName}@${irohaDomain}`
-const aliceAccFull = `${aliceAccName}@${irohaDomain}`
-
-const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
-const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
-const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
-const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
-
-const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8081'
-const DUMMY_FILE_PATH = path.join(__dirname, '../src/data/wallets.json')
-const accounts = [testAccFull, aliceAccFull]
+const nodeIp = process.env.NODE_IP || '127.0.0.1:50051'
+const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
+const accounts = ['test@notary', 'alice@notary']
 const wallets = require(DUMMY_FILE_PATH).wallets
 
 console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
@@ -30,19 +24,12 @@ console.log(`accounts: ${accounts.join(', ')}`)
 console.log(`assets: ${wallets.map(w => w.name).join(', ')}`)
 console.log('')
 
-irohaUtil.login(testAccFull, testPrivKeyHex, nodeIp)
-  .then(() => tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
-  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
-  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'eth_whitelist', '0x1234567890123456789012345678901234567890'))
-  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
-  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], aliceAccFull, 'bitcoin', 'Alice-bitcoin-wallet'))
+irohaUtil.login('test@notary', adminPrivKeyHex, nodeIp)
+  .then(() => tryToCreateAccount('alice', 'notary', alicePubKey))
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
-  .then(() => setupAccountTransactions(testAccFull, testPrivKeyHex))
-  .then(() => setupAccountTransactions(aliceAccFull, alicePrivKeyHex))
-  // Let's use alice's private key as 2nd key for now
-  .then(() => tryToAddSignatory(testPrivKeyHex, testAccFull, alicePubKey))
-  .then(() => tryToSetQuorum(testPrivKeyHex, testAccFull, 2))
+  .then(() => setupAccountTransactions('test@notary', adminPrivKeyHex))
+  .then(() => setupAccountTransactions('alice@notary', alicePrivKeyHex))
   .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
@@ -53,34 +40,21 @@ function initializeAssets () {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
     const assetName = w.name.toLowerCase()
-    const assetId = assetName + `#${irohaDomain}`
+    const assetId = assetName + '#notary'
 
-    return tryToCreateAsset(assetName, irohaDomain, precision)
+    return tryToCreateAsset(assetName, 'notary', precision)
       .then(() => {
-        console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
-        return irohaUtil.addAssetQuantity([testPrivKeyHex], assetId, amount)
-      }).catch((error) => {
-        console.log(error)
-      })
-      .then(() => {
-        const splittedAmount = String(Math.round(amount * 0.3))
-        console.log(`transfer 1/3 ${splittedAmount} initial amount of ${assetId} to ${aliceAccFull}`)
-        return irohaUtil.transferAsset(
-          [testPrivKeyHex],
-          testAccFull,
-          aliceAccFull,
-          `${w.name.toLowerCase()}#${irohaDomain}`,
-          'transfer 1/3',
-          splittedAmount
-        )
+        console.log(`adding initial amount of ${assetId} to test@notary`)
+
+        return irohaUtil.addAssetQuantity('test@notary', `${w.name.toLowerCase()}#notary`, amount)
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)
 
-        const transferringInitialAssets = _.without(accounts, testAccFull).map(accountId => {
+        const transferringInitialAssets = _.without(accounts, 'test@notary').map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
-          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, assetId, 'initial tx', amount).catch(() => {})
+          return irohaUtil.transferAsset('test@notary', accountId, `${w.name.toLowerCase()}#notary`, 'initial tx', amount).catch(() => {})
         })
 
         return Promise.all(transferringInitialAssets)
@@ -106,7 +80,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
           const message = _.sample(['hello', 'hi', '', 'PART_OF_DUMMY_SETTLEMENT'])
           const amount = String(Math.random()).substr(0, precision + 2)
 
-          const p = irohaUtil.transferAsset([accountPrivKeyHex], from, to, `${w.name.toLowerCase()}#${irohaDomain}`, message, amount).catch(() => {})
+          const p = irohaUtil.transferAsset(from, to, `${w.name.toLowerCase()}#notary`, message, amount).catch(() => {})
 
           txs.push(p)
         })
