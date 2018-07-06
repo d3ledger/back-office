@@ -1,22 +1,17 @@
 <template>
   <div>
     <div class="column-fullheight" style="padding: 20px;">
-      <!-- <div style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 20px;">
-        <img src="@/assets/portfolio.png" style="display: block; width: 61%; height: 100%;"/>
-        <img src="@/assets/structure.png" style="display: block; width: 35%; height: 100%;"/>
-      </div>
-      <img src="@/assets/card.png" style="display: block; width: 100%; margin-bottom: 20px"/> -->
       <el-row class="card_margin-bottom">
         <el-col :span="16">
           <dashboard-portfolio :price="portfolioPrice"/>
         </el-col>
         <el-col :span="8">
-          <dashboard-pie-chart :wallets="wallets" :portfolio="portfolioPercent"/>
+          <dashboard-pie-chart :portfolio="portfolioPercent"/>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="10" class="portfolio_card-padding">
-          <dashboard-table/>
+          <dashboard-table :portfolio="portfolioPercent"/>
         </el-col>
         <el-col :span="14">
           <dashboard-chart/>
@@ -50,7 +45,6 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'wallets',
       'portfolioPrice',
       'portfolioPercent'
     ])
