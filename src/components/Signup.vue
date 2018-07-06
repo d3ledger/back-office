@@ -71,7 +71,7 @@
 </template>
 
 <script>
-const FileSaver = require('file-saver')
+import FileSaver from 'file-saver'
 
 export default {
   name: 'signup',
@@ -79,7 +79,7 @@ export default {
   data () {
     return {
       isLoading: false,
-      predefinedDomain: 'test',
+      predefinedDomain: 'notary',
       form: {
         username: ''
       },
