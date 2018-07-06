@@ -59,7 +59,20 @@ const loadPriceByFilter = axios => ({ crypto, filter }) => {
     .catch(error => ({ error }))
 }
 
+const loadFullData = axios => asset => {
+  return axios
+    .get('data/pricemultifull', {
+      params: {
+        fsyms: asset,
+        tsyms: 'RUB'
+      }
+    })
+    .then(({ data }) => data)
+    .catch(error => ({ error }))
+}
+
 export default {
   loadPricesByLabels: loadPricesByLabels(axiosAPI),
-  loadPriceByFilter: loadPriceByFilter(axiosAPI)
+  loadPriceByFilter: loadPriceByFilter(axiosAPI),
+  loadFullData: loadFullData(axiosAPI)
 }
