@@ -1,43 +1,37 @@
-import Vue from 'vue'
-import map from 'lodash/fp/map'
-import flatMap from 'lodash/fp/flatMap'
-import concat from 'lodash/fp/concat'
-import fromPairs from 'lodash/fp/fromPairs'
-import flow from 'lodash/fp/flow'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import _ from 'lodash'
+import axios from 'util/cryptoApi-axios-util'
 
-const types = flow(
-  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
-  concat([
-    'RESET'
-  ]),
-  map(x => [x, x]),
-  fromPairs
-)([
+const types = _([
   'GET_CRYPTO_FULL_DATA'
-])
+]).chain()
+  .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
+  .concat([
+    'RESET'
+  ])
+  .map(x => [x, x])
+  .fromPairs()
+  .value()
 
 function initialState () {
   return {
     cryptoInfo: {
       current: {
-        fiat: 0,
-        fiat_change: 0,
+        rur: 0,
+        rur_change: 0,
         crypto: 0,
         crypto_change: 0
       },
       market: {
         cap: {
-          fiat: 0,
+          rur: 0,
           crypto: 0
         },
         volume: {
-          fiat: 0,
+          rur: 0,
           crypto: 0
         },
         supply: 0
-      },
-      isLoading: false
+      }
     },
     connectionError: null
   }
@@ -68,102 +62,43 @@ const mutations = {
     })
   },
 
-  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {
-    Vue.set(state.cryptoInfo, 'isLoading', true)
-  },
+  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {},
 
-  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (
-    state,
-    {
-      historicalDataFiat,
-      historicalDataCrypto,
-      volumeData,
-      priceData,
-      currencies
-    }
-  ) {
-    // process priceData
-    const RAW = Object.values(priceData.RAW)[0]
-    const compareToFiat = RAW[currencies.fiat]
-    const compareToCrypto = RAW[currencies.crypto]
-
-    const priceFiat = compareToFiat.PRICE
-    const priceCrypto = compareToCrypto.PRICE
-    const marketcapFiat = compareToFiat.MKTCAP
-    const marketcapCrypto = compareToFiat.SUPPLY
-    const circulatingSupply = compareToFiat.SUPPLY
-
-    // process historicalData
-    const getChangeInfo = ({ Data }) => {
-      const closeOfTheFirstSpan = Data.filter(x => Number.isFinite(x.close) && x.close > 0)[0].close
-      const closeOfTheLastSpan = Data[Data.length - 1].close
-      const change = closeOfTheLastSpan - closeOfTheFirstSpan
-      const changePct = (change / closeOfTheFirstSpan) * 100
-
-      return [change, changePct]
-    }
-    const [changeFiat] = getChangeInfo(historicalDataFiat)
-    const [, changePctCrypto] = getChangeInfo(historicalDataCrypto)
-
-    // process volumeData
-    const volumeCrypto = volumeData.Data
-      .filter(({ volume }) => Number.isFinite(volume))
-      .reduce((sum, { volume }) => sum + volume, 0)
-    const volumeFiat = priceFiat * volumeCrypto
-
-    Vue.set(state, 'cryptoInfo', {
+  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
+    const crypto = Object.values(RAW)[0].RUB
+    const assetInfo = {
       current: {
-        fiat: priceFiat,
-        fiat_change: changeFiat,
-        crypto: priceCrypto,
-        crypto_change: changePctCrypto
+        rur: crypto.PRICE,
+        rur_change: crypto.CHANGEDAY,
+        crypto: 'xxx xxx',
+        crypto_change: crypto.CHANGEPCTDAY
       },
       market: {
         cap: {
-          fiat: marketcapFiat,
-          crypto: marketcapCrypto
+          rur: crypto.MKTCAP,
+          crypto: crypto.SUPPLY
         },
         volume: {
-          fiat: volumeFiat,
-          crypto: volumeCrypto
+          rur: crypto.TOTALVOLUME24HTO,
+          crypto: crypto.TOTALVOLUME24H
         },
-        supply: circulatingSupply
-      },
-      isLoading: false
-    })
+        supply: crypto.SUPPLY
+      }
+    }
+    state.cryptoInfo = assetInfo
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
-    Vue.set(state.cryptoInfo, 'isLoading', false)
     handleError(state, err)
   }
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { filter, asset }) {
+  getCryptoFullData ({ commit, dispatch, getters }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
-
-    const currencies = getters.settingsView
-
-    return Promise.all([
-      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
-      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
-      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset }),
-      cryptoCompareUtil.loadFullData(asset, currencies)
-    ])
-      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
-        commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
-          historicalDataFiat,
-          historicalDataCrypto,
-          volumeData,
-          priceData,
-          currencies
-        })
-      })
-      .catch(err => {
-        commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
-        throw err
-      })
+    axios.loadFullData(asset)
+      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
+      .catch(err => commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err))
   }
 }
 
