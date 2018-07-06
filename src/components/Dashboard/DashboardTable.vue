@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card :body-style="{ padding: 0 }">
     <div class="card_header" slot="header">
       <el-input
         placeholder="Search"
@@ -85,11 +85,10 @@ export default {
 
 .table_header {
   color: #888888;
+  padding: 1rem;
 }
 
-.table_header-title {
-  text-align: center;
-}
+.table_header-title {}
 
 .table_body {}
 
@@ -100,7 +99,6 @@ export default {
 .table_body-item {
   height: 50px;
   cursor: pointer;
-  text-align: center;
 }
 
 .table_body-item:hover {
