@@ -41,32 +41,36 @@
                 <i class="el-icon-more-outline" />
               </div>
               <div class="card-info">
-              <el-row style="margin-bottom: 20px">
-                <el-col :span="12">
-                  <p class="card-info-amount">{{ assetInfo.current.rur }} ₽</p>
-                  <p style="color: green">{{ assetInfo.current.rur_change }}</p>
-                </el-col>
-                <el-col :span="12">
-                  <p class="card-info-amount">{{ assetInfo.current.btc }} BTC</p>
-                  <p style="color: green">{{ assetInfo.current.btc_change }}</p>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="8">
-                  <p class="card-info-title">Market Cap</p>
-                  <p>{{ assetInfo.market.cap.rur }} ₽</p>
-                  <p>{{ assetInfo.market.cap.btc }} BTC</p>
-                </el-col>
-                <el-col :span="8">
-                  <p class="card-info-title">Volume (24h)</p>
-                  <p>{{ assetInfo.market.volume.rur }} ₽</p>
-                  <p>{{ assetInfo.market.volume.btc }} BTC</p>
-                </el-col>
-                <el-col :span="8">
-                  <p class="card-info-title">Circulating Supply</p>
-                  <p> {{ assetInfo.market.supply + ' ' + wallet.asset }} </p>
-                </el-col>
-              </el-row>
+                <el-row style="margin-bottom: 20px">
+                  <el-col :span="12">
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur }} ₽</p>
+                    <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
+                      {{ cryptoInfo.current.rur_change }}
+                    </p>
+                  </el-col>
+                  <el-col :span="12">
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} {{ wallet.asset }}</p>
+                    <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
+                      {{ cryptoInfo.current.crypto_change }}
+                    </p>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="8">
+                    <p class="card-info-title">Market Cap</p>
+                    <p>{{ cryptoInfo.market.cap.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.cap.crypto }} {{ wallet.asset }}</p>
+                  </el-col>
+                  <el-col :span="8">
+                    <p class="card-info-title">Volume (24h)</p>
+                    <p>{{ cryptoInfo.market.volume.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.volume.crypto }} {{ wallet.asset }}</p>
+                  </el-col>
+                  <el-col :span="8">
+                    <p class="card-info-title">Circulating Supply</p>
+                    <p> {{ cryptoInfo.market.supply }} {{ wallet.asset }}</p>
+                  </el-col>
+                </el-row>
               </div>
             </el-card>
           </el-col>
@@ -232,7 +236,7 @@
 
 <script>
 // TODO: Transfer form all assets
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
@@ -253,30 +257,14 @@ export default {
         to: null,
         amount: null,
         description: null
-      },
-      assetInfo: {
-        current: {
-          rur: 37705.68,
-          rur_change: '+450 ₽ (1.02 %)',
-          btc: 0.07928230,
-          btc_change: '+0.0000043 ₽ (0.28 %)'
-        },
-        market: {
-          cap: {
-            rur: 3769370874535,
-            btc: 7927895
-          },
-          volume: {
-            rur: 1544690000,
-            btc: 202340
-          },
-          supply: 99968544
-        }
       }
     }
   },
 
   computed: {
+    ...mapGetters([
+      'cryptoInfo'
+    ]),
     wallet () {
       const walletId = this.$route.params.walletId
 
@@ -315,7 +303,10 @@ export default {
 
     fetchWallet () {
       this.$store.dispatch('getAccountAssets')
-        .then(() => this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId }))
+        .then(() => {
+          this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
+          this.$store.dispatch('getCryptoFullData', this.wallet)
+        })
     },
 
     onSubmitWithdrawalForm () {
@@ -445,6 +436,13 @@ export default {
   line-height: 1.5;
 }
 
+.card-info .uptrend {
+  color: #06b023;
+}
+
+.card-info .downtrend {
+  color: #ff1339;
+}
 .card-info-title {
   color: rgba(0, 0, 0, 0.6);
   margin-bottom: 4px;
