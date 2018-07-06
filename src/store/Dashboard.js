@@ -1,15 +1,17 @@
 import _ from 'lodash'
-import grpc from 'grpc'
 import axios from '@util/cryptoApi-axios-util'
 
 const types = _([
-  'GET_MULTIPLE_PRICE'
+  'GET_MULTIPLE_PRICE',
+  'GET_PRICE_BY_FILTER'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat([
     'RESET',
     'PORTFOLIO_FULL_PRICE',
-    'PORTFOLIO_PERCENT_CRYPTO'
+    'PORTFOLIO_CRYPTO_PRICE',
+    'SELECT_CHART_FILTER',
+    'SELECT_CHART_CRYPTO'
   ])
   .map(x => [x, x])
   .fromPairs()
@@ -19,7 +21,13 @@ function initialState () {
   return {
     currentPriceList: [],
     portfolioPrice: 0,
-    portfolioPercent: {}
+    portfolioPercent: [],
+    portfolioChart: {
+      filter: 'ALL',
+      crypto: 'BTC',
+      data: []
+    },
+    connectionError: null
   }
 }
 
@@ -31,6 +39,12 @@ const getters = {
   },
   portfolioPercent (state) {
     return state.portfolioPercent
+  },
+  portfolioChart (state) {
+    return state.portfolioChart
+  },
+  connectionError (state) {
+    return state.connectionError
   }
 }
 
@@ -40,15 +54,7 @@ const getters = {
  * @param {Error} err
  */
 function handleError (state, err) {
-  switch (err.code) {
-    case grpc.status.UNAVAILABLE:
-    case grpc.status.CANCELLED:
-      state.connectionError = err
-      break
-
-    default:
-      state.connectionError = null
-  }
+  state.connectionError = err
 }
 
 const mutations = {
@@ -66,7 +72,6 @@ const mutations = {
   },
 
   [types.GET_MULTIPLE_PRICE_FAILURE] (state, err) {
-    console.log(err)
     handleError(state, err)
   },
 
@@ -74,8 +79,26 @@ const mutations = {
     state.portfolioPrice = price
   },
 
-  [types.PORTFOLIO_PERCENT_CRYPTO] (state, percent) {
-    state.portfolioPercent = percent
+  [types.PORTFOLIO_CRYPTO_PRICE] (state, price) {
+    state.portfolioPercent = price
+  },
+
+  [types.GET_PRICE_BY_FILTER_REQUEST] (state) {},
+
+  [types.GET_PRICE_BY_FILTER_SUCCESS] (state, data) {
+    state.portfolioChart.data = data
+  },
+
+  [types.GET_PRICE_BY_FILTER_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SELECT_CHART_FILTER] (state, filter) {
+    state.portfolioChart.filter = filter
+  },
+
+  [types.SELECT_CHART_CRYPTO] (state, crypto) {
+    state.portfolioChart.crypto = crypto
   }
 }
 
@@ -92,6 +115,19 @@ const actions = {
         .catch(err => commit(types.GET_MULTIPLE_PRICE_FAILURE, err))
     })
   },
+  getPriceByFilter ({ commit, getters }, data) {
+    if (data.crypto) {
+      commit(types.SELECT_CHART_CRYPTO, data.crypto)
+    }
+    if (data.filter) {
+      commit(types.SELECT_CHART_FILTER, data.filter)
+    }
+    const filter = getters.portfolioChart
+    commit(types.GET_PRICE_BY_FILTER_REQUEST)
+    axios.loadPriceByFilter(filter)
+      .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
+      .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
+  },
   calculatePortfolio ({ commit, getters }, { prices }) {
     let price = 0
     getters.wallets.forEach(crypto => {
@@ -104,18 +140,21 @@ const actions = {
   },
   calculatePercentPortfolio ({ commit, getters }, { prices }) {
     const price = getters.portfolioPrice
-    let currencies = []
+    const currencies = []
     getters.wallets.forEach(crypto => {
+      // TODO: To be removed. This is used for checking fake crypto currencies.
       if (_.has(prices, crypto.asset)) {
+        const cryptoPrice = prices[crypto.asset].RUB * crypto.amount
         currencies.push({
           asset: crypto.asset,
           color: crypto.color,
-          value: (prices[crypto.asset].RUB * crypto.amount * 100) / price
+          name: crypto.name,
+          price: cryptoPrice,
+          percent: (cryptoPrice * 100) / price
         })
       }
     })
-    console.log(currencies)
-    commit('PORTFOLIO_PERCENT_CRYPTO', currencies)
+    commit('PORTFOLIO_CRYPTO_PRICE', currencies)
   }
 }
 
