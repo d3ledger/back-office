@@ -5,29 +5,46 @@ export default {
   extends: Doughnut,
   props: {
     data: {
-      type: Object,
+      type: Array,
       required: true
     }
   },
   data () {
-    return {
-      chartData: {
-        labels: this.data.map(c => c.asset),
-        datasets: [{
-          data: this.data.map(c => c.value.toFixed(2)),
-          backgroundColor: this.data.map(c => `#${c.color}`)
-        }]
-      }
+    return {}
+  },
+  watch: {
+    data () {
+      this.updateChart()
     }
   },
   mounted () {
-    this.renderChart(this.chartData, {
-      responsive: true,
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      }
-    })
+    this.updateChart()
+  },
+  methods: {
+    updateChart () {
+      this.renderChart({
+        labels: this.data.map(c => c.asset),
+        datasets: [{
+          data: this.data.map(c => c.percent.toFixed(2)),
+          backgroundColor: this.data.map(c => `#${c.color}`)
+        }]
+      }, {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItem, data) {
+              const value = data.datasets[0].data[tooltipItem.index] || 0
+              const label = data.labels[tooltipItem.index] || ''
+              return `${label} - ${value}%`
+            }
+          }
+        }
+      })
+    }
   }
 }
 </script>

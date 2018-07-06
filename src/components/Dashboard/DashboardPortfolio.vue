@@ -26,7 +26,7 @@
             Market
           </div>
           <div>
-            <line-chart :height="150" :width="100"/>
+            <line-chart :height="150" :width="100" chart-type="portfolio" :data="[]"/>
           </div>
         </el-card>
     </el-col>
