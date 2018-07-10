@@ -13,6 +13,7 @@ import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
 import ReportsPage from '@/components/Reports/ReportsPage'
 import Login from '@/components/Login'
 import Signup from '@/components/Signup'
+import SettingsPage from '@/components/Settings/SettingsPage'
 
 Vue.use(Router)
 
@@ -67,6 +68,11 @@ const defaultRouter = new Router({
           path: 'reports',
           name: 'reports',
           component: ReportsPage
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: SettingsPage
         }
       ]
     },
