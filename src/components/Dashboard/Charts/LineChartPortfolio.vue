@@ -8,14 +8,6 @@ export default {
     data: {
       type: Array,
       required: false
-    },
-    filter: {
-      type: String,
-      required: false
-    },
-    chartType: {
-      type: String,
-      required: false
     }
   },
   watch: {
@@ -31,14 +23,15 @@ export default {
       let scales = {
         xAxes: [{
           gridLines: {
-            display: true,
-            drawTicks: true
+            display: false,
+            drawTicks: false
           },
           ticks: {
-            display: true
+            display: false
           }
         }],
         yAxes: [{
+          stacked: true,
           gridLines: {
             display: true,
             drawTicks: false,
@@ -50,38 +43,15 @@ export default {
         }]
       }
 
-      if (this.chartType === 'portfolio') {
-        scales = {
-          xAxes: [{
-            gridLines: {
-              display: false,
-              drawTicks: false
-            },
-            ticks: {
-              display: false
-            }
-          }],
-          yAxes: [{
-            stacked: true,
-            gridLines: {
-              display: true,
-              drawTicks: false,
-              drawBorder: false
-            },
-            ticks: {
-              display: false
-            }
-          }]
-        }
-      }
       this.renderChart({
         labels: this.data.map(i => this.convertDate(i.time)),
         datasets: [{
           bezierCurve: false,
           lineTension: 0,
+          borderWidth: 2,
           backgroundColor: '#fafafa',
           borderColor: '#000000',
-          data: this.data.map(i => i.close),
+          data: this.data.map(i => i.sum),
           pointRadius: 0,
           pointHitRadius: 10
         }]
@@ -95,7 +65,7 @@ export default {
           callbacks: {
             label: function (tooltipItem, data) {
               const value = data.datasets[0].data[tooltipItem.index] || 0
-              return `${value} ₽`
+              return `${value.toFixed(2)} ₽`
             }
           }
         },
@@ -103,16 +73,8 @@ export default {
       })
     },
     convertDate (num) {
-      const filterFormat = {
-        'ALL': 'DD/MM/YYYY',
-        '1Y': 'MMMM',
-        '1M': 'DD MMMM',
-        '1W': 'dddd',
-        '1D': 'HH:mm',
-        '1H': 'HH:mm'
-      }
       const date = new Date(num * 1000)
-      return format(date, filterFormat[this.filter])
+      return format(date, 'DD MMMM')
     }
   }
 }

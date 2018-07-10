@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card :body-style="{ padding: 0 }">
     <div slot="header">
       <el-row>
         <el-col :span="18">
@@ -17,18 +17,18 @@
       </el-row>
     </div>
     <div>
-      <line-chart :data="portfolioChart.data" :filter="portfolioChart.filter"/>
+      <line-chart-table :data="portfolioChart.data" :filter="portfolioChart.filter"/>
     </div>
   </el-card>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import LineChart from '@/components/Dashboard/Charts/LineChart'
+import LineChartTable from '@/components/Dashboard/Charts/LineChartTable'
 
 export default {
   components: {
-    LineChart
+    LineChartTable
   },
   data () {
     return {
@@ -39,9 +39,6 @@ export default {
     ...mapGetters([
       'portfolioChart'
     ])
-  },
-  mounted () {
-    this.$store.dispatch('getPriceByFilter', this.portfolioChart)
   },
   methods: {
     selectLabel (label) {
