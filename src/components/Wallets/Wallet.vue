@@ -43,13 +43,13 @@
               <div class="card-info">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur.toFixed(2) }} ₽</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur.toFixed(2) }} {{ getSymbol }}</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.rur_change.toFixed(2) }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} BTC</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} {{ settingsView.crypto }}</p>
                     <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.crypto_change.toFixed(2) }}%
                     </p>
@@ -58,12 +58,12 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.cap.rur }} {{ getSymbol }}</p>
                     <p>{{ cryptoInfo.market.cap.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur }} ₽</p>
+                    <p>{{ cryptoInfo.market.volume.rur }} {{ getSymbol }}</p>
                     <p>{{ cryptoInfo.market.volume.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
@@ -233,10 +233,14 @@ import { mapActions, mapGetters } from 'vuex'
 
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'wallet',
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat,
+    currencySymbol
+  ],
   components: {
     AssetIcon
   },
@@ -256,7 +260,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'cryptoInfo'
+      'cryptoInfo',
+      'settingsView'
     ]),
     wallet () {
       const walletId = this.$route.params.walletId
