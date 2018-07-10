@@ -28,6 +28,7 @@
     "timezones.json": "^1.4.3",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.3.2",
+    "vue-localstorage": "^0.6.2",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"
   },

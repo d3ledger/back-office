@@ -14,14 +14,14 @@
             <div>
               <el-row class="settings_item">
                 <div class="settings_item-header">
-                  <span class="header">Currency</span>
+                  <span class="header">Current currency</span>
                 </div>
                 <div>
                   <el-row class="currencies_list">
                     <el-col>
-                      <el-radio-group v-model="currentFiat" size="small">
+                      <el-radio-group v-model="selectedFiat" size="small" @input="selectFiat">
                         <el-radio
-                          v-for="(value, index) in settingsFiatCurrencies"
+                          v-for="(value, index) in fiatCurrencies"
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
@@ -31,37 +31,14 @@
                   </el-row>
                   <el-row class="currencies_list">
                     <el-col>
-                      <el-radio-group v-model="currentCrypto" size="small">
+                      <el-radio-group v-model="selectedCrypto" size="small" @input="selectCrypto">
                         <el-radio
-                          v-for="(value, index) in settingsCryptoCurrencies"
+                          v-for="(value, index) in cryptoCurrencies"
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
                           border>{{ value }}</el-radio>
                       </el-radio-group>
-                    </el-col>
-                  </el-row>
-                </div>
-              </el-row>
-              <el-row class="settings_item">
-                <div class="settings_item-header">
-                  <span class="header">Time zone</span>
-                </div>
-                <div>
-                  <el-row>
-                    <el-col>
-                      <el-select
-                        class="time-zone_select"
-                        v-model="currentZone"
-                        filterable
-                        placeholder="Select">
-                        <el-option
-                          v-for="(zone, index) in timezones"
-                          :key="index"
-                          :label="zone"
-                          :value="zone">
-                        </el-option>
-                      </el-select>
                     </el-col>
                   </el-row>
                 </div>
@@ -75,61 +52,47 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import dateFormat from '@/components/mixins/dateFormat'
-
 export default {
   name: 'settings-page',
   data () {
-    return {}
-  },
-  mixins: [
-    dateFormat
-  ],
-  computed: {
-    ...mapGetters([
-      'settingsFiatCurrencies',
-      'settingsCryptoCurrencies'
-    ]),
-    currentFiat: {
-      get () {
-        return this.$store.getters.settingsView.fiat
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewFiat', value)
-      }
-    },
-    currentCrypto: {
-      get () {
-        return this.$store.getters.settingsView.crypto
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewCrypto', value)
-      }
-    },
-    currentZone: {
-      get () {
-        return this.$store.getters.settingsView.timezone
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewTime', value)
-      }
+    return {
+      fiatCurrencies: ['RUB', 'USD', 'EUR'],
+      cryptoCurrencies: ['BTC', 'ETH', 'XRP'],
+      selectedFiat: 'RUB',
+      selectedCrypto: 'BTC',
+      settings: {}
     }
+  },
+  methods: {
+    selectFiat (value) {
+      this.settings.view.fiat = value
+      this.$localStorage.set('settings', JSON.stringify(this.settings))
+    },
+    selectCrypto (value) {
+      this.settings.view.crypto = value
+      this.$localStorage.set('settings', JSON.stringify(this.settings))
+    }
+  },
+  mounted () {
+    this.settings = JSON.parse(this.$localStorage.get('settings'))
+    if (this.settings) {
+      this.selectedFiat = this.settings.view.fiat
+      this.selectedCrypto = this.settings.view.crypto
+    }
+    // this.test()
   }
 }
 </script>
 
 <style scoped>
-.settings_item {
-  margin-bottom: 20px;
-}
+.settings_item {}
 
 .settings_item-header {
   margin-bottom: 15px;
 }
 
 .settings_item-header > .header {
-  font-size: 1rem;
+  font-size: 1.5rem
 }
 
 .currencies_list {
@@ -138,9 +101,5 @@ export default {
 
 .currencies_list-select {
   width: 5rem;
-}
-
-.time-zone_select {
-  width: 100%;
 }
 </style>
