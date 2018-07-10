@@ -14,6 +14,8 @@ const DEFAULT_TIMEOUT_LIMIT = 5000
  */
 const cache = {
   username: null, // NOT persisted by localStorage
+  // TODO: do not cache keys; require a private key on every action instead.
+  // For now it is needed for queries until tokens are implemented.
   keys: null, // NOT persisted by localStorage
   nodeIp: null // persisted by localStorage
 }
