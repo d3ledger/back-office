@@ -43,15 +43,15 @@
               <div class="card-info">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur }} ₽</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur.toFixed(2) }} ₽</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
-                      {{ cryptoInfo.current.rur_change }}
+                      {{ cryptoInfo.current.rur_change.toFixed(2) }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} {{ wallet.asset }}</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto }} BTC</p>
                     <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
-                      {{ cryptoInfo.current.crypto_change }}
+                      {{ cryptoInfo.current.crypto_change.toFixed(2) }}%
                     </p>
                   </el-col>
                 </el-row>
