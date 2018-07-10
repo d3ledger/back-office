@@ -13,20 +13,20 @@
             </el-row>
           </div>
           <div class="portfolio_current-price">
-            <p class="portfolio_current-price_value" justify="center">{{ price }} ₽</p>
+            <p class="portfolio_current-price_value" justify="center">{{ price.value }} ₽</p>
           </div>
-          <div>
-            <p style="color: green">+ 1003 ₽ (9.4 %)</p>
+          <div class="portfolio_diff-price">
+            <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatDifference }}</p>
           </div>
         </el-card>
     </el-col>
     <el-col :span="15">
-        <el-card class="card">
+        <el-card class="card" :body-style="{ padding: 0 }">
           <div slot="header">
             Market
           </div>
           <div>
-            <line-chart :height="150" :width="100" chart-type="portfolio" :data="[]"/>
+            <line-chart-portfolio chart-type="portfolio" :data="chartData"/>
           </div>
         </el-card>
     </el-col>
@@ -34,17 +34,26 @@
 </template>
 
 <script>
-import LineChart from '@/components/Dashboard/Charts/LineChart'
+import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio'
 
 export default {
   name: 'dashboard-portfolio',
   components: {
-    LineChart
+    LineChartPortfolio
   },
   props: {
     price: {
-      type: Number,
+      type: Object,
       required: true
+    },
+    chartData: {
+      type: Array,
+      required: true
+    }
+  },
+  filters: {
+    formatDifference (price) {
+      return `${price.diff} (${price.percent}%)`
     }
   }
 }
@@ -71,5 +80,12 @@ export default {
 .portfolio_current-price_value {
   font-size: 2rem;
   font-weight: bold;
+}
+.portfolio_diff-price .uptrend {
+  color: #06b023;
+}
+
+.portfolio_diff-price .downtrend {
+  color: #ff1339;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="column-fullheight" style="padding: 20px;">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
-          <dashboard-portfolio :price="portfolioPrice"/>
+          <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
         </el-col>
         <el-col :span="8">
           <dashboard-pie-chart :portfolio="portfolioPercent"/>
@@ -11,10 +11,10 @@
       </el-row>
       <el-row>
         <el-col :span="10" class="portfolio_card-padding">
-          <dashboard-table :portfolio="portfolioPercent"/>
+          <dashboard-table :portfolio="portfolioList"/>
         </el-col>
         <el-col :span="14">
-          <dashboard-chart/>
+          <dashboard-chart />
         </el-col>
       </el-row>
     </div>
@@ -41,12 +41,14 @@ export default {
     }
   },
   mounted () {
-    this.$store.dispatch('getMultuplePrice')
+    this.$store.dispatch('loadDashboard')
   },
   computed: {
     ...mapGetters([
       'portfolioPrice',
-      'portfolioPercent'
+      'portfolioPercent',
+      'portfolioHistory',
+      'portfolioList'
     ])
   }
 }

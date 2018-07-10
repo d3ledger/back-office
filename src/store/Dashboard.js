@@ -2,27 +2,66 @@ import _ from 'lodash'
 import axios from 'util/cryptoApi-axios-util'
 
 const types = _([
-  'GET_MULTIPLE_PRICE',
-  'GET_PRICE_BY_FILTER'
+  'GET_PRICE_BY_FILTER',
+  'GET_PORTFOLIO_HISTORY'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat([
     'RESET',
-    'PORTFOLIO_FULL_PRICE',
-    'PORTFOLIO_CRYPTO_PRICE',
+    'GET_PORTFOLIO_FULL_PRICE',
+    'GET_PORTFOLIO_PRICE_LIST',
+    'GET_PORTFOLIO_PRICE_PERCENTAGE',
     'SELECT_CHART_FILTER',
-    'SELECT_CHART_CRYPTO'
+    'SELECT_CHART_CRYPTO',
+    'LOAD_DASHBOARD'
   ])
   .map(x => [x, x])
   .fromPairs()
   .value()
 
+const convertData = (obj, wallets) => {
+  const getEqTime = (t) => {
+    return _(obj)
+      .filter(c => c.data.length)
+      .map(c => ({
+        asset: c.asset,
+        value: _.find(c.data, d => d.time === t)
+      }))
+      .value()
+  }
+  const getSum = (d) => {
+    return d.reduce((p, n) => {
+      const crypto = wallets.find(c => c.asset === n.asset)
+      return p + (n.value.close * crypto.amount)
+    }, 0)
+  }
+  return _(obj[0].data)
+    .map('time')
+    .map(t => {
+      const d = getEqTime(t)
+      const s = getSum(d)
+      return {
+        time: t,
+        sum: s,
+        data: d
+      }
+    })
+    .value()
+}
+
 function initialState () {
   return {
-    currentPriceList: [],
-    portfolioPrice: 0,
-    portfolioPercent: [],
-    portfolioChart: {
+    portfolio: {
+      assetsFullPrice: {
+        diff: 0,
+        value: 0,
+        percent: 0
+      },
+      assetsPercentage: [],
+      assetsHistory: []
+    },
+    assetList: [],
+    assetChart: {
       filter: 'ALL',
       crypto: 'BTC',
       data: []
@@ -35,13 +74,19 @@ const state = initialState()
 
 const getters = {
   portfolioPrice (state) {
-    return state.portfolioPrice
+    return state.portfolio.assetsFullPrice
   },
   portfolioPercent (state) {
-    return state.portfolioPercent
+    return state.portfolio.assetsPercentage
   },
   portfolioChart (state) {
-    return state.portfolioChart
+    return state.assetChart
+  },
+  portfolioHistory (state) {
+    return state.portfolio.assetsHistory
+  },
+  portfolioList (state) {
+    return state.assetList
   },
   connectionError (state) {
     return state.connectionError
@@ -54,6 +99,7 @@ const getters = {
  * @param {Error} err
  */
 function handleError (state, err) {
+  console.error(err)
   state.connectionError = err
 }
 
@@ -65,55 +111,72 @@ const mutations = {
     })
   },
 
-  [types.GET_MULTIPLE_PRICE_REQUEST] (state) {},
-
-  [types.GET_MULTIPLE_PRICE_SUCCESS] (state, { prices }) {
-    state.currentPriceList = prices
+  [types.GET_PORTFOLIO_FULL_PRICE] (state, { value, diff, percent }) {
+    state.portfolio.assetsFullPrice = {
+      diff: diff.toFixed(2),
+      value: value.toFixed(2),
+      percent: percent.toFixed(2)
+    }
   },
 
-  [types.GET_MULTIPLE_PRICE_FAILURE] (state, err) {
-    handleError(state, err)
+  [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, percent) {
+    state.portfolio.assetsPercentage = percent
   },
 
-  [types.PORTFOLIO_FULL_PRICE] (state, price) {
-    state.portfolioPrice = price
-  },
-
-  [types.PORTFOLIO_CRYPTO_PRICE] (state, price) {
-    state.portfolioPercent = price
+  [types.GET_PORTFOLIO_PRICE_LIST] (state, list) {
+    state.assetList = list
   },
 
   [types.GET_PRICE_BY_FILTER_REQUEST] (state) {},
 
   [types.GET_PRICE_BY_FILTER_SUCCESS] (state, data) {
-    state.portfolioChart.data = data
+    state.assetChart.data = data
   },
 
   [types.GET_PRICE_BY_FILTER_FAILURE] (state, err) {
     handleError(state, err)
   },
 
+  [types.GET_PORTFOLIO_HISTORY_REQUEST] (state) {},
+
+  [types.GET_PORTFOLIO_HISTORY_SUCCESS] (state, data) {
+    state.portfolio.assetsHistory = data
+  },
+
+  [types.GET_PORTFOLIO_HISTORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.SELECT_CHART_FILTER] (state, filter) {
-    state.portfolioChart.filter = filter
+    state.assetChart.filter = filter
   },
 
   [types.SELECT_CHART_CRYPTO] (state, crypto) {
-    state.portfolioChart.crypto = crypto
-  }
+    state.assetChart.crypto = crypto
+  },
+
+  [types.LOAD_DASHBOARD] (state) {}
 }
 
 const actions = {
-  getMultuplePrice ({ commit, dispatch, getters }) {
-    dispatch('getAccountAssets').then(() => {
-      commit(types.GET_MULTIPLE_PRICE_REQUEST)
-      axios.loadPricesByLabels(getters.wallets)
-        .then(prices => {
-          commit(types.GET_MULTIPLE_PRICE_SUCCESS, prices)
-          dispatch('calculatePortfolio', prices)
-          dispatch('calculatePercentPortfolio', prices)
-        })
-        .catch(err => commit(types.GET_MULTIPLE_PRICE_FAILURE, err))
-    })
+  loadDashboard ({ dispatch, commit, getters }) {
+    commit('LOAD_DASHBOARD')
+    dispatch('getAccountAssets')
+      .then(() => {
+        dispatch('getPortfolioHistory')
+        dispatch('getPriceByFilter', getters.portfolioChart)
+      })
+  },
+  getPortfolioHistory ({ commit, dispatch, getters }) {
+    commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
+    axios.loadHistoryByLabels(getters.wallets)
+      .then(history => {
+        commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
+        dispatch('calculatePortfolio')
+        dispatch('calculatePercentPortfolio')
+        dispatch('calculatePriceChange')
+      })
+      .catch(err => commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err))
   },
   getPriceByFilter ({ commit, getters }, data) {
     if (data.crypto) {
@@ -128,33 +191,46 @@ const actions = {
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
       .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
   },
-  calculatePortfolio ({ commit, getters }, { prices }) {
-    let price = 0
-    getters.wallets.forEach(crypto => {
-      // TODO: To be removed. This is used for checking fake crypto currencies.
-      if (_.has(prices, crypto.asset)) {
-        price += prices[crypto.asset].RUB * crypto.amount
-      }
-    })
-    commit('PORTFOLIO_FULL_PRICE', Number(price.toFixed(2)))
+  calculatePortfolio ({ commit, getters }) {
+    const today = _.last(getters.portfolioHistory).sum
+    const prevDay = _.nth(getters.portfolioHistory, -2).sum
+    const portfolio = {
+      value: today,
+      diff: today - prevDay,
+      percent: 100 - ((prevDay * 100) / today)
+    }
+    commit('GET_PORTFOLIO_FULL_PRICE', portfolio)
   },
-  calculatePercentPortfolio ({ commit, getters }, { prices }) {
-    const price = getters.portfolioPrice
+  calculatePercentPortfolio ({ commit, getters }) {
+    const today = _.last(getters.portfolioHistory)
     const currencies = []
-    getters.wallets.forEach(crypto => {
-      // TODO: To be removed. This is used for checking fake crypto currencies.
-      if (_.has(prices, crypto.asset)) {
-        const cryptoPrice = prices[crypto.asset].RUB * crypto.amount
-        currencies.push({
-          asset: crypto.asset,
-          color: crypto.color,
-          name: crypto.name,
-          price: cryptoPrice,
-          percent: (cryptoPrice * 100) / price
-        })
-      }
+    today.data.map(crypto => {
+      const walletAsset = getters.wallets.find(w => w.asset === crypto.asset)
+      currencies.push({
+        asset: crypto.asset,
+        color: walletAsset.color,
+        price: crypto.value.close,
+        percent: (crypto.value.close * walletAsset.amount * 100) / today.sum
+      })
     })
-    commit('PORTFOLIO_CRYPTO_PRICE', currencies)
+    commit('GET_PORTFOLIO_PRICE_PERCENTAGE', currencies)
+  },
+  calculatePriceChange ({ commit, getters }) {
+    const today = _.last(getters.portfolioHistory)
+    const prevDay = _.nth(getters.portfolioHistory, -2)
+    const currencies = []
+    today.data.map(crypto => {
+      const walletAsset = getters.wallets.find(w => w.asset === crypto.asset)
+      const prevDayAsset = prevDay.data.find(c => c.asset === crypto.asset)
+      currencies.push({
+        asset: crypto.asset,
+        name: walletAsset.name,
+        price: crypto.value.close,
+        diff: crypto.value.close - prevDayAsset.value.close,
+        percent: 100 - ((prevDayAsset.value.close * 100) / crypto.value.close)
+      })
+    })
+    commit('GET_PORTFOLIO_PRICE_LIST', currencies)
   }
 }
 
