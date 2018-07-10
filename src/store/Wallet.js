@@ -65,27 +65,27 @@ const mutations = {
   [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {},
 
   [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
-    const crypto = Object.values(RAW)[0].RUB
-    const assetInfo = {
+    const compareToRUB = Object.values(RAW)[0].RUB
+    const compareToCrypto = Object.values(RAW)[0].BTC
+    state.cryptoInfo = {
       current: {
-        rur: crypto.PRICE,
-        rur_change: crypto.CHANGEDAY,
-        crypto: 'xxx xxx',
-        crypto_change: crypto.CHANGEPCTDAY
+        rur: compareToRUB.PRICE,
+        rur_change: compareToRUB.CHANGEDAY,
+        crypto: compareToCrypto.PRICE,
+        crypto_change: compareToCrypto.CHANGEPCTDAY
       },
       market: {
         cap: {
-          rur: crypto.MKTCAP,
-          crypto: crypto.SUPPLY
+          rur: compareToRUB.MKTCAP,
+          crypto: compareToRUB.SUPPLY
         },
         volume: {
-          rur: crypto.TOTALVOLUME24HTO,
-          crypto: crypto.TOTALVOLUME24H
+          rur: compareToRUB.TOTALVOLUME24HTO,
+          crypto: compareToRUB.TOTALVOLUME24H
         },
-        supply: crypto.SUPPLY
+        supply: compareToRUB.SUPPLY
       }
     }
-    state.cryptoInfo = assetInfo
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
@@ -94,7 +94,7 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit, dispatch, getters }, { asset }) {
+  getCryptoFullData ({ commit }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
     axios.loadFullData(asset)
       .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
