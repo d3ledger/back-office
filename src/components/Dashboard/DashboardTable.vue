@@ -46,6 +46,7 @@
 import { mapGetters } from 'vuex'
 import _ from 'lodash/collection'
 import numberFormat from '@/components/mixins/numberFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   data () {
@@ -54,7 +55,8 @@ export default {
     }
   },
   mixins: [
-    numberFormat
+    numberFormat,
+    currencySymbol
   ],
   props: {
     portfolio: {
