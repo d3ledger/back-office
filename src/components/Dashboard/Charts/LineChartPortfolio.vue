@@ -1,6 +1,7 @@
 <script>
 import { Line } from 'vue-chartjs'
 import { format } from 'date-fns'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   extends: Line,
@@ -10,6 +11,9 @@ export default {
       required: false
     }
   },
+  mixins: [
+    currencySymbol
+  ],
   watch: {
     data () {
       this.updateChart()
@@ -20,6 +24,7 @@ export default {
   },
   methods: {
     updateChart () {
+      const symbol = this.getSymbol
       let scales = {
         xAxes: [{
           gridLines: {
@@ -65,7 +70,7 @@ export default {
           callbacks: {
             label: function (tooltipItem, data) {
               const value = data.datasets[0].data[tooltipItem.index] || 0
-              return `${value.toFixed(2)} ₽`
+              return `${value.toFixed(2)} ${symbol}`
             }
           }
         },

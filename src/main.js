@@ -5,8 +5,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import VueLocalStorage from 'vue-localstorage'
-
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -18,14 +16,6 @@ import 'cryptocoins-icons/webfont/cryptocoins.css'
 
 library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)
 Vue.component('fa-icon', FontAwesomeIcon)
-
-Vue.use(VueLocalStorage)
-Vue.localStorage.set('settings', JSON.stringify({
-  view: {
-    fiat: 'RUB',
-    crypto: 'BTC'
-  }
-}))
 
 // TODO: import only necessary components
 Vue.use(ElementUI, { locale })
