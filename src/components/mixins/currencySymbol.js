@@ -5,14 +5,8 @@ const symbols = {
 }
 
 const currencySymbol = {
-  methods: {
-    assetName (assetId) {
-      const wallet = this.$store.getters.wallets.find(w => w.assetId === assetId) || {}
-      return wallet.asset
-    }
-  },
   computed: {
-    currencySymbol () {
+    getSymbol () {
       const view = this.$store.getters.settingsView.fiat
       return symbols[view]
     }

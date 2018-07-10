@@ -18,7 +18,7 @@
           <div class="table_body-content" @click="selectCrypto(value.asset)">
             <el-col :span="8">{{ value | formatName }}</el-col>
             <el-col :span="8">
-              <span class="balance">{{ value.price | formatBalance }}</span>
+              <span class="balance">{{ value.price | formatBalance }} {{ getSymbol }}</span>
             </el-col>
             <el-col :span="8">
               <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
@@ -34,6 +34,7 @@
 
 <script>
 import _ from 'lodash/collection'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   data () {
@@ -41,6 +42,9 @@ export default {
       filterInput: ''
     }
   },
+  mixins: [
+    currencySymbol
+  ],
   props: {
     portfolio: {
       type: Array,
@@ -59,7 +63,7 @@ export default {
   filters: {
     formatBalance (amount) {
       if (!amount) return ''
-      return `${amount.toFixed(2)} ₽`
+      return `${amount.toFixed(2)}`
     },
     formatName (crypto) {
       if (!crypto) return null

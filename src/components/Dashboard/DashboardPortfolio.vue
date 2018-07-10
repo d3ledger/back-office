@@ -13,7 +13,7 @@
             </el-row>
           </div>
           <div class="portfolio_current-price">
-            <p class="portfolio_current-price_value" justify="center">{{ price.value }} ₽</p>
+            <p class="portfolio_current-price_value" justify="center">{{ price.value }} {{ getSymbol }}</p>
           </div>
           <div class="portfolio_diff-price">
             <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatDifference }}</p>
@@ -35,12 +35,16 @@
 
 <script>
 import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'dashboard-portfolio',
   components: {
     LineChartPortfolio
   },
+  mixins: [
+    currencySymbol
+  ],
   props: {
     price: {
       type: Object,

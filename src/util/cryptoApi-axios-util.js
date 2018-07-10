@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getParsedItem } from 'util/storage-util'
 
 const API_URL = process.env.CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
 
@@ -8,11 +9,12 @@ let axiosAPI = axios.create({
 
 const loadPricesByLabels = axios => currencies => {
   const assets = currencies.map(crypto => crypto.asset).toString()
+  const currentFiat = getParsedItem('settings').view.fiat
   return axios
     .get('data/pricemulti', {
       params: {
         fsyms: assets,
-        tsyms: 'RUB'
+        tsyms: currentFiat
       }
     })
     .then(({ data }) => ({ prices: data }))
@@ -20,12 +22,13 @@ const loadPricesByLabels = axios => currencies => {
 }
 
 const loadHistoryByLabels = axios => currencies => {
+  const currentFiat = getParsedItem('settings').view.fiat
   const history = currencies.map(crypto => {
     return axios
       .get('data/histoday', {
         params: {
           fsym: crypto.asset,
-          tsym: 'RUB',
+          tsym: currentFiat,
           limit: 30
         }
       })
@@ -40,6 +43,7 @@ const loadHistoryByLabels = axios => currencies => {
 }
 
 const loadPriceByFilter = axios => ({ crypto, filter }) => {
+  const currentFiat = getParsedItem('settings').view.fiat
   const dateFilter = {
     'ALL': {
       url: 'histoday',
@@ -71,7 +75,7 @@ const loadPriceByFilter = axios => ({ crypto, filter }) => {
     .get(`data/${search.url}`, {
       params: {
         fsym: crypto,
-        tsym: 'RUB',
+        tsym: currentFiat,
         limit: search.time
       }
     })
@@ -80,11 +84,14 @@ const loadPriceByFilter = axios => ({ crypto, filter }) => {
 }
 
 const loadFullData = axios => asset => {
+  const settings = getParsedItem('settings').view
+  const currentFiat = settings.fiat
+  const currentCrypto = settings.crypto
   return axios
     .get('data/pricemultifull', {
       params: {
         fsyms: asset,
-        tsyms: 'RUB,BTC'
+        tsyms: `${currentFiat},${currentCrypto}`
       }
     })
     .then(({ data }) => data)
