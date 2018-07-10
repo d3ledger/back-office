@@ -26,6 +26,10 @@
           <fa-icon icon="file-invoice" class="menu-icon" />
           <span slot="title">Reports</span>
         </el-menu-item>
+        <el-menu-item index="/settings">
+          <fa-icon icon="cog" class="menu-icon" />
+          <span slot="title">Settings</span>
+        </el-menu-item>
         <el-menu-item index="/logout" @click="logout">
           <fa-icon icon="sign-out-alt" class="menu-icon" />
           <span slot="title">Logout</span>
