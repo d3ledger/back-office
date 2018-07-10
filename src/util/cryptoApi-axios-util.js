@@ -19,6 +19,26 @@ const loadPricesByLabels = axios => currencies => {
     .catch(error => ({ error }))
 }
 
+const loadHistoryByLabels = axios => currencies => {
+  const history = currencies.map(crypto => {
+    return axios
+      .get('data/histoday', {
+        params: {
+          fsym: crypto.asset,
+          tsym: 'RUB',
+          limit: 30
+        }
+      })
+  })
+  return Promise.all(history)
+    .then(h => h.map(({ data }, index) => {
+      return {
+        data: data.Data,
+        asset: currencies[index].asset
+      }
+    }))
+}
+
 const loadPriceByFilter = axios => ({ crypto, filter }) => {
   const dateFilter = {
     'ALL': {
@@ -64,7 +84,7 @@ const loadFullData = axios => asset => {
     .get('data/pricemultifull', {
       params: {
         fsyms: asset,
-        tsyms: 'RUB'
+        tsyms: 'RUB,BTC'
       }
     })
     .then(({ data }) => data)
@@ -73,6 +93,7 @@ const loadFullData = axios => asset => {
 
 export default {
   loadPricesByLabels: loadPricesByLabels(axiosAPI),
+  loadHistoryByLabels: loadHistoryByLabels(axiosAPI),
   loadPriceByFilter: loadPriceByFilter(axiosAPI),
   loadFullData: loadFullData(axiosAPI)
 }
