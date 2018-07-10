@@ -21,10 +21,9 @@
               <span class="balance">{{ value.price | formatBalance }}</span>
             </el-col>
             <el-col :span="8">
-              <!-- TODO: Finish this trend -->
-              <!-- <span :class="[Math.round(Math.random()) ? 'uptrend' : 'downtrend']">
-                {{ value.changes || '4 000 ₽ (54 %)' }}
-              </span> -->
+              <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
+                {{ value | formatDiff }}
+              </span>
             </el-col>
           </div>
         </div>
@@ -50,8 +49,10 @@ export default {
   },
   computed: {
     filteredPortfolio () {
-      return this.portfolio.filter(animal => {
-        return _.includes(animal.name.toLowerCase(), this.filterInput.toLowerCase())
+      return this.portfolio.filter(crypto => {
+        const isName = _.includes(crypto.name.toLowerCase(), this.filterInput.toLowerCase())
+        const isAsset = _.includes(crypto.asset.toLowerCase(), this.filterInput.toLowerCase())
+        return isName || isAsset
       })
     }
   },
@@ -63,6 +64,10 @@ export default {
     formatName (crypto) {
       if (!crypto) return null
       return `${crypto.name} (${crypto.asset})`
+    },
+    formatDiff (crypto) {
+      if (!crypto) return null
+      return `${crypto.diff.toFixed(2)} (${crypto.percent.toFixed(2)}%)`
     }
   },
   methods: {
@@ -120,10 +125,10 @@ export default {
 }
 
 .table_body-item .uptrend {
-  color: #ff1339;
+  color: #06b023;
 }
 
 .table_body-item .downtrend {
-  color: #06b023;
+  color: #ff1339;
 }
 </style>
