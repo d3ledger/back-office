@@ -19,7 +19,7 @@
                 <div>
                   <el-row class="currencies_list">
                     <el-col>
-                      <el-radio-group v-model="selectedFiat" size="small" @input="selectFiat">
+                      <el-radio-group v-model="currentFiat" size="small">
                         <el-radio
                           v-for="(value, index) in fiatCurrencies"
                           :key="index"
@@ -31,7 +31,7 @@
                   </el-row>
                   <el-row class="currencies_list">
                     <el-col>
-                      <el-radio-group v-model="selectedCrypto" size="small" @input="selectCrypto">
+                      <el-radio-group v-model="currentCrypto" size="small">
                         <el-radio
                           v-for="(value, index) in cryptoCurrencies"
                           :key="index"
@@ -57,29 +57,26 @@ export default {
   data () {
     return {
       fiatCurrencies: ['RUB', 'USD', 'EUR'],
-      cryptoCurrencies: ['BTC', 'ETH', 'XRP'],
-      selectedFiat: 'RUB',
-      selectedCrypto: 'BTC',
-      settings: {}
+      cryptoCurrencies: ['BTC', 'ETH', 'XRP']
     }
   },
-  methods: {
-    selectFiat (value) {
-      this.settings.view.fiat = value
-      this.$localStorage.set('settings', JSON.stringify(this.settings))
+  computed: {
+    currentFiat: {
+      get () {
+        return this.$store.getters.settingsView.fiat
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewFiat', value)
+      }
     },
-    selectCrypto (value) {
-      this.settings.view.crypto = value
-      this.$localStorage.set('settings', JSON.stringify(this.settings))
+    currentCrypto: {
+      get () {
+        return this.$store.getters.settingsView.crypto
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewCrypto', value)
+      }
     }
-  },
-  mounted () {
-    this.settings = JSON.parse(this.$localStorage.get('settings'))
-    if (this.settings) {
-      this.selectedFiat = this.settings.view.fiat
-      this.selectedCrypto = this.settings.view.crypto
-    }
-    // this.test()
   }
 }
 </script>

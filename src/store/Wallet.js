@@ -100,7 +100,7 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit }, { asset }) {
+  getCryptoFullData ({ commit, getters }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
     return cryptoCompareUtil.loadFullData(asset)
       .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))

@@ -43,13 +43,13 @@
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} ₽</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ getSymbol }}</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} BTC</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}</p>
                     <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.crypto_change | formatPercent }}
                     </p>
@@ -58,12 +58,12 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} ₽</p>
+                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ getSymbol }}</p>
                     <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} ₽</p>
+                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ getSymbol }}</p>
                     <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
@@ -241,12 +241,14 @@ import { mapActions, mapGetters } from 'vuex'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'wallet',
   mixins: [
     dateFormat,
-    numberFormat
+    numberFormat,
+    currencySymbol
   ],
   components: {
     AssetIcon
@@ -267,7 +269,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'cryptoInfo'
+      'cryptoInfo',
+      'settingsView'
     ]),
     wallet () {
       const walletId = this.$route.params.walletId
