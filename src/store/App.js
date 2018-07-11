@@ -5,27 +5,40 @@ const types = {
 
 function initialState () {
   return {
-    approvalDialogVisible: false
+    approvalDialogVisible: false,
+    resolvePrompting: null,
+    rejectPrompting: null
   }
 }
 
 const state = initialState()
 
 const mutations = {
-  [types.APPROVAL_DIALOG_OPEN] (state) {
+  [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting }) {
     state.approvalDialogVisible = true
+    state.resolvePrompting = resolvePrompting
+    state.rejectPrompting = rejectPrompting
   },
-  [types.APPROVAL_DIALOG_CLOSE] (state) {
+  [types.APPROVAL_DIALOG_CLOSE] (state, privateKey) {
     state.approvalDialogVisible = false
+    state.resolvePrompting(privateKey)
   }
 }
 
 const actions = {
   openApprovalDialog ({ commit }) {
-    commit(types.APPROVAL_DIALOG_OPEN)
+    let resolvePrompting, rejectPrompting
+    const prompting = new Promise((resolve, reject) => {
+      resolvePrompting = resolve
+      rejectPrompting = reject
+    })
+
+    commit(types.APPROVAL_DIALOG_OPEN, { resolvePrompting, rejectPrompting })
+
+    return prompting
   },
-  closeApprovalDialog ({ commit }) {
-    commit(types.APPROVAL_DIALOG_CLOSE)
+  closeApprovalDialog ({ commit }, privateKey) {
+    commit(types.APPROVAL_DIALOG_CLOSE, privateKey)
   }
 }
 
