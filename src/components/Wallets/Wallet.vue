@@ -218,7 +218,7 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="fullwidth black clickable" @click="() => {openApprovalDialog(); onSubmit();}" style="margin-top: 40px" :loading="isSending">TRANSFER</el-button>
+      <el-button class="fullwidth black clickable" @click="onSubmit" style="margin-top: 40px" :loading="isSending">TRANSFER</el-button>
     </el-dialog>
   </div>
 </template>
@@ -312,12 +312,18 @@ export default {
     },
 
     onSubmit () {
-      this.isSending = true
-      this.$store.dispatch('transferAsset', {
-        assetId: this.wallet.assetId,
-        to: this.transferForm.to,
-        amount: this.transferForm.amount
-      })
+      this.openApprovalDialog()
+        .then(privateKey => {
+          console.log(privateKey)
+
+          this.isSending = true
+
+          return this.$store.dispatch('transferAsset', {
+            assetId: this.wallet.assetId,
+            to: this.transferForm.to,
+            amount: this.transferForm.amount
+          })
+        })
         .then(() => {
           this.$message({
             message: 'Transfer successful!',

@@ -39,7 +39,7 @@
      title="Approve transaction"
      :visible="approvalDialogVisible"
      width="500px"
-     @close="closeApprovalDialog"
+     @close="closeApprovalDialog()"
      center
    >
      <el-form>
@@ -58,7 +58,7 @@
        <el-form-item style="margin-bottom: 0;">
          <el-button
            class="fullwidth black clickable"
-           @click="closeApprovalDialog"
+           @click="closeApprovalDialog(privateKey)"
          >
            Confirm
          </el-button>
