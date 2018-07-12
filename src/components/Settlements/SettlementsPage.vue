@@ -152,6 +152,8 @@ export default {
 
       this.openApprovalDialog()
         .then(privateKey => {
+          if (!privateKey) return
+
           return this.$store.dispatch('createSettlement', {
             privateKey,
             to: s.to,
@@ -160,20 +162,20 @@ export default {
             requestAssetId: s.request_asset,
             requestAmount: s.request_amount
           })
-        })
-        .then(() => {
-          this.$message('New settlement has successfully been created')
-        })
-        .catch(err => {
-          console.error(err)
-          this.$message('Failed to create new settlement')
-        })
-        .finally(() => {
-          Object.assign(
-            this.$data.settlementForm,
-            this.$options.data().settlementForm
-          )
-          this.settlementFormVisible = false
+            .then(() => {
+              this.$message('New settlement has successfully been created')
+            })
+            .catch(err => {
+              console.error(err)
+              this.$message('Failed to create new settlement')
+            })
+            .finally(() => {
+              Object.assign(
+                this.$data.settlementForm,
+                this.$options.data().settlementForm
+              )
+              this.settlementFormVisible = false
+            })
         })
     }
   }
