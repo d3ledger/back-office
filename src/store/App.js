@@ -26,6 +26,17 @@ const mutations = {
 }
 
 const actions = {
+  /*
+   * openApprovalDialog returns a Promise and closeApprovalDialog resolves it.
+   * This allows the caller to simply chain postprocesses like this:
+   * ```
+   *  openApprovalDialog().then(input => ...)
+   * ```
+   *
+   * It does a hacky way of exporting resolve/reject outside Promise in order to
+   * resolve the Promise at closeApprovalDialog.
+   * c.f. https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope
+   */
   openApprovalDialog ({ commit }) {
     let resolvePrompting, rejectPrompting
     const prompting = new Promise((resolve, reject) => {
