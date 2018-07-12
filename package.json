@@ -27,6 +27,7 @@
     "iroha-lib": "0.1.7",
     "lodash": "^4.17.10",
     "source-map-support": "^0.5.4",
+    "timezones.json": "^1.4.3",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.3.2",
     "vue-router": "^3.0.1",
