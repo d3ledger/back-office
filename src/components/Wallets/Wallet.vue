@@ -317,6 +317,8 @@ export default {
     onSubmitWithdrawalForm () {
       this.openApprovalDialog()
         .then(privateKey => {
+          if (!privateKey) return
+
           // TODO: withdrawal process
 
           this.withdrawFormVisible = false
@@ -326,6 +328,8 @@ export default {
     onSubmitTransferForm () {
       this.openApprovalDialog()
         .then(privateKey => {
+          if (!privateKey) return
+
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
@@ -334,21 +338,21 @@ export default {
             to: this.transferForm.to,
             amount: this.transferForm.amount
           })
-        })
-        .then(() => {
-          this.$message({
-            message: 'Transfer successful!',
-            type: 'success'
-          })
-          this.resetTransferForm()
-          this.fetchWallet()
-          this.transferFormVisible = false
-        })
-        .catch(err => {
-          console.error(err)
-          this.$alert(err.message, 'Transfer error', {
-            type: 'error'
-          })
+            .then(() => {
+              this.$message({
+                message: 'Transfer successful!',
+                type: 'success'
+              })
+              this.resetTransferForm()
+              this.fetchWallet()
+              this.transferFormVisible = false
+            })
+            .catch(err => {
+              console.error(err)
+              this.$alert(err.message, 'Transfer error', {
+                type: 'error'
+              })
+            })
         })
         .finally(() => { this.isSending = false })
     },
