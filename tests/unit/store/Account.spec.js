@@ -43,13 +43,18 @@ describe('Account store', () => {
     transferAsset: () => Promise.resolve()
   })
 
+  const notaryUtilMock = {
+    signup: () => Promise.resolve()
+  }
+
   let types, mutations, actions, getters
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
       'util/iroha-util': irohaUtilMock,
       'util/iroha-amount': require('../../../src/util/iroha-amount'),
-      'util/store-util': require('../../../src/util/store-util')
+      'util/store-util': require('../../../src/util/store-util'),
+      'util/notary-util': notaryUtilMock
     }).default)
   })
 
