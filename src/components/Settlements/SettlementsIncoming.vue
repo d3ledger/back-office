@@ -103,10 +103,7 @@ export default {
       settlementForAcceptance: null,
 
       rejectionDialogVisible: false,
-      settlementForRejection: null,
-
-      cancellationDialogVisible: false,
-      settlementForcancellation: null
+      settlementForRejection: null
     }
   },
 
@@ -130,9 +127,14 @@ export default {
     },
 
     onAccept () {
-      this.$store.dispatch('acceptSettlement', {
-        settlementHash: this.settlementForAcceptance.id
-      })
+      this.openApprovalDialog()
+        .then(privateKey => {
+          console.log(`accept: privateKey=${privateKey}`)
+
+          return this.$store.dispatch('acceptSettlement', {
+            settlementHash: this.settlementForAcceptance.id
+          })
+        })
         .then(() => {
           this.$message('Accepted')
           this.fetchAllUnsignedTransactions()
@@ -145,9 +147,14 @@ export default {
     },
 
     onReject () {
-      this.$store.dispatch('rejectSettlement', {
-        settlementHash: this.settlementForRejection.id
-      })
+      this.openApprovalDialog()
+        .then(privateKey => {
+          console.log(`reject: privateKey=${privateKey}`)
+
+          return this.$store.dispatch('rejectSettlement', {
+            settlementHash: this.settlementForRejection.id
+          })
+        })
         .then(() => {
           this.$message('Rejected')
           this.fetchAllUnsignedTransactions()
@@ -157,21 +164,6 @@ export default {
           this.$message('Failed to reject')
         })
         .finally(() => { this.rejectionDialogVisible = false })
-    },
-
-    onCancel () {
-      this.$store.dispatch('cancelSettlement', {
-        settlementHash: this.settlementForcancellation.id
-      })
-        .then(() => {
-          this.$message('Canceled')
-          this.fetchAllUnsignedTransactions()
-        })
-        .catch(err => {
-          console.error(err)
-          this.$message('Failed to cancel')
-        })
-        .finally(() => { this.cancellationDialogVisible = false })
     }
   }
 }
