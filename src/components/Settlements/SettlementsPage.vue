@@ -101,7 +101,7 @@
       </el-form>
       <el-button
         class="fullwidth black clickable"
-        @click="openApprovalDialog"
+        @click="onSubmitSettlementForm"
         style="margin-top: 40px"
       >
         EXCHANGE
@@ -147,16 +147,21 @@ export default {
     ...mapActions([
       'openApprovalDialog'
     ]),
-    onCreateSettlement () {
-      const s = this.newSettlementForm
+    onSubmitSettlementForm () {
+      const s = this.settlementForm
 
-      this.$store.dispatch('createSettlement', {
-        to: s.to,
-        offerAssetId: s.offer_asset,
-        offerAmount: s.offer_amount,
-        requestAssetId: s.request_asset,
-        requestAmount: s.request_amount
-      })
+      this.openApprovalDialog()
+        .then(privateKey => {
+          console.log(`settlement: privateKey=${privateKey}`)
+
+          return this.$store.dispatch('createSettlement', {
+            to: s.to,
+            offerAssetId: s.offer_asset,
+            offerAmount: s.offer_amount,
+            requestAssetId: s.request_asset,
+            requestAmount: s.request_amount
+          })
+        })
         .then(() => {
           this.$message('New settlement has successfully been created')
         })
@@ -166,10 +171,10 @@ export default {
         })
         .finally(() => {
           Object.assign(
-            this.$data.newSettlementForm,
-            this.$options.data().newSettlementForm
+            this.$data.settlementForm,
+            this.$options.data().settlementForm
           )
-          this.newSettlementFormVisible = false
+          this.settlementFormVisible = false
         })
     }
   }
