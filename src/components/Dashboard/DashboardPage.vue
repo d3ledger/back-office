@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="column-fullheight" style="padding: 20px;">
+  <el-container>
+    <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
           <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
@@ -10,15 +10,19 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="10" class="portfolio_card-padding">
-          <dashboard-table :portfolio="portfolioList"/>
-        </el-col>
-        <el-col :span="14">
-          <dashboard-chart />
+        <el-col :span="24">
+          <el-row>
+            <el-col :span="8">
+              <dashboard-table :portfolio="portfolioList"/>
+            </el-col>
+            <el-col :span="16">
+              <dashboard-chart />
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
-    </div>
-  </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -37,8 +41,7 @@ export default {
     DashboardChart
   },
   data () {
-    return {
-    }
+    return {}
   },
   mounted () {
     this.$store.dispatch('loadDashboard')

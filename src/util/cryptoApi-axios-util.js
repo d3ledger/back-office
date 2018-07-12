@@ -6,19 +6,6 @@ let axiosAPI = axios.create({
   baseURL: API_URL
 })
 
-const loadPricesByLabels = axios => currencies => {
-  const assets = currencies.map(crypto => crypto.asset).toString()
-  return axios
-    .get('data/pricemulti', {
-      params: {
-        fsyms: assets,
-        tsyms: 'RUB'
-      }
-    })
-    .then(({ data }) => ({ prices: data }))
-    .catch(error => ({ error }))
-}
-
 const loadHistoryByLabels = axios => currencies => {
   const history = currencies.map(crypto => {
     return axios
@@ -92,7 +79,6 @@ const loadFullData = axios => asset => {
 }
 
 export default {
-  loadPricesByLabels: loadPricesByLabels(axiosAPI),
   loadHistoryByLabels: loadHistoryByLabels(axiosAPI),
   loadPriceByFilter: loadPriceByFilter(axiosAPI),
   loadFullData: loadFullData(axiosAPI)

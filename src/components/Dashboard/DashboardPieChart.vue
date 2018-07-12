@@ -1,21 +1,47 @@
 <template>
   <el-card class="card">
-    <div slot="header">
-      Portfolio structure
-    </div>
     <el-row>
-      <el-col :span="10">
+      <el-col :span="11">
         <div class="list_crypto">
-          <p v-for="(item, index) in portfolio"
-            :key="index"
-            >
-            <span class="list_crypto-color"
-              :style="{ backgroundColor: `#${item.color}` }"></span> {{item.asset}}
-          </p>
+          <div class="list_crypto-content">
+            <div v-for="(item, index) in portfolio"
+              :key="index"
+              class="list_crypto-content-item"
+              >
+              <span class="list_crypto-content-color"
+                :style="{ backgroundColor: `#${item.color}` }"></span>
+              <p class="list_crypto-content-asset">{{item.asset}}</p>
+            </div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+            <div data-v-653f2a0b="" class="list_crypto-content-item"><span data-v-653f2a0b="" class="list_crypto-content-color" style="background-color: rgb(255, 176, 85);"></span> <p data-v-653f2a0b="" class="list_crypto-content-asset">BTC</p></div>
+          </div>
         </div>
       </el-col>
-      <el-col :span="14">
-        <donat-chart :height="100" :width="100" :data="portfolio"/>
+      <el-col :span="13">
+        <donat-chart :style="{ margin: '-0.5rem 0rem 0rem 0rem' }" :height="200" :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
@@ -47,26 +73,38 @@ export default {
 }
 
 .list_crypto {
+  height: 190px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.list_crypto-content {
   display: flex;
   flex-wrap: wrap;
+
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 17px;
+  box-sizing: content-box;
 }
 
-.list_crypto p {
-  width: 90px;
-  margin-bottom: 1.7rem;
+.list_crypto-content .list_crypto-content-item {
+  width: 3.5rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
 }
 
-.list_crypto p:nth-child(3n) {
-  margin-bottom: 0rem;
-}
-
-.list_crypto-color {
+.list_crypto-content-color {
   width: 1rem;
   height: 1rem;
-  margin-right: 5px;
   border-radius: 1rem;
   display: inline-block;
-  background-color: #5a85e8;
+  background-color: #445886;
+}
+
+.list_crypto-content-asset {
+  float: right;
 }
 
 </style>
