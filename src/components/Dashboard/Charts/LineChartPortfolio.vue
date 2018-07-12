@@ -19,9 +19,6 @@ export default {
       this.updateChart()
     }
   },
-  mounted () {
-    this.updateChart()
-  },
   methods: {
     updateChart () {
       const symbol = this.getSymbol

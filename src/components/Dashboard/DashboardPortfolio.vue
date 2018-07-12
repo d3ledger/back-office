@@ -65,11 +65,7 @@ export default {
 
 <style scoped>
 .portfolio_left {
-  margin-right: 30px;
-
-}
-.portfolio_card-padding {
-  padding-right: 10px;
+  margin-right: 20px;
 }
 .card {
   height: 14rem;
