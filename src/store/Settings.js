@@ -56,6 +56,10 @@ const mutations = {
 
   [types.UPDATE_SETTINGS_VIEW_CRYPTO] (state, crypto) {
     Vue.set(state.view, 'crypto', crypto)
+  },
+
+  [types.UPDATE_SETTINGS_VIEW_TIMEZONE] (state, timezone) {
+    state.view.timezone = timezone
   }
 }
 
