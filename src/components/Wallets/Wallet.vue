@@ -164,7 +164,7 @@
         <el-form-item style="margin-bottom: 0;">
           <el-button
             class="fullwidth black clickable"
-            @click="openApprovalDialog"
+            @click="onSubmitWithdrawalForm"
             :loading="isSending"
             style="margin-top: 40px"
           >
@@ -222,7 +222,12 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="fullwidth black clickable" @click="onSubmit" style="margin-top: 40px" :loading="isSending">TRANSFER</el-button>
+      <el-button
+        class="fullwidth black clickable"
+        @click="onSubmitTransferForm"
+        style="margin-top: 40px"
+        :loading="isSending"
+      >TRANSFER</el-button>
     </el-dialog>
   </div>
 </template>
@@ -307,10 +312,19 @@ export default {
         })
     },
 
-    onSubmit () {
+    onSubmitWithdrawalForm () {
       this.openApprovalDialog()
         .then(privateKey => {
-          console.log(privateKey)
+          console.log(`withdrawal: privateKey=${privateKey}`)
+
+          // TODO: withdrawal process
+        })
+    },
+
+    onSubmitTransferForm () {
+      this.openApprovalDialog()
+        .then(privateKey => {
+          console.log(`transfer: privateKey=${privateKey}`)
 
           this.isSending = true
 
