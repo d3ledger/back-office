@@ -21,8 +21,7 @@ const types = _([
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT',
-  'CANCEL_SETTLEMENT'
+  'REJECT_SETTLEMENT'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -220,14 +219,6 @@ const mutations = {
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
     handleError(state, err)
-  },
-
-  [types.CANCEL_SETTLEMENT_REQUEST] (state) {},
-
-  [types.CANCEL_SETTLEMENT_SUCCESS] (state) {},
-
-  [types.CANCEL_SETTLEMENT_FAILURE] (state, err) {
-    handleError(state, err)
   }
 }
 
@@ -385,19 +376,6 @@ const actions = {
       })
       .catch(err => {
         commit(types.REJECT_SETTLEMENT_FAILURE, err)
-        throw err
-      })
-  },
-
-  cancelSettlement ({ commit, state }, { settlementHash }) {
-    commit(types.CANCEL_SETTLEMENT_REQUEST, settlementHash)
-
-    return irohaUtil.cancelSettlement()
-      .then(() => {
-        commit(types.CANCEL_SETTLEMENT_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.CANCEL_SETTLEMENT_FAILURE, err)
         throw err
       })
   }

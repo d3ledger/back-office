@@ -135,15 +135,6 @@ function rejectSettlement () {
   })
 }
 
-// TODO: implement it
-function cancelSettlement () {
-  debug('starting cancelSettlement...')
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 500)
-  })
-}
-
 /*
  * ===== queries =====
  */
@@ -605,7 +596,6 @@ module.exports = {
   generateKeypair,
   acceptSettlement,
   rejectSettlement,
-  cancelSettlement,
 
   // queries
   getAccount,
