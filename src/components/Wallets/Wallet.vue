@@ -329,6 +329,7 @@ export default {
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
+            privateKey,
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             amount: this.transferForm.amount
