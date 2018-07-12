@@ -132,6 +132,7 @@ export default {
           console.log(`accept: privateKey=${privateKey}`)
 
           return this.$store.dispatch('acceptSettlement', {
+            privateKey,
             settlementHash: this.settlementForAcceptance.id
           })
         })
@@ -152,6 +153,7 @@ export default {
           console.log(`reject: privateKey=${privateKey}`)
 
           return this.$store.dispatch('rejectSettlement', {
+            privateKey,
             settlementHash: this.settlementForRejection.id
           })
         })

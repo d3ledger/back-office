@@ -155,6 +155,7 @@ export default {
           console.log(`settlement: privateKey=${privateKey}`)
 
           return this.$store.dispatch('createSettlement', {
+            privateKey,
             to: s.to,
             offerAssetId: s.offer_asset,
             offerAmount: s.offer_amount,
