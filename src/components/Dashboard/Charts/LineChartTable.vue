@@ -19,9 +19,6 @@ export default {
       this.updateChart()
     }
   },
-  mounted () {
-    this.updateChart()
-  },
   methods: {
     updateChart () {
       let scales = {
@@ -31,7 +28,9 @@ export default {
             drawTicks: true
           },
           ticks: {
-            display: true
+            display: true,
+            autoSkip: true,
+            maxTicksLimit: 10
           }
         }],
         yAxes: [{
@@ -77,9 +76,9 @@ export default {
     },
     convertDate (num) {
       const filterFormat = {
-        'ALL': 'DD/MM/YYYY',
-        '1Y': 'MMMM',
-        '1M': 'DD MMMM',
+        'ALL': 'MMM\'YY',
+        '1Y': 'MMM\'YY',
+        '1M': 'DD MMM',
         '1W': 'dddd',
         '1D': 'HH:mm',
         '1H': 'HH:mm'
