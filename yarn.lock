@@ -9205,9 +9205,9 @@ timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
-timsort@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
+timezones.json@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/timezones.json/-/timezones.json-1.4.3.tgz#06cbac38137b3ceafca381d826d210ac315e2eb3"
 
 tmp@^0.0.33:
   version "0.0.33"

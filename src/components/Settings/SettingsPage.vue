@@ -50,11 +50,7 @@
                 <div>
                   <el-row>
                     <el-col>
-                      <el-select
-                        class="time-zone_select"
-                        v-model="currentZone"
-                        filterable
-                        placeholder="Select">
+                      <el-select v-model="currentZone" filterable placeholder="Select">
                         <el-option
                           v-for="(zone, index) in timezones"
                           :key="index"
@@ -76,6 +72,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   name: 'settings-page',
