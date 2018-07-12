@@ -227,7 +227,9 @@
         @click="onSubmitTransferForm"
         style="margin-top: 40px"
         :loading="isSending"
-      >TRANSFER</el-button>
+      >
+        TRANSFER
+      </el-button>
     </el-dialog>
   </div>
 </template>
