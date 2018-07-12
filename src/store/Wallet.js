@@ -1,5 +1,6 @@
+import Vue from 'vue'
 import _ from 'lodash'
-import axios from 'util/cryptoApi-axios-util'
+import cryptoCompareUtil from 'util/cryptoApi-axios-util'
 
 const types = _([
   'GET_CRYPTO_FULL_DATA'
@@ -67,7 +68,7 @@ const mutations = {
   [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
     const compareToRUB = Object.values(RAW)[0].RUB
     const compareToCrypto = Object.values(RAW)[0].BTC
-    state.cryptoInfo = {
+    Vue.set(state, 'cryptoInfo', {
       current: {
         rur: compareToRUB.PRICE,
         rur_change: compareToRUB.CHANGEDAY,
@@ -85,7 +86,7 @@ const mutations = {
         },
         supply: compareToRUB.SUPPLY
       }
-    }
+    })
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
@@ -96,7 +97,7 @@ const mutations = {
 const actions = {
   getCryptoFullData ({ commit }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
-    axios.loadFullData(asset)
+    cryptoCompareUtil.loadFullData(asset)
       .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
       .catch(err => commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err))
   }
