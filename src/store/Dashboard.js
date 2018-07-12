@@ -1,7 +1,9 @@
+import Vue from 'vue'
 import _ from 'lodash'
-import axios from 'util/cryptoApi-axios-util'
+import cryptoCompareUtil from 'util/cryptoApi-axios-util'
 
 const types = _([
+  'LOAD_DASHBOARD',
   'GET_PRICE_BY_FILTER',
   'GET_PORTFOLIO_HISTORY'
 ]).chain()
@@ -12,8 +14,7 @@ const types = _([
     'GET_PORTFOLIO_PRICE_LIST',
     'GET_PORTFOLIO_PRICE_PERCENTAGE',
     'SELECT_CHART_FILTER',
-    'SELECT_CHART_CRYPTO',
-    'LOAD_DASHBOARD'
+    'SELECT_CHART_CRYPTO'
   ])
   .map(x => [x, x])
   .fromPairs()
@@ -62,10 +63,11 @@ function initialState () {
     },
     assetList: [],
     assetChart: {
-      filter: 'ALL',
+      filter: '1Y',
       crypto: 'BTC',
       data: []
     },
+    isLoading: false,
     connectionError: null
   }
 }
@@ -90,6 +92,9 @@ const getters = {
   },
   connectionError (state) {
     return state.connectionError
+  },
+  dashboardLoading (state) {
+    return state.isLoading
   }
 }
 
@@ -112,15 +117,15 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_FULL_PRICE] (state, { value, diff, percent }) {
-    state.portfolio.assetsFullPrice = {
+    Vue.set(state.portfolio, 'assetsFullPrice', {
       diff: diff.toFixed(2),
       value: value.toFixed(2),
       percent: percent.toFixed(2)
-    }
+    })
   },
 
   [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, percent) {
-    state.portfolio.assetsPercentage = percent
+    Vue.set(state.portfolio, 'assetsPercentage', percent)
   },
 
   [types.GET_PORTFOLIO_PRICE_LIST] (state, list) {
@@ -130,7 +135,7 @@ const mutations = {
   [types.GET_PRICE_BY_FILTER_REQUEST] (state) {},
 
   [types.GET_PRICE_BY_FILTER_SUCCESS] (state, data) {
-    state.assetChart.data = data
+    Vue.set(state.assetChart, 'data', data)
   },
 
   [types.GET_PRICE_BY_FILTER_FAILURE] (state, err) {
@@ -140,7 +145,7 @@ const mutations = {
   [types.GET_PORTFOLIO_HISTORY_REQUEST] (state) {},
 
   [types.GET_PORTFOLIO_HISTORY_SUCCESS] (state, data) {
-    state.portfolio.assetsHistory = data
+    Vue.set(state.portfolio, 'assetsHistory', data)
   },
 
   [types.GET_PORTFOLIO_HISTORY_FAILURE] (state, err) {
@@ -148,28 +153,41 @@ const mutations = {
   },
 
   [types.SELECT_CHART_FILTER] (state, filter) {
-    state.assetChart.filter = filter
+    Vue.set(state.assetChart, 'filter', filter)
   },
 
   [types.SELECT_CHART_CRYPTO] (state, crypto) {
-    state.assetChart.crypto = crypto
+    Vue.set(state.assetChart, 'crypto', crypto)
   },
 
-  [types.LOAD_DASHBOARD] (state) {}
+  [types.LOAD_DASHBOARD_REQUEST] (state) {
+    state.isLoading = true
+  },
+
+  [types.LOAD_DASHBOARD_SUCCESS] (state) {
+    state.isLoading = false
+  },
+
+  [types.LOAD_DASHBOARD_FAILURE] (state, err) {
+    state.isLoading = false
+    handleError(state, err)
+  }
 }
 
 const actions = {
   loadDashboard ({ dispatch, commit, getters }) {
-    commit('LOAD_DASHBOARD')
+    commit(types.LOAD_DASHBOARD_REQUEST)
     dispatch('getAccountAssets')
       .then(() => {
         dispatch('getPortfolioHistory')
         dispatch('getPriceByFilter', getters.portfolioChart)
       })
+      .then(() => commit(types.LOAD_DASHBOARD_SUCCESS))
+      .catch((err) => commit(types.LOAD_DASHBOARD_FAILURE, err))
   },
   getPortfolioHistory ({ commit, dispatch, getters }) {
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
-    axios.loadHistoryByLabels(getters.wallets)
+    cryptoCompareUtil.loadHistoryByLabels(getters.wallets)
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
         dispatch('calculatePortfolio')
@@ -187,7 +205,7 @@ const actions = {
     }
     const filter = getters.portfolioChart
     commit(types.GET_PRICE_BY_FILTER_REQUEST)
-    axios.loadPriceByFilter(filter)
+    cryptoCompareUtil.loadPriceByFilter(filter)
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
       .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
   },
@@ -199,7 +217,7 @@ const actions = {
       diff: today - prevDay,
       percent: 100 - ((prevDay * 100) / today)
     }
-    commit('GET_PORTFOLIO_FULL_PRICE', portfolio)
+    commit(types.GET_PORTFOLIO_FULL_PRICE, portfolio)
   },
   calculatePercentPortfolio ({ commit, getters }) {
     const today = _.last(getters.portfolioHistory)
@@ -213,7 +231,7 @@ const actions = {
         percent: (crypto.value.close * walletAsset.amount * 100) / today.sum
       })
     })
-    commit('GET_PORTFOLIO_PRICE_PERCENTAGE', currencies)
+    commit(types.GET_PORTFOLIO_PRICE_PERCENTAGE, currencies)
   },
   calculatePriceChange ({ commit, getters }) {
     const today = _.last(getters.portfolioHistory)
@@ -222,15 +240,17 @@ const actions = {
     today.data.map(crypto => {
       const walletAsset = getters.wallets.find(w => w.asset === crypto.asset)
       const prevDayAsset = prevDay.data.find(c => c.asset === crypto.asset)
+      const amountToday = walletAsset.amount * crypto.value.close
+      const amountPrevDay = walletAsset.amount * prevDayAsset.value.close
       currencies.push({
         asset: crypto.asset,
         name: walletAsset.name,
-        price: crypto.value.close,
-        diff: crypto.value.close - prevDayAsset.value.close,
-        percent: 100 - ((prevDayAsset.value.close * 100) / crypto.value.close)
+        price: amountToday,
+        diff: amountToday - amountPrevDay,
+        percent: 100 - ((amountPrevDay * 100) / amountToday)
       })
     })
-    commit('GET_PORTFOLIO_PRICE_LIST', currencies)
+    commit(types.GET_PORTFOLIO_PRICE_LIST, currencies)
   }
 }
 
