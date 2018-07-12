@@ -96,13 +96,13 @@
                 <div v-if="scope.row.settlement" style="background: #F8FFF0">
                   <p>This transaction is a part of a succesfull setllement:</p>
                   <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
-                  <p>Was <el-tag>created</el-tag> at {{ scope.row.settlement.date | formatDateLong}}</p>
+                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.settlement.date) }}</p>
                   <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
-                  {{ scope.row.settlement.date | formatDateLong}}</p>
+                  {{ formatDateLong(scope.row.settlement.date) }}</p>
                   <p>Message: {{ scope.row.settlement.message }}</p>
                 </div>
                 <div v-else>
-                  <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
                   <p>Message: {{ scope.row.message }}</p>
                 </div>
               </template>
@@ -124,7 +124,7 @@
             </el-table-column>
             <el-table-column label="Date" width="120">
               <template slot-scope="scope">
-                {{ scope.row.date | formatDate }}
+                {{ formatDate(scope.row.date) }}
               </template>
             </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
