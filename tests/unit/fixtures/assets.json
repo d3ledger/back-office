@@ -1,31 +1,5 @@
 [
   {
-    "assetId": "waves1#test",
-    "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 19769
-      },
-      "precision": 2
-    }
-  },
-  {
-    "assetId": "etherium1#test",
-    "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 100674179
-      },
-      "precision": 6
-    }
-  },
-  {
     "assetId": "bitcoin#test",
     "accountId": "admin@test",
     "balance": {
@@ -33,48 +7,74 @@
         "first": 0,
         "second": 0,
         "third": 0,
-        "fourth": 860720575
+        "fourth": 1080368522
       },
       "precision": 8
     }
   },
   {
-    "assetId": "waves#test",
+    "assetId": "bytecoin#test",
     "accountId": "admin@test",
     "balance": {
       "value": {
         "first": 0,
         "second": 0,
         "third": 0,
-        "fourth": 19816
+        "fourth": 100002
       },
       "precision": 2
     }
   },
   {
-    "assetId": "etherium#test",
+    "assetId": "ethereum#test",
     "accountId": "admin@test",
     "balance": {
       "value": {
         "first": 0,
         "second": 0,
         "third": 0,
-        "fourth": 99216037
+        "fourth": 1025
       },
-      "precision": 6
+      "precision": 2
     }
   },
   {
-    "assetId": "bitcoin1#test",
+    "assetId": "eos#test",
     "accountId": "admin@test",
     "balance": {
       "value": {
         "first": 0,
         "second": 0,
         "third": 0,
-        "fourth": 834074626
+        "fourth": 1080368522
       },
       "precision": 8
+    }
+  },
+  {
+    "assetId": "dogecoin#test",
+    "accountId": "admin@test",
+    "balance": {
+      "value": {
+        "first": 0,
+        "second": 0,
+        "third": 0,
+        "fourth": 20004
+      },
+      "precision": 2
+    }
+  },
+  {
+    "assetId": "aeon#test",
+    "accountId": "admin@test",
+    "balance": {
+      "value": {
+        "first": 0,
+        "second": 0,
+        "third": 0,
+        "fourth": 3003
+      },
+      "precision": 2
     }
   }
 ]
