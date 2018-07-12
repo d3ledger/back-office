@@ -152,8 +152,6 @@ export default {
 
       this.openApprovalDialog()
         .then(privateKey => {
-          console.log(`settlement: privateKey=${privateKey}`)
-
           return this.$store.dispatch('createSettlement', {
             privateKey,
             to: s.to,

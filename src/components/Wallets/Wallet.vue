@@ -315,17 +315,15 @@ export default {
     onSubmitWithdrawalForm () {
       this.openApprovalDialog()
         .then(privateKey => {
-          console.log(`withdrawal: privateKey=${privateKey}`)
-
           // TODO: withdrawal process
+
+          this.withdrawFormVisible = false
         })
     },
 
     onSubmitTransferForm () {
       this.openApprovalDialog()
         .then(privateKey => {
-          console.log(`transfer: privateKey=${privateKey}`)
-
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
