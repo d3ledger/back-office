@@ -11,7 +11,7 @@
             {{ scope.row.from }} want to exchange {{ scope.row.offer_amount + ' ' + scope.row.offer_asset}}
             for {{ scope.row.request_amount + ' ' + scope.row.request_asset}} with {{ scope.row.to }}
           </p>
-          <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+          <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
           <p>Message: {{ scope.row.message }}</p>
         </template>
       </el-table-column>
@@ -31,7 +31,7 @@
       </el-table-column>
       <el-table-column label="Date" width="120">
         <template slot-scope="scope">
-          {{ scope.row.date | formatDate }}
+          {{ formatDate(scope.row.date) }}
         </template>
       </el-table-column>
     </el-table>
