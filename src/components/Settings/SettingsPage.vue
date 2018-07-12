@@ -43,6 +43,25 @@
                   </el-row>
                 </div>
               </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Time zone</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <el-select v-model="currentZone" filterable placeholder="Select">
+                        <el-option
+                          v-for="(zone, index) in timezones"
+                          :key="index"
+                          :label="zone"
+                          :value="zone">
+                        </el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
             </div>
           </el-card>
         </el-col>
@@ -52,6 +71,8 @@
 </template>
 
 <script>
+import dateFormat from '@/components/mixins/dateFormat'
+
 export default {
   name: 'settings-page',
   data () {
@@ -60,6 +81,9 @@ export default {
       cryptoCurrencies: ['BTC', 'ETH', 'XRP']
     }
   },
+  mixins: [
+    dateFormat
+  ],
   computed: {
     currentFiat: {
       get () {
@@ -75,6 +99,14 @@ export default {
       },
       set (value) {
         this.$store.dispatch('updateSettingsViewCrypto', value)
+      }
+    },
+    currentZone: {
+      get () {
+        return this.$store.getters.settingsView.timezone
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewTime', value)
       }
     }
   }
