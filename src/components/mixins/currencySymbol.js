@@ -6,7 +6,7 @@ const symbols = {
 
 const currencySymbol = {
   computed: {
-    getSymbol () {
+    currencySymbol () {
       const view = this.$store.getters.settingsView.fiat
       return symbols[view]
     }
