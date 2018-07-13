@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     updateChart () {
-      const symbol = this.getSymbol
+      const symbol = this.currencySymbol
       let scales = {
         xAxes: [{
           gridLines: {

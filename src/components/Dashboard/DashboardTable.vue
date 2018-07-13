@@ -18,7 +18,7 @@
           <div class="table_body-content" @click="selectCrypto(value.asset)">
             <el-col :span="8">{{ value | formatName }}</el-col>
             <el-col :span="8">
-              <span class="balance">{{ value.price | formatBalance }} {{ getSymbol }}</span>
+              <span class="balance">{{ value.price | formatBalance }} {{ currencySymbol }}</span>
             </el-col>
             <el-col :span="8">
               <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">

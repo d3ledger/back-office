@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import _ from 'lodash'
 import { getParsedItem, setParsedItem, setItem } from 'util/storage-util'
 
@@ -11,6 +12,10 @@ const types = _([
 
 function initialState () {
   return {
+    default: {
+      fiatCurrencies: ['RUB', 'USD', 'EUR'],
+      cryptoCurrencies: ['BTC', 'ETH', 'XRP']
+    },
     view: {
       fiat: 'RUB',
       crypto: 'BTC'
@@ -23,6 +28,12 @@ const state = initialState()
 const getters = {
   settingsView (state) {
     return state.view
+  },
+  settingsFiatCurrencies (state) {
+    return state.default.fiatCurrencies
+  },
+  settingsCryptoCurrencies (state) {
+    return state.default.cryptoCurrencies
   }
 }
 
@@ -30,29 +41,27 @@ const mutations = {
   [types.LOAD_SETTINGS] (state, storage) {
     if (!_.isEqual(state, storage)) {
       Object.keys(state).map(key => {
-        console.log(key)
         state[key] = storage[key]
       })
     }
   },
 
   [types.UPDATE_SETTINGS_VIEW_FIAT] (state, fiat) {
-    state.view.fiat = fiat
+    Vue.set(state.view, 'fiat', fiat)
   },
 
   [types.UPDATE_SETTINGS_VIEW_CRYPTO] (state, crypto) {
-    state.view.crypto = crypto
+    Vue.set(state.view, 'crypto', crypto)
   }
 }
 
 const actions = {
   loadSettings ({ commit, state }) {
     const storage = getParsedItem('settings')
-    console.log(storage)
     if (storage) {
       commit(types.LOAD_SETTINGS, storage)
     } else {
-      setItem('settings', state)
+      setItem('settings', _.omit(state, 'default'))
     }
   },
   updateSettingsViewFiat ({ commit }, fiat) {
