@@ -27,11 +27,11 @@
                 {{ value | formatName }}
               </div>
               <div class="column balance">
-                {{ value.price | formatBalance }}
+                {{ value.price | formatNumberShort }}
               </div>
               <div class="column text-right">
                 <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
-                  {{ value | formatDiff }}
+                  {{ value | formatNumberPercentDiff }}
                 </span>
               </div>
             </div>
@@ -44,6 +44,7 @@
 
 <script>
 import _ from 'lodash/collection'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   data () {
@@ -52,6 +53,9 @@ export default {
       selectedCrypto: null
     }
   },
+  mixins: [
+    numberFormat
+  ],
   props: {
     portfolio: {
       type: Array,
@@ -68,17 +72,9 @@ export default {
     }
   },
   filters: {
-    formatBalance (amount) {
-      if (!amount) return ''
-      return `${amount.toFixed(2)} ₽`
-    },
     formatName (crypto) {
       if (!crypto) return null
       return `${crypto.name} (${crypto.asset})`
-    },
-    formatDiff (crypto) {
-      if (!crypto) return null
-      return `${crypto.diff.toFixed(2)} (${crypto.percent.toFixed(2)}%)`
     }
   },
   methods: {
