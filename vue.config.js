@@ -12,3 +12,16 @@ if (process.env.NODE_ENV === 'test') {
     }
   })
 }
+
+module.exports = {
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@util': path.resolve(__dirname, 'src/util')
+      }
+    },
+    module: {
+      rules: rules
+    }
+  }
+}
