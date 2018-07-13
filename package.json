@@ -26,6 +26,7 @@
     "grpc": "^1.12.2",
     "iroha-lib": "0.1.7",
     "lodash": "^4.17.10",
+    "numbro": "^2.1.0",
     "source-map-support": "^0.5.4",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.3.2",
