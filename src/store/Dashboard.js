@@ -36,7 +36,10 @@ const convertData = (obj, wallets) => {
       return p + (n.value.close * crypto.amount)
     }, 0)
   }
-  return _(obj[0].data)
+  const timeKey = _.findKey(obj, (c) => {
+    return c.data.length > 0 && c.data[0].time
+  })
+  return _(obj[timeKey].data)
     .map('time')
     .map(t => {
       const d = getEqTime(t)
@@ -104,8 +107,8 @@ const getters = {
  * @param {Error} err
  */
 function handleError (state, err) {
-  console.error(err)
   state.connectionError = err
+  throw err
 }
 
 const mutations = {
@@ -116,20 +119,49 @@ const mutations = {
     })
   },
 
-  [types.GET_PORTFOLIO_FULL_PRICE] (state, { value, diff, percent }) {
+  [types.GET_PORTFOLIO_FULL_PRICE] (state) {
+    const today = _.last(state.portfolio.assetsHistory).sum
+    const prevDay = _.nth(state.portfolio.assetsHistory, -2).sum
     Vue.set(state.portfolio, 'assetsFullPrice', {
-      diff: diff.toFixed(2),
-      value: value.toFixed(2),
-      percent: percent.toFixed(2)
+      value: today.toFixed(2),
+      diff: (today - prevDay).toFixed(2),
+      percent: (100 - ((prevDay * 100) / today)).toFixed(2)
     })
   },
 
-  [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, percent) {
-    Vue.set(state.portfolio, 'assetsPercentage', percent)
+  [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, wallets) {
+    const today = _.last(state.portfolio.assetsHistory)
+    const currencies = []
+    today.data.map(crypto => {
+      const walletAsset = wallets.find(w => w.asset === crypto.asset)
+      currencies.push({
+        asset: crypto.asset,
+        color: walletAsset.color,
+        price: crypto.value.close,
+        percent: (crypto.value.close * walletAsset.amount * 100) / today.sum
+      })
+    })
+    Vue.set(state.portfolio, 'assetsPercentage', currencies)
   },
 
-  [types.GET_PORTFOLIO_PRICE_LIST] (state, list) {
-    state.assetList = list
+  [types.GET_PORTFOLIO_PRICE_LIST] (state, wallets) {
+    const today = _.last(state.portfolio.assetsHistory)
+    const prevDay = _.nth(state.portfolio.assetsHistory, -2)
+    const currencies = []
+    today.data.map(crypto => {
+      const walletAsset = wallets.find(w => w.asset === crypto.asset)
+      const prevDayAsset = prevDay.data.find(c => c.asset === crypto.asset)
+      const amountToday = walletAsset.amount * crypto.value.close
+      const amountPrevDay = walletAsset.amount * prevDayAsset.value.close
+      currencies.push({
+        asset: crypto.asset,
+        name: walletAsset.name,
+        price: amountToday,
+        diff: amountToday - amountPrevDay,
+        percent: 100 - ((amountPrevDay * 100) / amountToday)
+      })
+    })
+    state.assetList = currencies
   },
 
   [types.GET_PRICE_BY_FILTER_REQUEST] (state) {},
@@ -185,16 +217,18 @@ const actions = {
       .then(() => commit(types.LOAD_DASHBOARD_SUCCESS))
       .catch((err) => commit(types.LOAD_DASHBOARD_FAILURE, err))
   },
-  getPortfolioHistory ({ commit, dispatch, getters }) {
+  getPortfolioHistory ({ commit, getters }) {
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
     cryptoCompareUtil.loadHistoryByLabels(getters.wallets)
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
-        dispatch('calculatePortfolio')
-        dispatch('calculatePercentPortfolio')
-        dispatch('calculatePriceChange')
       })
       .catch(err => commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err))
+      .then(() => {
+        commit('GET_PORTFOLIO_FULL_PRICE')
+        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
+        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
+      })
   },
   getPriceByFilter ({ commit, getters }, data) {
     if (data.crypto) {
@@ -208,49 +242,6 @@ const actions = {
     cryptoCompareUtil.loadPriceByFilter(filter)
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
       .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
-  },
-  calculatePortfolio ({ commit, getters }) {
-    const today = _.last(getters.portfolioHistory).sum
-    const prevDay = _.nth(getters.portfolioHistory, -2).sum
-    const portfolio = {
-      value: today,
-      diff: today - prevDay,
-      percent: 100 - ((prevDay * 100) / today)
-    }
-    commit(types.GET_PORTFOLIO_FULL_PRICE, portfolio)
-  },
-  calculatePercentPortfolio ({ commit, getters }) {
-    const today = _.last(getters.portfolioHistory)
-    const currencies = []
-    today.data.map(crypto => {
-      const walletAsset = getters.wallets.find(w => w.asset === crypto.asset)
-      currencies.push({
-        asset: crypto.asset,
-        color: walletAsset.color,
-        price: crypto.value.close,
-        percent: (crypto.value.close * walletAsset.amount * 100) / today.sum
-      })
-    })
-    commit(types.GET_PORTFOLIO_PRICE_PERCENTAGE, currencies)
-  },
-  calculatePriceChange ({ commit, getters }) {
-    const today = _.last(getters.portfolioHistory)
-    const prevDay = _.nth(getters.portfolioHistory, -2)
-    const currencies = []
-    today.data.map(crypto => {
-      const walletAsset = getters.wallets.find(w => w.asset === crypto.asset)
-      const prevDayAsset = prevDay.data.find(c => c.asset === crypto.asset)
-      const amountToday = walletAsset.amount * crypto.value.close
-      const amountPrevDay = walletAsset.amount * prevDayAsset.value.close
-      currencies.push({
-        asset: crypto.asset,
-        name: walletAsset.name,
-        price: amountToday,
-        diff: amountToday - amountPrevDay,
-        percent: 100 - ((amountPrevDay * 100) / amountToday)
-      })
-    })
-    commit(types.GET_PORTFOLIO_PRICE_LIST, currencies)
   }
 }
 
