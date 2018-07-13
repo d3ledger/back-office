@@ -1,6 +1,5 @@
 {
-  "name": "back-office",
-  "productName": "D3 Back Office",
+  "name": "back-office-new",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,9 +7,8 @@
     "build": "vue-cli-service build",
     "build:more-memory": "node --max_old_space_size=4096 node_modules/.bin/vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "init-fake-tokens": "node scripts/setup"
+    "test:unit": "vue-cli-service test:unit",
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.0",
@@ -21,7 +19,7 @@
     "date-fns": "^1.29.0",
     "element-ui": "^2.3.8",
     "file-saver": "^1.3.8",
-    "grpc": "^1.12.2",
+    "grpc-web-client": "^0.6.2",
     "iroha-lib": "0.1.7",
     "lodash": "^4.17.10",
     "source-map-support": "^0.5.4",
@@ -34,71 +32,28 @@
   "devDependencies": {
     "@babel/polyfill": "^7.0.0-beta.49",
     "@babel/preset-env": "^7.0.0-beta.49",
-    "@vue/cli-plugin-babel": "3.0.0-beta.15",
-    "@vue/cli-plugin-e2e-nightwatch": "3.0.0-beta.15",
-    "@vue/cli-plugin-eslint": "3.0.0-beta.15",
+    "@vue/cli-plugin-babel": "3.0.0-rc.3",
+    "@vue/cli-plugin-e2e-nightwatch": "3.0.0-rc.3",
+    "@vue/cli-plugin-eslint": "3.0.0-rc.3",
     "@vue/cli-plugin-unit-mocha": "^3.0.0-beta.16",
-    "@vue/cli-service": "3.0.0-beta.15",
-    "@vue/eslint-config-standard": "3.0.0-beta.15",
+    "@vue/cli-service": "3.0.0-rc.3",
+    "@vue/eslint-config-standard": "3.0.0-rc.3",
     "@vue/test-utils": "^1.0.0-beta.16",
     "babel-core": "^7.0.0-0",
     "chai": "^4.1.2",
     "chai-things": "^0.2.0",
-    "electron": "^2.0.2",
-    "electron-builder": "^20.14.7",
-    "electron-webpack": "^2.1.2",
     "inject-loader": "^4.0.1",
     "istanbul-instrumenter-loader": "^3.0.1",
-    "lint-staged": "^6.0.0",
+    "lint-staged": "^7.2.0",
     "node-sass": "^4.7.2",
     "nyc": "^12.0.2",
-    "sass-loader": "^6.0.6",
+    "sass-loader": "^7.0.3",
     "sinon": "^6.0.0",
-    "vue-cli-plugin-electron-builder": "^0.3.2",
     "vue-template-compiler": "^2.5.13"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ],
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "vue-cli-service lint",
-      "git add"
-    ],
-    "*.vue": [
-      "vue-cli-service lint",
-      "git add"
-    ]
-  },
-  "electronWebpack": {
-    "renderer": {
-      "sourceDirectory": "src",
-      "webpackConfig": "dist_electron/webpack.renderer.additions.js"
-    },
-    "main": {
-      "webpackConfig": "webpack.main.additions.js"
-    }
-  },
-  "build": {
-    "directories": {
-      "output": "dist_electron"
-    },
-    "files": [
-      "dist/**/*",
-      "node_modules/**/*",
-      "package.json"
-    ]
-  },
-  "nyc": {
-    "include": [
-      "src/store/**/*.js"
-    ],
-    "instrument": false,
-    "sourceMap": false
-  }
+  ]
 }
