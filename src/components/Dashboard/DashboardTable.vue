@@ -13,34 +13,44 @@
     </div>
     <div class="card-content_body">
       <el-row justify="center" class="table_header">
-        <el-col :span="10" class="table_header-title">Currency</el-col>
-        <el-col :span="5" class="table_header-title">Balance</el-col>
-        <el-col :span="9" class="table_header-title text-right">Changes</el-col>
+        <div class="table_header-title">Currency</div>
+        <div class="table_header-title">Balance</div>
+        <div class="table_header-title text-right">Changes</div>
       </el-row>
       <el-row class="table_body">
         <div class="table_body-content">
-          <div :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]" v-for="(value, index) in filteredPortfolio" :key="index">
+          <div
+            :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]"
+            v-for="(value, index) in filteredPortfolio" :key="index">
             <div class="table_body-item_content" @click="selectCrypto(value.asset)">
-              <el-col
-                :sm="24"
-                :md="12"
-                :lg="10">{{ value | formatName }}</el-col>
-              <el-col
-                :sm="24"
-                :md="12"
-                :lg="5"
-                class="balance">
-                <span >{{ value.price | formatBalance }}</span>
-              </el-col>
-              <el-col
-                :xs="24"
-                :md="24"
-                :lg="9"
-                class="text-right">
+              <div class="column">
+                {{ value | formatName }}
+              </div>
+              <div class="column balance">
+                {{ value.price | formatBalance }}
+              </div>
+              <div class="column text-right">
                 <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
                   {{ value | formatDiff }}
                 </span>
-              </el-col>
+              </div>
+            </div>
+          </div>
+          <div
+            :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]"
+            v-for="(value, index) in filteredPortfolio" :key="index">
+            <div class="table_body-item_content" @click="selectCrypto(value.asset)">
+              <div class="column">
+                {{ value | formatName }}
+              </div>
+              <div class="column balance">
+                {{ value.price | formatBalance }}
+              </div>
+              <div class="column text-right">
+                <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
+                  {{ value | formatDiff }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -124,11 +134,15 @@ export default {
 }
 
 .table_header {
+  display: flex;
+  flex-flow: row wrap;
   color: #888888;
   padding: 1rem;
 }
 
-.table_header-title {}
+.table_header-title {
+  flex: 0 1 33%
+}
 
 .table_header-title.text-right {
   text-align: right;
@@ -149,7 +163,7 @@ export default {
 }
 
 .table_body-item {
-  height: 60px;
+  height: 80px;
   cursor: pointer;
   padding-bottom: 5px;
   border-bottom: 1px solid #f5f5f5
@@ -165,24 +179,30 @@ export default {
 }
 
 .table_body-item_content {
+  display: flex;
+  flex-flow: row wrap;
   padding: 1.5rem 1rem 0;
   height: 100%;
 }
 
-.table_body-item_content .text-right {
+.table_body-item_content .column {
+  flex: 0 1 33%
+}
+
+.table_body-item_content .column.text-right {
   text-align: right;
 }
 
-.table_body-item_content .balance {
+.table_body-item_content .column.balance {
   font-weight: 600;
   color: #000000;
 }
 
-.table_body-item_content .uptrend {
+.table_body-item_content .column .uptrend {
   color: #06b023;
 }
 
-.table_body-item_content .downtrend {
+.table_body-item_content .column .downtrend {
   color: #ff1339;
 }
 
@@ -191,11 +211,20 @@ export default {
     display: none;
   }
   .table_body-item {
-    font-size: inherit;
-    height: 85px;
+    height: 100px;
   }
-  .table_body-item_content .balance {
-    text-align: right
+  .table_body-item_content .column:nth-child(1) {
+    flex-grow: 1;
+    flex: 0 1 50%;
+  }
+  .table_body-item_content .column:nth-child(2) {
+    flex-grow: 1;
+    flex: 0 1 50%;
+    text-align: right;
+  }
+  .table_body-item_content .column:nth-child(3) {
+    flex-grow: 1;
+    flex: 0 1 100%;
   }
 }
 </style>
