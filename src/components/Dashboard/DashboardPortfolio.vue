@@ -13,7 +13,7 @@
             </el-row>
           </div>
           <div class="portfolio_current-price">
-            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ getSymbol }}</p>
+            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
           </div>
           <div class="portfolio_diff-price">
             <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatNumberPercentDiff }}</p>

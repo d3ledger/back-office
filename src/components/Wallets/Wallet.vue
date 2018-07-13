@@ -43,7 +43,7 @@
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ getSymbol }}</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
@@ -58,12 +58,12 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ getSymbol }}</p>
+                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ getSymbol }}</p>
+                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
