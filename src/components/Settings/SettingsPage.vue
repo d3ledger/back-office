@@ -21,7 +21,7 @@
                     <el-col>
                       <el-radio-group v-model="currentFiat" size="small">
                         <el-radio
-                          v-for="(value, index) in fiatCurrencies"
+                          v-for="(value, index) in settingsFiatCurrencies"
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
@@ -33,7 +33,7 @@
                     <el-col>
                       <el-radio-group v-model="currentCrypto" size="small">
                         <el-radio
-                          v-for="(value, index) in cryptoCurrencies"
+                          v-for="(value, index) in settingsCryptoCurrencies"
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
@@ -71,20 +71,21 @@
 </template>
 
 <script>
-import dateFormat from '@/components/mixins/dateFormat'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'settings-page',
   data () {
-    return {
-      fiatCurrencies: ['RUB', 'USD', 'EUR'],
-      cryptoCurrencies: ['BTC', 'ETH', 'XRP']
-    }
+    return {}
   },
   mixins: [
     dateFormat
   ],
   computed: {
+    ...mapGetters([
+      'settingsFiatCurrencies',
+      'settingsCryptoCurrencies'
+    ]),
     currentFiat: {
       get () {
         return this.$store.getters.settingsView.fiat

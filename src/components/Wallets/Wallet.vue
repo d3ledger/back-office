@@ -43,7 +43,7 @@
               <div class="card-info">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur.toFixed(2) }} {{ getSymbol }}</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur.toFixed(2) }} {{ currencySymbol }}</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.rur_change.toFixed(2) }}
                     </p>
@@ -58,12 +58,12 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur }} {{ getSymbol }}</p>
+                    <p>{{ cryptoInfo.market.cap.rur }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.cap.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur }} {{ getSymbol }}</p>
+                    <p>{{ cryptoInfo.market.volume.rur }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.volume.crypto }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
