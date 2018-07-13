@@ -36,23 +36,6 @@
               </div>
             </div>
           </div>
-          <div
-            :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]"
-            v-for="(value, index) in filteredPortfolio" :key="index">
-            <div class="table_body-item_content" @click="selectCrypto(value.asset)">
-              <div class="column">
-                {{ value | formatName }}
-              </div>
-              <div class="column balance">
-                {{ value.price | formatBalance }}
-              </div>
-              <div class="column text-right">
-                <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
-                  {{ value | formatDiff }}
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
       </el-row>
     </div>
