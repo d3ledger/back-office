@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import irohaUtil from 'util/iroha-util'
+import irohaUtil from './util/iroha-util'
 
 import Home from '@/components/Home'
 import DashboardPage from '@/components/Dashboard/DashboardPage'

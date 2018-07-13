@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import _ from 'lodash'
-import grpc from 'grpc'
-import irohaUtil from 'util/iroha-util'
-import notaryUtil from 'util/notary-util'
-import { amountToString } from 'util/iroha-amount'
-import { getTransferAssetsFrom, getSettlementsFrom } from 'util/store-util'
+import { grpc } from 'grpc-web-client'
+import irohaUtil from '../util/iroha-util'
+import notaryUtil from '../util/notary-util'
+import { amountToString } from '../util/iroha-amount'
+import { getTransferAssetsFrom, getSettlementsFrom } from '../util/store-util'
 
 // TODO: To be removed. This is used for the following reason for now:
 //   1. to get asset's properties (e.g. color) which cannot be fetched from API.
