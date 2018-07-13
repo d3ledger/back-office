@@ -18,17 +18,23 @@
         <div class="table_header-title text-right">Changes</div>
       </el-row>
       <el-row class="table_body">
-        <div class="table_body-item" v-for="(value, index) in filteredPortfolio" :key="index">
-          <div class="table_body-content" @click="selectCrypto(value.asset)">
-            <el-col :span="8">{{ value | formatName }}</el-col>
-            <el-col :span="8">
-              <span class="balance">{{ value.price | formatBalance }} {{ currencySymbol }}</span>
-            </el-col>
-            <el-col :span="8">
-              <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
-                {{ value | formatDiff }}
-              </span>
-            </el-col>
+        <div class="table_body-content">
+          <div
+            :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]"
+            v-for="(value, index) in filteredPortfolio" :key="index">
+            <div class="table_body-item_content" @click="selectCrypto(value.asset)">
+              <div class="column">
+                {{ value | formatName }}
+              </div>
+              <div class="column balance">
+                {{ value.price | formatNumberShort }}
+              </div>
+              <div class="column text-right">
+                <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
+                  {{ value | formatNumberPercentDiff }}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </el-row>
@@ -38,7 +44,7 @@
 
 <script>
 import _ from 'lodash/collection'
-import currencySymbol from '@/components/mixins/currencySymbol'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   data () {
@@ -48,7 +54,7 @@ export default {
     }
   },
   mixins: [
-    currencySymbol
+    numberFormat
   ],
   props: {
     portfolio: {
@@ -66,17 +72,9 @@ export default {
     }
   },
   filters: {
-    formatBalance (amount) {
-      if (!amount) return ''
-      return `${amount.toFixed(2)}`
-    },
     formatName (crypto) {
       if (!crypto) return null
       return `${crypto.name} (${crypto.asset})`
-    },
-    formatDiff (crypto) {
-      if (!crypto) return null
-      return `${crypto.diff.toFixed(2)} (${crypto.percent.toFixed(2)}%)`
     }
   },
   methods: {

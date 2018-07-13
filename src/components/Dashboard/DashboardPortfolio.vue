@@ -13,10 +13,10 @@
             </el-row>
           </div>
           <div class="portfolio_current-price">
-            <p class="portfolio_current-price_value" justify="center">{{ price.value }} {{ currencySymbol }}</p>
+            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} ₽</p>
           </div>
           <div class="portfolio_diff-price">
-            <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatDifference }}</p>
+            <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatNumberPercentDiff }}</p>
           </div>
         </el-card>
     </el-col>
@@ -35,7 +35,7 @@
 
 <script>
 import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio'
-import currencySymbol from '@/components/mixins/currencySymbol'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   name: 'dashboard-portfolio',
@@ -43,7 +43,7 @@ export default {
     LineChartPortfolio
   },
   mixins: [
-    currencySymbol
+    numberFormat
   ],
   props: {
     price: {
@@ -53,11 +53,6 @@ export default {
     chartData: {
       type: Array,
       required: true
-    }
-  },
-  filters: {
-    formatDifference (price) {
-      return `${price.diff} (${price.percent}%)`
     }
   }
 }

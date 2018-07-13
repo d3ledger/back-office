@@ -1,6 +1,8 @@
 import numbro from 'numbro'
 
-const dateFormat = {
+numbro.zeroFormat('N/A')
+
+var dateFormat = {
   filters: {
     formatNumberShort: value => numbro(value).format({
       mantissa: 2,
@@ -31,14 +33,6 @@ const dateFormat = {
         forceSign: true
       })
       return `${nV} (${nP}%)`
-    },
-    formatPrecision: value => {
-      const removeZeros = (v) => v.replace(/0+$/, '')
-      const arrRepOfValue = `${value}`.split('.')
-      const beforeDecimal = arrRepOfValue[0]
-      const afterDecimal = removeZeros(arrRepOfValue[1] || '')
-      const format = afterDecimal.length ? `.${afterDecimal}` : ''
-      return `${beforeDecimal}${format}`
     }
   }
 }
