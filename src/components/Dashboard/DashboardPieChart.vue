@@ -16,7 +16,7 @@
         </div>
       </el-col>
       <el-col :span="13">
-        <donat-chart :style="{ margin: '-0.5rem 0rem 0rem 0rem' }" :height="200" :data="portfolio"/>
+        <donat-chart style="donat-chart" :height="200" :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
@@ -56,7 +56,7 @@ export default {
 .list_crypto-content {
   display: flex;
   flex-wrap: wrap;
-
+  align-content: flex-start;
   width: 100%;
   height: 100%;
   overflow-y: scroll;
@@ -80,6 +80,10 @@ export default {
 
 .list_crypto-content-asset {
   float: right;
+}
+
+.donat-chart {
+  margin-top: -0.5rem
 }
 
 </style>
