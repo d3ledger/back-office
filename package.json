@@ -7,7 +7,7 @@
     "build": "vue-cli-service build",
     "build:more-memory": "node --max_old_space_size=4096 node_modules/.bin/vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
@@ -51,6 +51,19 @@
     "sass-loader": "^7.0.3",
     "sinon": "^6.0.0",
     "vue-template-compiler": "^2.5.13"
+  },
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "vue-cli-service lint",
+      "git add"
+    ],
+    "*.vue": [
+      "vue-cli-service lint",
+      "git add"
+    ]
   },
   "browserslist": [
     "> 1%",
