@@ -1,5 +1,4 @@
 import chai from 'chai'
-import sinon from 'sinon'
 import DashboardInjector from 'inject-loader!../../../src/store/Dashboard'
 import helper from '../helper'
 
@@ -16,21 +15,11 @@ describe('Dashboard store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = DashboardInjector({
-      '@util/cryptoApi-axios-util': require('@util/cryptoApi-axios-util')
+      'util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
     }).default)
   })
 
   describe('Mutations', () => {
-    function testErrorHandling (type, state = {}) {
-      it(`${type} should set connectionError`, () => {
-        state = { ...state, connectionError: null }
-        const error = new Error()
-        expect(state.connectionError).to.be.a('null')
-        mutations[types[type]](state, error)
-        expect(state.connectionError).to.equal(error)
-      })
-    }
-
     it('RESET should reset the state', () => {
       const state = {
         portfolio: {
@@ -40,8 +29,7 @@ describe('Dashboard store', () => {
             percent: 555
           },
           assetsPercentage: [{}, {}, {}],
-          assetsHistory: [{}, {}, {}],
-          filter: 'ALL'
+          assetsHistory: [{}, {}, {}]
         },
         assetList: [{}, {}, {}],
         assetChart: {
@@ -60,16 +48,13 @@ describe('Dashboard store', () => {
             percent: 0
           },
           assetsPercentage: [],
-          assetsHistory: [],
-          filter: '1W',
-          isLoading: false
+          assetsHistory: []
         },
         assetList: [],
         assetChart: {
-          filter: '1M',
-          crypto: null,
-          data: [],
-          isLoading: false
+          filter: '1Y',
+          crypto: 'BTC',
+          data: []
         },
         isLoading: false,
         connectionError: null
@@ -79,7 +64,7 @@ describe('Dashboard store', () => {
       expect(state).to.be.deep.equal(expectedState)
     })
 
-    it('GET_PORTFOLIO_FULL_PRICE should calculte value, difference and percent difference', () => {
+    it('GET_PORTFOLIO_FULL_PRICE should ...', () => {
       const today = randomAmountRng()
       const prevDay = randomAmountRng()
       const state = {
@@ -103,15 +88,17 @@ describe('Dashboard store', () => {
         .to.be.deep.equal(assetsFullPrice)
     })
 
-    it('GET_PORTFOLIO_PRICE_PERCENTAGE should calculate array of objects with data for pie chart', () => {
+    it('GET_PORTFOLIO_PRICE_PERCENTAGE should ...', () => {
       const assets = ['BTC', 'ETH']
-      const wallets = assets
+      const wallets = new Array(assets.length)
+        .fill(null)
         .map((_, index) => ({
           amount: randomAmountRng({ max: 10 }),
           color: '#00000',
           asset: assets[index]
         }))
-      const data = assets
+      const data = new Array(assets.length)
+        .fill(null)
         .map((_, index) => ({
           asset: assets[index],
           value: {
@@ -139,7 +126,7 @@ describe('Dashboard store', () => {
         .which.contains.something.that.has.all.keys(expectedKeys)
     })
 
-    it('GET_PORTFOLIO_PRICE_LIST should calculate array of objects width data for table list of cryptocurrencies', () => {
+    it('GET_PORTFOLIO_PRICE_LIST should ...', () => {
       const assets = [{
         asset: 'BTC',
         name: 'Bitcoin'
@@ -147,14 +134,16 @@ describe('Dashboard store', () => {
         asset: 'ETH',
         name: 'Ethereum'
       }]
-      const wallets = assets
+      const wallets = new Array(assets.length)
+        .fill(null)
         .map((_, index) => ({
           amount: randomAmountRng({ max: 10 }),
           color: '#00000',
           asset: assets[index].asset,
           name: assets[index].name
         }))
-      const data = () => assets
+      const data = () => new Array(assets.length)
+        .fill(null)
         .map((_, index) => ({
           asset: assets[index].asset,
           value: {
@@ -162,7 +151,8 @@ describe('Dashboard store', () => {
             close: randomAmountRng({ max: 1000 })
           }
         }))
-      const history = assets
+      const history = new Array(2)
+        .fill(null)
         .map(() => ({
           data: [...data()],
           sum: randomAmountRng(),
@@ -181,8 +171,8 @@ describe('Dashboard store', () => {
         .which.contains.something.that.has.all.keys(expectedKeys)
     })
 
-    it('SELECT_CHART_FILTER should change filter of chart', () => {
-      const filter = randomArrayElement(['1Y', '1M', '1W', '1D', '1H'])
+    it('SELECT_CHART_FILTER should ...', () => {
+      const filter = randomArrayElement(['1W', '1M', '1Y'])
       const state = { assetChart: {} }
       mutations[types.SELECT_CHART_FILTER](state, filter)
       expect(state.assetChart)
@@ -190,7 +180,7 @@ describe('Dashboard store', () => {
         .to.be.deep.equal(filter)
     })
 
-    it('SELECT_CHART_CRYPTO should change cryptocurrency of chart', () => {
+    it('SELECT_CHART_CRYPTO should ...', () => {
       const crypto = randomArrayElement(['BTC', 'ETH', 'XRP'])
       const state = { assetChart: {} }
       mutations[types.SELECT_CHART_CRYPTO](state, crypto)
@@ -199,7 +189,7 @@ describe('Dashboard store', () => {
         .to.be.equal(crypto)
     })
 
-    it('GET_PRICE_BY_FILTER_SUCCESS should set data', () => {
+    it('GET_PRICE_BY_FILTER_SUCCESS should ...', () => {
       const size = randomAmountRng({ max: 700 })
       const data = new Array(size)
         .fill(null)
@@ -212,23 +202,15 @@ describe('Dashboard store', () => {
           volumefrom: randomAmountRng(),
           volumeto: randomAmountRng()
         }))
-      const state = { assetChart: {
-        isLoading: true
-      } }
+      const state = { assetChart: {} }
       mutations[types.GET_PRICE_BY_FILTER_SUCCESS](state, data)
 
       expect(state.assetChart)
         .to.have.property('data')
         .to.be.deep.equal(data)
-
-      expect(state.assetChart)
-        .to.have.property('isLoading')
-        .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PRICE_BY_FILTER_FAILURE', { assetChart: { isLoading: true } })
-
-    it('GET_PORTFOLIO_HISTORY_SUCCESS should set data', () => {
+    it('GET_PORTFOLIO_HISTORY_SUCCESS should ...', () => {
       const size = randomAmountRng({ max: 50 })
       const history = new Array(size)
         .fill(null)
@@ -237,23 +219,15 @@ describe('Dashboard store', () => {
           sum: randomAmountRng(),
           time: new Date().getTime()
         }))
-      const state = { portfolio: {
-        isLoading: true
-      } }
+      const state = { portfolio: {} }
       mutations[types.GET_PORTFOLIO_HISTORY_SUCCESS](state, history)
 
       expect(state.portfolio)
         .to.have.property('assetsHistory')
         .to.be.deep.equal(history)
-
-      expect(state.portfolio)
-        .to.have.property('isLoading')
-        .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE', { portfolio: { isLoading: true } })
-
-    it('LOAD_DASHBOARD_SUCCESS should change lodaing state to TRUE', () => {
+    it('LOAD_DASHBOARD_SUCCESS should ...', () => {
       const state = {
         isLoading: true
       }
@@ -264,165 +238,19 @@ describe('Dashboard store', () => {
 
       expect(state).to.be.deep.equal(expectedState)
     })
-
-    testErrorHandling('LOAD_DASHBOARD_FAILURE')
   })
 
   describe('Actions', () => {
-    describe('loadDashboard', () => {
-      it.skip('should call mutations in correct order')
-    })
-
-    describe('getPortfolioHistory', () => {
-      it('should call mutations in correct order', async () => {
-        const assets = ['BTC', 'ETH']
-        const wallets = assets
-          .map((_, index) => ({
-            amount: randomAmountRng({ max: 10 }),
-            color: '#00000',
-            asset: assets[index]
-          }))
-        const commit = sinon.spy()
-        const getters = {
-          wallets,
-          settingsView: {
-            fiat: randomArrayElement(['USD', 'EUR', 'RUB']),
-            crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
-          }
-        }
-        const filter = randomArrayElement(['1Y', '1M', '1W', '1D', '1H'])
-        await actions.getPortfolioHistory({ commit, getters }, { filter })
-
-        const response = commit.thirdCall.args[1]
-
-        expect(commit.args).to.deep.equal([
-          [types.SELECT_PORTFOLIO_FILTER, filter],
-          [types.GET_PORTFOLIO_HISTORY_REQUEST],
-          [types.GET_PORTFOLIO_HISTORY_SUCCESS, response]
-        ])
-      })
-    })
-
-    describe('getPriceByFilter', () => {
-      it('should call mutations in correct order', async () => {
-        const commit = sinon.spy()
-        const data = {
-          filter: randomArrayElement(['1Y', '1M', '1W', '1D', '1H']),
-          crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
-        }
-        const getters = {
-          wallets: [],
-          settingsView: {
-            fiat: randomArrayElement(['USD', 'EUR', 'RUB']),
-            crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
-          },
-          portfolioChart: {
-            filter: data.filter,
-            crypto: data.crypto
-          }
-        }
-        const state = { assetChart: {} }
-        await actions.getPriceByFilter({ commit, getters, state }, data)
-
-        const response = commit.getCall(3).args[1]
-
-        expect(commit.args).to.deep.equal([
-          [types.SELECT_CHART_CRYPTO, data.crypto],
-          [types.SELECT_CHART_FILTER, data.filter],
-          [types.GET_PRICE_BY_FILTER_REQUEST],
-          [types.GET_PRICE_BY_FILTER_SUCCESS, response]
-        ])
-      })
+    it('ACTION TEST', () => {
+      const action = actions
+      expect('TEST').to.be.a('IMPLEMENTED', action)
     })
   })
 
   describe('Getters', () => {
-    describe('portfolioPrice', () => {
-      it('should return object that haves diff, value, percent', () => {
-        const state = {
-          portfolio: {
-            assetsFullPrice: {
-              diff: randomAmountRng(),
-              value: randomAmountRng(),
-              percent: randomAmountRng()
-            }
-          }
-        }
-        const result = getters.portfolioPrice(state)
-        expect(result)
-          .to.have.property('diff')
-          .to.be.equal(state.portfolio.assetsFullPrice.diff)
-        expect(result)
-          .to.have.property('value')
-          .to.be.equal(state.portfolio.assetsFullPrice.value)
-        expect(result)
-          .to.have.property('percent')
-          .to.be.equal(state.portfolio.assetsFullPrice.percent)
-      })
-    })
-    describe('portfolioPercent', () => {
-      it('should return empty array', () => {
-        const state = {
-          portfolio: {
-            assetsPercentage: []
-          }
-        }
-        const result = getters.portfolioPercent(state)
-        expect(result).to.be.an('array').which.is.empty
-      })
-    })
-    describe('portfolioChart', () => {
-      it('should return object that haves data, current filter and cryptocurrency', () => {
-        const state = {
-          assetChart: {
-            filter: '1Y',
-            crypto: 'BTC',
-            data: []
-          }
-        }
-        const result = getters.portfolioChart(state)
-        expect(result)
-          .to.have.property('filter')
-          .to.be.equal('1Y')
-        expect(result)
-          .to.have.property('crypto')
-          .to.be.equal('BTC')
-        expect(result)
-          .to.have.property('data')
-          .to.be.an('array').which.is.empty
-      })
-    })
-    describe('portfolioHistory', () => {
-      it('should return empty array', () => {
-        const state = {
-          portfolio: {
-            assetsHistory: []
-          }
-        }
-        const result = getters.portfolioHistory(state)
-        expect(result).to.be.an('array').which.is.empty
-      })
-    })
-    describe('portfolioList', () => {
-      it('should return empty array', () => {
-        const state = { assetList: [] }
-        const result = getters.portfolioList(state)
-        expect(result).to.be.an('array').which.is.empty
-      })
-    })
-    describe('connectionError', () => {
-      it('should return null', () => {
-        const state = { connectionError: null }
-        const result = getters.connectionError(state)
-        expect(result).to.be.a('null')
-      })
-    })
-    describe('isDashboardLoading', () => {
-      it('should return false', () => {
-        const state = { isLoading: false }
-        const result = getters.isDashboardLoading(state)
-        expect(result).to.be.false
-      })
+    it('GETTER TESTS', () => {
+      const getter = getters
+      expect('TEST').to.be.a('IMPLEMENTED', getter)
     })
   })
 })
