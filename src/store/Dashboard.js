@@ -225,9 +225,9 @@ const actions = {
       })
       .catch(err => commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err))
       .then(() => {
-        commit('GET_PORTFOLIO_FULL_PRICE')
-        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
-        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
+        commit(types.GET_PORTFOLIO_FULL_PRICE)
+        commit(types.GET_PORTFOLIO_PRICE_PERCENTAGE, getters.wallets)
+        commit(types.GET_PORTFOLIO_PRICE_LIST, getters.wallets)
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
