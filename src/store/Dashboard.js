@@ -108,7 +108,6 @@ const getters = {
  */
 function handleError (state, err) {
   state.connectionError = err
-  throw err
 }
 
 const mutations = {
@@ -215,7 +214,10 @@ const actions = {
         await dispatch('getPriceByFilter', getters.portfolioChart)
       })
       .then(() => commit(types.LOAD_DASHBOARD_SUCCESS))
-      .catch((err) => commit(types.LOAD_DASHBOARD_FAILURE, err))
+      .catch((err) => {
+        commit(types.LOAD_DASHBOARD_FAILURE, err)
+        throw err
+      })
   },
   async getPortfolioHistory ({ commit, getters }) {
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
@@ -223,11 +225,14 @@ const actions = {
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
       })
-      .catch(err => commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err))
+      .catch(err => {
+        commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err)
+        throw err
+      })
       .then(() => {
-        commit(types.GET_PORTFOLIO_FULL_PRICE)
-        commit(types.GET_PORTFOLIO_PRICE_PERCENTAGE, getters.wallets)
-        commit(types.GET_PORTFOLIO_PRICE_LIST, getters.wallets)
+        commit('GET_PORTFOLIO_FULL_PRICE')
+        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
+        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
@@ -241,7 +246,10 @@ const actions = {
     commit(types.GET_PRICE_BY_FILTER_REQUEST)
     await cryptoCompareUtil.loadPriceByFilter(filter)
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
-      .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
+      .catch(err => {
+        commit(types.GET_PRICE_BY_FILTER_FAILURE, err)
+        throw err
+      })
   }
 }
 
