@@ -40,7 +40,7 @@
                 <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
                 <i class="el-icon-more-outline" />
               </div>
-              <div class="card-info">
+              <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
                     <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} ₽</p>
