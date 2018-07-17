@@ -65,7 +65,6 @@ export default {
 }
 
 .list_crypto-content .list_crypto-content-item {
-  width: 3.5rem;
   margin-right: 5px;
   margin-bottom: 5px;
 }
@@ -73,6 +72,7 @@ export default {
 .list_crypto-content-color {
   width: 1rem;
   height: 1rem;
+  margin-right: 5px;
   border-radius: 1rem;
   display: inline-block;
   background-color: #445886;
