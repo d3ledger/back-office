@@ -9,5 +9,8 @@
         "useBuiltIns": "entry"
       }
     ]
+  ],
+  "plugins": [
+    "transform-async-to-generator"
   ]
 }
