@@ -210,16 +210,16 @@ const actions = {
   loadDashboard ({ dispatch, commit, getters }) {
     commit(types.LOAD_DASHBOARD_REQUEST)
     dispatch('getAccountAssets')
-      .then(() => {
-        dispatch('getPortfolioHistory')
-        dispatch('getPriceByFilter', getters.portfolioChart)
+      .then(async () => {
+        await dispatch('getPortfolioHistory')
+        await dispatch('getPriceByFilter', getters.portfolioChart)
       })
       .then(() => commit(types.LOAD_DASHBOARD_SUCCESS))
       .catch((err) => commit(types.LOAD_DASHBOARD_FAILURE, err))
   },
-  getPortfolioHistory ({ commit, getters }) {
+  async getPortfolioHistory ({ commit, getters }) {
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
-    cryptoCompareUtil.loadHistoryByLabels(getters.wallets)
+    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets)
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
       })
@@ -230,7 +230,7 @@ const actions = {
         commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
       })
   },
-  getPriceByFilter ({ commit, getters }, data) {
+  async getPriceByFilter ({ commit, getters }, data) {
     if (data.crypto) {
       commit(types.SELECT_CHART_CRYPTO, data.crypto)
     }
@@ -239,7 +239,7 @@ const actions = {
     }
     const filter = getters.portfolioChart
     commit(types.GET_PRICE_BY_FILTER_REQUEST)
-    cryptoCompareUtil.loadPriceByFilter(filter)
+    await cryptoCompareUtil.loadPriceByFilter(filter)
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
       .catch(err => commit(types.GET_PRICE_BY_FILTER_FAILURE, err))
   }

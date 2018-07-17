@@ -32,7 +32,8 @@ function initialState () {
           crypto: 0
         },
         supply: 0
-      }
+      },
+      isLoading: false
     },
     connectionError: null
   }
@@ -63,7 +64,9 @@ const mutations = {
     })
   },
 
-  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {},
+  [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {
+    Vue.set(state.cryptoInfo, 'isLoading', true)
+  },
 
   [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
     const compareToRUB = Object.values(RAW)[0].RUB
@@ -85,11 +88,13 @@ const mutations = {
           crypto: compareToRUB.TOTALVOLUME24H
         },
         supply: compareToRUB.SUPPLY
-      }
+      },
+      isLoading: false
     })
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
+    Vue.set(state.cryptoInfo, 'isLoading', false)
     handleError(state, err)
   }
 }
