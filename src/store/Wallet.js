@@ -104,7 +104,10 @@ const actions = {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
     cryptoCompareUtil.loadFullData(asset)
       .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
-      .catch(err => commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err))
+      .catch(err => {
+        commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
+        throw err
+      })
   }
 }
 
