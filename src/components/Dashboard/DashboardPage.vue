@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container v-loading.fullscreen.lock="dashboardLoading">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
@@ -51,7 +51,8 @@ export default {
       'portfolioPrice',
       'portfolioPercent',
       'portfolioHistory',
-      'portfolioList'
+      'portfolioList',
+      'dashboardLoading'
     ])
   }
 }

@@ -20,7 +20,7 @@
       <el-row class="table_body">
         <div class="table_body-content">
           <div
-            :class="['table_body-item', selectedCrypto === value.asset ? 'active' : '' ]"
+            :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             v-for="(value, index) in filteredPortfolio" :key="index">
             <div class="table_body-item_content" @click="selectCrypto(value.asset)">
               <div class="column">
@@ -43,14 +43,14 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import _ from 'lodash/collection'
 import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   data () {
     return {
-      filterInput: '',
-      selectedCrypto: null
+      filterInput: ''
     }
   },
   mixins: [
@@ -63,6 +63,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'portfolioChart'
+    ]),
     filteredPortfolio () {
       return this.portfolio.filter(crypto => {
         const isName = _.includes(crypto.name.toLowerCase(), this.filterInput.toLowerCase())
