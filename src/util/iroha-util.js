@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 const debug = require('debug')('iroha-util')
 const iroha = require('iroha-lib')
-const grpc = require('grpc')
+const grpc = require('grpc-web-client').grpc
 
 /**
  * default timeout limit of queries
@@ -27,9 +27,9 @@ const localStorage = global.localStorage || {
   removeItem () {}
 }
 
-const endpointGrpc = require('iroha-lib/pb/endpoint_grpc_pb.js')
-const pbEndpoint = require('iroha-lib/pb/endpoint_pb.js')
-const pbResponse = require('iroha-lib/pb/responses_pb.js')
+const endpointGrpc = require('./proto/endpoint_pb_service.js')
+const pbEndpoint = require('./proto/endpoint_pb.js')
+const pbResponse = require('./proto/responses_pb.js')
 const txBuilder = new iroha.ModelTransactionBuilder()
 const queryBuilder = new iroha.ModelQueryBuilder()
 const crypto = new iroha.ModelCrypto()
@@ -158,8 +158,7 @@ function sendQuery (
 ) {
   return new Promise((resolve, reject) => {
     const queryClient = new endpointGrpc.QueryServiceClient(
-      cache.nodeIp,
-      grpc.credentials.createInsecure()
+      cache.nodeIp
     )
     const query = buildQuery()
     const protoQuery = makeProtoQueryWithKeys(query, cache.keys)
@@ -379,8 +378,7 @@ function command (
     const protoTx = makeProtoTxWithKeys(tx, cache.keys)
 
     txClient = new endpointGrpc.CommandServiceClient(
-      cache.nodeIp,
-      grpc.credentials.createInsecure()
+      cache.nodeIp
     )
     txHash = blob2array(tx.hash().blob())
 
@@ -424,7 +422,7 @@ function command (
           }
 
           const status = response.getTxStatus()
-          const TxStatus = require('iroha-lib/pb/endpoint_pb.js').TxStatus
+          const TxStatus = require('./proto/endpoint_pb.js').TxStatus
           const statusName = getProtoEnumName(
             TxStatus,
             'iroha.protocol.TxStatus',
@@ -574,7 +572,7 @@ function getProtoEnumName (obj, key, value) {
 }
 
 function makeProtoQueryWithKeys (builtQuery, keys) {
-  const pbQuery = require('iroha-lib/pb/queries_pb.js').Query
+  const pbQuery = require('./proto/queries_pb.js').Query
 
   const blob = new iroha.ModelProtoQuery(builtQuery).signAndAddSignature(keys).finish().blob()
   const arr = blob2array(blob)
@@ -584,7 +582,7 @@ function makeProtoQueryWithKeys (builtQuery, keys) {
 }
 
 function makeProtoTxWithKeys (builtTx, keys) {
-  const pbTransaction = require('iroha-lib/pb/block_pb.js').Transaction
+  const pbTransaction = require('./proto/block_pb.js').Transaction
 
   const blob = new iroha.ModelProtoTransaction(builtTx).signAndAddSignature(keys).finish().blob()
   const arr = blob2array(blob)

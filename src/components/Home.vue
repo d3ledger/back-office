@@ -115,7 +115,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style>
 .el-menu-item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -125,12 +125,12 @@ export default {
   overflow-y: auto;
   transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-right: none;
-  position: fixed;
   z-index: 100;
-}
-
-.el-side-menu {
   width: 62px;
+
+  /* Getting rid of element.ui styles */
+  position: fixed !important;
+  border-right: none !important;
 }
 
 .el-side-menu:not(.el-menu--collapse) {
