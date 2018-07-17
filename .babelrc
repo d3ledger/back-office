@@ -6,11 +6,9 @@
         "targets": {
           "node": 8
         },
-        "useBuiltIns": "entry"
+        "useBuiltIns": "entry",
+        "exclude": ["transform-regenerator"]
       }
     ]
-  ],
-  "plugins": [
-    "transform-async-to-generator"
   ]
 }
