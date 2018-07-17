@@ -10,8 +10,5 @@
         "exclude": ["transform-regenerator"]
       }
     ]
-  ],
-  "plugins": [
-    "transform-async-to-generator"
   ]
 }
