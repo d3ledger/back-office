@@ -43,7 +43,9 @@ const mutations = {
   [types.LOAD_SETTINGS] (state, storage) {
     if (!_.isEqual(state, storage)) {
       Object.keys(state).map(key => {
-        state[key] = storage[key]
+        if (key !== 'default') {
+          state[key] = storage[key]
+        }
       })
     }
   },
