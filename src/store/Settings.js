@@ -5,7 +5,8 @@ import { getParsedItem, setParsedItem, setItem } from 'util/storage-util'
 const types = _([
   'LOAD_SETTINGS',
   'UPDATE_SETTINGS_VIEW_FIAT',
-  'UPDATE_SETTINGS_VIEW_CRYPTO'
+  'UPDATE_SETTINGS_VIEW_CRYPTO',
+  'UPDATE_SETTINGS_VIEW_TIMEZONE'
 ]).map(x => [x, x])
   .fromPairs()
   .value()
@@ -18,7 +19,8 @@ function initialState () {
     },
     view: {
       fiat: 'RUB',
-      crypto: 'BTC'
+      crypto: 'BTC',
+      timezone: 'Europe/Moscow'
     }
   }
 }
@@ -54,6 +56,10 @@ const mutations = {
 
   [types.UPDATE_SETTINGS_VIEW_CRYPTO] (state, crypto) {
     Vue.set(state.view, 'crypto', crypto)
+  },
+
+  [types.UPDATE_SETTINGS_VIEW_TIMEZONE] (state, timezone) {
+    state.view.timezone = timezone
   }
 }
 
@@ -73,6 +79,10 @@ const actions = {
   updateSettingsViewCrypto ({ commit }, crypto) {
     setParsedItem('settings.view.crypto', crypto)
     commit(types.UPDATE_SETTINGS_VIEW_CRYPTO, crypto)
+  },
+  updateSettingsViewTime ({ commit }, timezone) {
+    setParsedItem('settings.view.timezone', timezone)
+    commit(types.UPDATE_SETTINGS_VIEW_TIMEZONE, timezone)
   }
 }
 

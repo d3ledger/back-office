@@ -14,7 +14,7 @@
             <div>
               <el-row class="settings_item">
                 <div class="settings_item-header">
-                  <span class="header">Current currency</span>
+                  <span class="header">Currency</span>
                 </div>
                 <div>
                   <el-row class="currencies_list">
@@ -43,6 +43,29 @@
                   </el-row>
                 </div>
               </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Time zone</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <el-select
+                        class="time-zone_select"
+                        v-model="currentZone"
+                        filterable
+                        placeholder="Select">
+                        <el-option
+                          v-for="(zone, index) in timezones"
+                          :key="index"
+                          :label="zone"
+                          :value="zone">
+                        </el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
             </div>
           </el-card>
         </el-col>
@@ -53,12 +76,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   name: 'settings-page',
   data () {
     return {}
   },
+  mixins: [
+    dateFormat
+  ],
   computed: {
     ...mapGetters([
       'settingsFiatCurrencies',
@@ -79,20 +106,30 @@ export default {
       set (value) {
         this.$store.dispatch('updateSettingsViewCrypto', value)
       }
+    },
+    currentZone: {
+      get () {
+        return this.$store.getters.settingsView.timezone
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewTime', value)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.settings_item {}
+.settings_item {
+  margin-bottom: 20px;
+}
 
 .settings_item-header {
   margin-bottom: 15px;
 }
 
 .settings_item-header > .header {
-  font-size: 1.5rem
+  font-size: 1rem;
 }
 
 .currencies_list {
@@ -101,5 +138,9 @@ export default {
 
 .currencies_list-select {
   width: 5rem;
+}
+
+.time-zone_select {
+  width: 100%;
 }
 </style>
