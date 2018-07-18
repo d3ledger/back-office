@@ -104,8 +104,10 @@ export default {
 
       reader.onload = (ev) => {
         this.form.privateKey = (ev.target.result || '').trim()
+        this.form.username = this.form.username || fileList[0].name.replace('.priv', '')
         this.$refs['form'].validate()
       }
+
       reader.readAsText(file.raw)
     },
 
