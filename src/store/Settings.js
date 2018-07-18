@@ -59,7 +59,7 @@ const mutations = {
   },
 
   [types.UPDATE_SETTINGS_VIEW_TIMEZONE] (state, timezone) {
-    state.view.timezone = timezone
+    Vue.set(state.view, 'timezone', timezone)
   }
 }
 
