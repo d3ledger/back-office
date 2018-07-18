@@ -103,8 +103,8 @@ const getters = {
  */
 function handleError (state, err) {
   switch (err.code) {
-    case grpc.status.UNAVAILABLE:
-    case grpc.status.CANCELLED:
+    case grpc.Code.Unavailable:
+    case grpc.Code.Canceled:
       state.connectionError = err
       break
 

@@ -167,7 +167,7 @@ function sendQuery (
     const timer = setTimeout(() => {
       queryClient.$channel.close()
       const err = new Error('please check IP address OR your internet connection')
-      err.code = grpc.status.CANCELLED
+      err.code = grpc.Code.Canceled
       reject(err)
     }, timeoutLimit)
 
