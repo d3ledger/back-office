@@ -6,7 +6,8 @@
         "targets": {
           "node": 8
         },
-        "useBuiltIns": "entry"
+        "useBuiltIns": "entry",
+        "exclude": ["transform-regenerator"]
       }
     ]
   ]
