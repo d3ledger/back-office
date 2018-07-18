@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import _ from 'lodash'
-import { getParsedItem, setParsedItem, setItem } from 'util/storage-util'
+import { getParsedItem, setParsedItem, setItem } from '@util/storage-util'
 
 const types = _([
   'LOAD_SETTINGS',
