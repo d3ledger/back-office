@@ -43,13 +43,13 @@
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} ₽</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}</p>
                     <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} BTC</p>
+                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}</p>
                     <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
                       {{ cryptoInfo.current.crypto_change | formatPercent }}
                     </p>
@@ -58,12 +58,12 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} ₽</p>
+                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} ₽</p>
+                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}</p>
                     <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
                   </el-col>
                   <el-col :span="8">
@@ -96,13 +96,13 @@
                 <div v-if="scope.row.settlement" style="background: #F8FFF0">
                   <p>This transaction is a part of a succesfull setllement:</p>
                   <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
-                  <p>Was <el-tag>created</el-tag> at {{ scope.row.settlement.date | formatDateLong}}</p>
+                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.settlement.date) }}</p>
                   <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
-                  {{ scope.row.settlement.date | formatDateLong}}</p>
+                  {{ formatDateLong(scope.row.settlement.date) }}</p>
                   <p>Message: {{ scope.row.settlement.message }}</p>
                 </div>
                 <div v-else>
-                  <p>Was <el-tag>created</el-tag> at {{ scope.row.date | formatDateLong}}</p>
+                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
                   <p>Message: {{ scope.row.message }}</p>
                 </div>
               </template>
@@ -124,7 +124,7 @@
             </el-table-column>
             <el-table-column label="Date" width="120">
               <template slot-scope="scope">
-                {{ scope.row.date | formatDate }}
+                {{ formatDate(scope.row.date) }}
               </template>
             </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
@@ -241,12 +241,14 @@ import { mapActions, mapGetters } from 'vuex'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'wallet',
   mixins: [
     dateFormat,
-    numberFormat
+    numberFormat,
+    currencySymbol
   ],
   components: {
     AssetIcon
@@ -267,7 +269,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'cryptoInfo'
+      'cryptoInfo',
+      'settingsView'
     ]),
     wallet () {
       const walletId = this.$route.params.walletId

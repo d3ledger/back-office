@@ -68,9 +68,10 @@ const mutations = {
     Vue.set(state.cryptoInfo, 'isLoading', true)
   },
 
-  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { RAW }) {
-    const compareToRUB = Object.values(RAW)[0].RUB
-    const compareToCrypto = Object.values(RAW)[0].BTC
+  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { data, currencies }) {
+    const RAW = Object.values(data.RAW)[0]
+    const compareToRUB = RAW[currencies.fiat]
+    const compareToCrypto = RAW[currencies.crypto]
     Vue.set(state, 'cryptoInfo', {
       current: {
         rur: compareToRUB.PRICE,
@@ -100,10 +101,11 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit }, { asset }) {
+  getCryptoFullData ({ commit, getters }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
+    const currencies = getters.settingsView
     return cryptoCompareUtil.loadFullData(asset)
-      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
+      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { data, currencies }))
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
         throw err
