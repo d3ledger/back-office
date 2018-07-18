@@ -120,7 +120,7 @@ export default {
         this.$store.dispatch('login', {
           username: this.form.username,
           privateKey: this.form.privateKey,
-          nodeIp: this.form.nodeIp
+          nodeIp: (this.form.nodeIp.indexOf('://') === -1) ? 'http://' + this.form.nodeIp : this.form.nodeIp
         })
           .then(account => {
             this.$router.push('/')
