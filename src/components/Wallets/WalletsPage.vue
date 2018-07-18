@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container v-if="wallets.length">
     <el-aside class="column-fullheight wallets-menu" width="280px">
       <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
@@ -14,16 +14,21 @@
       <router-view :key="$route.params.walletId"></router-view>
     </el-main>
   </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import WalletMenuItem from '@/components/Wallets/WalletMenuItem'
+import NoAssetsCard from '@/components/common/NoAssetsCard'
 
 export default {
   name: 'wallets-page',
   components: {
-    WalletMenuItem
+    WalletMenuItem,
+    NoAssetsCard
   },
 
   data () {

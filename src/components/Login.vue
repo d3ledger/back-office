@@ -104,8 +104,10 @@ export default {
 
       reader.onload = (ev) => {
         this.form.privateKey = (ev.target.result || '').trim()
+        this.form.username = this.form.username || fileList[0].name.replace('.priv', '')
         this.$refs['form'].validate()
       }
+
       reader.readAsText(file.raw)
     },
 
@@ -118,7 +120,7 @@ export default {
         this.$store.dispatch('login', {
           username: this.form.username,
           privateKey: this.form.privateKey,
-          nodeIp: this.form.nodeIp
+          nodeIp: (this.form.nodeIp.indexOf('://') === -1) ? 'http://' + this.form.nodeIp : this.form.nodeIp
         })
           .then(account => {
             this.$router.push('/')
