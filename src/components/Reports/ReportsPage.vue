@@ -83,7 +83,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
-import download from 'downloadjs'
+import FileSaver from 'file-saver'
 
 export default {
   name: 'reports-page',
@@ -109,15 +109,14 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
-    onClickDownload (format, { date, wallet }) {
+    onClickDownload ({ date, wallet }, format) {
       const ext = (format === 'pdf') ? 'pdf' : 'csv'
-      const mimeType = (format === 'pdf') ? 'application/pdf' : 'text/csv'
       const fileName = `report.${ext}`
       const generating = (format === 'pdf')
         ? generatePDF({ date, wallet })
         : generateCSV({ date, wallet })
 
-      generating.then(reportData => download(reportData, fileName, mimeType))
+      generating.then(reportData => FileSaver.saveAs(reportData, fileName))
     }
   }
 }
