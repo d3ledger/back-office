@@ -14,7 +14,7 @@
             <div>
               <el-row class="settings_item">
                 <div class="settings_item-header">
-                  <span class="header">Current currency</span>
+                  <span class="header">Currency</span>
                 </div>
                 <div>
                   <el-row class="currencies_list">
@@ -50,7 +50,11 @@
                 <div>
                   <el-row>
                     <el-col>
-                      <el-select v-model="currentZone" filterable placeholder="Select">
+                      <el-select
+                        class="time-zone_select"
+                        v-model="currentZone"
+                        filterable
+                        placeholder="Select">
                         <el-option
                           v-for="(zone, index) in timezones"
                           :key="index"
@@ -114,14 +118,16 @@ export default {
 </script>
 
 <style scoped>
-.settings_item {}
+.settings_item {
+  margin-bottom: 20px;
+}
 
 .settings_item-header {
   margin-bottom: 15px;
 }
 
 .settings_item-header > .header {
-  font-size: 1.5rem
+  font-size: 1rem;
 }
 
 .currencies_list {
@@ -130,5 +136,9 @@ export default {
 
 .currencies_list-select {
   width: 5rem;
+}
+
+.time-zone_select {
+  width: 100%;
 }
 </style>
