@@ -11,12 +11,12 @@ const expect = chai.expect
 
 chai.use(require('chai-things'))
 
-describe('Wallet store', () => {
+describe('Dashboard store', () => {
   let types, mutations, actions, getters
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = WalletInjector({
-      '@util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
+      'util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
     }).default)
   })
 
@@ -25,18 +25,18 @@ describe('Wallet store', () => {
       const state = {
         cryptoInfo: {
           current: {
-            fiat: randomAmountRng(),
-            fiat_change: randomAmountRng(),
+            rur: randomAmountRng(),
+            rur_change: randomAmountRng(),
             crypto: randomAmountRng(),
             crypto_change: randomAmountRng()
           },
           market: {
             cap: {
-              fiat: randomAmountRng(),
+              rur: randomAmountRng(),
               crypto: randomAmountRng()
             },
             volume: {
-              fiat: randomAmountRng(),
+              rur: randomAmountRng(),
               crypto: randomAmountRng()
             },
             supply: randomAmountRng()
@@ -48,18 +48,18 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            fiat: 0,
-            fiat_change: 0,
+            rur: 0,
+            rur_change: 0,
             crypto: 0,
             crypto_change: 0
           },
           market: {
             cap: {
-              fiat: 0,
+              rur: 0,
               crypto: 0
             },
             volume: {
-              fiat: 0,
+              rur: 0,
               crypto: 0
             },
             supply: 0
@@ -83,80 +83,45 @@ describe('Wallet store', () => {
     it('GET_CRYPTO_FULL_DATA_SUCCESS should set cryptoInfo data', () => {
       const state = { cryptoInfo: {} }
       const number = randomAmountRng()
-      const price = randomAmountRng()
-      const assets = ['BTC', 'ETH']
-      const fiats = ['USD', 'EUR']
-      const asset = randomArrayElement(assets)
-      const fiat = randomArrayElement(fiats)
-      const currencies = {
-        fiat,
-        crypto: asset
-      }
-      const historicalDataFiat = {
-        Data: [
-          { close: number },
-          { close: number }
-        ]
-      }
-      const historicalDataCrypto = {
-        Data: [
-          { close: number },
-          { close: number }
-        ]
-      }
-      const volumeData = {
-        Data: [
-          { volume: number },
-          { volume: number }
-        ]
-      }
-      const priceData = {
-        RAW: {
-          test: {
-            [fiat]: {
-              PRICE: price,
-              CHANGEDAY: number,
-              MKTCAP: number,
-              SUPPLY: number,
-              TOTALVOLUME24HTO: number,
-              TOTALVOLUME24H: number
-            },
-            [asset]: {
-              PRICE: price,
-              CHANGEPCTDAY: number
-            }
+      const RAW = {
+        test: {
+          RUB: {
+            PRICE: number,
+            CHANGEDAY: number,
+            MKTCAP: number,
+            SUPPLY: number,
+            TOTALVOLUME24HTO: number,
+            TOTALVOLUME24H: number
+          },
+          BTC: {
+            PRICE: number,
+            CHANGEPCTDAY: number
           }
         }
       }
       const expectedState = {
         cryptoInfo: {
           current: {
-            fiat: price,
-            fiat_change: 0,
-            crypto: price,
-            crypto_change: 0
+            rur: number,
+            rur_change: number,
+            crypto: number,
+            crypto_change: number
           },
           market: {
             cap: {
-              fiat: number,
+              rur: number,
               crypto: number
             },
             volume: {
-              fiat: price * (number * 2),
-              crypto: number * 2
+              rur: number,
+              crypto: number
             },
             supply: number
           },
           isLoading: false
         }
       }
-      mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, {
-        historicalDataFiat,
-        historicalDataCrypto,
-        volumeData,
-        priceData,
-        currencies
-      })
+      mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, { RAW })
       expect(state).to.be.deep.equal(expectedState)
     })
 
@@ -176,18 +141,9 @@ describe('Wallet store', () => {
     describe('getCryptoFullData', () => {
       it('should call mutations in correct order', async () => {
         const assets = ['BTC', 'ETH']
-        const fiats = ['USD', 'EUR']
-        const filter = '1D'
         const asset = randomArrayElement(assets)
-        const fiat = randomArrayElement(fiats)
-        const getters = {
-          settingsView: {
-            fiat,
-            crypto: asset
-          }
-        }
         const commit = sinon.spy()
-        await actions.getCryptoFullData({ commit, getters }, { filter, asset })
+        await actions.getCryptoFullData({ commit }, { asset })
         const response = commit.secondCall.args[1]
         expect(commit.args).to.deep.equal([
           [types.GET_CRYPTO_FULL_DATA_REQUEST],
@@ -203,18 +159,18 @@ describe('Wallet store', () => {
         const state = {
           cryptoInfo: {
             current: {
-              fiat: randomAmountRng(),
-              fiat_change: randomAmountRng(),
+              rur: randomAmountRng(),
+              rur_change: randomAmountRng(),
               crypto: randomAmountRng(),
               crypto_change: randomAmountRng()
             },
             market: {
               cap: {
-                fiat: randomAmountRng(),
+                rur: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               volume: {
-                fiat: randomAmountRng(),
+                rur: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               supply: randomAmountRng()
