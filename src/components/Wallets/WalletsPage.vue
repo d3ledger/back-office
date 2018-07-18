@@ -33,8 +33,7 @@ export default {
 
   data () {
     return {
-      search: '',
-      ethDepositAdcress: '0x0000000000000000000000000000000000000000'
+      search: ''
     }
   },
 
