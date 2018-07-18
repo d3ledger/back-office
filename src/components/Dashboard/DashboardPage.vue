@@ -1,5 +1,5 @@
 <template>
-  <el-container v-loading.fullscreen.lock="dashboardLoading">
+  <el-container v-if="wallets.lenght" v-loading.fullscreen.lock="dashboardLoading">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
@@ -23,6 +23,9 @@
       </el-row>
     </el-main>
   </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
@@ -31,6 +34,7 @@ import DashboardPortfolio from '@/components/Dashboard/DashboardPortfolio'
 import DashboardPieChart from '@/components/Dashboard/DashboardPieChart'
 import DashboardTable from '@/components/Dashboard/DashboardTable'
 import DashboardChart from '@/components/Dashboard/DashboardChart'
+import NoAssetsCard from '@/components/common/NoAssetsCard'
 
 export default {
   name: 'dashboard-page',
@@ -38,7 +42,8 @@ export default {
     DashboardPortfolio,
     DashboardPieChart,
     DashboardTable,
-    DashboardChart
+    DashboardChart,
+    NoAssetsCard
   },
   data () {
     return {}
@@ -48,6 +53,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'wallets',
       'portfolioPrice',
       'portfolioPercent',
       'portfolioHistory',
