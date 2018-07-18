@@ -51,22 +51,22 @@ describe('Account store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
-      'util/iroha-util': irohaUtilMock,
-      'util/iroha-amount': require('../../../src/util/iroha-amount'),
-      'util/store-util': require('../../../src/util/store-util'),
-      'util/notary-util': notaryUtilMock
+      '@util/iroha-util': irohaUtilMock,
+      '@util/iroha-amount': require('../../../src/util/iroha-amount'),
+      '@util/store-util': require('../../../src/util/store-util'),
+      '@util/notary-util': notaryUtilMock
     }).default)
   })
 
   describe('Mutations', () => {
     function testErrorHandling (type) {
-      const codes = ['UNAVAILABLE', 'CANCELLED']
+      const codes = ['Unavailable', 'Canceled']
 
       codes.forEach(codeName => {
         it(`${type} should treat grpc ${codeName} as a connection error`, () => {
-          const grpc = require('grpc')
+          const grpc = require('grpc-web-client').grpc
           const state = {}
-          const error = { code: grpc.status[codeName] }
+          const error = { code: grpc.Code[codeName] }
 
           expect(state.connectionError).to.not.exist
 
