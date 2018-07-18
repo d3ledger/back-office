@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="wallets.lenght" v-loading.fullscreen.lock="dashboardLoading">
+  <el-container v-if="wallets.length" v-loading.fullscreen.lock="dashboardLoading">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
@@ -49,7 +49,9 @@ export default {
     return {}
   },
   mounted () {
-    this.$store.dispatch('loadDashboard')
+    if (this.wallets.length > 0) {
+      this.$store.dispatch('loadDashboard')
+    }
   },
   computed: {
     ...mapGetters([
