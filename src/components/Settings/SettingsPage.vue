@@ -50,7 +50,11 @@
                 <div>
                   <el-row>
                     <el-col>
-                      <el-select v-model="currentZone" filterable placeholder="Select">
+                      <el-select
+                        class="time-zone_select"
+                        v-model="currentZone"
+                        filterable
+                        placeholder="Select">
                         <el-option
                           v-for="(zone, index) in timezones"
                           :key="index"

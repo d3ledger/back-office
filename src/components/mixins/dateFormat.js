@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 const timezones = _(tz)
   .map(t => t.utc)
   .flatten()
-  .sortBy()
+  .sortedUniq()
   .value()
 
 const offsetByZone = (zone) =>
