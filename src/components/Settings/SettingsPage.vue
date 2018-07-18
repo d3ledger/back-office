@@ -77,7 +77,6 @@
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
 import { mapGetters } from 'vuex'
-import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   name: 'settings-page',

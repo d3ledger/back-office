@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getParsedItem } from 'util/storage-util'
+import { getParsedItem } from '@util/storage-util'
 
 const API_URL = process.env.CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
 
