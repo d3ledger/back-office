@@ -99,4 +99,8 @@ a:hover {
 .black.el-button:hover {
   opacity: 0.8;
 }
+
+.monospace {
+  font-family: "Courier New", Courier, monospace;
+}
 </style>
