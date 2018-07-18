@@ -101,7 +101,7 @@
       </el-form>
       <el-button
         class="fullwidth black clickable"
-        @click="openApprovalDialog"
+        @click="onSubmitSettlementForm"
         style="margin-top: 40px"
       >
         EXCHANGE
@@ -147,29 +147,35 @@ export default {
     ...mapActions([
       'openApprovalDialog'
     ]),
-    onCreateSettlement () {
-      const s = this.newSettlementForm
+    onSubmitSettlementForm () {
+      const s = this.settlementForm
 
-      this.$store.dispatch('createSettlement', {
-        to: s.to,
-        offerAssetId: s.offer_asset,
-        offerAmount: s.offer_amount,
-        requestAssetId: s.request_asset,
-        requestAmount: s.request_amount
-      })
-        .then(() => {
-          this.$message('New settlement has successfully been created')
-        })
-        .catch(err => {
-          console.error(err)
-          this.$message('Failed to create new settlement')
-        })
-        .finally(() => {
-          Object.assign(
-            this.$data.newSettlementForm,
-            this.$options.data().newSettlementForm
-          )
-          this.newSettlementFormVisible = false
+      this.openApprovalDialog()
+        .then(privateKey => {
+          if (!privateKey) return
+
+          return this.$store.dispatch('createSettlement', {
+            privateKey,
+            to: s.to,
+            offerAssetId: s.offer_asset,
+            offerAmount: s.offer_amount,
+            requestAssetId: s.request_asset,
+            requestAmount: s.request_amount
+          })
+            .then(() => {
+              this.$message('New settlement has successfully been created')
+            })
+            .catch(err => {
+              console.error(err)
+              this.$message('Failed to create new settlement')
+            })
+            .finally(() => {
+              Object.assign(
+                this.$data.settlementForm,
+                this.$options.data().settlementForm
+              )
+              this.settlementFormVisible = false
+            })
         })
     }
   }

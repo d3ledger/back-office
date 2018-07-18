@@ -39,7 +39,7 @@
      title="Approve transaction"
      :visible="approvalDialogVisible"
      width="500px"
-     @close="closeApprovalDialog"
+     @close="closeApprovalDialogWith()"
      center
    >
      <el-form>
@@ -58,7 +58,7 @@
        <el-form-item style="margin-bottom: 0;">
          <el-button
            class="fullwidth black clickable"
-           @click="closeApprovalDialog"
+           @click="closeApprovalDialogWith(privateKey)"
          >
            Confirm
          </el-button>
@@ -110,6 +110,11 @@ export default {
     logout () {
       this.$store.dispatch('logout')
         .then(() => this.$router.push('/login'))
+    },
+
+    closeApprovalDialogWith (privateKey) {
+      this.closeApprovalDialog(privateKey)
+      this.privateKey = null
     }
   }
 }

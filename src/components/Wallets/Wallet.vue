@@ -160,7 +160,7 @@
         <el-form-item style="margin-bottom: 0;">
           <el-button
             class="fullwidth black clickable"
-            @click="openApprovalDialog"
+            @click="onSubmitWithdrawalForm"
             :loading="isSending"
             style="margin-top: 40px"
           >
@@ -218,7 +218,14 @@
           />
         </el-form-item>
       </el-form>
-      <el-button class="fullwidth black clickable" @click="() => {openApprovalDialog(); onSubmit();}" style="margin-top: 40px" :loading="isSending">TRANSFER</el-button>
+      <el-button
+        class="fullwidth black clickable"
+        @click="onSubmitTransferForm"
+        style="margin-top: 40px"
+        :loading="isSending"
+      >
+        TRANSFER
+      </el-button>
     </el-dialog>
   </div>
 </template>
@@ -311,27 +318,45 @@ export default {
         .then(() => this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId }))
     },
 
-    onSubmit () {
-      this.isSending = true
-      this.$store.dispatch('transferAsset', {
-        assetId: this.wallet.assetId,
-        to: this.transferForm.to,
-        amount: this.transferForm.amount
-      })
-        .then(() => {
-          this.$message({
-            message: 'Transfer successful!',
-            type: 'success'
-          })
-          this.resetTransferForm()
-          this.fetchWallet()
-          this.transferFormVisible = false
+    onSubmitWithdrawalForm () {
+      this.openApprovalDialog()
+        .then(privateKey => {
+          if (!privateKey) return
+
+          // TODO: withdrawal process
+
+          this.withdrawFormVisible = false
         })
-        .catch(err => {
-          console.error(err)
-          this.$alert(err.message, 'Transfer error', {
-            type: 'error'
+    },
+
+    onSubmitTransferForm () {
+      this.openApprovalDialog()
+        .then(privateKey => {
+          if (!privateKey) return
+
+          this.isSending = true
+
+          return this.$store.dispatch('transferAsset', {
+            privateKey,
+            assetId: this.wallet.assetId,
+            to: this.transferForm.to,
+            amount: this.transferForm.amount
           })
+            .then(() => {
+              this.$message({
+                message: 'Transfer successful!',
+                type: 'success'
+              })
+              this.resetTransferForm()
+              this.fetchWallet()
+              this.transferFormVisible = false
+            })
+            .catch(err => {
+              console.error(err)
+              this.$alert(err.message, 'Transfer error', {
+                type: 'error'
+              })
+            })
         })
         .finally(() => { this.isSending = false })
     },

@@ -21,8 +21,7 @@ const types = _([
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT',
-  'CANCEL_SETTLEMENT'
+  'REJECT_SETTLEMENT'
 ]).chain()
   .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
   .concat(['RESET'])
@@ -104,8 +103,8 @@ const getters = {
  */
 function handleError (state, err) {
   switch (err.code) {
-    case grpc.status.UNAVAILABLE:
-    case grpc.status.CANCELLED:
+    case grpc.Code.Unavailable:
+    case grpc.Code.Canceled:
       state.connectionError = err
       break
 
@@ -220,14 +219,6 @@ const mutations = {
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
     handleError(state, err)
-  },
-
-  [types.CANCEL_SETTLEMENT_REQUEST] (state) {},
-
-  [types.CANCEL_SETTLEMENT_SUCCESS] (state) {},
-
-  [types.CANCEL_SETTLEMENT_FAILURE] (state, err) {
-    handleError(state, err)
   }
 }
 
@@ -326,10 +317,10 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state }, { assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state }, { privateKey, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(state.accountId, to, assetId, description, amount)
+    return irohaUtil.transferAsset(privateKey, state.accountId, to, assetId, description, amount)
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
@@ -341,11 +332,12 @@ const actions = {
 
   createSettlement (
     { commit, state },
-    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { privateKey, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
     return irohaUtil.createSettlement(
+      privateKey,
       state.accountId,
       to,
       offerAssetId,
@@ -363,8 +355,8 @@ const actions = {
       })
   },
 
-  acceptSettlement ({ commit, state }, { settlementHash }) {
-    commit(types.ACCEPT_SETTLEMENT_REQUEST, settlementHash)
+  acceptSettlement ({ commit, state }, { privateKey, settlementHash }) {
+    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
 
     return irohaUtil.acceptSettlement()
       .then(() => {
@@ -376,8 +368,8 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { settlementHash }) {
-    commit(types.REJECT_SETTLEMENT_REQUEST, settlementHash)
+  rejectSettlement ({ commit, state }, { privateKey, settlementHash }) {
+    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
 
     return irohaUtil.rejectSettlement()
       .then(() => {
@@ -385,19 +377,6 @@ const actions = {
       })
       .catch(err => {
         commit(types.REJECT_SETTLEMENT_FAILURE, err)
-        throw err
-      })
-  },
-
-  cancelSettlement ({ commit, state }, { settlementHash }) {
-    commit(types.CANCEL_SETTLEMENT_REQUEST, settlementHash)
-
-    return irohaUtil.cancelSettlement()
-      .then(() => {
-        commit(types.CANCEL_SETTLEMENT_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.CANCEL_SETTLEMENT_FAILURE, err)
         throw err
       })
   }

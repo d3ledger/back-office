@@ -14,6 +14,8 @@ const DEFAULT_TIMEOUT_LIMIT = 5000
  */
 const cache = {
   username: null, // NOT persisted by localStorage
+  // TODO: do not cache keys; require a private key on every action instead.
+  // For now it is needed for queries until tokens are implemented.
   keys: null, // NOT persisted by localStorage
   nodeIp: null // persisted by localStorage
 }
@@ -133,15 +135,6 @@ function rejectSettlement () {
   })
 }
 
-// TODO: implement it
-function cancelSettlement () {
-  debug('starting cancelSettlement...')
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 500)
-  })
-}
-
 /*
  * ===== queries =====
  */
@@ -174,7 +167,7 @@ function sendQuery (
     const timer = setTimeout(() => {
       queryClient.$channel.close()
       const err = new Error('please check IP address OR your internet connection')
-      err.code = grpc.status.CANCELLED
+      err.code = grpc.Code.Canceled
       reject(err)
     }, timeoutLimit)
 
@@ -364,10 +357,12 @@ function getAllUnsignedTransactions (accountId) {
  */
 /**
  * wrapper function of commands
+ * @param {String} privateKey
  * @param {Function} buildQuery
  * @param {Number} timeoutLimit timeoutLimit
  */
 function command (
+  privateKey = '',
   buildTx = function () {},
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
@@ -375,7 +370,11 @@ function command (
 
   return new Promise((resolve, reject) => {
     const tx = buildTx()
-    const protoTx = makeProtoTxWithKeys(tx, cache.keys)
+    const keys = crypto.convertFromExisting(
+      crypto.fromPrivateKey(privateKey).publicKey().hex(),
+      privateKey
+    )
+    const protoTx = makeProtoTxWithKeys(tx, keys)
 
     txClient = new endpointGrpc.CommandServiceClient(
       cache.nodeIp
@@ -441,14 +440,16 @@ function command (
 
 /**
  * createAccount https://hyperledger.github.io/iroha-api/?protobuf#create-account
+ * @param {String} privateKey
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} mainPubKey
  */
-function createAccount (accountName, domainId, mainPubKey) {
+function createAccount (privateKey, accountName, domainId, mainPubKey) {
   debug('starting createAccount...')
 
   return command(
+    privateKey,
     function buildTx () {
       return txBuilder
         .creatorAccountId(cache.username)
@@ -461,14 +462,16 @@ function createAccount (accountName, domainId, mainPubKey) {
 
 /**
  * createAsset https://hyperledger.github.io/iroha-api/#create-asset
+ * @param {String} privateKey
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
  */
-function createAsset (assetName, domainId, precision) {
+function createAsset (privateKey, assetName, domainId, precision) {
   debug('starting createAsset...')
 
   return command(
+    privateKey,
     function buildTx () {
       return txBuilder
         .creatorAccountId(cache.username)
@@ -481,14 +484,16 @@ function createAsset (assetName, domainId, precision) {
 
 /**
  * addAssetQuantity https://hyperledger.github.io/iroha-api/#add-asset-quantity
+ * @param {String} privateKey
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
  */
-function addAssetQuantity (accountId, assetId, amount) {
+function addAssetQuantity (privateKey, accountId, assetId, amount) {
   debug('starting addAssetQuantity...')
 
   return command(
+    privateKey,
     function buildTx () {
       return txBuilder
         .creatorAccountId(cache.username)
@@ -501,17 +506,19 @@ function addAssetQuantity (accountId, assetId, amount) {
 
 /**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
+ * @param {String} privateKey
  * @param {String} srcAccountId
  * @param {String} destAccountId
  * @param {String} assetId
  * @param {String} description
  * @param {String} amount
  */
-function transferAsset (srcAccountId, destAccountId, assetId, description, amount) {
+function transferAsset (privateKey, srcAccountId, destAccountId, assetId, description, amount) {
   debug('starting transferAsset...')
 
   return command(
-    function () {
+    privateKey,
+    function buildTx () {
       return txBuilder
         .creatorAccountId(cache.username)
         .createdTime(Date.now())
@@ -603,7 +610,6 @@ module.exports = {
   generateKeypair,
   acceptSettlement,
   rejectSettlement,
-  cancelSettlement,
 
   // queries
   getAccount,
