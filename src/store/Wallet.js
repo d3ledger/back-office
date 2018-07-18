@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import _ from 'lodash'
-import cryptoCompareUtil from 'util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
 const types = _([
   'GET_CRYPTO_FULL_DATA'
