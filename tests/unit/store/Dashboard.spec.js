@@ -101,15 +101,13 @@ describe('Dashboard store', () => {
 
     it('GET_PORTFOLIO_PRICE_PERCENTAGE should calculate array of objects with data for pie chart', () => {
       const assets = ['BTC', 'ETH']
-      const wallets = new Array(assets.length)
-        .fill(null)
+      const wallets = assets
         .map((_, index) => ({
           amount: randomAmountRng({ max: 10 }),
           color: '#00000',
           asset: assets[index]
         }))
-      const data = new Array(assets.length)
-        .fill(null)
+      const data = assets
         .map((_, index) => ({
           asset: assets[index],
           value: {
@@ -145,16 +143,14 @@ describe('Dashboard store', () => {
         asset: 'ETH',
         name: 'Ethereum'
       }]
-      const wallets = new Array(assets.length)
-        .fill(null)
+      const wallets = assets
         .map((_, index) => ({
           amount: randomAmountRng({ max: 10 }),
           color: '#00000',
           asset: assets[index].asset,
           name: assets[index].name
         }))
-      const data = () => new Array(assets.length)
-        .fill(null)
+      const data = () => assets
         .map((_, index) => ({
           asset: assets[index].asset,
           value: {
@@ -162,8 +158,7 @@ describe('Dashboard store', () => {
             close: randomAmountRng({ max: 1000 })
           }
         }))
-      const history = new Array(2)
-        .fill(null)
+      const history = assets
         .map(() => ({
           data: [...data()],
           sum: randomAmountRng(),
@@ -265,8 +260,7 @@ describe('Dashboard store', () => {
     describe('getPortfolioHistory', () => {
       it('should call mutations in correct order', async () => {
         const assets = ['BTC', 'ETH']
-        const wallets = new Array(assets.length)
-          .fill(null)
+        const wallets = assets
           .map((_, index) => ({
             amount: randomAmountRng({ max: 10 }),
             color: '#00000',
