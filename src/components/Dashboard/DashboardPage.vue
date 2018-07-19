@@ -49,9 +49,7 @@ export default {
     return {}
   },
   mounted () {
-    if (this.wallets.length > 0) {
-      this.$store.dispatch('loadDashboard')
-    }
+    this.$store.dispatch('loadDashboard')
   },
   computed: {
     ...mapGetters([
