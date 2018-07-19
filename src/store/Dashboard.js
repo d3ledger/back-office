@@ -223,7 +223,7 @@ const actions = {
   },
   async getPortfolioHistory ({ commit, getters }) {
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
-    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets)
+    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets, getters.settingsView)
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
       })
@@ -238,7 +238,7 @@ const actions = {
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
-    const crypto = getters.wallets[0].asset || data.crypto
+    const crypto = (getters.wallets.length && !data.crypto) ? getters.wallets[0].asset : data.crypto
     if (crypto) {
       commit(types.SELECT_CHART_CRYPTO, crypto)
     }
@@ -248,7 +248,7 @@ const actions = {
 
     const filter = getters.portfolioChart
     commit(types.GET_PRICE_BY_FILTER_REQUEST)
-    await cryptoCompareUtil.loadPriceByFilter(filter)
+    await cryptoCompareUtil.loadPriceByFilter(filter, getters.settingsView)
       .then(({ Data }) => commit(types.GET_PRICE_BY_FILTER_SUCCESS, Data))
       .catch(err => {
         commit(types.GET_PRICE_BY_FILTER_FAILURE, err)
