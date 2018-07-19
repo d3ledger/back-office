@@ -85,14 +85,13 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { mapGetters } from 'vuex'
-import { format as formatDate, isWithinRange, isAfter } from 'date-fns'
-import { generatePDF, generateCSV } from '@util/report-util'
+import { mapState, mapGetters } from 'vuex'
+import reportGenerator from '@/components/mixins/reportGenerator'
 // import FileSaver from 'file-saver'
 
 export default {
   name: 'reports-page',
+  mixins: [reportGenerator],
   data () {
     return {
       reportFormVisible: false,
@@ -101,14 +100,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      wallets: 'wallets'
+    ...mapState({
+      accountId: state => state.Account.accountId
     }),
+    ...mapGetters([
+      'wallets'
+    ]),
     mockReports: function () {
       return this.wallets.map(x => ({
         assetId: x.assetId,
         walletName: `${x.name} (${x.asset.toUpperCase()})`,
-        date: ['Jul 1, 2018', 'Jul 15, 2018']
+        date: ['Jul 1, 2018', 'Jul 31, 2018']
       }))
     }
   },
@@ -116,97 +118,26 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
-    // TODO: move logic elsewhere
     onClickDownload ({ date, walletName, assetId }, fileFormat) {
       const [dateFrom, dateTo] = date
-      // const ext = (fileFormat === 'pdf') ? 'pdf' : 'csv'
-      // const fileName = `report-${formatDate(dateFrom, 'YYYYMMDD')}-${formatDate(dateTo, 'YYYYMMDD')}.${ext}`
 
       this.$store.dispatch('getAccountAssetTransactions', { assetId })
         .then(() => {
-          const sumAmount = (txs) => txs
-            .map(tx => parseFloat(tx.amount))
-            .reduce((sum, x) => sum + x, 0)
-
-          const transactions = this.$store.getters.getTransactionsByAssetId(assetId)
-          const wallet = this.$store.getters.wallets.find(x => (x.assetId === assetId))
-          const currencyAbbr = wallet.asset
-          const precision = wallet.precision
-          const currentAmount = wallet.amount
-
-          const txsWithinRange = transactions
-            .filter(tx => isWithinRange(tx.date, dateFrom, dateTo))
-          const txsAfterRange = transactions
-            .filter(tx => isAfter(tx.date, dateTo))
-          const netChangeAfterRange = txsAfterRange
-            .map(tx => (tx.to === 'you') ? +tx.amount : -tx.amount)
-            .reduce((sum, x) => sum + x, 0)
-          const transfersIn = sumAmount(txsWithinRange.filter(tx => (tx.to === 'you')))
-          const transfersOut = sumAmount(txsWithinRange.filter(tx => (tx.from === 'you')))
-          const netChange = transfersIn - transfersOut
-          const endingBalance = currentAmount - netChangeAfterRange
-          // TODO:
-          const endingBalanceUSD = null
-          const startingBalance = endingBalance - netChange
-          // TODO:
-          const startingBalanceUSD = null
-          // TODO:
-          const transactionsByDay = _(txsWithinRange)
-            .groupBy(tx => formatDate(tx.date, 'YYYYMMDD'))
-            .map((txs, date) => {
-              const dailyIn = sumAmount(txs.filter(tx => (tx.to === 'you')))
-              // TODO:
-              const dailyInUSD = null
-              const dailyOut = sumAmount(txs.filter(tx => (tx.from === 'you')))
-              // TODO:
-              const dailyOutUSD = null
-              const dailyNet = dailyIn - dailyOut
-
-              return {
-                date,
-                dailyIn: dailyIn.toFixed(precision),
-                dailyInUSD,
-                dailyOut: dailyOut.toFixed(precision),
-                dailyOutUSD,
-                dailyNet: dailyNet.toFixed(precision)
-              }
-            })
-            .value()
-          // TODO:
-          const transactionsDetails = []
-
-          const reportData = {
-            // metadata
-            accountId: this.$store.state.Account.accountId,
-            walletName,
-            currencyAbbr,
+          const params = {
+            accountId: this.accountId,
+            wallet: this.wallets.find(x => (x.assetId === assetId)),
+            transactions: this.$store.getters.getTransactionsByAssetId(assetId),
+            assetId,
             dateFrom,
-            dateTo,
-
-            // summary
-            endingBalance: endingBalance.toFixed(precision),
-            endingBalanceUSD,
-            startingBalance: startingBalance.toFixed(precision),
-            startingBalanceUSD,
-            netChange: netChange.toFixed(precision),
-            transfersIn: transfersIn.toFixed(precision),
-            transfersOut: transfersOut.toFixed(precision),
-
-            // transactions by day
-            transactionsByDay,
-
-            // transaction details
-            transactionsDetails
+            dateTo
           }
-
           const generating = (fileFormat === 'pdf')
-            ? generatePDF(reportData)
-            : generateCSV(reportData)
+            ? this.generatePDF(params)
+            : this.generateCSV(params)
 
-          console.log(reportData)
-          generating.then(blob => {
+          generating.then(({ blob, filename }) => {
             console.log('generated')
-            // FileSaver.saveAs(blob, fileName)
+            // FileSaver.saveAs(blob, filename)
           })
         })
     }
