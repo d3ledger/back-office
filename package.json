@@ -24,6 +24,7 @@
     "iroha-lib": "0.1.7",
     "lodash": "^4.17.10",
     "numbro": "^2.1.0",
+    "pdfmake": "^0.1.37",
     "source-map-support": "^0.5.4",
     "timezones.json": "^1.4.3",
     "vue": "^2.5.16",
