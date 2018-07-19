@@ -11,12 +11,12 @@ const expect = chai.expect
 
 chai.use(require('chai-things'))
 
-describe('Dashboard store', () => {
+describe('Wallet store', () => {
   let types, mutations, actions, getters
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = WalletInjector({
-      'util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
+      '@util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
     }).default)
   })
 
@@ -83,19 +83,29 @@ describe('Dashboard store', () => {
     it('GET_CRYPTO_FULL_DATA_SUCCESS should set cryptoInfo data', () => {
       const state = { cryptoInfo: {} }
       const number = randomAmountRng()
-      const RAW = {
-        test: {
-          RUB: {
-            PRICE: number,
-            CHANGEDAY: number,
-            MKTCAP: number,
-            SUPPLY: number,
-            TOTALVOLUME24HTO: number,
-            TOTALVOLUME24H: number
-          },
-          BTC: {
-            PRICE: number,
-            CHANGEPCTDAY: number
+      const assets = ['BTC', 'ETH']
+      const fiats = ['USD', 'EUR']
+      const asset = randomArrayElement(assets)
+      const fiat = randomArrayElement(fiats)
+      const currencies = {
+        fiat,
+        crypto: asset
+      }
+      const data = {
+        RAW: {
+          test: {
+            [fiat]: {
+              PRICE: number,
+              CHANGEDAY: number,
+              MKTCAP: number,
+              SUPPLY: number,
+              TOTALVOLUME24HTO: number,
+              TOTALVOLUME24H: number
+            },
+            [asset]: {
+              PRICE: number,
+              CHANGEPCTDAY: number
+            }
           }
         }
       }
@@ -121,7 +131,10 @@ describe('Dashboard store', () => {
           isLoading: false
         }
       }
-      mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, { RAW })
+      mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, {
+        data,
+        currencies
+      })
       expect(state).to.be.deep.equal(expectedState)
     })
 
@@ -141,9 +154,17 @@ describe('Dashboard store', () => {
     describe('getCryptoFullData', () => {
       it('should call mutations in correct order', async () => {
         const assets = ['BTC', 'ETH']
+        const fiats = ['USD', 'EUR']
         const asset = randomArrayElement(assets)
+        const fiat = randomArrayElement(fiats)
+        const getters = {
+          settingsView: {
+            fiat,
+            crypto: asset
+          }
+        }
         const commit = sinon.spy()
-        await actions.getCryptoFullData({ commit }, { asset })
+        await actions.getCryptoFullData({ commit, getters }, { asset })
         const response = commit.secondCall.args[1]
         expect(commit.args).to.deep.equal([
           [types.GET_CRYPTO_FULL_DATA_REQUEST],

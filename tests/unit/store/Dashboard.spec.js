@@ -16,7 +16,7 @@ describe('Dashboard store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = DashboardInjector({
-      'util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
+      '@util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
     }).default)
   })
 
@@ -64,7 +64,7 @@ describe('Dashboard store', () => {
         assetList: [],
         assetChart: {
           filter: '1Y',
-          crypto: 'BTC',
+          crypto: null,
           data: []
         },
         isLoading: false,
@@ -267,7 +267,13 @@ describe('Dashboard store', () => {
             asset: assets[index]
           }))
         const commit = sinon.spy()
-        const getters = { wallets }
+        const getters = {
+          wallets,
+          settingsView: {
+            fiat: randomArrayElement(['USD', 'EUR', 'RUB']),
+            crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
+          }
+        }
         await actions.getPortfolioHistory({ commit, getters })
 
         const response = commit.secondCall.args[1]
@@ -290,6 +296,11 @@ describe('Dashboard store', () => {
           crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
         }
         const getters = {
+          wallets: [],
+          settingsView: {
+            fiat: randomArrayElement(['USD', 'EUR', 'RUB']),
+            crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
+          },
           portfolioChart: {
             filter: data.filter,
             crypto: data.crypto
