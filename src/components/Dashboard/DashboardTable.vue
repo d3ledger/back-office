@@ -14,7 +14,7 @@
     <div class="card-content_body">
       <el-row justify="center" class="table_header">
         <div class="table_header-title">Currency</div>
-        <div class="table_header-title">Balance</div>
+        <div class="table_header-title text-center">Balance</div>
         <div class="table_header-title text-right">Changes</div>
       </el-row>
       <el-row class="table_body">
@@ -26,7 +26,7 @@
               <div class="column">
                 {{ value | formatName }}
               </div>
-              <div class="column balance">
+              <div class="column balance text-center">
                 {{ value.price | formatNumberShort }}
               </div>
               <div class="column text-right">
@@ -132,6 +132,10 @@ export default {
   text-align: right;
 }
 
+.table_header-title.text-center {
+  text-align: center;
+}
+
 .table_body {
   height: 380px;
   width: 100%;
@@ -165,7 +169,7 @@ export default {
 .table_body-item_content {
   display: flex;
   flex-flow: row wrap;
-  padding: 1.5rem 1rem 0;
+  padding: 2rem 1rem 0;
   height: 100%;
 }
 
@@ -175,6 +179,10 @@ export default {
 
 .table_body-item_content .column.text-right {
   text-align: right;
+}
+
+.table_body-item_content .column.text-center {
+  text-align: center;
 }
 
 .table_body-item_content .column.balance {
