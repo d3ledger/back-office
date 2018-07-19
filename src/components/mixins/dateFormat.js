@@ -30,6 +30,11 @@ const dateFormat = {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)
       return format(time, 'MMMM D, YYYY HH:mm:ss')
+    },
+    formatDateWith (date, formatString) {
+      const timeZoneLabel = this.$store.getters.settingsView.timezone
+      const time = convertTime(date, timeZoneLabel)
+      return format(time, formatString)
     }
   },
   data () {
