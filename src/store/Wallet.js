@@ -102,8 +102,9 @@ const mutations = {
 const actions = {
   getCryptoFullData ({ commit, getters }, { asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
-    return cryptoCompareUtil.loadFullData(asset)
-      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, data))
+    const currencies = getters.settingsView
+    return cryptoCompareUtil.loadFullData(asset, currencies)
+      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { data, currencies }))
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
         throw err
