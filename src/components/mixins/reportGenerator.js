@@ -1,23 +1,29 @@
 import _ from 'lodash'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 import { isWithinRange, isAfter, subMinutes } from 'date-fns'
 import dateFormat from '@/components/mixins/dateFormat'
 
+pdfMake.vfs = pdfFonts.pdfMake.vfs
+
 function generatePDF (params) {
   return new Promise((resolve, reject) => {
-    const reportData = f.call(this, { ext: 'pdf', ...params })
+    const reportData = generateReportData.call(this, { ext: 'pdf', ...params })
     const content = JSON.stringify(reportData, null, '  ')
-    const blob = new Blob(
-      [content],
-      { type: 'application/pdf;charset=utf-8' }
-    )
+    const docDefinition = {
+      content
+    }
+    const pdfDocGenerator = pdfMake.createPdf(docDefinition)
 
-    resolve({ filename: reportData.filename, blob })
+    pdfDocGenerator.getBlob(blob => {
+      resolve({ filename: reportData.filename, blob })
+    })
   })
 }
 
 function generateCSV (params) {
   return new Promise((resolve, reject) => {
-    const reportData = f.call(this, { ext: 'csv', ...params })
+    const reportData = generateReportData.call(this, { ext: 'csv', ...params })
     const content = JSON.stringify(reportData, null, '  ')
     const blob = new Blob(
       [content],
@@ -28,7 +34,7 @@ function generateCSV (params) {
   })
 }
 
-function f ({ accountId, wallet, transactions, dateFrom, dateTo, ext }) {
+function generateReportData ({ accountId, wallet, transactions, dateFrom, dateTo, ext }) {
   const sumAmount = (txs) => txs
     .map(tx => parseFloat(tx.amount))
     .reduce((sum, x) => sum + x, 0)
