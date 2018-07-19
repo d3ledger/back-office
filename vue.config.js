@@ -23,5 +23,10 @@ module.exports = {
     module: {
       rules: rules
     }
+  },
+  devServer: {
+    headers: {
+      'Access-Control-Allow-Origin': '*'
+    }
   }
 }
