@@ -9,22 +9,26 @@
               <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
             </div>
             <el-table :data="mockReports">
-              <el-table-column label="date" prop="date"></el-table-column>
-              <el-table-column label="wallet" prop="wallet"></el-table-column>
+              <el-table-column label="date">
+                <template slot-scope="scope">
+                  {{ scope.row.date[0] }} - {{ scope.row.date[1] }}
+                </template>
+              </el-table-column>
+              <el-table-column label="wallet" prop="walletName"></el-table-column>
               <el-table-column label="download" width="160px">
                 <template slot-scope="scope">
                   <div>
                     <el-button
                       size="mini"
                       plain type="primary"
-                      @click="onClickDownload('pdf', scope.row)"
+                      @click="onClickDownload(scope.row, 'pdf')"
                     >
                       PDF
                     </el-button>
                     <el-button
                       size="mini"
                       type="primary"
-                      @click="onClickDownload('csv', scope.row)"
+                      @click="onClickDownload(scope.row, 'csv')"
                     >
                       CSV
                     </el-button>
@@ -81,9 +85,11 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import { mapGetters } from 'vuex'
+import { format as formatDate, isWithinRange, isAfter } from 'date-fns'
 import { generatePDF, generateCSV } from '@util/report-util'
-import FileSaver from 'file-saver'
+// import FileSaver from 'file-saver'
 
 export default {
   name: 'reports-page',
@@ -100,8 +106,9 @@ export default {
     }),
     mockReports: function () {
       return this.wallets.map(x => ({
-        wallet: `${x.name} (${x.asset.toUpperCase()})`,
-        date: 'DEC 3, 2017 — JAN 3, 2018'
+        assetId: x.assetId,
+        walletName: `${x.name} (${x.asset.toUpperCase()})`,
+        date: ['Jul 1, 2018', 'Jul 15, 2018']
       }))
     }
   },
@@ -109,14 +116,99 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
-    onClickDownload ({ date, wallet }, format) {
-      const ext = (format === 'pdf') ? 'pdf' : 'csv'
-      const fileName = `report.${ext}`
-      const generating = (format === 'pdf')
-        ? generatePDF({ date, wallet })
-        : generateCSV({ date, wallet })
+    // TODO: move logic elsewhere
+    onClickDownload ({ date, walletName, assetId }, fileFormat) {
+      const [dateFrom, dateTo] = date
+      // const ext = (fileFormat === 'pdf') ? 'pdf' : 'csv'
+      // const fileName = `report-${formatDate(dateFrom, 'YYYYMMDD')}-${formatDate(dateTo, 'YYYYMMDD')}.${ext}`
 
-      generating.then(reportData => FileSaver.saveAs(reportData, fileName))
+      this.$store.dispatch('getAccountAssetTransactions', { assetId })
+        .then(() => {
+          const sumAmount = (txs) => txs
+            .map(tx => parseFloat(tx.amount))
+            .reduce((sum, x) => sum + x, 0)
+
+          const transactions = this.$store.getters.getTransactionsByAssetId(assetId)
+          const wallet = this.$store.getters.wallets.find(x => (x.assetId === assetId))
+          const currencyAbbr = wallet.asset
+          const precision = wallet.precision
+          const currentAmount = wallet.amount
+
+          const txsWithinRange = transactions
+            .filter(tx => isWithinRange(tx.date, dateFrom, dateTo))
+          const txsAfterRange = transactions
+            .filter(tx => isAfter(tx.date, dateTo))
+          const netChangeAfterRange = txsAfterRange
+            .map(tx => (tx.to === 'you') ? +tx.amount : -tx.amount)
+            .reduce((sum, x) => sum + x, 0)
+          const transfersIn = sumAmount(txsWithinRange.filter(tx => (tx.to === 'you')))
+          const transfersOut = sumAmount(txsWithinRange.filter(tx => (tx.from === 'you')))
+          const netChange = transfersIn - transfersOut
+          const endingBalance = currentAmount - netChangeAfterRange
+          // TODO:
+          const endingBalanceUSD = null
+          const startingBalance = endingBalance - netChange
+          // TODO:
+          const startingBalanceUSD = null
+          // TODO:
+          const transactionsByDay = _(txsWithinRange)
+            .groupBy(tx => formatDate(tx.date, 'YYYYMMDD'))
+            .map((txs, date) => {
+              const dailyIn = sumAmount(txs.filter(tx => (tx.to === 'you')))
+              // TODO:
+              const dailyInUSD = null
+              const dailyOut = sumAmount(txs.filter(tx => (tx.from === 'you')))
+              // TODO:
+              const dailyOutUSD = null
+              const dailyNet = dailyIn - dailyOut
+
+              return {
+                date,
+                dailyIn: dailyIn.toFixed(precision),
+                dailyInUSD,
+                dailyOut: dailyOut.toFixed(precision),
+                dailyOutUSD,
+                dailyNet: dailyNet.toFixed(precision)
+              }
+            })
+            .value()
+          // TODO:
+          const transactionsDetails = []
+
+          const reportData = {
+            // metadata
+            accountId: this.$store.state.Account.accountId,
+            walletName,
+            currencyAbbr,
+            dateFrom,
+            dateTo,
+
+            // summary
+            endingBalance: endingBalance.toFixed(precision),
+            endingBalanceUSD,
+            startingBalance: startingBalance.toFixed(precision),
+            startingBalanceUSD,
+            netChange: netChange.toFixed(precision),
+            transfersIn: transfersIn.toFixed(precision),
+            transfersOut: transfersOut.toFixed(precision),
+
+            // transactions by day
+            transactionsByDay,
+
+            // transaction details
+            transactionsDetails
+          }
+
+          const generating = (fileFormat === 'pdf')
+            ? generatePDF(reportData)
+            : generateCSV(reportData)
+
+          console.log(reportData)
+          generating.then(blob => {
+            console.log('generated')
+            // FileSaver.saveAs(blob, fileName)
+          })
+        })
     }
   }
 }
