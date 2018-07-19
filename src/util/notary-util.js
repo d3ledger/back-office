@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const NOTARY_URL = process.env.NOTARY_URL || 'http://localhost:8083/'
+const NOTARY_URL = process.env.VUE_APP_NOTARY_URL || 'http://localhost:8083/'
 
 let axiosNotary = axios.create({
   baseURL: NOTARY_URL
