@@ -50,7 +50,7 @@ export default {
         datasets: [{
           bezierCurve: false,
           lineTension: 0,
-          borderWidth: 2,
+          borderWidth: 1,
           backgroundColor: '#fafafa',
           borderColor: '#000000',
           data: this.data.map(i => i.sum),
