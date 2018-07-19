@@ -21,14 +21,14 @@
                     <el-button
                       size="mini"
                       plain type="primary"
-                      @click="onClickDownload(scope.row, 'pdf')"
+                      @click="download(scope.row, 'pdf')"
                     >
                       PDF
                     </el-button>
                     <el-button
                       size="mini"
                       type="primary"
-                      @click="onClickDownload(scope.row, 'csv')"
+                      @click="download(scope.row, 'csv')"
                     >
                       CSV
                     </el-button>
@@ -59,7 +59,7 @@
               v-for="wallet in wallets"
               :key="wallet.name"
               :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-              :value="wallet.name">
+              :value="wallet.assetId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -76,6 +76,7 @@
       <el-button
         class="fullwidth black clickable"
         style="margin-top: 40px;"
+        @click="onClickNewReport"
       >
         <fa-icon icon="download"/>
         DOWNLOAD REPORT
@@ -87,7 +88,7 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import reportGenerator from '@/components/mixins/reportGenerator'
-// import FileSaver from 'file-saver'
+import FileSaver from 'file-saver'
 
 export default {
   name: 'reports-page',
@@ -118,7 +119,7 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
-    onClickDownload ({ date, walletName, assetId }, fileFormat) {
+    download ({ date, assetId }, fileFormat) {
       const [dateFrom, dateTo] = date
 
       this.$store.dispatch('getAccountAssetTransactions', { assetId })
@@ -137,9 +138,17 @@ export default {
 
           generating.then(({ blob, filename }) => {
             console.log('generated')
-            // FileSaver.saveAs(blob, filename)
+            FileSaver.saveAs(blob, filename)
           })
         })
+    },
+
+    onClickNewReport () {
+      this.download({
+        date: this.date,
+        // TODO: only 0th for now
+        assetId: this.selectedWallets[0]
+      }, 'pdf')
     }
   }
 }
