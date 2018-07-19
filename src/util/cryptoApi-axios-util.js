@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { getParsedItem } from '@util/storage-util'
 
 const API_URL = process.env.CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
 
@@ -7,8 +6,8 @@ let axiosAPI = axios.create({
   baseURL: API_URL
 })
 
-const loadHistoryByLabels = axios => currencies => {
-  const currentFiat = getParsedItem('settings').view.fiat
+const loadHistoryByLabels = axios => (currencies, settings) => {
+  const currentFiat = settings.fiat
   const history = currencies.map(crypto => {
     return axios
       .get('data/histoday', {
@@ -28,8 +27,8 @@ const loadHistoryByLabels = axios => currencies => {
     }))
 }
 
-const loadPriceByFilter = axios => ({ crypto, filter }) => {
-  const currentFiat = getParsedItem('settings').view.fiat
+const loadPriceByFilter = axios => ({ crypto, filter }, settings) => {
+  const currentFiat = settings.fiat
   const dateFilter = {
     'ALL': {
       url: 'histoday',
@@ -69,10 +68,9 @@ const loadPriceByFilter = axios => ({ crypto, filter }) => {
     .catch(error => ({ error }))
 }
 
-const loadFullData = axios => asset => {
-  const settings = getParsedItem('settings').view
-  const currentFiat = settings.fiat
-  const currentCrypto = settings.crypto
+const loadFullData = axios => (asset, currencies) => {
+  const currentFiat = currencies.fiat
+  const currentCrypto = currencies.crypto
   return axios
     .get('data/pricemultifull', {
       params: {
