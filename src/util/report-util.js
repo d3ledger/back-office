@@ -2,6 +2,7 @@ import _ from 'lodash'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import { isWithinRange, isAfter, startOfDay, endOfDay } from 'date-fns'
+import { parse as json2csv } from 'json2csv'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -87,14 +88,34 @@ export function generatePDF (params) {
 
 export function generateCSV (params) {
   return new Promise((resolve, reject) => {
-    const reportData = generateReportData.call(this, { ext: 'csv', ...params })
-    const content = JSON.stringify(reportData, null, '  ')
+    const data = generateReportData.call(this, { ext: 'csv', ...params })
+    const dataForCSV = data.transactionDetails.map(tx => ({
+      'Time': tx.time,
+      'To': tx.to,
+      'Amount': tx.amount,
+      'Amount in USD': tx.amountUSD,
+      'Balance': tx.balance,
+      'Balance in USD': tx.balanceUSD,
+      'Description': tx.description
+    }))
+    const fields = ['Time', 'To', 'Amount', 'Amount in USD', 'Balance', 'Balance in USD', 'Description']
+
+    let csv
+
+    try {
+      csv = json2csv(dataForCSV, { fields })
+    } catch (err) {
+      return reject(err)
+    }
+
+    console.log(csv)
+
     const blob = new Blob(
-      [content],
+      [csv],
       { type: 'text/csv;charset=utf-8' }
     )
 
-    resolve({ filename: reportData.filename, blob })
+    resolve({ filename: data.filename, blob })
   })
 }
 
@@ -170,16 +191,19 @@ export function generateReportData ({
 
       return {
         time: formatDate(tx.date),
+        to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
         amountUSD: (amount * priceUSD).toFixed(precision),
-        balance: balance.toFixed(precision)
+        balance: balance.toFixed(precision),
+        balanceUSD: (balance * priceUSD).toFixed(precision)
       }
     })
     .value()
 
   transactionDetails.unshift({
     time: formatDate(dateFrom),
+    to: null,
     description: 'Starting Balance',
     amount: null,
     amountUSD: null,
@@ -188,6 +212,7 @@ export function generateReportData ({
 
   transactionDetails.push({
     time: formatDate(endOfDay(dateTo)),
+    to: null,
     description: 'Ending Balance',
     amount: null,
     amountUSD: null,
