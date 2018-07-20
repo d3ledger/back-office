@@ -1,12 +1,11 @@
 import _ from 'lodash'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
-import { isWithinRange, isAfter, subMinutes } from 'date-fns'
-import dateFormat from '@/components/mixins/dateFormat'
+import { isWithinRange, isAfter, startOfDay, endOfDay } from 'date-fns'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
-function generatePDF (params) {
+export function generatePDF (params) {
   return new Promise((resolve, reject) => {
     const reportData = generateReportData.call(this, { ext: 'pdf', ...params })
     const content = JSON.stringify(reportData, null, '  ')
@@ -21,7 +20,7 @@ function generatePDF (params) {
   })
 }
 
-function generateCSV (params) {
+export function generateCSV (params) {
   return new Promise((resolve, reject) => {
     const reportData = generateReportData.call(this, { ext: 'csv', ...params })
     const content = JSON.stringify(reportData, null, '  ')
@@ -34,21 +33,30 @@ function generateCSV (params) {
   })
 }
 
-function generateReportData ({ accountId, wallet, transactions, dateFrom, dateTo, ext }) {
+export function generateReportData ({
+  accountId,
+  wallet,
+  transactions,
+  dateFrom,
+  dateTo,
+  ext,
+  formatDate,
+  formatDateWith
+}) {
   const sumAmount = (txs) => txs
     .map(tx => parseFloat(tx.amount))
     .reduce((sum, x) => sum + x, 0)
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
 
-  const filename = `report-${this.formatDateWith(dateFrom, 'YYYYMMDD')}-${this.formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
+  const filename = `report-${formatDateWith(dateFrom, 'YYYYMMDD')}-${formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
 
   const currencyAbbr = wallet.asset
   const precision = wallet.precision
   const currentAmount = wallet.amount
 
-  const txsWithinRange = transactions.filter(tx => isWithinRange(tx.date, dateFrom, dateTo))
-  const txsAfterRange = transactions.filter(tx => isAfter(tx.date, dateTo))
+  const txsWithinRange = transactions.filter(tx => isWithinRange(tx.date, startOfDay(dateFrom), endOfDay(dateTo)))
+  const txsAfterRange = transactions.filter(tx => isAfter(tx.date, endOfDay(dateTo)))
   const netChangeAfterRange = txsAfterRange
     .map(tx => (tx.to === 'you') ? +tx.amount : -tx.amount)
     .reduce((sum, x) => sum + x, 0)
@@ -63,7 +71,7 @@ function generateReportData ({ accountId, wallet, transactions, dateFrom, dateTo
   const startingBalanceUSD = null
   // TODO:
   const transactionsByDay = _(txsWithinRange)
-    .groupBy(tx => this.formatDateWith(tx.date, 'YYYYMMDD'))
+    .groupBy(tx => formatDateWith(tx.date, 'YYYYMMDD'))
     .map((txs, date) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
       // TODO:
@@ -92,31 +100,31 @@ function generateReportData ({ accountId, wallet, transactions, dateFrom, dateTo
       const balance = startingBalance + accumulatedAmount
 
       return {
-        time: this.formatDate(tx.date),
+        time: formatDate(tx.date),
         description: tx.message,
         amount: tx.amount,
         // TODO:
         amountUSD: null,
-        balance
+        balance: balance.toFixed(precision)
       }
     })
     .sortBy('time')
     .value()
 
   transactionsDetails.unshift({
-    time: this.formatDate(dateFrom),
+    time: formatDate(dateFrom),
     description: 'Starting Balance',
     amount: null,
     amountUSD: null,
-    balance: startingBalance
+    balance: startingBalance.toFixed(precision)
   })
 
   transactionsDetails.push({
-    time: this.formatDate(subMinutes(dateTo, 1)),
+    time: formatDate(endOfDay(dateTo)),
     description: 'Ending Balance',
     amount: null,
     amountUSD: null,
-    balance: endingBalance
+    balance: endingBalance.toFixed(precision)
   })
 
   const reportData = {
@@ -147,12 +155,4 @@ function generateReportData ({ accountId, wallet, transactions, dateFrom, dateTo
   console.log(reportData)
 
   return reportData
-}
-
-export default {
-  mixins: [dateFormat],
-  methods: {
-    generatePDF,
-    generateCSV
-  }
 }
