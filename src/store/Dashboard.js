@@ -210,7 +210,7 @@ const actions = {
     commit(types.LOAD_DASHBOARD_REQUEST)
     dispatch('getAccountAssets')
       .then(async () => {
-        if (getters.wallets) {
+        if (getters.wallets.length) {
           await dispatch('getPortfolioHistory')
           await dispatch('getPriceByFilter', getters.portfolioChart)
         }
