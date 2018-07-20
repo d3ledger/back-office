@@ -50,7 +50,6 @@
         <el-form-item label="Wallets">
           <el-select
             v-model="selectedWallets"
-            multiple
             placeholder="Choose wallets for a report"
             style="width: 100%;"
             size="large"
