@@ -87,12 +87,13 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import reportGenerator from '@/components/mixins/reportGenerator'
-import FileSaver from 'file-saver'
+import { generatePDF, generateCSV } from '@util/report-util'
+import dateFormat from '@/components/mixins/dateFormat'
+// import FileSaver from 'file-saver'
 
 export default {
   name: 'reports-page',
-  mixins: [reportGenerator],
+  mixins: [dateFormat],
   data () {
     return {
       reportFormVisible: false,
@@ -130,15 +131,17 @@ export default {
             transactions: this.$store.getters.getTransactionsByAssetId(assetId),
             assetId,
             dateFrom,
-            dateTo
+            dateTo,
+            formatDate: this.formatDate.bind(this),
+            formatDateWith: this.formatDateWith.bind(this)
           }
           const generating = (fileFormat === 'pdf')
-            ? this.generatePDF(params)
-            : this.generateCSV(params)
+            ? generatePDF(params)
+            : generateCSV(params)
 
           generating.then(({ blob, filename }) => {
             console.log('generated')
-            FileSaver.saveAs(blob, filename)
+            // FileSaver.saveAs(blob, filename)
           })
         })
     },

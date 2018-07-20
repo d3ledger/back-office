@@ -1,47 +1,19 @@
 import chai from 'chai'
-import reportUtilInjector from 'inject-loader!@util/report-util.js'
-import { format as formatDateOriginal } from 'date-fns'
+import reportUtilInjector from 'inject-loader!../../../src/util/report-util.js'
 
 const expect = chai.expect
 
+chai.use(require('chai-things'))
+
 describe('report-util', () => {
   const { generateReportData } = reportUtilInjector({
-    'pdfmake-lite/build/pdfmake.min': {}
+    'pdfmake/build/pdfmake': {},
+    'pdfmake/build/vfs_fonts': { pdfMake: {} }
   })
 
   describe('generateReportData', () => {
     const MOCK_REPORT = require('../fixtures/report.json')
-
-    /**
-     * Force to format a date as UTC+0 for testing.
-     *
-     *   e.g.
-     *   formatDateWith(1534828440000, 'MMM. D, HH:mm') == 'Aug. 21, 05:14'
-     *   formatDateWith('Aug. 21, 05:14', 'MMM. D, HH:mm') == 'Aug. 21, 05:14'
-     *   formatDateWith('Aug. 1', 'MMM. D, HH:mm') == 'Aug. 1, 00:00'
-     */
-    const formatDateWith = function (date, formatString) {
-      const isUnixTimestamp = Number.isFinite(date)
-      const tzOffsetMilliseconds = new Date().getTimezoneOffset() * 60 * 1000
-
-      // Once parse the passed date with the environment's timezone.
-      const dateWithOffset = new Date(date)
-
-      const superficialUnixTimestamp = isUnixTimestamp
-        ? dateWithOffset.getTime() + tzOffsetMilliseconds
-        : dateWithOffset.getTime()
-
-      // Technically, it is not UTC because it includes a timezone offset,
-      // but its date and time parts are superficially the same as UTC.
-      //
-      //   dateSuperficialUTC = Tue Aug 21 2018 13:49:53 GMT+0900 (GMT+09:00)
-      //                        ^^^^^^^^^^^^^^^^^^^^^^^^
-      //                        ^here is the same as UTC
-      //
-      const dateSuperficialUTC = new Date(superficialUnixTimestamp)
-
-      return formatDateOriginal(dateSuperficialUTC, formatString)
-    }
+    const formatDateWith = require('date-fns').format
     const formatDate = (date) => formatDateWith(date, 'MMM. D, HH:mm')
 
     it('should throw an error against lack of parameters', () => {
