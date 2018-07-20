@@ -82,8 +82,18 @@ const loadFullData = axios => (asset, currencies) => {
     .catch(error => ({ error }))
 }
 
+const loadPriceMulti = axios => ({ fsyms, tsyms }) => {
+  return axios
+    .get('data/pricemulti', {
+      params: { fsyms, tsyms }
+    })
+    .then(({ data }) => data)
+    .catch(error => ({ error }))
+}
+
 export default {
   loadHistoryByLabels: loadHistoryByLabels(axiosAPI),
   loadPriceByFilter: loadPriceByFilter(axiosAPI),
-  loadFullData: loadFullData(axiosAPI)
+  loadFullData: loadFullData(axiosAPI),
+  loadPriceMulti: loadPriceMulti(axiosAPI)
 }
