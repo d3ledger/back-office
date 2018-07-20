@@ -23,7 +23,7 @@
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             v-for="(value, index) in filteredPortfolio" :key="index">
             <div class="table_body-item_content" @click="selectCrypto(value.asset)">
-              <div class="column">
+              <div class="column text-format">
                 {{ value | formatName }}
               </div>
               <div class="column balance text-center">
@@ -177,6 +177,10 @@ export default {
   flex: 0 1 33%
 }
 
+.table_body-item_content .column.text-format {
+  word-break: break-all;
+}
+
 .table_body-item_content .column.text-right {
   text-align: right;
 }
@@ -207,11 +211,11 @@ export default {
   }
   .table_body-item_content .column:nth-child(1) {
     flex-grow: 1;
-    flex: 0 1 50%;
+    flex: 0 1 80%;
   }
   .table_body-item_content .column:nth-child(2) {
     flex-grow: 1;
-    flex: 0 1 50%;
+    flex: 0 1 20%;
     text-align: right;
   }
   .table_body-item_content .column:nth-child(3) {
