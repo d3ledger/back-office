@@ -49,7 +49,7 @@
       <el-form style="width: 100%">
         <el-form-item label="Wallets">
           <el-select
-            v-model="selectedWallets"
+            v-model="selectedWallet"
             placeholder="Choose wallets for a report"
             style="width: 100%;"
             size="large"
@@ -72,14 +72,30 @@
           />
         </el-form-item>
       </el-form>
-      <el-button
-        class="fullwidth black clickable"
-        style="margin-top: 40px;"
-        @click="onClickNewReport"
-      >
-        <fa-icon icon="download"/>
-        DOWNLOAD REPORT
-      </el-button>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-button
+            class="fullwidth black clickable"
+            style="margin-top: 40px;"
+            @click="download({ date, assetId: selectedWallet }, 'pdf')"
+          >
+            <fa-icon icon="download"/>
+            PDF
+          </el-button>
+        </el-col>
+
+        <el-col :span="12">
+          <el-button
+            class="fullwidth black clickable"
+            style="margin-top: 40px;"
+            @click="download({ date, assetId: selectedWallet }, 'csv')"
+          >
+            <fa-icon icon="download"/>
+            CSV
+          </el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -97,7 +113,7 @@ export default {
   data () {
     return {
       reportFormVisible: false,
-      selectedWallets: [],
+      selectedWallet: null,
       date: ''
     }
   },
@@ -106,7 +122,8 @@ export default {
       accountId: state => state.Account.accountId
     }),
     ...mapGetters([
-      'wallets'
+      'wallets',
+      'settingsView'
     ]),
     mockReports: function () {
       return this.wallets.map(x => ({
@@ -123,23 +140,26 @@ export default {
     download ({ date, assetId }, fileFormat) {
       const [dateFrom, dateTo] = date
       const wallet = this.wallets.find(x => (x.assetId === assetId))
+      const fiat = this.settingsView.fiat
 
       Promise.all([
-        cryptoCompareUtil.loadPriceMulti({ fsyms: wallet.asset, tsyms: 'USD' }),
+        // TODO: use Dashboard store instead to get the price
+        cryptoCompareUtil.loadPriceMulti({ fsyms: wallet.asset, tsyms: fiat }),
         this.$store.dispatch('getAccountAssetTransactions', { assetId })
       ])
         .then(([price]) => {
-          const priceUSD = price[wallet.asset].USD
+          const priceFiat = price[wallet.asset][fiat]
           const params = {
             accountId: this.accountId,
             wallet,
             transactions: this.$store.getters.getTransactionsByAssetId(assetId),
             assetId,
-            priceUSD,
+            priceFiat,
             dateFrom,
             dateTo,
             formatDate: this.formatDate.bind(this),
-            formatDateWith: this.formatDateWith.bind(this)
+            formatDateWith: this.formatDateWith.bind(this),
+            fiat
           }
           const generating = (fileFormat === 'pdf')
             ? generatePDF(params)
@@ -150,14 +170,6 @@ export default {
             FileSaver.saveAs(blob, filename)
           })
         })
-    },
-
-    onClickNewReport () {
-      this.download({
-        date: this.date,
-        // TODO: only 0th for now
-        assetId: this.selectedWallets[0]
-      }, 'pdf')
     }
   }
 }
