@@ -89,7 +89,7 @@
 import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
-// import FileSaver from 'file-saver'
+import FileSaver from 'file-saver'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
 export default {
@@ -148,7 +148,7 @@ export default {
 
           generating.then(({ blob, filename }) => {
             console.log('generated')
-            // FileSaver.saveAs(blob, filename)
+            FileSaver.saveAs(blob, filename)
           })
         })
     },
