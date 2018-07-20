@@ -8,9 +8,10 @@
       "assetId": "ethereum#test",
       "precision": 2
     },
-    "priceUSD": 459.03,
+    "priceFiat": 459.03,
     "dateFrom": "Jul. 1, 2018",
     "dateTo": "Jul. 17, 2018",
+    "fiat": "USD",
     "ext": "pdf",
     "transactions": [
       {
@@ -114,7 +115,7 @@
     ]
   },
   "expected": {
-    "filename": "report-20180701-20180717.pdf",
+    "filename": "report-ethereum-20180701-20180717.pdf",
     "accountId": "report@test",
     "walletName": "Ethereum",
     "cryptoCurrencyUnit": "ETH",
@@ -126,18 +127,18 @@
     "transactionsByDay": [
       {
         "dailyIn": "1.73",
-        "dailyInUSD": "794.12",
+        "dailyInFiat": "794.12",
         "dailyNet": "-0.88",
         "dailyOut": "2.61",
-        "dailyOutUSD": "1198.07",
+        "dailyOutFiat": "1198.07",
         "date": "Jul. 13"
       },
       {
         "dailyIn": "1.44",
-        "dailyInUSD": "661.00",
+        "dailyInFiat": "661.00",
         "dailyNet": "-2.02",
         "dailyOut": "3.46",
-        "dailyOutUSD": "1588.24",
+        "dailyOutFiat": "1588.24",
         "date": "Jul. 17"
       }
     ],
@@ -147,7 +148,7 @@
         "to": null,
         "description": "Starting Balance",
         "amount": null,
-        "amountUSD": null,
+        "amountFiat": null,
         "balance": "14.28"
       },
       {
@@ -155,124 +156,124 @@
         "to": "alice@test",
         "description": "initial tx",
         "amount": "-1.66",
-        "amountUSD": "-761.99",
+        "amountFiat": "-761.99",
         "balance": "12.62",
-        "balanceUSD": "5792.96"
+        "balanceFiat": "5792.96"
       },
       {
         "time": "Jul. 13, 16:17",
         "to": "alice@test",
         "description": "",
         "amount": "-0.12",
-        "amountUSD": "-55.08",
+        "amountFiat": "-55.08",
         "balance": "12.50",
-        "balanceUSD": "5737.88"
+        "balanceFiat": "5737.88"
       },
       {
         "time": "Jul. 13, 16:17",
         "to": "alice@test",
         "description": "hello",
         "amount": "-0.73",
-        "amountUSD": "-335.09",
+        "amountFiat": "-335.09",
         "balance": "11.77",
-        "balanceUSD": "5402.78"
+        "balanceFiat": "5402.78"
       },
       {
         "time": "Jul. 13, 16:17",
         "to": "alice@test",
         "description": "hi",
         "amount": "-0.10",
-        "amountUSD": "-45.90",
+        "amountFiat": "-45.90",
         "balance": "11.67",
-        "balanceUSD": "5356.88"
+        "balanceFiat": "5356.88"
       },
       {
         "time": "Jul. 13, 16:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.83",
-        "amountUSD": "380.99",
+        "amountFiat": "380.99",
         "balance": "12.50",
-        "balanceUSD": "5737.88"
+        "balanceFiat": "5737.88"
       },
       {
         "time": "Jul. 13, 16:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.90",
-        "amountUSD": "413.13",
+        "amountFiat": "413.13",
         "balance": "13.40",
-        "balanceUSD": "6151.00"
+        "balanceFiat": "6151.00"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "alice@test",
         "description": "initial tx",
         "amount": "-1.24",
-        "amountUSD": "-569.20",
+        "amountFiat": "-569.20",
         "balance": "12.16",
-        "balanceUSD": "5581.80"
+        "balanceFiat": "5581.80"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "alice@test",
         "description": "",
         "amount": "-0.08",
-        "amountUSD": "-36.72",
+        "amountFiat": "-36.72",
         "balance": "12.08",
-        "balanceUSD": "5545.08"
+        "balanceFiat": "5545.08"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "alice@test",
         "description": "hello",
         "amount": "-0.20",
-        "amountUSD": "-91.81",
+        "amountFiat": "-91.81",
         "balance": "11.88",
-        "balanceUSD": "5453.28"
+        "balanceFiat": "5453.28"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "alice@test",
         "description": "hi",
         "amount": "-0.84",
-        "amountUSD": "-385.59",
+        "amountFiat": "-385.59",
         "balance": "11.04",
-        "balanceUSD": "5067.69"
+        "balanceFiat": "5067.69"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "Received",
         "description": "",
         "amount": "0.85",
-        "amountUSD": "390.18",
+        "amountFiat": "390.18",
         "balance": "11.89",
-        "balanceUSD": "5457.87"
+        "balanceFiat": "5457.87"
       },
       {
         "time": "Jul. 17, 13:41",
         "to": "Received",
         "description": "hello",
         "amount": "0.59",
-        "amountUSD": "270.83",
+        "amountFiat": "270.83",
         "balance": "12.48",
-        "balanceUSD": "5728.69"
+        "balanceFiat": "5728.69"
       },
       {
         "time": "Jul. 17, 16:18",
         "to": "alice@test",
         "description": "",
         "amount": "-1.10",
-        "amountUSD": "-504.93",
+        "amountFiat": "-504.93",
         "balance": "11.38",
-        "balanceUSD": "5223.76"
+        "balanceFiat": "5223.76"
       },
       {
         "time": "Jul. 17, 23:59",
         "to": null,
         "description": "Ending Balance",
         "amount": null,
-        "amountUSD": null,
+        "amountFiat": null,
         "balance": "11.38"
       }
     ]

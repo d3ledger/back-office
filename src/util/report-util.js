@@ -22,15 +22,15 @@ export function generatePDF (params) {
       },
 
       content: [
-        { text: `Report (${data.dateFrom} - ${data.dateTo})`, style: 'title' },
+        { text: `Report (${formatDate(data.dateFrom)} - ${formatDate(data.dateTo)})`, style: 'title' },
         { text: `Account ID: ${data.accountId}` },
         { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
 
         { text: `Summary`, style: 'heading1' },
         { text: `Ending Balance: ${data.endingBalance} ${data.cryptoCurrencyUnit}` },
-        { text: `Ending Balance in USD: ${data.endingBalanceUSD}` },
+        { text: `Ending Balance in ${data.fiat}: ${data.endingBalanceFiat}` },
         { text: `Starting Balance: ${data.startingBalance} ${data.cryptoCurrencyUnit}` },
-        { text: `Starting Balance in USD: ${data.startingBalanceUSD}` },
+        { text: `Starting Balance in ${data.fiat}: ${data.startingBalanceFiat}` },
         { text: `Net Change: ${data.netChange} ${data.cryptoCurrencyUnit}` },
         { text: `Transfers In: ${data.transfersIn} ${data.cryptoCurrencyUnit}` },
         { text: `Transfers Out: ${data.transfersOut} ${data.cryptoCurrencyUnit}` },
@@ -42,13 +42,13 @@ export function generatePDF (params) {
             headerRows: 1,
             widths: ['auto', '*', '*', '*', '*', '*'],
             body: [
-              ['Date', 'In', 'In (USD)', 'Out', 'Out (USD)', 'Net'],
+              ['Date', 'In', `In (${data.fiat})`, 'Out', `Out (${data.fiat})`, 'Net'],
               ...data.transactionsByDay.map(tx => ([
                 formatDate(tx.date),
                 tx.dailyIn,
-                tx.dailyInUSD,
+                tx.dailyInFiat,
                 tx.dailyOut,
-                tx.dailyOutUSD,
+                tx.dailyOutFiat,
                 tx.dailyNet
               ]))
             ]
@@ -62,12 +62,12 @@ export function generatePDF (params) {
             headerRows: 1,
             widths: ['auto', '*', 'auto', 'auto', 'auto'],
             body: [
-              ['Time', 'Description', 'Amount', 'Amount (USD)', 'Balance'],
+              ['Time', 'Description', 'Amount', `Amount (${data.fiat})`, 'Balance'],
               ...data.transactionDetails.map(tx => ([
                 formatDate(tx.time),
                 tx.description,
                 tx.amount,
-                tx.amountUSD,
+                tx.amountFiat,
                 tx.balance
               ]))
             ]
@@ -93,12 +93,12 @@ export function generateCSV (params) {
       'Time': tx.time,
       'To': tx.to,
       'Amount': tx.amount,
-      'Amount in USD': tx.amountUSD,
+      [`Amount in ${data.fiat}`]: tx.amountFiat,
       'Balance': tx.balance,
-      'Balance in USD': tx.balanceUSD,
+      [`Balance in ${data.fiat}`]: tx.balanceFiat,
       'Description': tx.description
     }))
-    const fields = ['Time', 'To', 'Amount', 'Amount in USD', 'Balance', 'Balance in USD', 'Description']
+    const fields = ['Time', 'To', 'Amount', `Amount in ${data.fiat}`, 'Balance', `Balance in ${data.fiat}`, 'Description']
 
     let csv
 
@@ -128,12 +128,13 @@ export function generateReportData ({
   accountId,
   wallet,
   transactions,
-  priceUSD,
+  priceFiat,
   dateFrom,
   dateTo,
   ext,
   formatDate,
-  formatDateWith
+  formatDateWith,
+  fiat
 }) {
   const sumAmount = (txs) => txs
     .map(tx => parseFloat(tx.amount))
@@ -141,7 +142,7 @@ export function generateReportData ({
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
 
-  const filename = `report-${formatDateWith(dateFrom, 'YYYYMMDD')}-${formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
+  const filename = `report-${wallet.name.toLowerCase()}-${formatDateWith(dateFrom, 'YYYYMMDD')}-${formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
 
   const cryptoCurrencyUnit = wallet.asset
   const precision = wallet.precision
@@ -156,24 +157,24 @@ export function generateReportData ({
   const transfersOut = sumAmount(txsWithinRange.filter(isFromYou))
   const netChange = transfersIn - transfersOut
   const endingBalance = currentAmount - netChangeAfterRange
-  const endingBalanceUSD = endingBalance * priceUSD
+  const endingBalanceFiat = endingBalance * priceFiat
   const startingBalance = endingBalance - netChange
-  const startingBalanceUSD = startingBalance * priceUSD
+  const startingBalanceFiat = startingBalance * priceFiat
   const transactionsByDay = _(txsWithinRange)
     .groupBy(tx => startOfDay(new Date(tx.date)))
     .map((txs, date) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
-      const dailyInUSD = dailyIn * priceUSD
+      const dailyInFiat = dailyIn * priceFiat
       const dailyOut = sumAmount(txs.filter(isFromYou))
-      const dailyOutUSD = dailyOut * priceUSD
+      const dailyOutFiat = dailyOut * priceFiat
       const dailyNet = dailyIn - dailyOut
 
       return {
         date: formatDateWith(date, 'MMM. D'),
         dailyIn: dailyIn.toFixed(precision),
-        dailyInUSD: dailyInUSD.toFixed(precision),
+        dailyInFiat: dailyInFiat.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),
-        dailyOutUSD: dailyOutUSD.toFixed(precision),
+        dailyOutFiat: dailyOutFiat.toFixed(precision),
         dailyNet: dailyNet.toFixed(precision)
       }
     })
@@ -194,9 +195,9 @@ export function generateReportData ({
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
-        amountUSD: (amount * priceUSD).toFixed(precision),
+        amountFiat: (amount * priceFiat).toFixed(precision),
         balance: balance.toFixed(precision),
-        balanceUSD: (balance * priceUSD).toFixed(precision)
+        balanceFiat: (balance * priceFiat).toFixed(precision)
       }
     })
     .value()
@@ -206,7 +207,7 @@ export function generateReportData ({
     to: null,
     description: 'Starting Balance',
     amount: null,
-    amountUSD: null,
+    amountFiat: null,
     balance: startingBalance.toFixed(precision)
   })
 
@@ -215,7 +216,7 @@ export function generateReportData ({
     to: null,
     description: 'Ending Balance',
     amount: null,
-    amountUSD: null,
+    amountFiat: null,
     balance: endingBalance.toFixed(precision)
   })
 
@@ -227,12 +228,13 @@ export function generateReportData ({
     cryptoCurrencyUnit,
     dateFrom,
     dateTo,
+    fiat,
 
     // summary
     endingBalance: endingBalance.toFixed(precision),
-    endingBalanceUSD: endingBalanceUSD.toFixed(precision),
+    endingBalanceFiat: endingBalanceFiat.toFixed(precision),
     startingBalance: startingBalance.toFixed(precision),
-    startingBalanceUSD: startingBalanceUSD.toFixed(precision),
+    startingBalanceFiat: startingBalanceFiat.toFixed(precision),
     netChange: netChange.toFixed(precision),
     transfersIn: transfersIn.toFixed(precision),
     transfersOut: transfersOut.toFixed(precision),
