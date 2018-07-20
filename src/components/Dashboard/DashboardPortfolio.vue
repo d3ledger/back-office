@@ -7,9 +7,6 @@
               <el-col :span="22">
                 <div>My Portfolio <el-tag class="portfolio_filter" size="mini" type="info">Today</el-tag></div>
               </el-col>
-              <el-col :span="2">
-                <i class="el-icon-more-outline"/>
-              </el-col>
             </el-row>
           </div>
           <div class="portfolio_current-price">
