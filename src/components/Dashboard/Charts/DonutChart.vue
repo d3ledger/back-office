@@ -1,16 +1,8 @@
-<template>
-  <div class="echarts">
-    <ECharts
-      :options="chart"
-      :auto-resize="true"
-      @ready="onReady"
-    />
-  </div>
-</template>
-
 <script>
+import { Doughnut } from 'vue-chartjs'
+
 export default {
-  name: 'donut-chart',
+  extends: Doughnut,
   props: {
     data: {
       type: Array,
@@ -18,65 +10,38 @@ export default {
     }
   },
   data () {
-    return {
-      chart: {
-        tooltip: {
-          trigger: 'item',
-          formatter: '{b} <br/>{c}%'
-        },
-        series: [{
-          name: 'Portfolio percent',
-          type: 'pie',
-          radius: ['70%', '80%'],
-          avoidLabelOverlap: false,
-          label: {
-            normal: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              show: true,
-              textStyle: {
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            }
-          },
-          labelLine: {
-            normal: {
-              show: false
-            }
-          },
-          data: []
-        }]
-      }
-    }
+    return {}
   },
   watch: {
     data () {
-      this.onReady()
+      this.updateChart()
     }
   },
-  created () {
-    this.onReady()
-  },
   methods: {
-    onReady (instance, ECharts) {
-      this.chart.series[0].data = this.data.map(a => ({
-        value: a.percent.toFixed(2),
-        name: a.asset,
-        itemStyle: {
-          color: `#${a.color}`
+    updateChart () {
+      this.renderChart({
+        labels: this.data.map(c => c.asset),
+        datasets: [{
+          data: this.data.map(c => c.percent.toFixed(2)),
+          backgroundColor: this.data.map(c => `#${c.color}`)
+        }]
+      }, {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItem, data) {
+              const value = data.datasets[0].data[tooltipItem.index] || 0
+              const label = data.labels[tooltipItem.index] || ''
+              return `${label} - ${value}%`
+            }
+          }
         }
-      }))
+      })
     }
   }
 }
 </script>
-
-<style scoped>
-.echarts {
-  width: 100%;
-  height: 190px
-}
-</style>
