@@ -7,15 +7,80 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 export function generatePDF (params) {
   return new Promise((resolve, reject) => {
-    const reportData = generateReportData.call(this, { ext: 'pdf', ...params })
-    const content = JSON.stringify(reportData, null, '  ')
+    const formatDate = params.formatDate
+    const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
-      content
+      info: {
+        title: `report`,
+        creationDate: new Date()
+      },
+
+      styles: {
+        title: { fontSize: 24, margin: [0, 0, 0, 10] },
+        heading1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] }
+      },
+
+      content: [
+        { text: `Report (${data.dateFrom} - ${data.dateTo})`, style: 'title' },
+        { text: `Account ID: ${data.accountId}` },
+        { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
+
+        { text: `Summary`, style: 'heading1' },
+        { text: `Ending Balance: ${data.endingBalance} ${data.cryptoCurrencyUnit}` },
+        { text: `Ending Balance in USD: ${data.endingBalanceUSD}` },
+        { text: `Starting Balance: ${data.startingBalance} ${data.cryptoCurrencyUnit}` },
+        { text: `Starting Balance in USD: ${data.startingBalanceUSD}` },
+        { text: `Net Change: ${data.netChange} ${data.cryptoCurrencyUnit}` },
+        { text: `Transfers In: ${data.transfersIn} ${data.cryptoCurrencyUnit}` },
+        { text: `Transfers Out: ${data.transfersOut} ${data.cryptoCurrencyUnit}` },
+
+        { text: `Transactions By Day`, style: 'heading1' },
+        {
+          layout: 'lightHorizontalLines',
+          table: {
+            headerRows: 1,
+            widths: ['*', '*', '*', '*', '*', '*'],
+            body: [
+              ['Date', 'In', 'In (USD)', 'Out', 'Out (USD)', 'Net'],
+              ...data.transactionsByDay.map(tx => ([
+                formatDate(tx.date),
+                tx.dailyIn,
+                tx.dailyInUSD,
+                tx.dailyOut,
+                tx.dailyOutUSD,
+                tx.dailyNet
+              ]))
+            ]
+          }
+        },
+
+        { text: `Transaction Details`, style: 'heading1' },
+        {
+          layout: 'lightHorizontalLines',
+          table: {
+            headerRows: 1,
+            widths: ['auto', '*', 'auto', 'auto', 'auto'],
+            body: [
+              ['Time', 'Description', 'Amount', 'Amount (USD)', 'Balance'],
+              ...data.transactionDetails.map(tx => ([
+                formatDate(tx.time),
+                tx.description,
+                tx.amount,
+                tx.amountUSD,
+                tx.balance
+              ]))
+            ]
+          }
+        }
+      ]
     }
     const pdfDocGenerator = pdfMake.createPdf(docDefinition)
 
+    // TODO: for testing
+    pdfDocGenerator.open()
+
     pdfDocGenerator.getBlob(blob => {
-      resolve({ filename: reportData.filename, blob })
+      resolve({ filename: data.filename, blob })
     })
   })
 }
@@ -33,10 +98,16 @@ export function generateCSV (params) {
   })
 }
 
+/**
+ * Generate a report data object
+ * @param {Object} params
+ * @returns {Object}
+ */
 export function generateReportData ({
   accountId,
   wallet,
   transactions,
+  priceUSD,
   dateFrom,
   dateTo,
   ext,
@@ -51,7 +122,7 @@ export function generateReportData ({
 
   const filename = `report-${formatDateWith(dateFrom, 'YYYYMMDD')}-${formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
 
-  const currencyAbbr = wallet.asset
+  const cryptoCurrencyUnit = wallet.asset
   const precision = wallet.precision
   const currentAmount = wallet.amount
 
@@ -64,54 +135,50 @@ export function generateReportData ({
   const transfersOut = sumAmount(txsWithinRange.filter(isFromYou))
   const netChange = transfersIn - transfersOut
   const endingBalance = currentAmount - netChangeAfterRange
-  // TODO:
-  const endingBalanceUSD = null
+  const endingBalanceUSD = endingBalance * priceUSD
   const startingBalance = endingBalance - netChange
-  // TODO:
-  const startingBalanceUSD = null
-  // TODO:
+  const startingBalanceUSD = startingBalance * priceUSD
   const transactionsByDay = _(txsWithinRange)
-    .groupBy(tx => formatDateWith(tx.date, 'YYYYMMDD'))
+    .groupBy(tx => startOfDay(new Date(tx.date)))
     .map((txs, date) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
-      // TODO:
-      const dailyInUSD = null
+      const dailyInUSD = dailyIn * priceUSD
       const dailyOut = sumAmount(txs.filter(isFromYou))
-      // TODO:
-      const dailyOutUSD = null
+      const dailyOutUSD = dailyOut * priceUSD
       const dailyNet = dailyIn - dailyOut
 
       return {
-        date,
+        date: formatDateWith(date, 'MMM. D'),
         dailyIn: dailyIn.toFixed(precision),
-        dailyInUSD,
+        dailyInUSD: dailyInUSD.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),
-        dailyOutUSD,
+        dailyOutUSD: dailyOutUSD.toFixed(precision),
         dailyNet: dailyNet.toFixed(precision)
       }
     })
+    .values()
+    .sortBy('date')
     .value()
 
   let accumulatedAmount = 0
-  const transactionsDetails = _(txsWithinRange)
+  const transactionDetails = _(txsWithinRange)
+    .sortBy('date')
     .map(tx => {
-      accumulatedAmount += parseFloat(tx.amount)
-
+      const amount = isToYou(tx) ? +tx.amount : -tx.amount
+      accumulatedAmount += parseFloat(amount)
       const balance = startingBalance + accumulatedAmount
 
       return {
         time: formatDate(tx.date),
         description: tx.message,
-        amount: tx.amount,
-        // TODO:
-        amountUSD: null,
+        amount: amount.toFixed(precision),
+        amountUSD: (amount * priceUSD).toFixed(precision),
         balance: balance.toFixed(precision)
       }
     })
-    .sortBy('time')
     .value()
 
-  transactionsDetails.unshift({
+  transactionDetails.unshift({
     time: formatDate(dateFrom),
     description: 'Starting Balance',
     amount: null,
@@ -119,7 +186,7 @@ export function generateReportData ({
     balance: startingBalance.toFixed(precision)
   })
 
-  transactionsDetails.push({
+  transactionDetails.push({
     time: formatDate(endOfDay(dateTo)),
     description: 'Ending Balance',
     amount: null,
@@ -132,15 +199,15 @@ export function generateReportData ({
     filename,
     accountId,
     walletName: wallet.name,
-    currencyAbbr,
+    cryptoCurrencyUnit,
     dateFrom,
     dateTo,
 
     // summary
     endingBalance: endingBalance.toFixed(precision),
-    endingBalanceUSD,
+    endingBalanceUSD: endingBalanceUSD.toFixed(precision),
     startingBalance: startingBalance.toFixed(precision),
-    startingBalanceUSD,
+    startingBalanceUSD: startingBalanceUSD.toFixed(precision),
     netChange: netChange.toFixed(precision),
     transfersIn: transfersIn.toFixed(precision),
     transfersOut: transfersOut.toFixed(precision),
@@ -149,7 +216,7 @@ export function generateReportData ({
     transactionsByDay,
 
     // transaction details
-    transactionsDetails
+    transactionDetails
   }
 
   console.log(reportData)

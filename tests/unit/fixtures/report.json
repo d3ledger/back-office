@@ -8,6 +8,7 @@
       "assetId": "ethereum#test",
       "precision": 2
     },
+    "priceUSD": 459.03,
     "dateFrom": "Jul. 1, 2018",
     "dateTo": "Jul. 17, 2018",
     "ext": "pdf",
@@ -116,7 +117,7 @@
     "filename": "report-20180701-20180717.pdf",
     "accountId": "report@test",
     "walletName": "Ethereum",
-    "currencyAbbr": "ETH",
+    "cryptoCurrencyUnit": "ETH",
     "transfersIn": "3.17",
     "transfersOut": "6.07",
     "netChange": "-2.90",
@@ -125,22 +126,22 @@
     "transactionsByDay": [
       {
         "dailyIn": "1.73",
-        "dailyInUSD": null,
+        "dailyInUSD": "794.12",
         "dailyNet": "-0.88",
         "dailyOut": "2.61",
-        "dailyOutUSD": null,
-        "date": "20180713"
+        "dailyOutUSD": "1198.07",
+        "date": "Jul. 13"
       },
       {
         "dailyIn": "1.44",
-        "dailyInUSD": null,
+        "dailyInUSD": "661.00",
         "dailyNet": "-2.02",
         "dailyOut": "3.46",
-        "dailyOutUSD": null,
-        "date": "20180717"
+        "dailyOutUSD": "1588.24",
+        "date": "Jul. 17"
       }
     ],
-    "transactionsDetails": [
+    "transactionDetails": [
       {
         "time": "Jul. 1, 00:00",
         "description": "Starting Balance",
@@ -150,94 +151,94 @@
       },
       {
         "time": "Jul. 13, 16:17",
+        "description": "initial tx",
+        "amount": "-1.66",
+        "amountUSD": "-761.99",
+        "balance": "12.62"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "",
+        "amount": "-0.12",
+        "amountUSD": "-55.08",
+        "balance": "12.50"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "hello",
+        "amount": "-0.73",
+        "amountUSD": "-335.09",
+        "balance": "11.77"
+      },
+      {
+        "time": "Jul. 13, 16:17",
         "description": "hi",
-        "amount": "0.90",
-        "amountUSD": null,
-        "balance": "20.08"
+        "amount": "-0.10",
+        "amountUSD": "-45.90",
+        "balance": "11.67"
       },
       {
         "time": "Jul. 13, 16:17",
         "description": "hi",
         "amount": "0.83",
-        "amountUSD": null,
-        "balance": "20.91"
+        "amountUSD": "380.99",
+        "balance": "12.50"
       },
       {
         "time": "Jul. 13, 16:17",
         "description": "hi",
-        "amount": "0.10",
-        "amountUSD": null,
-        "balance": "21.01"
+        "amount": "0.90",
+        "amountUSD": "413.13",
+        "balance": "13.40"
       },
       {
-        "time": "Jul. 13, 16:17",
-        "description": "hello",
-        "amount": "0.73",
-        "amountUSD": null,
-        "balance": "21.74"
-      },
-      {
-        "time": "Jul. 13, 16:17",
-        "description": "",
-        "amount": "0.12",
-        "amountUSD": null,
-        "balance": "21.86"
-      },
-      {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 17, 13:41",
         "description": "initial tx",
-        "amount": "1.66",
-        "amountUSD": null,
-        "balance": "23.52"
+        "amount": "-1.24",
+        "amountUSD": "-569.20",
+        "balance": "12.16"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "",
+        "amount": "-0.08",
+        "amountUSD": "-36.72",
+        "balance": "12.08"
       },
       {
         "time": "Jul. 17, 13:41",
         "description": "hello",
-        "amount": "0.59",
-        "amountUSD": null,
-        "balance": "15.97"
+        "amount": "-0.20",
+        "amountUSD": "-91.81",
+        "balance": "11.88"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "hi",
+        "amount": "-0.84",
+        "amountUSD": "-385.59",
+        "balance": "11.04"
       },
       {
         "time": "Jul. 17, 13:41",
         "description": "",
         "amount": "0.85",
-        "amountUSD": null,
-        "balance": "16.82"
-      },
-      {
-        "time": "Jul. 17, 13:41",
-        "description": "hi",
-        "amount": "0.84",
-        "amountUSD": null,
-        "balance": "17.66"
+        "amountUSD": "390.18",
+        "balance": "11.89"
       },
       {
         "time": "Jul. 17, 13:41",
         "description": "hello",
-        "amount": "0.20",
-        "amountUSD": null,
-        "balance": "17.86"
-      },
-      {
-        "time": "Jul. 17, 13:41",
-        "description": "",
-        "amount": "0.08",
-        "amountUSD": null,
-        "balance": "17.94"
-      },
-      {
-        "time": "Jul. 17, 13:41",
-        "description": "initial tx",
-        "amount": "1.24",
-        "amountUSD": null,
-        "balance": "19.18"
+        "amount": "0.59",
+        "amountUSD": "270.83",
+        "balance": "12.48"
       },
       {
         "time": "Jul. 17, 16:18",
         "description": "",
-        "amount": "1.1",
-        "amountUSD": null,
-        "balance": "15.38"
+        "amount": "-1.10",
+        "amountUSD": "-504.93",
+        "balance": "11.38"
       },
       {
         "time": "Jul. 17, 23:59",

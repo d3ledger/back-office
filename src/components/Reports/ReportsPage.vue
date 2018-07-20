@@ -90,6 +90,7 @@ import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 // import FileSaver from 'file-saver'
+import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
 export default {
   name: 'reports-page',
@@ -122,14 +123,20 @@ export default {
   methods: {
     download ({ date, assetId }, fileFormat) {
       const [dateFrom, dateTo] = date
+      const wallet = this.wallets.find(x => (x.assetId === assetId))
 
-      this.$store.dispatch('getAccountAssetTransactions', { assetId })
-        .then(() => {
+      Promise.all([
+        cryptoCompareUtil.loadPriceMulti({ fsyms: wallet.asset, tsyms: 'USD' }),
+        this.$store.dispatch('getAccountAssetTransactions', { assetId })
+      ])
+        .then(([price]) => {
+          const priceUSD = price[wallet.asset].USD
           const params = {
             accountId: this.accountId,
-            wallet: this.wallets.find(x => (x.assetId === assetId)),
+            wallet,
             transactions: this.$store.getters.getTransactionsByAssetId(assetId),
             assetId,
+            priceUSD,
             dateFrom,
             dateTo,
             formatDate: this.formatDate.bind(this),
