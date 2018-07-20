@@ -15,20 +15,20 @@
           </div>
         </div>
       </el-col>
-      <el-col class="donat-chart" :span="13">
-        <donat-chart :height="200" :data="portfolio"/>
+      <el-col class="donut-chart" :span="13">
+        <donut-chart :height="200" :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script>
-import DonatChart from '@/components/Dashboard/Charts/DonatChart'
+import DonutChart from '@/components/Dashboard/Charts/DonutChart'
 
 export default {
-  name: 'dashboard-pie-chart',
+  name: 'dashboard-donut-chart',
   components: {
-    DonatChart
+    DonutChart
   },
   props: {
     portfolio: {
@@ -82,7 +82,7 @@ export default {
   width: 40px;
 }
 
-.donat-chart {
+.donut-chart {
   margin-top: -0.5rem
 }
 
