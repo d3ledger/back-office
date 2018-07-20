@@ -15,8 +15,8 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="13">
-        <donat-chart style="donat-chart" :height="200" :data="portfolio"/>
+      <el-col class="donat-chart" :span="13">
+        <donat-chart :height="200" :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
