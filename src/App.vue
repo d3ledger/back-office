@@ -30,6 +30,8 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed');
+
 html {
   box-sizing: border-box;
 }
@@ -40,7 +42,7 @@ html {
 }
 
 #app {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'IBM Plex Sans Condensed', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
