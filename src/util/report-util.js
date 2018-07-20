@@ -40,7 +40,7 @@ export function generatePDF (params) {
           layout: 'lightHorizontalLines',
           table: {
             headerRows: 1,
-            widths: ['*', '*', '*', '*', '*', '*'],
+            widths: ['auto', '*', '*', '*', '*', '*'],
             body: [
               ['Date', 'In', 'In (USD)', 'Out', 'Out (USD)', 'Net'],
               ...data.transactionsByDay.map(tx => ([
