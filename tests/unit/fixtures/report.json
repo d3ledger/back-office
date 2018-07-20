@@ -1,0 +1,251 @@
+{
+  "params": {
+    "accountId": "report@test",
+    "wallet": {
+      "name": "Ethereum",
+      "asset": "ETH",
+      "amount": 10.15,
+      "assetId": "ethereum#test",
+      "precision": 2
+    },
+    "dateFrom": "Jul. 1, 2018",
+    "dateTo": "Jul. 17, 2018",
+    "ext": "pdf",
+    "transactions": [
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.23",
+        "date": 1531902561757,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.1",
+        "date": 1531811895944,
+        "message": ""
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.59",
+        "date": 1531802515551,
+        "message": "hello"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.85",
+        "date": 1531802515546,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.84",
+        "date": 1531802510422,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.20",
+        "date": 1531802510419,
+        "message": "hello"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.08",
+        "date": 1531802510417,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.24",
+        "date": 1531802505264,
+        "message": "initial tx"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.90",
+        "date": 1531466238473,
+        "message": "hi"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.83",
+        "date": 1531466238465,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.10",
+        "date": 1531466233368,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.73",
+        "date": 1531466233363,
+        "message": "hello"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.12",
+        "date": 1531466233357,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.66",
+        "date": 1531466228261,
+        "message": "initial tx"
+      }
+    ]
+  },
+  "expected": {
+    "filename": "report-20180701-20180717.pdf",
+    "accountId": "report@test",
+    "walletName": "Ethereum",
+    "currencyAbbr": "ETH",
+    "transfersIn": "3.17",
+    "transfersOut": "6.07",
+    "netChange": "-2.90",
+    "endingBalance": "11.38",
+    "startingBalance": "14.28",
+    "transactionsByDay": [
+      {
+        "dailyIn": "1.73",
+        "dailyInUSD": null,
+        "dailyNet": "-0.88",
+        "dailyOut": "2.61",
+        "dailyOutUSD": null,
+        "date": "20180713"
+      },
+      {
+        "dailyIn": "1.44",
+        "dailyInUSD": null,
+        "dailyNet": "-2.02",
+        "dailyOut": "3.46",
+        "dailyOutUSD": null,
+        "date": "20180717"
+      }
+    ],
+    "transactionsDetails": [
+      {
+        "time": "Jul. 1, 00:00",
+        "description": "Starting Balance",
+        "amount": null,
+        "amountUSD": null,
+        "balance": "14.28"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "hi",
+        "amount": "0.90",
+        "amountUSD": null,
+        "balance": "20.08"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "hi",
+        "amount": "0.83",
+        "amountUSD": null,
+        "balance": "20.91"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "hi",
+        "amount": "0.10",
+        "amountUSD": null,
+        "balance": "21.01"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "hello",
+        "amount": "0.73",
+        "amountUSD": null,
+        "balance": "21.74"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "",
+        "amount": "0.12",
+        "amountUSD": null,
+        "balance": "21.86"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "description": "initial tx",
+        "amount": "1.66",
+        "amountUSD": null,
+        "balance": "23.52"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "hello",
+        "amount": "0.59",
+        "amountUSD": null,
+        "balance": "15.97"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "",
+        "amount": "0.85",
+        "amountUSD": null,
+        "balance": "16.82"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "hi",
+        "amount": "0.84",
+        "amountUSD": null,
+        "balance": "17.66"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "hello",
+        "amount": "0.20",
+        "amountUSD": null,
+        "balance": "17.86"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "",
+        "amount": "0.08",
+        "amountUSD": null,
+        "balance": "17.94"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "description": "initial tx",
+        "amount": "1.24",
+        "amountUSD": null,
+        "balance": "19.18"
+      },
+      {
+        "time": "Jul. 17, 16:18",
+        "description": "",
+        "amount": "1.1",
+        "amountUSD": null,
+        "balance": "15.38"
+      },
+      {
+        "time": "Jul. 17, 23:59",
+        "description": "Ending Balance",
+        "amount": null,
+        "amountUSD": null,
+        "balance": "11.38"
+      }
+    ]
+  }
+}
