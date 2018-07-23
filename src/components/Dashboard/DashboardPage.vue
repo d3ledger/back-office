@@ -6,7 +6,7 @@
           <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
         </el-col>
         <el-col :span="8">
-          <dashboard-pie-chart :portfolio="portfolioPercent"/>
+          <dashboard-donut-chart :portfolio="portfolioPercent"/>
         </el-col>
       </el-row>
       <el-row>
@@ -31,7 +31,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import DashboardPortfolio from '@/components/Dashboard/DashboardPortfolio'
-import DashboardPieChart from '@/components/Dashboard/DashboardPieChart'
+import DashboardDonutChart from '@/components/Dashboard/DashboardDonutChart'
 import DashboardTable from '@/components/Dashboard/DashboardTable'
 import DashboardChart from '@/components/Dashboard/DashboardChart'
 import NoAssetsCard from '@/components/common/NoAssetsCard'
@@ -40,7 +40,7 @@ export default {
   name: 'dashboard-page',
   components: {
     DashboardPortfolio,
-    DashboardPieChart,
+    DashboardDonutChart,
     DashboardTable,
     DashboardChart,
     NoAssetsCard
@@ -49,9 +49,7 @@ export default {
     return {}
   },
   mounted () {
-    if (this.wallets.length > 0) {
-      this.$store.dispatch('loadDashboard')
-    }
+    this.$store.dispatch('loadDashboard')
   },
   computed: {
     ...mapGetters([

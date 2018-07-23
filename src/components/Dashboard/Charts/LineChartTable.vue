@@ -57,7 +57,7 @@ export default {
           lineTension: 0,
           backgroundColor: '#fafafa',
           borderColor: '#000000',
-          borderWidth: 2,
+          borderWidth: 1,
           data: this.data.map(i => i.close),
           pointRadius: 0,
           pointHitRadius: 10
