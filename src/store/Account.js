@@ -1,5 +1,9 @@
 import Vue from 'vue'
-import _ from 'lodash'
+import map from 'lodash/fp/map'
+import flatMap from 'lodash/fp/flatMap'
+import concat from 'lodash/fp/concat'
+import fromPairs from 'lodash/fp/fromPairs'
+import flow from 'lodash/fp/flow'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha-util'
 import notaryUtil from '@util/notary-util'
@@ -10,7 +14,14 @@ import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
 //   1. to get asset's properties (e.g. color) which cannot be fetched from API.
 const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
 
-const types = _([
+const types = flow(
+  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
+  concat([
+    'RESET'
+  ]),
+  map(x => [x, x]),
+  fromPairs
+)([
   'SIGNUP',
   'LOGIN',
   'LOGOUT',
@@ -22,12 +33,7 @@ const types = _([
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
   'REJECT_SETTLEMENT'
-]).chain()
-  .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
-  .concat(['RESET'])
-  .map(x => [x, x])
-  .fromPairs()
-  .value()
+])
 
 function initialState () {
   return {

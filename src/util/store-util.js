@@ -1,4 +1,9 @@
-import _ from 'lodash'
+import flow from 'lodash/fp/flow'
+import isEmpty from 'lodash/fp/isEmpty'
+import isEqual from 'lodash/fp/isEqual'
+import uniqWith from 'lodash/fp/uniqWith'
+import sortBy from 'lodash/fp/sortBy'
+import reverse from 'lodash/fp/reverse'
 import { amountToString } from './iroha-amount'
 
 // TODO: To be removed.
@@ -24,7 +29,7 @@ function findSettlementOfTransaction (settlements = [], transferAsset) {
 }
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
-  if (_.isEmpty(transactions)) return []
+  if (isEmpty(transactions)) return []
 
   const transformed = []
 
@@ -79,18 +84,17 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
     *
     * To avoid it, we uniq the transactions.
     */
-  return _(transformed)
-    .chain()
-    .uniqWith(_.isEqual)
-    .sortBy('date')
-    .reverse()
-    .value()
+  return flow(
+    uniqWith(isEqual),
+    sortBy('date'),
+    reverse
+  )(transformed)
 }
 
 // TODO: extract settlements from raw transactions and return
 // TODO: might be able to put together with getTransferAssetsFrom
 export function getSettlementsFrom (transactions) {
-  if (_.isEmpty(transactions)) return []
+  if (isEmpty(transactions)) return []
 
   return DUMMY_SETTLEMENTS
 }
