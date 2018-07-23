@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import set from 'lodash/fp/set'
 
 const localStorage = global.localStorage || {
   setItem () {},
@@ -47,7 +47,7 @@ const getParsedItem = (key) => {
 const setParsedItem = (key, value) => {
   const path = key.split('.')
   const i = getParsedItem(path[0])
-  const v = _.set(i, path.slice(1), value)
+  const v = set(path.slice(1))(value)(i)
   setItem(path[0], v)
 }
 

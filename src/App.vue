@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import _ from 'lodash'
+import debounce from 'lodash/debounce'
 import { mapState } from 'vuex'
 
 export default {
@@ -22,7 +22,7 @@ export default {
   },
 
   methods: {
-    showConnectionErrorMessage: _.debounce(function () {
+    showConnectionErrorMessage: debounce(function () {
       this.$message.error(`connection error: Please check IP address OR your internet connection`)
     }, 1000)
   }
