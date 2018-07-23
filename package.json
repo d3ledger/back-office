@@ -11,9 +11,9 @@
     "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.0",
-    "@fortawesome/free-solid-svg-icons": "^5.1.0",
-    "@fortawesome/vue-fontawesome": "^0.1.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.1",
+    "@fortawesome/free-solid-svg-icons": "^5.1.1",
+    "@fortawesome/vue-fontawesome": "^0.1.1",
     "axios": "^0.18.0",
     "chart.js": "^2.7.2",
     "cryptocoins-icons": "^2.7.0",
@@ -50,7 +50,7 @@
     "node-sass": "^4.7.2",
     "nyc": "^12.0.2",
     "sass-loader": "^7.0.3",
-    "sinon": "^6.0.0",
+    "sinon": "^6.1.4",
     "vue-template-compiler": "^2.5.13"
   },
   "browserslist": [
