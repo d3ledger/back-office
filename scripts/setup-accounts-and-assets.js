@@ -34,6 +34,9 @@ console.log('')
 
 irohaUtil.login(`${testAccFull}`, testPrivKeyHex, nodeIp)
   .then(() => tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
+  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
+
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
   .then(() => setupAccountTransactions(`${testAccFull}`, testPrivKeyHex))
