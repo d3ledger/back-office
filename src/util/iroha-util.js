@@ -31,7 +31,7 @@ const localStorage = global.localStorage || {
 
 const endpointGrpc = require('./proto/endpoint_pb_service.js')
 const pbEndpoint = require('./proto/endpoint_pb.js')
-const pbResponse = require('./proto/responses_pb.js')
+const pbResponse = require('./proto/qry_responses_pb.js')
 const txBuilder = new iroha.ModelTransactionBuilder()
 const queryBuilder = new iroha.ModelQueryBuilder()
 const crypto = new iroha.ModelCrypto()
@@ -498,7 +498,7 @@ function addAssetQuantity (privateKey, accountId, assetId, amount) {
       return txBuilder
         .creatorAccountId(cache.username)
         .createdTime(Date.now())
-        .addAssetQuantity(accountId, assetId, amount)
+        .addAssetQuantity(assetId, amount)
         .build()
     }
   )
