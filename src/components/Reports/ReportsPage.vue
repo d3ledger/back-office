@@ -8,10 +8,10 @@
               <span>Reports</span>
               <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
             </div>
-            <el-table :data="mockReports">
+            <el-table :data="previousMonthReports">
               <el-table-column label="date">
                 <template slot-scope="scope">
-                  {{ scope.row.date[0] }} - {{ scope.row.date[1] }}
+                  {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
               <el-table-column label="wallet" prop="walletName"></el-table-column>
@@ -106,6 +106,7 @@ import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import FileSaver from 'file-saver'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import { subMonths, startOfMonth, endOfMonth } from 'date-fns'
 
 export default {
   name: 'reports-page',
@@ -125,12 +126,19 @@ export default {
       'wallets',
       'settingsView'
     ]),
-    mockReports: function () {
-      return this.wallets.map(x => ({
-        assetId: x.assetId,
-        walletName: `${x.name} (${x.asset.toUpperCase()})`,
-        date: ['Jul 1, 2018', 'Jul 31, 2018']
-      }))
+    previousMonthReports: function () {
+      return this.wallets.map(x => {
+        const previousMonth = subMonths(new Date(), 1)
+
+        return {
+          assetId: x.assetId,
+          walletName: `${x.name} (${x.asset.toUpperCase()})`,
+          date: [
+            startOfMonth(previousMonth),
+            endOfMonth(previousMonth)
+          ]
+        }
+      })
     }
   },
   created () {
