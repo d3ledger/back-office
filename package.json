@@ -78,7 +78,8 @@
   },
   "nyc": {
     "include": [
-      "src/store/**/*.js"
+      "src/store/**/*.js",
+      "src/util/report-util.js"
     ],
     "instrument": false,
     "sourceMap": false
