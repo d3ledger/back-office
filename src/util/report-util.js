@@ -6,7 +6,16 @@ import { parse as json2csv } from 'json2csv'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
+const debug = require('debug')('report-util')
+
+/**
+ * generate PDF blob
+ * @param {Object} params
+ * @returns {Promise}
+ */
 export function generatePDF (params) {
+  debug('generating PDF output...')
+
   return new Promise((resolve, reject) => {
     const formatDate = params.formatDate
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
@@ -77,16 +86,22 @@ export function generatePDF (params) {
     }
     const pdfDocGenerator = pdfMake.createPdf(docDefinition)
 
-    // TODO: for testing
-    pdfDocGenerator.open()
-
     pdfDocGenerator.getBlob(blob => {
+      debug('successfully generated PDF output')
+
       resolve({ filename: data.filename, blob })
     })
   })
 }
 
+/**
+ * generate CSV blob
+ * @param {Object} params
+ * @returns {Promise}
+ */
 export function generateCSV (params) {
+  debug('generating CSV output...')
+
   return new Promise((resolve, reject) => {
     const data = generateReportData.call(this, { ext: 'csv', ...params })
     const dataForCSV = data.transactionDetails.map(tx => ({
@@ -108,12 +123,12 @@ export function generateCSV (params) {
       return reject(err)
     }
 
-    console.log(csv)
-
     const blob = new Blob(
       [csv],
       { type: 'text/csv;charset=utf-8' }
     )
+
+    debug('successfully generated CSV output', csv)
 
     resolve({ filename: data.filename, blob })
   })
@@ -136,20 +151,32 @@ export function generateReportData ({
   formatDateWith,
   fiat
 }) {
+  /*
+   * prepare utility functions
+   */
   const sumAmount = (txs) => txs
     .map(tx => parseFloat(tx.amount))
     .reduce((sum, x) => sum + x, 0)
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
 
+  /*
+   * prepare basic data
+   */
   const filename = `report-${wallet.name.toLowerCase()}-${formatDateWith(dateFrom, 'YYYYMMDD')}-${formatDateWith(dateTo, 'YYYYMMDD')}.${ext}`
-
   const cryptoCurrencyUnit = wallet.asset
   const precision = wallet.precision
   const currentAmount = wallet.amount
 
+  /*
+   * split transactions
+   */
   const txsWithinRange = transactions.filter(tx => isWithinRange(tx.date, startOfDay(dateFrom), endOfDay(dateTo)))
   const txsAfterRange = transactions.filter(tx => isAfter(tx.date, endOfDay(dateTo)))
+
+  /*
+   * calculate figures
+   */
   const netChangeAfterRange = txsAfterRange
     .map(tx => (tx.to === 'you') ? +tx.amount : -tx.amount)
     .reduce((sum, x) => sum + x, 0)
@@ -160,6 +187,10 @@ export function generateReportData ({
   const endingBalanceFiat = endingBalance * priceFiat
   const startingBalance = endingBalance - netChange
   const startingBalanceFiat = startingBalance * priceFiat
+
+  /*
+   * prepare transactionsByDay
+   */
   const transactionsByDay = _(txsWithinRange)
     .groupBy(tx => startOfDay(new Date(tx.date)))
     .map((txs, date) => {
@@ -182,6 +213,9 @@ export function generateReportData ({
     .sortBy('date')
     .value()
 
+  /*
+   * prepare transactionDetails
+   */
   let accumulatedAmount = 0
   const transactionDetails = _(txsWithinRange)
     .sortBy('date')
@@ -220,6 +254,9 @@ export function generateReportData ({
     balance: endingBalance.toFixed(precision)
   })
 
+  /*
+   * put data together
+   */
   const reportData = {
     // metadata
     filename,
@@ -246,7 +283,7 @@ export function generateReportData ({
     transactionDetails
   }
 
-  console.log(reportData)
+  debug('successfully generated reportData', reportData)
 
   return reportData
 }
