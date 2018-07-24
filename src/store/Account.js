@@ -101,6 +101,11 @@ const getters = {
   resolvedSettlements (state) {
     return getSettlementsFrom(state.rawTransactions)
       .filter(x => x.status !== 'waiting')
+  },
+
+  ethWalletAddress (state) {
+    let wallet = _.findKey(state.accountInfo, 'ethereum_wallet')
+    return wallet ? state.accountInfo[wallet].ethereum_wallet : 'no eth deposit address'
   }
 }
 
@@ -149,7 +154,6 @@ const mutations = {
   [types.LOGIN_SUCCESS] (state, account) {
     state.accountId = account.accountId
     state.accountInfo = JSON.parse(account.jsonData)
-    state.accountQuorum = account.quorum
   },
 
   [types.LOGIN_FAILURE] (state, err) {
