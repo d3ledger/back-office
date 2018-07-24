@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 
 const rules = []
 
@@ -22,6 +23,9 @@ module.exports = {
     },
     module: {
       rules: rules
-    }
+    },
+    plugins: [
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    ]
   }
 }

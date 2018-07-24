@@ -1,6 +1,6 @@
 <script>
 import { Line } from 'vue-chartjs'
-import { format } from 'date-fns'
+import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
