@@ -21,16 +21,67 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en'
+import {
+  Dialog,
+  Menu,
+  MenuItem,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Option,
+  Button,
+  Table,
+  TableColumn,
+  DatePicker,
+  Form,
+  FormItem,
+  Tag,
+  Row,
+  Col,
+  Upload,
+  Card,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Loading,
+  MessageBox
+} from 'element-ui'
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
 import 'cryptocoins-icons/webfont/cryptocoins.css'
+
+Vue.use(Dialog)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(Input)
+Vue.use(Radio)
+Vue.use(RadioGroup)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Button)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(DatePicker)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Tag)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Upload)
+Vue.use(Card)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Main)
+Vue.use(Loading.directive)
+Vue.prototype.$alert = MessageBox.alert
+locale.use(lang)
 
 library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)
 Vue.component('fa-icon', FontAwesomeIcon)
 
-// TODO: import only necessary components
-Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 
 new Vue({
