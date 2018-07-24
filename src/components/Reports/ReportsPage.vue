@@ -105,7 +105,6 @@ import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import FileSaver from 'file-saver'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { subMonths, startOfMonth, endOfMonth } from 'date-fns'
 
 export default {
@@ -124,7 +123,8 @@ export default {
     }),
     ...mapGetters([
       'wallets',
-      'settingsView'
+      'settingsView',
+      'portfolioList'
     ]),
     previousMonthReports: function () {
       return this.wallets.map(x => {
@@ -146,17 +146,14 @@ export default {
   },
   methods: {
     download ({ date, assetId }, fileFormat) {
-      const [dateFrom, dateTo] = date
-      const wallet = this.wallets.find(x => (x.assetId === assetId))
-      const fiat = this.settingsView.fiat
-
       Promise.all([
-        // TODO: use Dashboard store instead to get the price
-        cryptoCompareUtil.loadPriceMulti({ fsyms: wallet.asset, tsyms: fiat }),
+        this.$store.dispatch('loadDashboard'),
         this.$store.dispatch('getAccountAssetTransactions', { assetId })
       ])
-        .then(([price]) => {
-          const priceFiat = price[wallet.asset][fiat]
+        .then(() => {
+          const [dateFrom, dateTo] = date
+          const wallet = this.wallets.find(x => (x.assetId === assetId))
+          const priceFiat = this.portfolioList.find(({ asset }) => asset === wallet.asset).price
           const params = {
             accountId: this.accountId,
             wallet,
@@ -167,14 +164,13 @@ export default {
             dateTo,
             formatDate: this.formatDate.bind(this),
             formatDateWith: this.formatDateWith.bind(this),
-            fiat
+            fiat: this.settingsView.fiat
           }
           const generating = (fileFormat === 'pdf')
             ? generatePDF(params)
             : generateCSV(params)
 
           generating.then(({ blob, filename }) => {
-            console.log('generated')
             FileSaver.saveAs(blob, filename)
           })
         })
