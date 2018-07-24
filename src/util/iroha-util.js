@@ -505,6 +505,28 @@ function addAssetQuantity (privateKey, accountId, assetId, amount) {
 }
 
 /**
+ * setAccountDetail https://hyperledger.github.io/iroha-api/#set-account-detail
+ * @param {String} privateKey
+ * @param {String} accountId
+ * @param {String} key
+ * @param {String} value
+ */
+function setAccountDetail (privateKey, accountId, key, value) {
+  debug('starting setAccountDetail...')
+
+  return command(
+    privateKey,
+    function buildTx () {
+      return txBuilder
+        .creatorAccountId(cache.username)
+        .createdTime(Date.now())
+        .setAccountDetail(accountId, key, value)
+        .build()
+    }
+  )
+}
+
+/**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
  * @param {String} privateKey
  * @param {String} srcAccountId
@@ -624,5 +646,6 @@ module.exports = {
   createAsset,
   transferAsset,
   addAssetQuantity,
-  createSettlement
+  createSettlement,
+  setAccountDetail
 }
