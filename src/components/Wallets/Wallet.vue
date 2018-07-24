@@ -158,7 +158,7 @@
           </span>
         </el-form-item>
         <el-form-item label="Address">
-          <el-input v-model="transferForm.to" placeholder="withdrawal address" />
+          <el-input v-model="transferForm.description" placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
@@ -182,9 +182,12 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><strong> {{ wallet.address }}</strong></p>
+          <p><span class="monospace"> {{ ethWalletAddress }}</span></p>
         </div>
-        <img src="@/assets/qr.png" style="width: 270px"/>
+        <qrcode-vue
+          :value="ethWalletAddress"
+          :size="270"
+        />
       </div>
     </el-dialog>
 
@@ -235,12 +238,16 @@
 
 <script>
 // TODO: Transfer form all assets
+import QrcodeVue from 'qrcode.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
+
+// Notary account for withdrawal.
+const notaryAccount = 'notary_red@notary'
 
 export default {
   name: 'wallet',
@@ -250,7 +257,8 @@ export default {
     currencySymbol
   ],
   components: {
-    AssetIcon
+    AssetIcon,
+    QrcodeVue
   },
   data () {
     return {
@@ -269,7 +277,8 @@ export default {
   computed: {
     ...mapGetters([
       'cryptoInfo',
-      'settingsView'
+      'settingsView',
+      'ethWalletAddress'
     ]),
     wallet () {
       const walletId = this.$route.params.walletId
@@ -320,10 +329,32 @@ export default {
         .then(privateKey => {
           if (!privateKey) return
 
-          // TODO: withdrawal process
+          this.isSending = true
 
-          this.withdrawFormVisible = false
+          return this.$store.dispatch('transferAsset', {
+            privateKey,
+            assetId: this.wallet.assetId,
+            to: notaryAccount,
+            description: this.transferForm.description,
+            amount: this.transferForm.amount
+          })
+            .then(() => {
+              this.$message({
+                message: 'Withdrawal request is submitted to notary!',
+                type: 'success'
+              })
+              this.resetTransferForm()
+              this.fetchWallet()
+              this.withdrawFormVisible = false
+            })
+            .catch(err => {
+              console.error(err)
+              this.$alert(err.message, 'Withdrawal error', {
+                type: 'error'
+              })
+            })
         })
+        .finally(() => { this.isSending = false })
     },
 
     onSubmitTransferForm () {
@@ -337,6 +368,7 @@ export default {
             privateKey,
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
+            description: this.transferForm.description,
             amount: this.transferForm.amount
           })
             .then(() => {
@@ -361,6 +393,7 @@ export default {
     resetTransferForm () {
       this.transferForm.to = ''
       this.transferForm.amount = '0'
+      this.transferForm.description = ''
     }
   }
 }
