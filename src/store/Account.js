@@ -3,7 +3,6 @@ import _ from 'lodash'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha-util'
 import notaryUtil from '@util/notary-util'
-import { amountToString } from '@util/iroha-amount'
 import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
 
 // TODO: To be removed. This is used for the following reason for now:
@@ -62,7 +61,7 @@ const getters = {
         color: DUMMY_ASSET.color,
         address: DUMMY_ASSET.address,
 
-        amount: amountToString(a.balance),
+        amount: a.balance,
         precision: a.balance.precision
       }
     })
