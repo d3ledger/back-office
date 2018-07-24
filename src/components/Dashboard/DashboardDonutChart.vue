@@ -23,12 +23,12 @@
 </template>
 
 <script>
-import DonutChart from '@/components/Dashboard/Charts/DonutChart'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'dashboard-donut-chart',
   components: {
-    DonutChart
+    DonutChart: lazyComponent('Dashboard/Charts/DonutChart')
   },
   props: {
     portfolio: {
