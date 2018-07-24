@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import { amountToString } from './iroha-amount'
 
 // TODO: To be removed.
 const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
@@ -44,7 +43,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
       const tx = {
         from: srcAccountId === accountId ? 'you' : srcAccountId,
         to: destAccountId === accountId ? 'you' : destAccountId,
-        amount: amountToString(amount),
+        amount: amount,
         date: createdTime,
         message: description
       }
