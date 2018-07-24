@@ -23,7 +23,6 @@ function findSettlementOfTransaction (settlements = [], transferAsset) {
 }
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
-  console.log(JSON.stringify(transactions))
   if (_.isEmpty(transactions)) return []
 
   const transformed = []
