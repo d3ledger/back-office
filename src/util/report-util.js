@@ -1,4 +1,9 @@
-import _ from 'lodash'
+import flow from 'lodash/fp/flow'
+import groupBy from 'lodash/fp/groupBy'
+import entries from 'lodash/fp/entries'
+import map from 'lodash/fp/map'
+import values from 'lodash/fp/values'
+import sortBy from 'lodash/fp/sortBy'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import { isWithinRange, isAfter, startOfDay, endOfDay } from 'date-fns'
@@ -191,9 +196,10 @@ export function generateReportData ({
   /*
    * prepare transactionsByDay
    */
-  const transactionsByDay = _(txsWithinRange)
-    .groupBy(tx => startOfDay(new Date(tx.date)))
-    .map((txs, date) => {
+  const transactionsByDay = flow(
+    groupBy(tx => startOfDay(new Date(tx.date))),
+    entries,
+    map(([date, txs]) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
       const dailyInFiat = dailyIn * priceFiat
       const dailyOut = sumAmount(txs.filter(isFromYou))
@@ -208,18 +214,18 @@ export function generateReportData ({
         dailyOutFiat: dailyOutFiat.toFixed(precision),
         dailyNet: dailyNet.toFixed(precision)
       }
-    })
-    .values()
-    .sortBy('date')
-    .value()
+    }),
+    values,
+    sortBy('date')
+  )(txsWithinRange)
 
   /*
    * prepare transactionDetails
    */
   let accumulatedAmount = 0
-  const transactionDetails = _(txsWithinRange)
-    .sortBy('date')
-    .map(tx => {
+  const transactionDetails = flow(
+    sortBy('date'),
+    map(tx => {
       const amount = isToYou(tx) ? +tx.amount : -tx.amount
       accumulatedAmount += parseFloat(amount)
       const balance = startingBalance + accumulatedAmount
@@ -234,7 +240,7 @@ export function generateReportData ({
         balanceFiat: (balance * priceFiat).toFixed(precision)
       }
     })
-    .value()
+  )(txsWithinRange)
 
   transactionDetails.unshift({
     time: formatDate(dateFrom),
