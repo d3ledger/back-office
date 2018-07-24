@@ -23,7 +23,7 @@ describe('Account store', () => {
    */
   const MOCK_ASSETS = require('../fixtures/assets.json')
   const MOCK_ASSET_TRANSACTIONS = require('../fixtures/transactions.json')
-  const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['bitcoin#test']
+  const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['omisego#test']
   const MOCK_NODE_IP = 'MOCK_NODE_IP'
   const MOCK_ACCOUNT_RESPONSE = { accountId: randomAccountId() }
   const MOCK_KEYPAIR = {
@@ -362,7 +362,7 @@ describe('Account store', () => {
     describe('getTransactionsByAssetId', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
-        const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
+        const result = getters.getTransactionsByAssetId(state)('omisego#test')
         const expectedKeys = ['amount', 'date', 'from', 'to', 'message']
 
         expect(result)
@@ -372,7 +372,7 @@ describe('Account store', () => {
 
       it('should return an empty array if there is no transactions', () => {
         const state = { rawAssetTransactions: {} }
-        const result = getters.getTransactionsByAssetId(state)('bitcoin#test')
+        const result = getters.getTransactionsByAssetId(state)('omisego#test')
 
         expect(result).to.be.an('array').which.is.empty
       })
