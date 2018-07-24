@@ -46,6 +46,7 @@ import {
   Aside,
   Main,
   Loading,
+  Message,
   MessageBox
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -77,6 +78,7 @@ Vue.use(Aside)
 Vue.use(Main)
 Vue.use(Loading.directive)
 Vue.prototype.$alert = MessageBox.alert
+Vue.prototype.$message = Message
 locale.use(lang)
 
 library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)

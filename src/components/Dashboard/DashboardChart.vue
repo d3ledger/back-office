@@ -26,11 +26,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import LineChartTable from '@/components/Dashboard/Charts/LineChartTable'
+import { lazyComponent } from '@router'
 
 export default {
   components: {
-    LineChartTable
+    LineChartTable: lazyComponent('Dashboard/Charts/LineChartTable')
   },
   data () {
     return {
