@@ -23,12 +23,13 @@ function findSettlementOfTransaction (settlements = [], transferAsset) {
 }
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
+  console.log(JSON.stringify(transactions))
   if (_.isEmpty(transactions)) return []
 
   const transformed = []
 
   transactions.forEach(t => {
-    const { commandsList, createdTime } = t.payload
+    const { commandsList, createdTime } = t.payload.reducedPayload
 
     commandsList.forEach(c => {
       if (!c.transferAsset) return
