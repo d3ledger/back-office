@@ -142,6 +142,16 @@ export function generateCSV (params) {
 /**
  * Generate a report data object
  * @param {Object} params
+ * @param {String} params.accountId - e.g. 'alice@test'
+ * @param {Object} params.wallet - { name, asset, precision, amount }
+ * @param {Object[]} params.transactins - an array of TransferAsset transactions
+ * @param {String} params.fiat - e.g. 'RUB'
+ * @param {Number} params.priceFiat - a price of fiat
+ * @param {Date} params.dateFrom - start of the range
+ * @param {Date} params.dateTo - end of the range
+ * @param {String} params.ext - e.g. 'pdf'
+ * @param {Function} params.formatDate - a functino to format a date to the specific string
+ * @param {Function} params.formatDateWith - a function to format a date to an arbitrary string
  * @returns {Object}
  */
 export function generateReportData ({
