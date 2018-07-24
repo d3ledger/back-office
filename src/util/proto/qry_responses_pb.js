@@ -12,6 +12,7 @@ var goog = jspb;
 var global = Function('return this')();
 
 var block_pb = require('./block_pb.js');
+var transaction_pb = require('./transaction_pb.js');
 var primitive_pb = require('./primitive_pb.js');
 goog.exportSymbol('proto.iroha.protocol.Account', null, global);
 goog.exportSymbol('proto.iroha.protocol.AccountAsset', null, global);
@@ -668,7 +669,7 @@ proto.iroha.protocol.AccountAsset.toObject = function(includeInstance, msg) {
   var f, obj = {
     assetId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     accountId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    balance: (f = msg.getBalance()) && primitive_pb.Amount.toObject(includeInstance, f)
+    balance: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -714,8 +715,7 @@ proto.iroha.protocol.AccountAsset.deserializeBinaryFromReader = function(msg, re
       msg.setAccountId(value);
       break;
     case 3:
-      var value = new primitive_pb.Amount;
-      reader.readMessage(value,primitive_pb.Amount.deserializeBinaryFromReader);
+      var value = /** @type {string} */ (reader.readString());
       msg.setBalance(value);
       break;
     default:
@@ -762,11 +762,10 @@ proto.iroha.protocol.AccountAsset.serializeBinaryToWriter = function(message, wr
     );
   }
   f = message.getBalance();
-  if (f != null) {
-    writer.writeMessage(
+  if (f.length > 0) {
+    writer.writeString(
       3,
-      f,
-      primitive_pb.Amount.serializeBinaryToWriter
+      f
     );
   }
 };
@@ -803,32 +802,17 @@ proto.iroha.protocol.AccountAsset.prototype.setAccountId = function(value) {
 
 
 /**
- * optional Amount balance = 3;
- * @return {?proto.iroha.protocol.Amount}
+ * optional string balance = 3;
+ * @return {string}
  */
 proto.iroha.protocol.AccountAsset.prototype.getBalance = function() {
-  return /** @type{?proto.iroha.protocol.Amount} */ (
-    jspb.Message.getWrapperField(this, primitive_pb.Amount, 3));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {?proto.iroha.protocol.Amount|undefined} value */
+/** @param {string} value */
 proto.iroha.protocol.AccountAsset.prototype.setBalance = function(value) {
-  jspb.Message.setWrapperField(this, 3, value);
-};
-
-
-proto.iroha.protocol.AccountAsset.prototype.clearBalance = function() {
-  this.setBalance(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.iroha.protocol.AccountAsset.prototype.hasBalance = function() {
-  return jspb.Message.getField(this, 3) != null;
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -2260,7 +2244,7 @@ proto.iroha.protocol.TransactionsResponse.prototype.toObject = function(opt_incl
 proto.iroha.protocol.TransactionsResponse.toObject = function(includeInstance, msg) {
   var f, obj = {
     transactionsList: jspb.Message.toObjectList(msg.getTransactionsList(),
-    block_pb.Transaction.toObject, includeInstance)
+    transaction_pb.Transaction.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -2298,8 +2282,8 @@ proto.iroha.protocol.TransactionsResponse.deserializeBinaryFromReader = function
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new block_pb.Transaction;
-      reader.readMessage(value,block_pb.Transaction.deserializeBinaryFromReader);
+      var value = new transaction_pb.Transaction;
+      reader.readMessage(value,transaction_pb.Transaction.deserializeBinaryFromReader);
       msg.addTransactions(value);
       break;
     default:
@@ -2336,7 +2320,7 @@ proto.iroha.protocol.TransactionsResponse.serializeBinaryToWriter = function(mes
     writer.writeRepeatedMessage(
       1,
       f,
-      block_pb.Transaction.serializeBinaryToWriter
+      transaction_pb.Transaction.serializeBinaryToWriter
     );
   }
 };
@@ -2348,7 +2332,7 @@ proto.iroha.protocol.TransactionsResponse.serializeBinaryToWriter = function(mes
  */
 proto.iroha.protocol.TransactionsResponse.prototype.getTransactionsList = function() {
   return /** @type{!Array.<!proto.iroha.protocol.Transaction>} */ (
-    jspb.Message.getRepeatedWrapperField(this, block_pb.Transaction, 1));
+    jspb.Message.getRepeatedWrapperField(this, transaction_pb.Transaction, 1));
 };
 
 
