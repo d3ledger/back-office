@@ -3,8 +3,6 @@ import reportUtilInjector from 'inject-loader!../../../src/util/report-util.js'
 
 const expect = chai.expect
 
-chai.use(require('chai-things'))
-
 describe('report-util', () => {
   const { generateReportData } = reportUtilInjector({
     'pdfmake/build/pdfmake': {},
