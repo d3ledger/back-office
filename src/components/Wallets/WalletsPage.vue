@@ -21,14 +21,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import WalletMenuItem from '@/components/Wallets/WalletMenuItem'
-import NoAssetsCard from '@/components/common/NoAssetsCard'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'wallets-page',
   components: {
-    WalletMenuItem,
-    NoAssetsCard
+    WalletMenuItem: lazyComponent('Wallets/WalletMenuItem'),
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
 
   data () {

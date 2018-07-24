@@ -31,14 +31,14 @@
 </template>
 
 <script>
-import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio'
+import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'dashboard-portfolio',
   components: {
-    LineChartPortfolio
+    LineChartPortfolio: lazyComponent('Dashboard/Charts/LineChartPortfolio')
   },
   mixins: [
     numberFormat,

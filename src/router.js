@@ -2,19 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import irohaUtil from '@util/iroha-util'
 
-import Home from '@/components/Home'
-import DashboardPage from '@/components/Dashboard/DashboardPage'
-import WalletsPage from '@/components/Wallets/WalletsPage'
-import Wallet from '@/components/Wallets/Wallet'
-import SettlementsPage from '@/components/Settlements/SettlementsPage'
-import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
-import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
-import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
-import ReportsPage from '@/components/Reports/ReportsPage'
-import Login from '@/components/Login'
-import Signup from '@/components/Signup'
-import SettingsPage from '@/components/Settings/SettingsPage'
-
 Vue.use(Router)
 
 export const lazyComponent = (name) => () => import(`@/components/${name}.vue`)
@@ -29,16 +16,16 @@ const defaultRouter = new Router({
         {
           path: '',
           name: 'dashboard',
-          component: DashboardPage
+          component: lazyComponent('Dashboard/DashboardPage')
         },
         {
           path: 'wallets',
           name: 'wallets',
-          component: WalletsPage,
+          component: lazyComponent('Wallets/WalletsPage'),
           children: [
             {
               path: ':walletId',
-              component: Wallet
+              component: lazyComponent('Wallets/Wallet')
             }
           ]
         },
@@ -50,29 +37,29 @@ const defaultRouter = new Router({
             {
               path: 'history',
               name: 'settlements-history',
-              component: SettlementsHistory
+              component: lazyComponent('Settlements/SettlementsHistory')
             },
             {
               path: 'incoming',
               name: 'settlements-incoming',
-              component: SettlementsIncoming
+              component: lazyComponent('Settlements/SettlementsIncoming')
             },
             {
               path: 'outgoing',
               name: 'settlements-outgoing',
-              component: SettlementsOutgoing
+              component: lazyComponent('Settlements/SettlementsOutgoing')
             }
           ]
         },
         {
           path: 'reports',
           name: 'reports',
-          component: ReportsPage
+          component: lazyComponent('Reports/ReportsPage')
         },
         {
           path: 'settings',
           name: 'settings',
-          component: SettingsPage
+          component: lazyComponent('Settings/SettingsPage')
         }
       ]
     },
@@ -85,11 +72,6 @@ const defaultRouter = new Router({
       path: '/signup',
       name: 'signup',
       component: lazyComponent('Signup')
-    },
-    {
-      path: '/signup',
-      name: 'signup',
-      component: Signup
     },
     {
       path: '*',
