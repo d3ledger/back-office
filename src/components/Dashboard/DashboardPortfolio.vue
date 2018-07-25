@@ -23,7 +23,7 @@
             Market
           </div>
           <div>
-            <line-chart-portfolio chart-type="portfolio" :data="chartData"/>
+            <line-chart-portfolio :data="chartData"/>
           </div>
         </el-card>
     </el-col>
