@@ -86,7 +86,7 @@
             :data="transactions"
             ref="table"
             @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
-            >
+          >
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <p>
@@ -108,17 +108,7 @@
             </el-table-column>
             <el-table-column label="Amount" width="100">
               <template slot-scope="scope">
-                {{ (scope.row.from === accountId ? '- ' : '+ ') + Number(scope.row.amount).toFixed(displayPrecision)}}
-              </template>
-            </el-table-column>
-            <el-table-column label="Address" min-width="120">
-              <template slot-scope="scope">
-                <div v-if="scope.row.from === accountId">
-                  to {{ scope.row.to }}
-                </div>
-                <div v-else>
-                  from {{ scope.row.from }}
-                </div>
+                {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
               </template>
             </el-table-column>
             <el-table-column label="Date" width="120">
@@ -126,9 +116,20 @@
                 {{ formatDate(scope.row.date) }}
               </template>
             </el-table-column>
+            <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div v-if="scope.row.from === 'you'">
+                  {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                </div>
+                <div v-else>
+                  {{ scope.row.from === 'notary' ? 'Deposit ' : '' }}from {{ scope.row.from === 'notary' ? scope.row.messagex : scope.row.from }}
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
               <template slot-scope="scope">
                 <div v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></div>
+                <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
                 <div v-else>{{ scope.row.message }}</div>
               </template>
             </el-table-column>
@@ -239,7 +240,7 @@
 <script>
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
@@ -247,7 +248,7 @@ import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 // Notary account for withdrawal.
-const notaryAccount = 'notary_red@notary'
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
 
 export default {
   name: 'wallet',
@@ -280,10 +281,6 @@ export default {
       'settingsView',
       'ethWalletAddress'
     ]),
-
-    ...mapState({
-      accountId: state => state.Account.accountId
-    }),
 
     wallet () {
       const walletId = this.$route.params.walletId

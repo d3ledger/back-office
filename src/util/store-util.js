@@ -5,6 +5,8 @@ import uniqWith from 'lodash/fp/uniqWith'
 import sortBy from 'lodash/fp/sortBy'
 import reverse from 'lodash/fp/reverse'
 
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
+
 // TODO: To be removed.
 const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
 
@@ -46,8 +48,14 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
       } = c.transferAsset
 
       const tx = {
-        from: srcAccountId === accountId ? 'you' : srcAccountId,
-        to: destAccountId === accountId ? 'you' : destAccountId,
+        from: match(srcAccountId)
+          .on(x => x === accountId, () => 'you')
+          .on(x => x === notaryAccount, () => 'notary')
+          .otherwise(x => x),
+        to: match(destAccountId)
+          .on(x => x === accountId, () => 'you')
+          .on(x => x === notaryAccount, () => 'notary')
+          .otherwise(x => x),
         amount: amount,
         date: createdTime,
         message: description
@@ -97,3 +105,14 @@ export function getSettlementsFrom (transactions) {
 
   return DUMMY_SETTLEMENTS
 }
+
+// Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c
+const matched = x => ({
+  on: () => matched(x),
+  otherwise: () => x
+})
+
+const match = x => ({
+  on: (pred, fn) => (pred(x) ? matched(fn(x)) : match(x)),
+  otherwise: fn => fn(x)
+})
