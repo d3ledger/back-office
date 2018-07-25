@@ -1,8 +1,22 @@
-<script>
-import { Doughnut } from 'vue-chartjs'
+<template>
+  <div class="echarts">
+    <IEcharts
+      :option="chart"
+      :resizable="true"
+      @ready="onReady"
+    />
+  </div>
+</template>
 
+<script>
+import IEcharts from 'vue-echarts-v3/src/lite.js'
+import 'echarts/lib/chart/pie'
+import 'echarts/lib/component/tooltip'
 export default {
-  extends: Doughnut,
+  name: 'donut-chart',
+  components: {
+    IEcharts
+  },
   props: {
     data: {
       type: Array,
@@ -10,38 +24,61 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      chart: {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b} <br/>{c}%'
+        },
+        series: [{
+          name: 'Portfolio percent',
+          type: 'pie',
+          radius: ['70%', '80%'],
+          avoidLabelOverlap: false,
+          label: {
+            normal: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              show: true,
+              textStyle: {
+                fontSize: '30',
+                fontWeight: 'bold'
+              }
+            }
+          },
+          labelLine: {
+            normal: {
+              show: false
+            }
+          },
+          data: []
+        }]
+      }
+    }
   },
   watch: {
     data () {
-      this.updateChart()
+      this.onReady()
     }
   },
   methods: {
-    updateChart () {
-      this.renderChart({
-        labels: this.data.map(c => c.asset),
-        datasets: [{
-          data: this.data.map(c => c.percent.toFixed(2)),
-          backgroundColor: this.data.map(c => `#${c.color}`)
-        }]
-      }, {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          callbacks: {
-            label: function (tooltipItem, data) {
-              const value = data.datasets[0].data[tooltipItem.index] || 0
-              const label = data.labels[tooltipItem.index] || ''
-              return `${label} - ${value}%`
-            }
-          }
+    onReady (instance, ECharts) {
+      this.chart.series[0].data = this.data.map(a => ({
+        value: a.percent.toFixed(2),
+        name: a.asset,
+        itemStyle: {
+          color: `#${a.color}`
         }
-      })
+      }))
     }
   }
 }
 </script>
+
+<style scoped>
+.echarts {
+  height: 190px
+}
+</style>

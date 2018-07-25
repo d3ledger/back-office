@@ -81,6 +81,10 @@ export default {
   justify-content: flex-end;
 }
 
+.card-content_body {
+  height: 100%;
+}
+
 .chart_time-filter {
   float: left;
   opacity: 0.3;
