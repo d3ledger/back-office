@@ -108,12 +108,12 @@
             </el-table-column>
             <el-table-column label="Amount" width="100">
               <template slot-scope="scope">
-                {{ (scope.row.from === 'you' ? '- ' : '+ ') + Number(scope.row.amount).toFixed(4)}}
+                {{ (scope.row.from === accountId ? '- ' : '+ ') + Number(scope.row.amount).toFixed(displayPrecision)}}
               </template>
             </el-table-column>
             <el-table-column label="Address" min-width="120">
               <template slot-scope="scope">
-                <div v-if="scope.row.from === 'you'">
+                <div v-if="scope.row.from === accountId">
                   to {{ scope.row.to }}
                 </div>
                 <div v-else>
@@ -239,7 +239,7 @@
 <script>
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
@@ -280,6 +280,11 @@ export default {
       'settingsView',
       'ethWalletAddress'
     ]),
+
+    ...mapState({
+      accountId: state => state.Account.accountId
+    }),
+
     wallet () {
       const walletId = this.$route.params.walletId
 
@@ -290,6 +295,10 @@ export default {
       if (!this.wallet) return []
 
       return this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
+    },
+
+    displayPrecision () {
+      return this.wallet.precision < 4 ? this.wallet.precision : 4
     }
   },
 
@@ -336,7 +345,7 @@ export default {
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.transferForm.description,
-            amount: this.transferForm.amount
+            amount: this.transferForm.amount.toString()
           })
             .then(() => {
               this.$message({
@@ -369,7 +378,7 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: this.transferForm.amount
+            amount: this.transferForm.amount.toString()
           })
             .then(() => {
               this.$message({
