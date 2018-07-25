@@ -125,18 +125,27 @@ describe('Account store', () => {
 
       mutations[types.SIGNUP_SUCCESS](state, params)
 
-      expect(state).to.deep.equal(expectedState)
+      expect(state).to.be.deep.equal(expectedState)
     })
 
     testErrorHandling('SIGNUP_FAILURE')
 
     it('LOGIN_SUCCESS should set an accountId to state', () => {
       const state = {}
-      const account = { accountId: randomAccountId() }
+      const account = { accountId: randomAccountId(), jsonData: '{"registration_service_red@notary": {"ethereum_wallet": "0x5f3dba5e45909d1bf126aa0af0601b1a369dbfd7"}}' }
 
       mutations[types.LOGIN_SUCCESS](state, account)
 
-      expect(state.accountId).to.equal(account.accountId)
+      expect(state.accountId).to.be.equal(account.accountId)
+    })
+
+    it('LOGIN_SUCCESS should set an accountInfo to state', () => {
+      const state = {}
+      const account = { accountId: randomAccountId(), jsonData: '{"registration_service_red@notary": {"ethereum_wallet": "0x5f3dba5e45909d1bf126aa0af0601b1a369dbfd7"}}' }
+
+      mutations[types.LOGIN_SUCCESS](state, account)
+
+      expect(state.accountInfo).to.be.deep.equal(JSON.parse(account.jsonData))
     })
 
     testErrorHandling('LOGIN_FAILURE')
@@ -351,7 +360,7 @@ describe('Account store', () => {
       it('should return wallets transformed from raw assets', () => {
         const state = { assets: MOCK_ASSETS }
         const result = getters.wallets(state)
-        const expectedKeys = ['id', 'assetId', 'name', 'asset', 'color', 'address', 'amount', 'precision']
+        const expectedKeys = ['id', 'assetId', 'name', 'asset', 'color', 'domain', 'amount', 'precision']
 
         expect(result)
           .to.be.an('array')
