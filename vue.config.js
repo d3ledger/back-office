@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 
 const rules = []
 
@@ -19,7 +18,6 @@ module.exports = {
     config.resolve.alias
       .set('@util', path.resolve(__dirname, 'src/util'))
       .set('@router', path.resolve(__dirname, 'src/router.js'))
-    config.plugin('IgnorePlugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
     config.plugin('html').tap(args => {
       args[0].chunksSortMode = 'none'
       return args

@@ -1,25 +1,19 @@
 <template>
   <div class="echarts">
-    <IEcharts
-      :option="chart"
-      :resizable="true"
+    <ECharts
+      :options="chart"
+      :auto-resize="true"
       @ready="onReady"
     />
   </div>
 </template>
 
 <script>
-import IEcharts from 'vue-echarts-v3/src/lite.js'
-import 'echarts/lib/chart/line'
-import 'echarts/lib/component/tooltip'
 import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   name: 'line-chart-portfolio',
-  components: {
-    IEcharts
-  },
   props: {
     data: {
       type: Array,
