@@ -53,6 +53,14 @@ import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
 import 'cryptocoins-icons/webfont/cryptocoins.css'
 
+import ECharts from 'vue-echarts/components/ECharts'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/pie'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/legendScroll'
+
+Vue.component('ECharts', ECharts)
+
 Vue.use(Dialog)
 Vue.use(Menu)
 Vue.use(MenuItem)

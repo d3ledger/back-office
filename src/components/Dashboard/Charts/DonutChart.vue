@@ -1,22 +1,16 @@
 <template>
   <div class="echarts">
-    <IEcharts
-      :option="chart"
-      :resizable="true"
+    <ECharts
+      :options="chart"
+      :auto-resize="true"
       @ready="onReady"
     />
   </div>
 </template>
 
 <script>
-import IEcharts from 'vue-echarts-v3/src/lite.js'
-import 'echarts/lib/chart/pie'
-import 'echarts/lib/component/tooltip'
 export default {
   name: 'donut-chart',
-  components: {
-    IEcharts
-  },
   props: {
     data: {
       type: Array,
@@ -79,6 +73,7 @@ export default {
 
 <style scoped>
 .echarts {
+  width: 100%;
   height: 190px
 }
 </style>
