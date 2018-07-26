@@ -9,6 +9,7 @@ import isWithinRange from 'date-fns/is_within_range'
 import isAfter from 'date-fns/is_after'
 import startOfDay from 'date-fns/start_of_day'
 import endOfDay from 'date-fns/end_of_day'
+import isSameDay from 'date-fns/is_same_day'
 import { parse as json2csv } from 'json2csv'
 import { fontLoader } from './font-util'
 
@@ -153,7 +154,7 @@ export function generateCSV (params) {
  * @param {Object} params.wallet - { name, asset, precision, amount }
  * @param {Object[]} params.transactins - an array of TransferAsset transactions
  * @param {String} params.fiat - e.g. 'RUB'
- * @param {Number} params.priceFiat - a price of fiat
+ * @param {Number} params.priceFiatList - a list of prices *from fiat to crypto*
  * @param {Date} params.dateFrom - start of the range
  * @param {Date} params.dateTo - end of the range
  * @param {String} params.ext - e.g. 'pdf'
@@ -165,7 +166,7 @@ export function generateReportData ({
   accountId,
   wallet,
   transactions,
-  priceFiat,
+  priceFiatList,
   dateFrom,
   dateTo,
   ext,
@@ -181,6 +182,10 @@ export function generateReportData ({
     .reduce((sum, x) => sum + x, 0)
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
+  // TODO: fix it
+  const getPriceFromFiat = (dateExpected, assetExpected) => {
+    return priceFiatList.find(({ date }) => isSameDay(date, dateExpected)).prices[assetExpected]
+  }
 
   /*
    * prepare basic data
@@ -206,9 +211,9 @@ export function generateReportData ({
   const transfersOut = sumAmount(txsWithinRange.filter(isFromYou))
   const netChange = transfersIn - transfersOut
   const endingBalance = currentAmount - netChangeAfterRange
-  const endingBalanceFiat = endingBalance * priceFiat
+  const endingBalanceFiat = endingBalance / getPriceFromFiat(dateTo, cryptoCurrencyUnit)
   const startingBalance = endingBalance - netChange
-  const startingBalanceFiat = startingBalance * priceFiat
+  const startingBalanceFiat = startingBalance / getPriceFromFiat(dateTo, cryptoCurrencyUnit)
 
   /*
    * prepare transactionsByDay
@@ -218,9 +223,9 @@ export function generateReportData ({
     entries,
     map(([date, txs]) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
-      const dailyInFiat = dailyIn * priceFiat
+      const dailyInFiat = dailyIn / getPriceFromFiat(date, cryptoCurrencyUnit)
       const dailyOut = sumAmount(txs.filter(isFromYou))
-      const dailyOutFiat = dailyOut * priceFiat
+      const dailyOutFiat = dailyOut / getPriceFromFiat(date, cryptoCurrencyUnit)
       const dailyNet = dailyIn - dailyOut
 
       return {
@@ -252,9 +257,9 @@ export function generateReportData ({
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
-        amountFiat: (amount * priceFiat).toFixed(precision),
+        amountFiat: (amount / getPriceFromFiat(tx.date, cryptoCurrencyUnit)).toFixed(precision),
         balance: balance.toFixed(precision),
-        balanceFiat: (balance * priceFiat).toFixed(precision)
+        balanceFiat: (balance / getPriceFromFiat(tx.date, cryptoCurrencyUnit)).toFixed(precision)
       }
     })
   )(txsWithinRange)
