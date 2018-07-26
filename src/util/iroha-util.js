@@ -2,6 +2,8 @@
 const debug = require('debug')('iroha-util')
 const iroha = require('iroha-lib')
 const grpc = require('grpc-web-client').grpc
+const _ = require('lodash')
+const queryHelper = require('./iroha-helpers/query-helper')
 
 /**
  * default timeout limit of queries
@@ -16,7 +18,7 @@ const cache = {
   username: null, // NOT persisted by localStorage
   // TODO: do not cache keys; require a private key on every action instead.
   // For now it is needed for queries until tokens are implemented.
-  keys: null, // NOT persisted by localStorage
+  key: null, // NOT persisted by localStorage
   nodeIp: null // persisted by localStorage
 }
 
@@ -33,7 +35,6 @@ const endpointGrpc = require('./proto/endpoint_pb_service.js')
 const pbEndpoint = require('./proto/endpoint_pb.js')
 const pbResponse = require('./proto/qry_responses_pb.js')
 const txBuilder = new iroha.ModelTransactionBuilder()
-const queryBuilder = new iroha.ModelQueryBuilder()
 const crypto = new iroha.ModelCrypto()
 
 /*
@@ -52,13 +53,8 @@ function login (username, privateKey, nodeIp) {
     return Promise.reject(new Error('privateKey should have length of 64'))
   }
 
-  const keys = crypto.convertFromExisting(
-    crypto.fromPrivateKey(privateKey).publicKey().hex(),
-    privateKey
-  )
-
   cache.username = username
-  cache.keys = keys
+  cache.key = privateKey
   cache.nodeIp = nodeIp
 
   localStorage.setItem('iroha-wallet:nodeIp', nodeIp)
@@ -79,7 +75,7 @@ function login (username, privateKey, nodeIp) {
  */
 function logout () {
   cache.username = null
-  cache.keys = null
+  cache.key = null
   cache.nodeIp = null
 
   return Promise.resolve()
@@ -140,12 +136,12 @@ function rejectSettlement () {
  */
 /**
  * wrapper function of queries
- * @param {Function} buildQuery
+ * @param {Object} query
  * @param {Function} onResponse
  * @param {Number} timeoutLimit timeoutLimit
  */
 function sendQuery (
-  buildQuery = function () {},
+  query,
   onResponse = function (resolve, reject, responseName, response) {},
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
@@ -153,12 +149,15 @@ function sendQuery (
     const queryClient = new endpointGrpc.QueryServiceClient(
       cache.nodeIp
     )
-    const query = buildQuery()
-    const protoQuery = makeProtoQueryWithKeys(query, cache.keys)
+
+    let queryToSend = _.flow(
+      (q) => queryHelper.addMeta(q, { creatorAccountId: cache.username }),
+      (q) => queryHelper.sign(q, cache.key)
+    )(query)
 
     debug('submitting query...')
     debug('peer ip:', cache.nodeIp)
-    debug('parameters:', JSON.stringify(protoQuery.toObject().payload, null, '  '))
+    debug('parameters:', JSON.stringify(queryToSend.toObject().payload, null, '  '))
     debug('')
 
     // grpc-node hangs against unresponsive server, which possibly occur when
@@ -171,7 +170,7 @@ function sendQuery (
       reject(err)
     }, timeoutLimit)
 
-    queryClient.find(protoQuery, (err, response) => {
+    queryClient.find(queryToSend, (err, response) => {
       clearTimeout(timer)
 
       if (err) {
@@ -200,14 +199,7 @@ function getAccount (accountId) {
   debug('starting getAccount...')
 
   return sendQuery(
-    () => {
-      return queryBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .queryCounter(1)
-        .getAccount(accountId)
-        .build()
-    },
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccount', { accountId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'ACCOUNT_RESPONSE') {
         return reject(new Error(`Query response error: expected=ACCOUNT_RESPONSE, actual=${responseName}`))
@@ -230,14 +222,7 @@ function getAccountTransactions (accountId) {
   debug('starting getAccountTransactions...')
 
   return sendQuery(
-    () => {
-      return queryBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .queryCounter(1)
-        .getAccountTransactions(accountId)
-        .build()
-    },
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@notary' }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE, actual=${responseName}`))
@@ -261,14 +246,7 @@ function getAccountAssetTransactions (accountId, assetId) {
   debug('starting getAccountAssetTransactions...')
 
   return sendQuery(
-    () => {
-      return queryBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .queryCounter(1)
-        .getAccountAssetTransactions(accountId, assetId)
-        .build()
-    },
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountAssetTransactions', { accountId, assetId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE, actual=${responseName}`))
@@ -291,14 +269,7 @@ function getAccountAssets (accountId) {
   debug('starting getAccountAssets...')
 
   return sendQuery(
-    () => {
-      return queryBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .queryCounter(1)
-        .getAccountAssets(accountId)
-        .build()
-    },
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountAssets', { accountId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'ACCOUNT_ASSETS_RESPONSE') {
         return reject(new Error(`Query response error: expected=ACCOUNT_ASSETS_RESPONSE, actual=${responseName}`))
@@ -321,14 +292,7 @@ function getAssetInfo (assetId) {
   debug('starting getAssetInfo...')
 
   return sendQuery(
-    () => {
-      return queryBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .queryCounter(1)
-        .getAssetInfo(assetId)
-        .build()
-    },
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAssetInfo', { assetId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'ASSET_RESPONSE') {
         return reject(new Error(`Query response error: expected=ASSET_RESPONSE, actual=${responseName}`))
@@ -598,16 +562,6 @@ function getProtoEnumName (obj, key, value) {
     }
     return getProtoEnumName(obj, key, value)
   }
-}
-
-function makeProtoQueryWithKeys (builtQuery, keys) {
-  const pbQuery = require('./proto/queries_pb.js').Query
-
-  const blob = new iroha.ModelProtoQuery(builtQuery).signAndAddSignature(keys).finish().blob()
-  const arr = blob2array(blob)
-  const protoQuery = pbQuery.deserializeBinary(arr)
-
-  return protoQuery
 }
 
 function makeProtoTxWithKeys (builtTx, keys) {
