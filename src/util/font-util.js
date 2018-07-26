@@ -1,5 +1,3 @@
-// https://github.com/bpampuch/pdfmake/issues/1374
-
 function fetchFont (fontURL) {
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest()
