@@ -6,7 +6,10 @@ import values from 'lodash/fp/values'
 import sortBy from 'lodash/fp/sortBy'
 import pdfMake from 'pdfmake/build/pdfmake.min'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
-import { isWithinRange, isAfter, startOfDay, endOfDay } from 'date-fns'
+import isWithinRange from 'date-fns/is_within_range'
+import isAfter from 'date-fns/is_after'
+import startOfDay from 'date-fns/start_of_day'
+import endOfDay from 'date-fns/end_of_day'
 import { parse as json2csv } from 'json2csv'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
