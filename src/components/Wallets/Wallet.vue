@@ -122,7 +122,7 @@
                   {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                 </div>
                 <div v-else>
-                  {{ scope.row.from === 'notary' ? 'Deposit ' : '' }}from {{ scope.row.from === 'notary' ? scope.row.messagex : scope.row.from }}
+                  {{ scope.row.from === 'notary' ? 'Deposit ' : '' }}from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                 </div>
               </template>
             </el-table-column>
