@@ -105,7 +105,9 @@ import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import FileSaver from 'file-saver'
-import { subMonths, startOfMonth, endOfMonth } from 'date-fns'
+import subMonths from 'date-fns/sub_months'
+import startOfMonth from 'date-fns/start_of_month'
+import endOfMonth from 'date-fns/end_of_month'
 
 export default {
   name: 'reports-page',
