@@ -108,6 +108,8 @@ import FileSaver from 'file-saver'
 import subMonths from 'date-fns/sub_months'
 import startOfMonth from 'date-fns/start_of_month'
 import endOfMonth from 'date-fns/end_of_month'
+import differenceInDays from 'date-fns/difference_in_days'
+import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
 export default {
   name: 'reports-page',
@@ -126,7 +128,7 @@ export default {
     ...mapGetters([
       'wallets',
       'settingsView',
-      'portfolioList'
+      'portfolioHistory'
     ]),
     previousMonthReports: function () {
       return this.wallets.map(x => {
@@ -147,34 +149,54 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
-    download ({ date, assetId }, fileFormat) {
-      Promise.all([
-        this.$store.dispatch('loadDashboard'),
-        this.$store.dispatch('getAccountAssetTransactions', { assetId })
-      ])
-        .then(() => {
-          const [dateFrom, dateTo] = date
-          const wallet = this.wallets.find(x => (x.assetId === assetId))
-          const priceFiat = this.portfolioList.find(({ asset }) => asset === wallet.asset).price
-          const params = {
-            accountId: this.accountId,
-            wallet,
-            transactions: this.$store.getters.getTransactionsByAssetId(assetId),
-            assetId,
-            priceFiat,
-            dateFrom,
-            dateTo,
-            formatDate: this.formatDate.bind(this),
-            formatDateWith: this.formatDateWith.bind(this),
-            fiat: this.settingsView.fiat
-          }
-          const generating = (fileFormat === 'pdf')
-            ? generatePDF(params)
-            : generateCSV(params)
+    /*
+     * collect prices from fiat to crypto
+     */
+    loadPriceFiatList (asset, dateFrom, dateTo) {
+      return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
+        limit: differenceInDays(dateTo, dateFrom),
+        toTs: new Date(dateTo).getTime()
+      })
+        .then(res => {
+          return res
+            .find(x => (x.asset === asset))
+            .map(data => data)
+            .map(({ time, close }) => ({ date: time * 1000, price: close }))
+        })
+    },
 
-          generating.then(({ blob, filename }) => {
-            FileSaver.saveAs(blob, filename)
-          })
+    download ({ date, assetId }, fileFormat) {
+      const [dateFrom, dateTo] = date
+      const wallet = this.wallets.find(x => (x.assetId === assetId))
+
+      Promise.all([
+        this.loadPriceFiatList(wallet.asset, dateFrom, dateTo),
+        this.$store.dispatch('getAccountAssetTransactions', { assetId })
+      ]).then(([priceFiatList]) => {
+        const params = {
+          accountId: this.accountId,
+          wallet,
+          transactions: this.$store.getters.getTransactionsByAssetId(assetId),
+          assetId,
+          priceFiatList,
+          dateFrom,
+          dateTo,
+          formatDate: this.formatDate.bind(this),
+          formatDateWith: this.formatDateWith.bind(this),
+          fiat: this.settingsView.fiat
+        }
+        const generating = (fileFormat === 'pdf')
+          ? generatePDF(params)
+          : generateCSV(params)
+
+        generating.then(({ blob, filename }) => {
+          FileSaver.saveAs(blob, filename)
+        })
+      })
+        .catch(err => {
+          console.error(err)
+
+          this.$message.error(`Failed to generate a report. Please try again later.`)
         })
     }
   }
