@@ -5,8 +5,7 @@ const expect = chai.expect
 
 describe('report-util', () => {
   const { generateReportData } = reportUtilInjector({
-    'pdfmake/build/pdfmake': {},
-    'pdfmake/build/vfs_fonts': { pdfMake: {} }
+    'pdfmake-lite/build/pdfmake.min': {}
   })
 
   describe('generateReportData', () => {

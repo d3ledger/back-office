@@ -4,15 +4,19 @@ import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
 import values from 'lodash/fp/values'
 import sortBy from 'lodash/fp/sortBy'
-import pdfMake from 'pdfmake/build/pdfmake.min'
-import pdfFonts from 'pdfmake/build/vfs_fonts'
+import pdfMake from 'pdfmake-lite/build/pdfmake.min'
 import isWithinRange from 'date-fns/is_within_range'
 import isAfter from 'date-fns/is_after'
 import startOfDay from 'date-fns/start_of_day'
 import endOfDay from 'date-fns/end_of_day'
 import { parse as json2csv } from 'json2csv'
+import { fontLoader } from './font-util'
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs
+pdfMake.vfs = fontLoader.vfs
+fontLoader.addFont({URL: 'fonts/Roboto-Regular.ttf', name: 'Roboto-Regular.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-Italic.ttf', name: 'Roboto-Italic.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-Medium.ttf', name: 'Roboto-Medium.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-MediumItalic.ttf', name: 'Roboto-MediumItalic.ttf'})
 
 const debug = require('debug')('report-util')
 
@@ -24,7 +28,7 @@ const debug = require('debug')('report-util')
 export function generatePDF (params) {
   debug('generating PDF output...')
 
-  return new Promise((resolve, reject) => {
+  return fontLoader.load().then(() => new Promise((resolve, reject) => {
     const formatDate = params.formatDate
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
@@ -99,7 +103,7 @@ export function generatePDF (params) {
 
       resolve({ filename: data.filename, blob })
     })
-  })
+  }))
 }
 
 /**
