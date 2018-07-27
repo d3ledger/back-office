@@ -74,7 +74,7 @@ const actions = {
     if (storage) {
       commit(types.LOAD_SETTINGS, storage)
     } else {
-      setItem('settings', omit(state, 'default'))
+      setItem('settings', omit('default')(state))
     }
   },
   updateSettingsViewFiat ({ commit }, fiat) {
