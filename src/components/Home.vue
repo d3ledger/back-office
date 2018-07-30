@@ -8,7 +8,7 @@
         background-color="#2D2D2D"
         active-text-color="#000"
         :default-active="currentActiveMenu"
-      >
+        >
         <h1 class="logo">D3</h1>
         <el-menu-item index="/">
           <fa-icon icon="chart-line" class="menu-icon" />
@@ -40,35 +40,48 @@
       <router-view />
     </el-main>
     <el-dialog
-     title="Approve transaction"
-     :visible="approvalDialogVisible"
-     width="500px"
-     @close="closeApprovalDialogWith()"
-     center
-   >
-     <el-form>
-       <el-form-item>
-         Please enter your private key to confirm transaction
-       </el-form-item>
-       <el-form-item label="Private key">
-         <el-input
-           type="textarea"
-           :rows="2"
-           v-model="privateKey"
-           placeholder="Your private key"
-           resize="none"
-         />
-       </el-form-item>
-       <el-form-item style="margin-bottom: 0;">
-         <el-button
-           class="fullwidth black clickable"
-           @click="closeApprovalDialogWith(privateKey)"
-         >
-           Confirm
-         </el-button>
-       </el-form-item>
-     </el-form>
-   </el-dialog>
+      title="Approve transaction"
+      :visible="approvalDialogVisible"
+      width="500px"
+      @close="closeApprovalDialogWith()"
+      center
+      >
+      <el-form label-position="top">
+        <el-form-item>
+          Please enter your private key to confirm transaction
+        </el-form-item>
+        <el-form-item>
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                name="privateKey"
+                placeholder="Your private key"
+                v-model="privateKey"
+              />
+            </el-col>
+
+            <el-upload
+              action=""
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="onFileChosen"
+              >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+        </el-form-item>
+        <el-form-item style="margin-bottom: 0;">
+          <el-button
+            class="fullwidth black clickable"
+            @click="closeApprovalDialogWith(privateKey)"
+            >
+            Confirm
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -120,6 +133,14 @@ export default {
     closeApprovalDialogWith (privateKey) {
       this.closeApprovalDialog(privateKey)
       this.privateKey = null
+    },
+
+    onFileChosen (file, fileList) {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        this.privateKey = (ev.target.result || '').trim()
+      }
+      reader.readAsText(file.raw)
     }
   }
 }
