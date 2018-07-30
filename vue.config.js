@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 
 const rules = []
 
@@ -14,12 +15,17 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 module.exports = {
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('@util', path.resolve(__dirname, 'src/util'))
+      .set('@router', path.resolve(__dirname, 'src/router.js'))
+    config.plugin('IgnorePlugin').use(webpack.IgnorePlugin, [/^\.\/locale$/, /moment$/])
+    config.plugin('html').tap(args => {
+      args[0].chunksSortMode = 'none'
+      return args
+    })
+  },
   configureWebpack: {
-    resolve: {
-      alias: {
-        '@util': path.resolve(__dirname, 'src/util')
-      }
-    },
     module: {
       rules: rules
     }

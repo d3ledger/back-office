@@ -1,15 +1,20 @@
 import Vue from 'vue'
-import _ from 'lodash'
+import map from 'lodash/fp/map'
+import fromPairs from 'lodash/fp/fromPairs'
+import flow from 'lodash/fp/flow'
+import omit from 'lodash/fp/omit'
+import isEqual from 'lodash/fp/isEqual'
 import { getParsedItem, setParsedItem, setItem } from '@util/storage-util'
 
-const types = _([
+const types = flow(
+  map(x => [x, x]),
+  fromPairs
+)([
   'LOAD_SETTINGS',
   'UPDATE_SETTINGS_VIEW_FIAT',
   'UPDATE_SETTINGS_VIEW_CRYPTO',
   'UPDATE_SETTINGS_VIEW_TIMEZONE'
-]).map(x => [x, x])
-  .fromPairs()
-  .value()
+])
 
 function initialState () {
   return {
@@ -41,7 +46,7 @@ const getters = {
 
 const mutations = {
   [types.LOAD_SETTINGS] (state, storage) {
-    if (!_.isEqual(state, storage)) {
+    if (!isEqual(state, storage)) {
       Object.keys(state).map(key => {
         if (key !== 'default') {
           state[key] = storage[key]
@@ -69,7 +74,7 @@ const actions = {
     if (storage) {
       commit(types.LOAD_SETTINGS, storage)
     } else {
-      setItem('settings', _.omit(state, 'default'))
+      setItem('settings', omit('default')(state))
     }
   },
   updateSettingsViewFiat ({ commit }, fiat) {

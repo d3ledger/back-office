@@ -1,12 +1,11 @@
-import _ from 'lodash'
+import map from 'lodash/fp/map'
+import flatten from 'lodash/fp/flatten'
+import sortedUniq from 'lodash/fp/sortedUniq'
+import flow from 'lodash/fp/flow'
 import tz from 'timezones.json'
-import { format } from 'date-fns'
+import format from 'date-fns/format'
 
-const timezones = _(tz)
-  .map(t => t.utc)
-  .flatten()
-  .sortedUniq()
-  .value()
+const timezones = flow(map(t => t.utc), flatten, sortedUniq)(tz)
 
 const offsetByZone = (zone) =>
   tz.find(t =>

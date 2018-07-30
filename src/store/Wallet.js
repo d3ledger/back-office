@@ -1,17 +1,21 @@
 import Vue from 'vue'
-import _ from 'lodash'
+import map from 'lodash/fp/map'
+import flatMap from 'lodash/fp/flatMap'
+import concat from 'lodash/fp/concat'
+import fromPairs from 'lodash/fp/fromPairs'
+import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
-const types = _([
-  'GET_CRYPTO_FULL_DATA'
-]).chain()
-  .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
-  .concat([
+const types = flow(
+  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
+  concat([
     'RESET'
-  ])
-  .map(x => [x, x])
-  .fromPairs()
-  .value()
+  ]),
+  map(x => [x, x]),
+  fromPairs
+)([
+  'GET_CRYPTO_FULL_DATA'
+])
 
 function initialState () {
   return {
