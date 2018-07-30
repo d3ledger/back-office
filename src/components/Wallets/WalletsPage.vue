@@ -47,6 +47,12 @@ export default {
 
   created () {
     this.$store.dispatch('getAccountAssets')
+  },
+
+  mounted () {
+    if (this.wallets.length) {
+      this.$router.push(`/wallets/${this.wallets[0].id}`)
+    }
   }
 }
 </script>

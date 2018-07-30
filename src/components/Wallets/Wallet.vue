@@ -26,10 +26,12 @@
                     <fa-icon icon="arrow-right" />
                     <span>Transfer</span>
                   </div>
-                  <router-link class="button" :to="{ path: '/settlements/outgoing', query: { exchange: true, offer_asset: wallet.asset } }" >
+                  <div role="button" class="button" @clock="exchangeFormVisible = true">
+                  <!-- <router-link class="button" :to="{ path: '/settlements/outgoing', query: { exchange: true, offer_asset: wallet.asset } }" > -->
                     <fa-icon icon="exchange-alt" />
                     <span>Exchange</span>
-                  </router-link>
+                  <!-- </router-link> -->
+                  </div>
                 </div>
               </div>
             </el-card>
@@ -266,6 +268,7 @@ export default {
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
+      exchangeFormVisible: false,
       isSending: false,
       transferForm: {
         to: null,
