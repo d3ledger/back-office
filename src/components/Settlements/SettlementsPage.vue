@@ -125,7 +125,7 @@ export default {
         request_asset: null,
         offer_amount: null,
         offer_asset: null,
-        description: null
+        description: ''
       }
     }
   },

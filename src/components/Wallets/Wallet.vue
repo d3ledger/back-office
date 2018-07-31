@@ -270,7 +270,7 @@ export default {
       transferForm: {
         to: null,
         amount: null,
-        description: null
+        description: ''
       }
     }
   },
