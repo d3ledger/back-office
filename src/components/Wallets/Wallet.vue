@@ -154,7 +154,7 @@
           <span class="form-item-text">
             Available balance:
             <span class="form-item-text-amount">
-              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+              {{ wallet | toUpperCase }}
             </span>
           </span>
         </el-form-item>
@@ -208,7 +208,7 @@
           <span class="form-item-text">
             Available balance:
             <span class="form-item-text-amount">
-              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+              {{ wallet | toUpperCase }}
             </span>
           </span>
         </el-form-item>
@@ -241,7 +241,6 @@
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
 import { mapActions, mapGetters } from 'vuex'
-
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
@@ -299,11 +298,12 @@ export default {
     }
   },
 
-  watch: {
-    '$route' (to, from) {
-      this.fetchWallet()
-    }
-  },
+  // watch: {
+  //   '$route' (to, from) {
+  //     if (!this.wallet) return
+  //     this.fetchWallet()
+  //   }
+  // },
 
   created () {
     this.fetchWallet()
@@ -383,8 +383,16 @@ export default {
                 message: 'Transfer successful!',
                 type: 'success'
               })
-              this.resetTransferForm()
+              if (this.wallet.amount === this.transferForm.amount) {
+                this.$router.push({
+                  name: 'wallets',
+                  params: {
+                    emptyAsset: this.wallet.assetId
+                  }
+                })
+              }
               this.fetchWallet()
+              this.resetTransferForm()
               this.transferFormVisible = false
             })
             .catch(err => {
@@ -401,6 +409,13 @@ export default {
       this.transferForm.to = ''
       this.transferForm.amount = '0'
       this.transferForm.description = ''
+    }
+  },
+
+  filters: {
+    toUpperCase (wallet) {
+      if (!wallet || !Object.keys(wallet).length) return null
+      return `${wallet.amount} ${wallet.asset.toUpperCase()}`
     }
   }
 }

@@ -45,6 +45,19 @@ export default {
     }
   },
 
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'wallets') {
+        const asset = this.wallets.find(a => a.assetId !== to.params.emptyAsset)
+        if (asset) {
+          this.$router.push(`/wallets/${asset.id}`)
+        } else {
+          this.$router.push(`/wallets`)
+        }
+      }
+    }
+  },
+
   created () {
     this.$store.dispatch('getAccountAssets')
   },
