@@ -1,6 +1,6 @@
 # back-office
 
-> Web application for an operator of D3 notary
+Web application for D3 ledger user.
 
 ## Build Setup
 
@@ -8,19 +8,12 @@
 # install dependencies
 yarn
 
-# rebuild native modules for Electron environment
-yarn rebuild
-
 # serve with hot reload
-yarn serve:electron
+yarn serve
 
-# build electron application for production
-# See [electron-builder docs](https://www.electron.build/multi-platform-build) for multi platform build
-yarn build:electron
+# build static app for deployment
+yarn build # build:more-memory if you run out of heap
 
 # run unit tests
-yarn run unit
-
-# run all tests
-yarn test
+yarn test:unit
 ```
