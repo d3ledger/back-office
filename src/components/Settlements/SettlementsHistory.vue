@@ -17,11 +17,9 @@
       </template>
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
-        <template slot-scope="scope">
-          {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
-          {{ '→' }}
-          {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
-        </template>
+      <template slot-scope="scope">
+        {{ Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset + ' → ' + Number(scope.row.request_amount).toFixed(4) + ' ' + scope.row.request_asset }}
+      </template>
     </el-table-column>
     <el-table-column label="Counterparty" width="150">
       <template slot-scope="scope">
