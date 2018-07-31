@@ -40,9 +40,89 @@
       <router-view />
     </el-main>
     <el-dialog
-      title="Approve transaction"
-      :visible="approvalDialogVisible"
+      title="Exchange"
       width="500px"
+      top="2vh"
+      :visible="exchangeDialogVisible"
+      @close="closeExchangeDialogWith()"
+      center
+    >
+      <el-form style="width: 100%">
+        <el-form-item label="I send" prop="amount">
+          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
+            <el-select
+              v-model="exchangeDialogOfferAsset"
+              slot="append"
+              placeholder="asset"
+              style="width: 100px"
+            >
+              <el-option
+                v-for="wallet in wallets"
+                :key="wallet.asset"
+                :label="wallet.asset"
+                :value="wallet.asset">
+                  <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
+              </el-option>
+            </el-select>
+          </el-input>
+          <span class="form-item-text">
+            Available balance:
+            <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
+              {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
+            </span>
+            <span v-else>...</span>
+          </span>
+        </el-form-item>
+        <el-form-item label="I receive" prop="amount">
+          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
+            <el-select
+              v-model="exchangeForm.request_asset"
+              slot="append"
+              placeholder="asset"
+              style="width: 100px"
+            >
+              <el-option
+                v-for="wallet in wallets"
+                :key="wallet.asset"
+                :label="wallet.asset"
+                :value="wallet.asset">
+                  <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
+              </el-option>
+            </el-select>
+          </el-input>
+          <span class="form-item-text">
+            Market price:
+            <span v-if="exchangeForm.request_asset && exchangeDialogOfferAsset" class="form-item-text-amount">
+              1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ 0.774231451 {{ exchangeForm.request_asset.toUpperCase() }}
+            </span>
+            <span v-else>...</span>
+          </span>
+        </el-form-item>
+        <el-form-item label="Counterparty">
+          <el-input v-model="exchangeForm.to" placeholder="Account id" />
+        </el-form-item>
+        <el-form-item label="Additional information">
+          <el-input
+            type="textarea"
+            :rows="2"
+            v-model="exchangeForm.description"
+            placeholder="Account id"
+            resize="none"
+          />
+        </el-form-item>
+      </el-form>
+      <el-button
+        class="fullwidth black clickable"
+        @click="onSubmitExchangeForm()"
+        style="margin-top: 40px"
+      >
+        EXCHANGE
+      </el-button>
+    </el-dialog>
+    <el-dialog
+      title="Approve transaction"
+      width="500px"
+      :visible="approvalDialogVisible"
       @close="closeApprovalDialogWith()"
       center
       >
@@ -86,7 +166,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Home',
@@ -94,19 +174,40 @@ export default {
   data () {
     return {
       privateKey: null,
-      isCollapsed: true
+      isCollapsed: true,
+      exchangeForm: {
+        to: null,
+        request_amount: null,
+        request_asset: null,
+        offer_amount: null,
+        description: null
+      }
     }
   },
 
   computed: {
+    ...mapGetters([
+      'wallets',
+      'approvalDialogVisible',
+      'exchangeDialogVisible'
+    ]),
+
+    ...mapState({
+      accountId: (state) => state.Account.accountId
+    }),
+
+    exchangeDialogOfferAsset: {
+      get () {
+        return this.$store.getters.exchangeDialogOfferAsset
+      },
+      set (asset) {
+        this.$store.commit('SET_EXCHANGE_DIALOG_OFFER_ASSET', asset)
+      }
+    },
+
     numberOfSettlements () {
       return this.$store.getters.waitingSettlements.length
     },
-
-    ...mapState({
-      accountId: (state) => state.Account.accountId,
-      approvalDialogVisible: (state) => state.App.approvalDialogVisible
-    }),
 
     currentActiveMenu: function () {
       if (this.$route.path.includes('wallets')) return '/wallets'
@@ -122,7 +223,9 @@ export default {
 
   methods: {
     ...mapActions([
-      'closeApprovalDialog'
+      'openApprovalDialog',
+      'closeApprovalDialog',
+      'closeExchangeDialog'
     ]),
 
     logout () {
@@ -133,6 +236,49 @@ export default {
     closeApprovalDialogWith (privateKey) {
       this.closeApprovalDialog(privateKey)
       this.privateKey = null
+    },
+
+    closeExchangeDialogWith () {
+      this.closeExchangeDialog()
+      this.exchangeForm = {
+        to: null,
+        request_amount: null,
+        request_asset: null,
+        offer_amount: null,
+        offer_asset: null,
+        description: null
+      }
+    },
+
+    onSubmitExchangeForm () {
+      const s = this.settlementForm
+      this.openApprovalDialog()
+        .then(privateKey => {
+          if (!privateKey) return
+          const offerAsset = this.exchangeDialogOfferAsset
+          return this.$store.dispatch('createSettlement', {
+            privateKey,
+            to: s.to,
+            offerAssetId: offerAsset,
+            offerAmount: s.offer_amount,
+            requestAssetId: s.request_asset,
+            requestAmount: s.request_amount
+          })
+            .then(() => {
+              this.$message('New settlement has successfully been created')
+            })
+            .catch(err => {
+              console.error(err)
+              this.$message('Failed to create new settlement')
+            })
+            .finally(() => {
+              Object.assign(
+                this.$data.settlementForm,
+                this.$options.data().settlementForm
+              )
+              this.closeExchangeDialogWith()
+            })
+        })
     },
 
     onFileChosen (file, fileList) {

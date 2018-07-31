@@ -1,13 +1,24 @@
+import Vue from 'vue'
+
 const types = {
   APPROVAL_DIALOG_OPEN: 'APPROVAL_DIALOG_OPEN',
-  APPROVAL_DIALOG_CLOSE: 'APPROVAL_DIALOG_CLOSE'
+  APPROVAL_DIALOG_CLOSE: 'APPROVAL_DIALOG_CLOSE',
+  EXCHANGE_DIALOG_OPEN: 'EXCHANGE_DIALOG_OPEN',
+  EXCHANGE_DIALOG_CLOSE: 'EXCHANGE_DIALOG_CLOSE',
+  SET_EXCHANGE_DIALOG_OFFER_ASSET: 'SET_EXCHANGE_DIALOG_OFFER_ASSET'
 }
 
 function initialState () {
   return {
-    approvalDialogVisible: false,
-    resolvePrompting: null,
-    rejectPrompting: null
+    approvalDialog: {
+      isVisible: false,
+      resolvePrompting: null,
+      rejectPrompting: null
+    },
+    exchangeDialog: {
+      isVisible: false,
+      offerAsset: null
+    }
   }
 }
 
@@ -15,13 +26,31 @@ const state = initialState()
 
 const mutations = {
   [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting }) {
-    state.approvalDialogVisible = true
-    state.resolvePrompting = resolvePrompting
-    state.rejectPrompting = rejectPrompting
+    Vue.set(state, 'approvalDialog', {
+      isVisible: true,
+      resolvePrompting,
+      rejectPrompting
+    })
   },
   [types.APPROVAL_DIALOG_CLOSE] (state, privateKey) {
-    state.approvalDialogVisible = false
-    state.resolvePrompting(privateKey)
+    Vue.set(state.approvalDialog, 'isVisible', false)
+    state.approvalDialog.resolvePrompting(privateKey)
+  },
+  [types.EXCHANGE_DIALOG_OPEN] (state, asset) {
+    const offerAsset = asset || null
+    Vue.set(state, 'exchangeDialog', {
+      isVisible: true,
+      offerAsset
+    })
+  },
+  [types.EXCHANGE_DIALOG_CLOSE] (state) {
+    Vue.set(state, 'exchangeDialog', {
+      isVisible: false,
+      offerAsset: null
+    })
+  },
+  [types.SET_EXCHANGE_DIALOG_OFFER_ASSET] (state, offerAsset) {
+    Vue.set(state.exchangeDialog, 'offerAsset', offerAsset)
   }
 }
 
@@ -50,10 +79,26 @@ const actions = {
   },
   closeApprovalDialog ({ commit }, privateKey) {
     commit(types.APPROVAL_DIALOG_CLOSE, privateKey)
+  },
+  openExchangeDialog ({ commit }, offerAsset) {
+    commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
+  },
+  closeExchangeDialog ({ commit }) {
+    commit(types.EXCHANGE_DIALOG_CLOSE)
   }
 }
 
-const getters = {}
+const getters = {
+  approvalDialogVisible () {
+    return state.approvalDialog.isVisible
+  },
+  exchangeDialogVisible () {
+    return state.exchangeDialog.isVisible
+  },
+  exchangeDialogOfferAsset () {
+    return state.exchangeDialog.offerAsset
+  }
+}
 
 export default {
   types,

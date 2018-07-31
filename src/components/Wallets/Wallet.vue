@@ -14,7 +14,7 @@
                   <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
                 </div>
                 <div style="width: 100%; display: flex;">
-                  <div role="button" class="button"  @click="receiveFormVisible = true">
+                  <div role="button" class="button" @click="receiveFormVisible = true">
                     <fa-icon icon="angle-double-down" />
                     <span>Deposit</span>
                   </div>
@@ -26,11 +26,9 @@
                     <fa-icon icon="arrow-right" />
                     <span>Transfer</span>
                   </div>
-                  <div role="button" class="button" @clock="exchangeFormVisible = true">
-                  <!-- <router-link class="button" :to="{ path: '/settlements/outgoing', query: { exchange: true, offer_asset: wallet.asset } }" > -->
+                  <div role="button" class="button" @click="openExchangeDialog(wallet.asset)">
                     <fa-icon icon="exchange-alt" />
                     <span>Exchange</span>
-                  <!-- </router-link> -->
                   </div>
                 </div>
               </div>
@@ -268,7 +266,6 @@ export default {
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
-      exchangeFormVisible: false,
       isSending: false,
       transferForm: {
         to: null,
@@ -314,7 +311,8 @@ export default {
 
   methods: {
     ...mapActions([
-      'openApprovalDialog'
+      'openApprovalDialog',
+      'openExchangeDialog'
     ]),
 
     tagType: function (val) {
