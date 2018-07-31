@@ -177,7 +177,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="350px"
+      width="400px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
