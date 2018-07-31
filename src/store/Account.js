@@ -4,6 +4,7 @@ import flatMap from 'lodash/fp/flatMap'
 import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
+import find from 'lodash/fp/find'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha-util'
 import notaryUtil from '@util/notary-util'
@@ -99,8 +100,9 @@ const getters = {
   },
 
   ethWalletAddress (state) {
-    let wallet = _.findKey(state.accountInfo, 'ethereum_wallet')
-    return wallet ? state.accountInfo[wallet].ethereum_wallet : 'no eth deposit address'
+    let wallet = find('ethereum_wallet', state.accountInfo)
+    console.log(wallet)
+    return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
   }
 }
 
