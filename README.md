@@ -1,8 +1,5 @@
 
-# D3
-<p align="center">
-  <img src="src/assets/logo.svg">
-</p>
+Web application for D3 ledger user.
 
 ## What is it?
 Distributed Digital Depository is a service platform for decentralized safekeeping and settlements of tokenized crypto assets. Financial intermediaries, or custodians, directly participate in the maintenance of the system by auditing exchange process, and by voting during sidechain-to-D3 tokenization process.
@@ -35,30 +32,12 @@ $ yarn serve
 ```
 This will serve application with hot reload.
 
-### How to build
-To build application for deployment
-``` bash
-$ yarn build
-```
+# serve with hot reload
+yarn serve
 
-If you are run out of memory while building application you can try another command, but it requires at least **4GB** of RAM
-``` bash
-$ yarn build:more-memory
-```
+# build static app for deployment
+yarn build # build:more-memory if you run out of heap
 
-### How to test
-To run tests all unit tests
-``` bash
-$ yarn test:unit
-```
-
-To run all e2e tests
-``` bash
-$ yarn test:e2e
-```
-
-**IMPORTANT** to run any e2e test need to provide `CYPRESS_IROHA`.
-
-``` bash
-$ CYPRESS_IROHA=http://127.0.0.1:8081 yarn test:e2e
+# run unit tests
+yarn test:unit
 ```
