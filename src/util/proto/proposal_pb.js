@@ -11,7 +11,7 @@ var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
 
-var block_pb = require('./block_pb.js');
+var transaction_pb = require('./transaction_pb.js');
 goog.exportSymbol('proto.iroha.protocol.Proposal', null, global);
 
 /**
@@ -69,7 +69,7 @@ proto.iroha.protocol.Proposal.toObject = function(includeInstance, msg) {
   var f, obj = {
     height: jspb.Message.getFieldWithDefault(msg, 1, 0),
     transactionsList: jspb.Message.toObjectList(msg.getTransactionsList(),
-    block_pb.Transaction.toObject, includeInstance),
+    transaction_pb.Transaction.toObject, includeInstance),
     createdTime: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
@@ -112,8 +112,8 @@ proto.iroha.protocol.Proposal.deserializeBinaryFromReader = function(msg, reader
       msg.setHeight(value);
       break;
     case 2:
-      var value = new block_pb.Transaction;
-      reader.readMessage(value,block_pb.Transaction.deserializeBinaryFromReader);
+      var value = new transaction_pb.Transaction;
+      reader.readMessage(value,transaction_pb.Transaction.deserializeBinaryFromReader);
       msg.addTransactions(value);
       break;
     case 3:
@@ -161,7 +161,7 @@ proto.iroha.protocol.Proposal.serializeBinaryToWriter = function(message, writer
     writer.writeRepeatedMessage(
       2,
       f,
-      block_pb.Transaction.serializeBinaryToWriter
+      transaction_pb.Transaction.serializeBinaryToWriter
     );
   }
   f = message.getCreatedTime();
@@ -195,7 +195,7 @@ proto.iroha.protocol.Proposal.prototype.setHeight = function(value) {
  */
 proto.iroha.protocol.Proposal.prototype.getTransactionsList = function() {
   return /** @type{!Array.<!proto.iroha.protocol.Transaction>} */ (
-    jspb.Message.getRepeatedWrapperField(this, block_pb.Transaction, 2));
+    jspb.Message.getRepeatedWrapperField(this, transaction_pb.Transaction, 2));
 };
 
 

@@ -19,6 +19,7 @@ goog.exportSymbol('proto.iroha.protocol.GetAccountAssets', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetAccountDetail', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetAccountTransactions', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetAssetInfo', null, global);
+goog.exportSymbol('proto.iroha.protocol.GetPendingTransactions', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetRolePermissions', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetRoles', null, global);
 goog.exportSymbol('proto.iroha.protocol.GetSignatories', null, global);
@@ -962,12 +963,67 @@ proto.iroha.protocol.GetAccountAssets.prototype.setAccountId = function(value) {
  * @constructor
  */
 proto.iroha.protocol.GetAccountDetail = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.iroha.protocol.GetAccountDetail.oneofGroups_);
 };
 goog.inherits(proto.iroha.protocol.GetAccountDetail, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   proto.iroha.protocol.GetAccountDetail.displayName = 'proto.iroha.protocol.GetAccountDetail';
 }
+/**
+ * Oneof group definitions for this message. Each group defines the field
+ * numbers belonging to that group. When of these fields' value is set, all
+ * other fields in the group are cleared. During deserialization, if multiple
+ * fields are encountered for a group, only the last value seen will be kept.
+ * @private {!Array<!Array<number>>}
+ * @const
+ */
+proto.iroha.protocol.GetAccountDetail.oneofGroups_ = [[1],[2],[3]];
+
+/**
+ * @enum {number}
+ */
+proto.iroha.protocol.GetAccountDetail.OptAccountIdCase = {
+  OPT_ACCOUNT_ID_NOT_SET: 0,
+  ACCOUNT_ID: 1
+};
+
+/**
+ * @return {proto.iroha.protocol.GetAccountDetail.OptAccountIdCase}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.getOptAccountIdCase = function() {
+  return /** @type {proto.iroha.protocol.GetAccountDetail.OptAccountIdCase} */(jspb.Message.computeOneofCase(this, proto.iroha.protocol.GetAccountDetail.oneofGroups_[0]));
+};
+
+/**
+ * @enum {number}
+ */
+proto.iroha.protocol.GetAccountDetail.OptKeyCase = {
+  OPT_KEY_NOT_SET: 0,
+  KEY: 2
+};
+
+/**
+ * @return {proto.iroha.protocol.GetAccountDetail.OptKeyCase}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.getOptKeyCase = function() {
+  return /** @type {proto.iroha.protocol.GetAccountDetail.OptKeyCase} */(jspb.Message.computeOneofCase(this, proto.iroha.protocol.GetAccountDetail.oneofGroups_[1]));
+};
+
+/**
+ * @enum {number}
+ */
+proto.iroha.protocol.GetAccountDetail.OptWriterCase = {
+  OPT_WRITER_NOT_SET: 0,
+  WRITER: 3
+};
+
+/**
+ * @return {proto.iroha.protocol.GetAccountDetail.OptWriterCase}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.getOptWriterCase = function() {
+  return /** @type {proto.iroha.protocol.GetAccountDetail.OptWriterCase} */(jspb.Message.computeOneofCase(this, proto.iroha.protocol.GetAccountDetail.oneofGroups_[2]));
+};
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -997,7 +1053,9 @@ proto.iroha.protocol.GetAccountDetail.prototype.toObject = function(opt_includeI
  */
 proto.iroha.protocol.GetAccountDetail.toObject = function(includeInstance, msg) {
   var f, obj = {
-    accountId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    accountId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    key: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    writer: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -1038,6 +1096,14 @@ proto.iroha.protocol.GetAccountDetail.deserializeBinaryFromReader = function(msg
       var value = /** @type {string} */ (reader.readString());
       msg.setAccountId(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setKey(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setWriter(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -1067,10 +1133,24 @@ proto.iroha.protocol.GetAccountDetail.prototype.serializeBinary = function() {
  */
 proto.iroha.protocol.GetAccountDetail.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getAccountId();
-  if (f.length > 0) {
+  f = /** @type {string} */ (jspb.Message.getField(message, 1));
+  if (f != null) {
     writer.writeString(
       1,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 2));
+  if (f != null) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = /** @type {string} */ (jspb.Message.getField(message, 3));
+  if (f != null) {
+    writer.writeString(
+      3,
       f
     );
   }
@@ -1088,7 +1168,79 @@ proto.iroha.protocol.GetAccountDetail.prototype.getAccountId = function() {
 
 /** @param {string} value */
 proto.iroha.protocol.GetAccountDetail.prototype.setAccountId = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
+  jspb.Message.setOneofField(this, 1, proto.iroha.protocol.GetAccountDetail.oneofGroups_[0], value);
+};
+
+
+proto.iroha.protocol.GetAccountDetail.prototype.clearAccountId = function() {
+  jspb.Message.setOneofField(this, 1, proto.iroha.protocol.GetAccountDetail.oneofGroups_[0], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.hasAccountId = function() {
+  return jspb.Message.getField(this, 1) != null;
+};
+
+
+/**
+ * optional string key = 2;
+ * @return {string}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.getKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.iroha.protocol.GetAccountDetail.prototype.setKey = function(value) {
+  jspb.Message.setOneofField(this, 2, proto.iroha.protocol.GetAccountDetail.oneofGroups_[1], value);
+};
+
+
+proto.iroha.protocol.GetAccountDetail.prototype.clearKey = function() {
+  jspb.Message.setOneofField(this, 2, proto.iroha.protocol.GetAccountDetail.oneofGroups_[1], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.hasKey = function() {
+  return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional string writer = 3;
+ * @return {string}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.getWriter = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.iroha.protocol.GetAccountDetail.prototype.setWriter = function(value) {
+  jspb.Message.setOneofField(this, 3, proto.iroha.protocol.GetAccountDetail.oneofGroups_[2], value);
+};
+
+
+proto.iroha.protocol.GetAccountDetail.prototype.clearWriter = function() {
+  jspb.Message.setOneofField(this, 3, proto.iroha.protocol.GetAccountDetail.oneofGroups_[2], undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.iroha.protocol.GetAccountDetail.prototype.hasWriter = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
@@ -1503,6 +1655,122 @@ proto.iroha.protocol.GetRolePermissions.prototype.setRoleId = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.iroha.protocol.GetPendingTransactions = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.iroha.protocol.GetPendingTransactions, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.iroha.protocol.GetPendingTransactions.displayName = 'proto.iroha.protocol.GetPendingTransactions';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.iroha.protocol.GetPendingTransactions.prototype.toObject = function(opt_includeInstance) {
+  return proto.iroha.protocol.GetPendingTransactions.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.iroha.protocol.GetPendingTransactions} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.iroha.protocol.GetPendingTransactions.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.iroha.protocol.GetPendingTransactions}
+ */
+proto.iroha.protocol.GetPendingTransactions.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.iroha.protocol.GetPendingTransactions;
+  return proto.iroha.protocol.GetPendingTransactions.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.iroha.protocol.GetPendingTransactions} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.iroha.protocol.GetPendingTransactions}
+ */
+proto.iroha.protocol.GetPendingTransactions.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.iroha.protocol.GetPendingTransactions.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.iroha.protocol.GetPendingTransactions.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.iroha.protocol.GetPendingTransactions} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.iroha.protocol.GetPendingTransactions.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.iroha.protocol.QueryPayloadMeta = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1857,7 +2125,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.iroha.protocol.Query.Payload.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12]];
+proto.iroha.protocol.Query.Payload.oneofGroups_ = [[3,4,5,6,7,8,9,10,11,12,13]];
 
 /**
  * @enum {number}
@@ -1873,7 +2141,8 @@ proto.iroha.protocol.Query.Payload.QueryCase = {
   GET_ACCOUNT_DETAIL: 9,
   GET_ROLES: 10,
   GET_ROLE_PERMISSIONS: 11,
-  GET_ASSET_INFO: 12
+  GET_ASSET_INFO: 12,
+  GET_PENDING_TRANSACTIONS: 13
 };
 
 /**
@@ -1922,7 +2191,8 @@ proto.iroha.protocol.Query.Payload.toObject = function(includeInstance, msg) {
     getAccountDetail: (f = msg.getGetAccountDetail()) && proto.iroha.protocol.GetAccountDetail.toObject(includeInstance, f),
     getRoles: (f = msg.getGetRoles()) && proto.iroha.protocol.GetRoles.toObject(includeInstance, f),
     getRolePermissions: (f = msg.getGetRolePermissions()) && proto.iroha.protocol.GetRolePermissions.toObject(includeInstance, f),
-    getAssetInfo: (f = msg.getGetAssetInfo()) && proto.iroha.protocol.GetAssetInfo.toObject(includeInstance, f)
+    getAssetInfo: (f = msg.getGetAssetInfo()) && proto.iroha.protocol.GetAssetInfo.toObject(includeInstance, f),
+    getPendingTransactions: (f = msg.getGetPendingTransactions()) && proto.iroha.protocol.GetPendingTransactions.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2013,6 +2283,11 @@ proto.iroha.protocol.Query.Payload.deserializeBinaryFromReader = function(msg, r
       var value = new proto.iroha.protocol.GetAssetInfo;
       reader.readMessage(value,proto.iroha.protocol.GetAssetInfo.deserializeBinaryFromReader);
       msg.setGetAssetInfo(value);
+      break;
+    case 13:
+      var value = new proto.iroha.protocol.GetPendingTransactions;
+      reader.readMessage(value,proto.iroha.protocol.GetPendingTransactions.deserializeBinaryFromReader);
+      msg.setGetPendingTransactions(value);
       break;
     default:
       reader.skipField();
@@ -2129,6 +2404,14 @@ proto.iroha.protocol.Query.Payload.serializeBinaryToWriter = function(message, w
       12,
       f,
       proto.iroha.protocol.GetAssetInfo.serializeBinaryToWriter
+    );
+  }
+  f = message.getGetPendingTransactions();
+  if (f != null) {
+    writer.writeMessage(
+      13,
+      f,
+      proto.iroha.protocol.GetPendingTransactions.serializeBinaryToWriter
     );
   }
 };
@@ -2461,6 +2744,36 @@ proto.iroha.protocol.Query.Payload.prototype.clearGetAssetInfo = function() {
  */
 proto.iroha.protocol.Query.Payload.prototype.hasGetAssetInfo = function() {
   return jspb.Message.getField(this, 12) != null;
+};
+
+
+/**
+ * optional GetPendingTransactions get_pending_transactions = 13;
+ * @return {?proto.iroha.protocol.GetPendingTransactions}
+ */
+proto.iroha.protocol.Query.Payload.prototype.getGetPendingTransactions = function() {
+  return /** @type{?proto.iroha.protocol.GetPendingTransactions} */ (
+    jspb.Message.getWrapperField(this, proto.iroha.protocol.GetPendingTransactions, 13));
+};
+
+
+/** @param {?proto.iroha.protocol.GetPendingTransactions|undefined} value */
+proto.iroha.protocol.Query.Payload.prototype.setGetPendingTransactions = function(value) {
+  jspb.Message.setOneofWrapperField(this, 13, proto.iroha.protocol.Query.Payload.oneofGroups_[0], value);
+};
+
+
+proto.iroha.protocol.Query.Payload.prototype.clearGetPendingTransactions = function() {
+  this.setGetPendingTransactions(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.iroha.protocol.Query.Payload.prototype.hasGetPendingTransactions = function() {
+  return jspb.Message.getField(this, 13) != null;
 };
 
 

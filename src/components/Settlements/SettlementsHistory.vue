@@ -17,7 +17,7 @@
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
       <template slot-scope="scope">
-        {{ scope.row.offer_amount.toFixed(4) + ' ' + scope.row.offer_asset + ' → ' + scope.row.request_amount.toFixed(4) + ' ' + scope.row.request_asset }}
+        {{ Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset + ' → ' + Number(scope.row.request_amount).toFixed(4) + ' ' + scope.row.request_asset }}
       </template>
     </el-table-column>
     <el-table-column label="Counterparty" width="150">

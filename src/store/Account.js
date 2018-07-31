@@ -4,15 +4,14 @@ import flatMap from 'lodash/fp/flatMap'
 import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
+import find from 'lodash/fp/find'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha-util'
 import notaryUtil from '@util/notary-util'
-import { amountToString } from '@util/iroha-amount'
 import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
 
-// TODO: To be removed. This is used for the following reason for now:
-//   1. to get asset's properties (e.g. color) which cannot be fetched from API.
-const DUMMY_ASSETS = require('@/mocks/wallets.json').wallets
+// TODO: Move it into notary's API so we have the same list
+const ASSETS = require('@util/crypto-list.json')
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -54,22 +53,21 @@ const getters = {
   wallets (state) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
-      const DUMMY_ASSET = DUMMY_ASSETS.find(d => {
-        return (d.name.toLowerCase() === a.assetId.split('#')[0])
+      const ASSET = ASSETS.find(d => {
+        return (d.name.toLowerCase() === a.assetId.split('#')[0].toLowerCase() || d.asset.toLowerCase() === a.assetId.split('#')[0].toLowerCase())
       })
 
       return {
         id: a.assetId.replace(/#/g, '$'),
         assetId: a.assetId,
+        domain: a.assetId.split('#')[1],
 
-        // TODO: get these info from appropreate sources.
-        name: DUMMY_ASSET.name,
-        asset: DUMMY_ASSET.asset,
-        color: DUMMY_ASSET.color,
-        address: DUMMY_ASSET.address,
+        name: ASSET.name,
+        asset: ASSET.asset,
+        color: ASSET.color,
 
-        amount: amountToString(a.balance),
-        precision: a.balance.precision
+        amount: a.balance,
+        precision: a.balance.split('.')[1] ? a.balance.split('.')[1].length : 0
       }
     })
   },
@@ -99,6 +97,12 @@ const getters = {
   resolvedSettlements (state) {
     return getSettlementsFrom(state.rawTransactions)
       .filter(x => x.status !== 'waiting')
+  },
+
+  ethWalletAddress (state) {
+    let wallet = find('ethereum_wallet', state.accountInfo)
+    console.log(wallet)
+    return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
   }
 }
 
@@ -141,6 +145,7 @@ const mutations = {
 
   [types.LOGIN_SUCCESS] (state, account) {
     state.accountId = account.accountId
+    state.accountInfo = JSON.parse(account.jsonData)
   },
 
   [types.LOGIN_FAILURE] (state, err) {
