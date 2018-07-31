@@ -49,9 +49,10 @@
     >
       <el-form style="width: 100%">
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.offer_amount" @input="calculatePriceRequest" placeholder="0">
             <el-select
               v-model="exchangeDialogOfferAsset"
+              @change="getOfferToRequestPrice()"
               slot="append"
               placeholder="asset"
               style="width: 100px"
@@ -74,9 +75,10 @@
           </span>
         </el-form-item>
         <el-form-item label="I receive" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.request_amount" @input="calculatePriceOffer" placeholder="0">
             <el-select
-              v-model="exchangeForm.request_asset"
+              v-model="exchangeDialogRequestAsset"
+              @change="getOfferToRequestPrice()"
               slot="append"
               placeholder="asset"
               style="width: 100px"
@@ -92,8 +94,8 @@
           </el-input>
           <span class="form-item-text">
             Market price:
-            <span v-if="exchangeForm.request_asset && exchangeDialogOfferAsset" class="form-item-text-amount">
-              1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ 0.774231451 {{ exchangeForm.request_asset.toUpperCase() }}
+            <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
+              1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
             </span>
             <span v-else>...</span>
           </span>
@@ -178,7 +180,6 @@ export default {
       exchangeForm: {
         to: null,
         request_amount: null,
-        request_asset: null,
         offer_amount: null,
         description: null
       }
@@ -189,7 +190,8 @@ export default {
     ...mapGetters([
       'wallets',
       'approvalDialogVisible',
-      'exchangeDialogVisible'
+      'exchangeDialogVisible',
+      'exchangeDialogPrice'
     ]),
 
     ...mapState({
@@ -202,6 +204,15 @@ export default {
       },
       set (asset) {
         this.$store.commit('SET_EXCHANGE_DIALOG_OFFER_ASSET', asset)
+      }
+    },
+
+    exchangeDialogRequestAsset: {
+      get () {
+        return this.$store.getters.exchangeDialogRequestAsset
+      },
+      set (asset) {
+        this.$store.commit('SET_EXCHANGE_DIALOG_REQUEST_ASSET', asset)
       }
     },
 
@@ -225,7 +236,8 @@ export default {
     ...mapActions([
       'openApprovalDialog',
       'closeApprovalDialog',
-      'closeExchangeDialog'
+      'closeExchangeDialog',
+      'getOfferToRequestPrice'
     ]),
 
     logout () {
@@ -256,12 +268,13 @@ export default {
         .then(privateKey => {
           if (!privateKey) return
           const offerAsset = this.exchangeDialogOfferAsset
+          const requestAsset = this.exchangeDialogRequestAsset
           return this.$store.dispatch('createSettlement', {
             privateKey,
             to: s.to,
             offerAssetId: offerAsset,
             offerAmount: s.offer_amount,
-            requestAssetId: s.request_asset,
+            requestAssetId: requestAsset,
             requestAmount: s.request_amount
           })
             .then(() => {
@@ -279,6 +292,18 @@ export default {
               this.closeExchangeDialogWith()
             })
         })
+    },
+
+    calculatePriceOffer (value) {
+      if (this.exchangeDialogPrice) {
+        this.exchangeForm.offer_amount = value / this.exchangeDialogPrice
+      }
+    },
+
+    calculatePriceRequest (value) {
+      if (this.exchangeDialogPrice) {
+        this.exchangeForm.request_amount = value * this.exchangeDialogPrice
+      }
     },
 
     onFileChosen (file, fileList) {

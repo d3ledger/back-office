@@ -1,12 +1,26 @@
 import Vue from 'vue'
+import map from 'lodash/fp/map'
+import flatMap from 'lodash/fp/flatMap'
+import concat from 'lodash/fp/concat'
+import fromPairs from 'lodash/fp/fromPairs'
+import flow from 'lodash/fp/flow'
+import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
-const types = {
-  APPROVAL_DIALOG_OPEN: 'APPROVAL_DIALOG_OPEN',
-  APPROVAL_DIALOG_CLOSE: 'APPROVAL_DIALOG_CLOSE',
-  EXCHANGE_DIALOG_OPEN: 'EXCHANGE_DIALOG_OPEN',
-  EXCHANGE_DIALOG_CLOSE: 'EXCHANGE_DIALOG_CLOSE',
-  SET_EXCHANGE_DIALOG_OFFER_ASSET: 'SET_EXCHANGE_DIALOG_OFFER_ASSET'
-}
+const types = flow(
+  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
+  concat([
+    'APPROVAL_DIALOG_OPEN',
+    'APPROVAL_DIALOG_CLOSE',
+    'EXCHANGE_DIALOG_OPEN',
+    'EXCHANGE_DIALOG_CLOSE',
+    'SET_EXCHANGE_DIALOG_OFFER_ASSET',
+    'SET_EXCHANGE_DIALOG_REQUEST_ASSET'
+  ]),
+  map(x => [x, x]),
+  fromPairs
+)([
+  'GET_OFFER_TO_REQUEST_PRICE'
+])
 
 function initialState () {
   return {
@@ -17,9 +31,16 @@ function initialState () {
     },
     exchangeDialog: {
       isVisible: false,
-      offerAsset: null
-    }
+      offerAsset: null,
+      requestAsset: null,
+      price: null
+    },
+    connectionError: null
   }
+}
+
+function handleError (state, err) {
+  state.connectionError = err
 }
 
 const state = initialState()
@@ -46,11 +67,24 @@ const mutations = {
   [types.EXCHANGE_DIALOG_CLOSE] (state) {
     Vue.set(state, 'exchangeDialog', {
       isVisible: false,
-      offerAsset: null
+      offerAsset: null,
+      requestAsset: null,
+      price: null
     })
   },
   [types.SET_EXCHANGE_DIALOG_OFFER_ASSET] (state, offerAsset) {
     Vue.set(state.exchangeDialog, 'offerAsset', offerAsset)
+  },
+  [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET] (state, requestAsset) {
+    Vue.set(state.exchangeDialog, 'requestAsset', requestAsset)
+  },
+  [types.GET_OFFER_TO_REQUEST_PRICE_REQUEST] (state) {},
+
+  [types.GET_OFFER_TO_REQUEST_PRICE_SUCCESS] (state, price) {
+    Vue.set(state.exchangeDialog, 'price', price)
+  },
+  [types.GET_OFFER_TO_REQUEST_PRICE_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -85,6 +119,21 @@ const actions = {
   },
   closeExchangeDialog ({ commit }) {
     commit(types.EXCHANGE_DIALOG_CLOSE)
+  },
+  getOfferToRequestPrice ({ commit, getters }) {
+    const offerAsset = getters.exchangeDialogOfferAsset
+    const requestAsset = getters.exchangeDialogRequestAsset
+    if (offerAsset && requestAsset) {
+      cryptoCompareUtil.loadPriceForAssets({
+        from: offerAsset,
+        to: requestAsset
+      })
+        .then(data => commit(types.GET_OFFER_TO_REQUEST_PRICE_SUCCESS, data[requestAsset]))
+        .catch(err => {
+          commit(types.GET_OFFER_TO_REQUEST_PRICE_FAILURE, err)
+          throw err
+        })
+    }
   }
 }
 
@@ -97,6 +146,12 @@ const getters = {
   },
   exchangeDialogOfferAsset () {
     return state.exchangeDialog.offerAsset
+  },
+  exchangeDialogRequestAsset () {
+    return state.exchangeDialog.requestAsset
+  },
+  exchangeDialogPrice () {
+    return state.exchangeDialog.price
   }
 }
 
