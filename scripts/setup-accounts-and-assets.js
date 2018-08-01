@@ -6,8 +6,9 @@
 const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
-const iroha = require('iroha-lib')
 const irohaUtil = require('../src/util/iroha-util')
+const ed25519 = require('ed25519.js')
+const hexStrToByte = require('../src/util//iroha-helpers/util').hexStrToByte
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
@@ -15,11 +16,10 @@ const aliceAccName = 'alice'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
-const crypto = new iroha.ModelCrypto()
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
-const testPubKey = crypto.fromPrivateKey(testPrivKeyHex).publicKey()
+const testPubKey = ed25519.derivePublicKey(hexStrToByte(testPrivKeyHex))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
-const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
+const alicePubKey = ed25519.derivePublicKey(hexStrToByte(alicePrivKeyHex))
 
 // IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
@@ -57,7 +57,7 @@ function initializeAssets () {
       .then(() => {
         console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
 
-        return irohaUtil.addAssetQuantity(testPrivKeyHex, `${testAccFull}`, `${w.name.toLowerCase()}#${irohaDomain}`, amount)
+        return irohaUtil.addAssetQuantity(testPrivKeyHex, `${w.name.toLowerCase()}#${irohaDomain}`, amount)
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)
