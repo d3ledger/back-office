@@ -271,7 +271,8 @@ export function generateReportData ({
     description: 'Starting Balance',
     amount: null,
     amountFiat: null,
-    balance: startingBalance.toFixed(precision)
+    balance: startingBalance.toFixed(precision),
+    balanceFiat: (startingBalance / getDailyPriceFiat(dateFrom)).toFixed(precision)
   })
 
   transactionDetails.push({
@@ -280,7 +281,8 @@ export function generateReportData ({
     description: 'Ending Balance',
     amount: null,
     amountFiat: null,
-    balance: endingBalance.toFixed(precision)
+    balance: endingBalance.toFixed(precision),
+    balanceFiat: (startingBalance / getDailyPriceFiat(dateTo)).toFixed(precision)
   })
 
   /*

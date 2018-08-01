@@ -218,7 +218,8 @@
         "description": "Starting Balance",
         "amount": null,
         "amountFiat": null,
-        "balance": "14.28"
+        "balance": "14.28",
+        "balanceFiat": "6208.70"
       },
       {
         "time": "Jul. 13, 16:17",
@@ -343,7 +344,8 @@
         "description": "Ending Balance",
         "amount": null,
         "amountFiat": null,
-        "balance": "11.38"
+        "balance": "11.38",
+        "balanceFiat": "6490.91"
       }
     ]
   }
