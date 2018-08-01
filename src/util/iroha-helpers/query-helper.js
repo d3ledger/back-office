@@ -44,7 +44,6 @@ const addQuery = (query, queryName, params) => {
  * @param {Number} meta.createdTime time of query creation
  * @param {Number} meta.queryCounter query counter (will be removed soon)
  */
-
 const addMeta = (query, { creatorAccountId, createdTime = Date.now(), queryCounter = 1 }) => {
   let meta = new Queries.QueryPayloadMeta()
   meta.setCreatorAccountId(creatorAccountId)
@@ -65,7 +64,6 @@ const addMeta = (query, { creatorAccountId, createdTime = Date.now(), queryCount
  * @param {Object} query base query
  * @param {stringing} privateKeyHex - private key of query's creator in hex.
  */
-
 const sign = (query, privateKeyHex) => {
   const privateKey = hexStrToByte(privateKeyHex)
   const publicKey = derivePublicKey(privateKey)
@@ -85,13 +83,6 @@ const sign = (query, privateKeyHex) => {
 }
 
 export default {
-  sign,
-  addMeta,
-  addQuery,
-  emptyQuery
-}
-
-module.exports = {
   sign,
   addMeta,
   addQuery,
