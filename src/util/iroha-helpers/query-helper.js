@@ -1,8 +1,10 @@
 import { sign as signQuery, derivePublicKey } from 'ed25519.js'
+import { sha3_256 as sha3 } from 'js-sha3'
 import cloneDeep from 'lodash/cloneDeep'
 import each from 'lodash/each'
-import { Signature } from '../proto/primitive_pb'
-import * as Queries from '../proto/queries_pb'
+import { Signature } from './proto/primitive_pb'
+import * as Queries from './proto/queries_pb'
+import { capitalize, hexStrToByte } from './util.js'
 
 const emptyQuery = () => new Queries.Query()
 
@@ -13,16 +15,9 @@ const emptyQuery = () => new Queries.Query()
 const getOrCreatePayload = query => query.hasPayload() ? cloneDeep(query.getPayload()) : new Queries.Query.Payload()
 
 /**
- * Capitalizes string
- * @param {String} string
- * @returns {String} capitalized string
- */
-const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1)
-
-/**
  * Returns new query with added command.
  * @param {Object} query base query
- * @param {String} queryName name of a query. For reference, visit http://iroha.readthedocs.io/en/latest/api/queries.html
+ * @param {stringing} queryName name of a query. For reference, visit http://iroha.readthedocs.io/en/latest/api/queries.html
  * @param {Object} params query parameters. For reference, visit http://iroha.readthedocs.io/en/latest/api/queries.html
  */
 const addQuery = (query, queryName, params) => {
@@ -45,7 +40,7 @@ const addQuery = (query, queryName, params) => {
  * Returns new query with meta information
  * @param {Object} query base query
  * @param {Object} meta - meta info
- * @param {String} meta.creatorAccountId accountID of query's creator
+ * @param {stringing} meta.creatorAccountId accountID of query's creator
  * @param {Number} meta.createdTime time of query creation
  * @param {Number} meta.queryCounter query counter (will be removed soon)
  */
@@ -68,15 +63,16 @@ const addMeta = (query, { creatorAccountId, createdTime = Date.now(), queryCount
 /**
  * Returns new signed query
  * @param {Object} query base query
- * @param {String} privateKeyHex - private key of query's creator in hex.
+ * @param {stringing} privateKeyHex - private key of query's creator in hex.
  */
 
 const sign = (query, privateKeyHex) => {
-  const payload = query.getPayload()
-  const privateKey = Buffer.from(privateKeyHex, 'hex')
+  const privateKey = hexStrToByte(privateKeyHex)
   const publicKey = derivePublicKey(privateKey)
 
-  const signatory = signQuery(Buffer.from(payload.serializeBinary()), privateKey, publicKey)
+  const payloadHash = sha3.array(query.payload.serializeBinary())
+
+  const signatory = signQuery(payloadHash, publicKey, privateKey)
 
   let s = new Signature()
   s.setPubkey(publicKey)
