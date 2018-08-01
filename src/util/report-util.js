@@ -10,7 +10,7 @@ import isAfter from 'date-fns/is_after'
 import startOfDay from 'date-fns/start_of_day'
 import endOfDay from 'date-fns/end_of_day'
 import isSameDay from 'date-fns/is_same_day'
-import { parse as json2csv } from 'json2csv'
+import { encode as json2csv } from 'csv.js'
 import { fontLoader } from './font-util'
 
 pdfMake.vfs = fontLoader.vfs
@@ -118,7 +118,7 @@ export function generateCSV (params) {
   return new Promise((resolve, reject) => {
     const data = generateReportData.call(this, { ext: 'csv', ...params })
     const dataForCSV = data.transactionDetails.map(tx => ({
-      'Time': tx.time,
+      'Time': tx.time.replace(',', ''),
       'To': tx.to,
       'Amount': tx.amount,
       [`Amount in ${data.fiat}`]: tx.amountFiat,
@@ -131,7 +131,7 @@ export function generateCSV (params) {
     let csv
 
     try {
-      csv = json2csv(dataForCSV, { fields })
+      csv = json2csv(dataForCSV, ',', fields)
     } catch (err) {
       return reject(err)
     }
