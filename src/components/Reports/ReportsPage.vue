@@ -69,6 +69,7 @@
             type="daterange"
             start-placeholder="Start date"
             end-placeholder="End date"
+            :picker-options="pickerOptions"
           />
         </el-form-item>
       </el-form>
@@ -109,6 +110,8 @@ import subMonths from 'date-fns/sub_months'
 import startOfMonth from 'date-fns/start_of_month'
 import endOfMonth from 'date-fns/end_of_month'
 import differenceInDays from 'date-fns/difference_in_days'
+import isAfter from 'date-fns/is_after'
+import endOfYesterday from 'date-fns/end_of_yesterday'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
 export default {
@@ -118,7 +121,10 @@ export default {
     return {
       reportFormVisible: false,
       selectedWallet: null,
-      date: ''
+      date: '',
+      pickerOptions: {
+        disabledDate: this.isDisabledDate
+      }
     }
   },
   computed: {
@@ -149,6 +155,8 @@ export default {
     this.$store.dispatch('getAccountAssets')
   },
   methods: {
+    isDisabledDate: (date) => isAfter(date, endOfYesterday()),
+
     /*
      * collect prices from fiat to crypto
      */
@@ -160,7 +168,7 @@ export default {
         .then(res => {
           return res
             .find(x => (x.asset === asset))
-            .map(data => data)
+            .data
             .map(({ time, close }) => ({ date: time * 1000, price: close }))
         })
     },
