@@ -104,7 +104,6 @@ const getters = {
 
   ethWalletAddress (state) {
     let wallet = find('ethereum_wallet', state.accountInfo)
-    console.log(wallet)
     return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
   }
 }
