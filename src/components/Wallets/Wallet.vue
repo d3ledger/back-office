@@ -298,13 +298,6 @@ export default {
     }
   },
 
-  // watch: {
-  //   '$route' (to, from) {
-  //     if (!this.wallet) return
-  //     this.fetchWallet()
-  //   }
-  // },
-
   created () {
     this.fetchWallet()
   },
