@@ -1,6 +1,16 @@
+/**
+ * Capitalizes string
+ * @param {String} string
+ * @returns {String} capitalized string
+ */
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1)
 
-const hexStringToByte = string => {
+/**
+ * Transfroms hex string to Uint8Array of bytes
+ * @param {String} string string in hex
+ * @returns {Uint8Array}
+ */
+const hexStrToByte = string => {
   if (!string) {
     return new Uint8Array()
   }
@@ -15,5 +25,5 @@ const hexStringToByte = string => {
 
 export {
   capitalize,
-  hexStringToByte
+  hexStrToByte
 }

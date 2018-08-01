@@ -70,7 +70,7 @@ const sign = (query, privateKeyHex) => {
   const privateKey = hexStrToByte(privateKeyHex)
   const publicKey = derivePublicKey(privateKey)
 
-  const payloadHash = sha3.array(query.payload.serializeBinary())
+  const payloadHash = sha3.array(query.getPayload().serializeBinary())
 
   const signatory = signQuery(payloadHash, publicKey, privateKey)
 

@@ -80,12 +80,11 @@ const addMeta = (transaction, { creatorAccountId, createdTime = Date.now(), quor
  * @param {Object} transaction base transaction
  * @param {String} privateKeyHex - private key of query's creator in hex.
  */
-
 const sign = (transaction, privateKeyHex) => {
   const privateKey = hexStrToByte(privateKeyHex)
   const publicKey = derivePublicKey(privateKey)
 
-  const payloadHash = sha3.array(transaction.payload.serializeBinary())
+  const payloadHash = sha3.array(transaction.getPayload().serializeBinary())
 
   const signatory = signTransaction(payloadHash, publicKey, privateKey)
 
@@ -99,17 +98,28 @@ const sign = (transaction, privateKeyHex) => {
   return signedTransactionWithSignature
 }
 
+/**
+ * Returns hash of a transaction
+ * @param {Object} transaction base transaction
+ * @param {String} privateKeyHex private key of query's creator in hex.
+ * @returns {Uint8Array} transaction hash
+ */
+
+const hash = transaction => new Uint8Array(sha3.array(transaction.getPayload().serializeBinary()))
+
 // TODO: Add types for commands
 export default {
   addCommand,
   addMeta,
   sign,
-  emptyTransaction
+  emptyTransaction,
+  hash
 }
 
 module.exports = {
   addCommand,
   addMeta,
   sign,
-  emptyTransaction
+  emptyTransaction,
+  hash
 }
