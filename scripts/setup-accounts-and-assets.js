@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 /*
- * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup-accounts-and-assets.js
+ * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup.js
  */
 
-const fs = require('fs')
-const path = require('path')
-const _ = require('lodash')
-const irohaUtil = require('../src/util/iroha-util')
-const ed25519 = require('ed25519.js')
-const hexStrToByte = require('../src/util//iroha-helpers/util').hexStrToByte
+import fs from 'fs'
+import path from 'path'
+import _ from 'lodash'
+import irohaUtil from '../src/util/iroha-util'
+import ed25519 from 'ed25519.js'
+import { hexStrToByte } from '../src/util//iroha-helpers/util'
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
@@ -24,7 +24,7 @@ const alicePubKey = ed25519.derivePublicKey(hexStrToByte(alicePrivKeyHex))
 // IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
-const accounts = [`${testAccFull}`, `${aliceAccFull}`]
+const accounts = [testAccFull, aliceAccFull]
 const wallets = require(DUMMY_FILE_PATH).wallets
 
 console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
