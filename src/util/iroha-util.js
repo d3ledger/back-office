@@ -31,9 +31,9 @@ const localStorage = global.localStorage || {
   removeItem () {}
 }
 
-const endpointGrpc = require('./proto/endpoint_pb_service.js')
-const pbEndpoint = require('./proto/endpoint_pb.js')
-const pbResponse = require('./proto/qry_responses_pb.js')
+const endpointGrpc = require('./iroha-helpers/proto/endpoint_pb_service.js')
+const pbEndpoint = require('./iroha-helpers/proto/endpoint_pb.js')
+const pbResponse = require('./iroha-helpers/proto/qry_responses_pb.js')
 const txBuilder = new iroha.ModelTransactionBuilder()
 const crypto = new iroha.ModelCrypto()
 
@@ -385,7 +385,7 @@ function command (
           }
 
           const status = response.getTxStatus()
-          const TxStatus = require('./proto/endpoint_pb.js').TxStatus
+          const TxStatus = require('./iroha-helpers/proto/endpoint_pb.js').TxStatus
           const statusName = getProtoEnumName(
             TxStatus,
             'iroha.protocol.TxStatus',
@@ -565,7 +565,7 @@ function getProtoEnumName (obj, key, value) {
 }
 
 function makeProtoTxWithKeys (builtTx, keys) {
-  const pbTransaction = require('./proto/block_pb.js').Transaction
+  const pbTransaction = require('./iroha-helpers/proto/block_pb.js').Transaction
 
   const blob = new iroha.ModelProtoTransaction(builtTx).signAndAddSignature(keys).finish().blob()
   const arr = blob2array(blob)
