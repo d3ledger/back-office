@@ -1,16 +1,15 @@
-/* eslint-disable no-unused-vars */
+import { grpc } from 'grpc-web-client'
+import flow from 'lodash/fp/flow'
+import { createKeyPair } from 'ed25519.js'
+import { byteToHexString } from './iroha-helpers/util'
+import queryHelper from './iroha-helpers/query-helper'
+import txHelper from './iroha-helpers/tx-helper'
+
+import { QueryServiceClient, CommandServiceClient } from './iroha-helpers/proto/endpoint_pb_service.js'
+import * as pbResponse from './iroha-helpers/proto/qry_responses_pb.js'
+import { TxStatus, TxStatusRequest } from './iroha-helpers/proto/endpoint_pb.js'
+
 const debug = require('debug')('iroha-util')
-const iroha = require('iroha-lib')
-const grpc = require('grpc-web-client').grpc
-const flow = require('lodash/fp/flow')
-const queryHelper = require('./iroha-helpers/query-helper')
-const txHelper = require('./iroha-helpers/tx-helper')
-
-const endpointGrpc = require('./iroha-helpers/proto/endpoint_pb_service.js')
-const pbEndpoint = require('./iroha-helpers/proto/endpoint_pb.js')
-const pbResponse = require('./iroha-helpers/proto/qry_responses_pb.js')
-const TxStatus = require('./iroha-helpers/proto/endpoint_pb.js').TxStatus
-
 /**
  * default timeout limit of queries
  */
@@ -36,8 +35,6 @@ const localStorage = global.localStorage || {
   getItem () {},
   removeItem () {}
 }
-
-const crypto = new iroha.ModelCrypto()
 
 /*
  * ===== functions =====
@@ -108,9 +105,9 @@ function isLoggedIn () {
  * generate new keypair
  */
 function generateKeypair () {
-  const keypair = crypto.generateKeypair()
-  const publicKey = keypair.publicKey().hex()
-  const privateKey = keypair.privateKey().hex()
+  const keys = createKeyPair()
+  const publicKey = byteToHexString(keys.publicKey)
+  const privateKey = byteToHexString(keys.privateKey)
 
   return { publicKey, privateKey }
 }
@@ -148,7 +145,7 @@ function sendQuery (
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
   return new Promise((resolve, reject) => {
-    const queryClient = new endpointGrpc.QueryServiceClient(
+    const queryClient = new QueryServiceClient(
       cache.nodeIp
     )
 
@@ -342,7 +339,7 @@ function command (
 
     txHash = txHelper.hash(txToSend)
 
-    txClient = new endpointGrpc.CommandServiceClient(
+    txClient = new CommandServiceClient(
       cache.nodeIp
     )
 
@@ -376,7 +373,7 @@ function command (
       debug('sending transaction status request...')
 
       return new Promise((resolve, reject) => {
-        const request = new pbEndpoint.TxStatusRequest()
+        const request = new TxStatusRequest()
 
         request.setTxHash(txHash)
 
@@ -510,7 +507,7 @@ function getProtoEnumName (obj, key, value) {
     }
   } else {
     protoEnumName[key] = []
-    for (var k in obj) {
+    for (let k in obj) {
       let idx = obj[k]
       if (isNaN(idx)) {
         debug(
@@ -529,7 +526,7 @@ function getProtoEnumName (obj, key, value) {
 /*
  *  ===== export ===
  */
-module.exports = {
+export default {
   getStoredNodeIp,
   clearStorage,
   login,
