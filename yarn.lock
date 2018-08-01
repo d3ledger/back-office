@@ -3280,6 +3280,10 @@ cssstyle@^1.0.0:
   dependencies:
     cssom "0.3.x"
 
+csv.js@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/csv.js/-/csv.js-1.0.4.tgz#3eb8b6c34b00def7c65fd7f80301a3bbfb28baec"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
