@@ -2,8 +2,14 @@
 const debug = require('debug')('iroha-util')
 const iroha = require('iroha-lib')
 const grpc = require('grpc-web-client').grpc
-const _ = require('lodash')
+const flow = require('lodash/fp/flow')
 const queryHelper = require('./iroha-helpers/query-helper')
+const txHelper = require('./iroha-helpers/tx-helper')
+
+const endpointGrpc = require('./iroha-helpers/proto/endpoint_pb_service.js')
+const pbEndpoint = require('./iroha-helpers/proto/endpoint_pb.js')
+const pbResponse = require('./iroha-helpers/proto/qry_responses_pb.js')
+const TxStatus = require('./iroha-helpers/proto/endpoint_pb.js').TxStatus
 
 /**
  * default timeout limit of queries
@@ -31,10 +37,6 @@ const localStorage = global.localStorage || {
   removeItem () {}
 }
 
-const endpointGrpc = require('./iroha-helpers/proto/endpoint_pb_service.js')
-const pbEndpoint = require('./iroha-helpers/proto/endpoint_pb.js')
-const pbResponse = require('./iroha-helpers/proto/qry_responses_pb.js')
-const txBuilder = new iroha.ModelTransactionBuilder()
 const crypto = new iroha.ModelCrypto()
 
 /*
@@ -150,7 +152,7 @@ function sendQuery (
       cache.nodeIp
     )
 
-    let queryToSend = _.flow(
+    let queryToSend = flow(
       (q) => queryHelper.addMeta(q, { creatorAccountId: cache.username }),
       (q) => queryHelper.sign(q, cache.key)
     )(query)
@@ -322,32 +324,31 @@ function getAllUnsignedTransactions (accountId) {
 /**
  * wrapper function of commands
  * @param {String} privateKey
- * @param {Function} buildQuery
- * @param {Number} timeoutLimit timeoutLimit
+ * @param {Object} tx transaction
+ * @param {Number} timeoutLimit
  */
 function command (
   privateKey = '',
-  buildTx = function () {},
+  tx,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
   let txClient, txHash
 
   return new Promise((resolve, reject) => {
-    const tx = buildTx()
-    const keys = crypto.convertFromExisting(
-      crypto.fromPrivateKey(privateKey).publicKey().hex(),
-      privateKey
-    )
-    const protoTx = makeProtoTxWithKeys(tx, keys)
+    let txToSend = flow(
+      (t) => txHelper.addMeta(t, { creatorAccountId: cache.username }),
+      (t) => txHelper.sign(t, cache.key)
+    )(tx)
+
+    txHash = txHelper.hash(txToSend)
 
     txClient = new endpointGrpc.CommandServiceClient(
       cache.nodeIp
     )
-    txHash = blob2array(tx.hash().blob())
 
     debug('submitting transaction...')
     debug('peer ip:', cache.nodeIp)
-    debug('parameters:', JSON.stringify(protoTx.toObject().payload, null, '  '))
+    debug('parameters:', JSON.stringify(txToSend.getPayload(), null, '  '))
     debug('txhash:', Buffer.from(txHash).toString('hex'))
     debug('')
 
@@ -356,7 +357,7 @@ function command (
       reject(new Error('please check IP address OR your internet connection'))
     }, timeoutLimit)
 
-    txClient.torii(protoTx, (err, data) => {
+    txClient.torii(txToSend, (err, data) => {
       clearTimeout(timer)
 
       if (err) {
@@ -385,7 +386,6 @@ function command (
           }
 
           const status = response.getTxStatus()
-          const TxStatus = require('./iroha-helpers/proto/endpoint_pb.js').TxStatus
           const statusName = getProtoEnumName(
             TxStatus,
             'iroha.protocol.TxStatus',
@@ -409,18 +409,12 @@ function command (
  * @param {String} domainId
  * @param {String} mainPubKey
  */
-function createAccount (privateKey, accountName, domainId, mainPubKey) {
+function createAccount (privateKey, accountName, domainId, mainPubkey) {
   debug('starting createAccount...')
 
   return command(
     privateKey,
-    function buildTx () {
-      return txBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .createAccount(accountName, domainId, mainPubKey)
-        .build()
-    }
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, mainPubkey })
   )
 }
 
@@ -436,13 +430,7 @@ function createAsset (privateKey, assetName, domainId, precision) {
 
   return command(
     privateKey,
-    function buildTx () {
-      return txBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .createAsset(assetName, domainId, precision)
-        .build()
-    }
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision })
   )
 }
 
@@ -453,18 +441,12 @@ function createAsset (privateKey, assetName, domainId, precision) {
  * @param {String} assetId
  * @param {String} amount
  */
-function addAssetQuantity (privateKey, accountId, assetId, amount) {
+function addAssetQuantity (privateKey, assetId, amount) {
   debug('starting addAssetQuantity...')
 
   return command(
     privateKey,
-    function buildTx () {
-      return txBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .addAssetQuantity(assetId, amount)
-        .build()
-    }
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount })
   )
 }
 
@@ -480,13 +462,7 @@ function setAccountDetail (privateKey, accountId, key, value) {
 
   return command(
     privateKey,
-    function buildTx () {
-      return txBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .setAccountDetail(accountId, key, value)
-        .build()
-    }
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value })
   )
 }
 
@@ -504,13 +480,7 @@ function transferAsset (privateKey, srcAccountId, destAccountId, assetId, descri
 
   return command(
     privateKey,
-    function buildTx () {
-      return txBuilder
-        .creatorAccountId(cache.username)
-        .createdTime(Date.now())
-        .transferAsset(srcAccountId, destAccountId, assetId, description, amount)
-        .build()
-    }
+    txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
   )
 }
 
@@ -528,14 +498,6 @@ function createSettlement () {
  */
 function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-function blob2array (blob) {
-  const bytearray = new Uint8Array(blob.size())
-  for (let i = 0; i < blob.size(); ++i) {
-    bytearray[i] = blob.get(i)
-  }
-  return bytearray
 }
 
 const protoEnumName = {}
@@ -562,16 +524,6 @@ function getProtoEnumName (obj, key, value) {
     }
     return getProtoEnumName(obj, key, value)
   }
-}
-
-function makeProtoTxWithKeys (builtTx, keys) {
-  const pbTransaction = require('./iroha-helpers/proto/block_pb.js').Transaction
-
-  const blob = new iroha.ModelProtoTransaction(builtTx).signAndAddSignature(keys).finish().blob()
-  const arr = blob2array(blob)
-  const protoTx = pbTransaction.deserializeBinary(arr)
-
-  return protoTx
 }
 
 /*
