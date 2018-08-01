@@ -58,7 +58,6 @@ const addCommand = (transaction, commandName, params) => {
  * @param {Number} meta.createdTime time of transaction creation
  * @param {Number} meta.quorum minimum amount of signatures needed to sign a transaction
  */
-
 const addMeta = (transaction, { creatorAccountId, createdTime = Date.now(), quorum = 1 }) => {
   let payload = getOrCreatePayload(transaction)
   let reducedPayload = getOrCreateReducedPayload(payload)
@@ -104,19 +103,10 @@ const sign = (transaction, privateKeyHex) => {
  * @param {String} privateKeyHex private key of query's creator in hex.
  * @returns {Uint8Array} transaction hash
  */
-
 const hash = transaction => new Uint8Array(sha3.array(transaction.getPayload().serializeBinary()))
 
 // TODO: Add types for commands
 export default {
-  addCommand,
-  addMeta,
-  sign,
-  emptyTransaction,
-  hash
-}
-
-module.exports = {
   addCommand,
   addMeta,
   sign,
