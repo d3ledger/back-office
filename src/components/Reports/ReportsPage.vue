@@ -162,7 +162,7 @@ export default {
      */
     loadPriceFiatList (asset, dateFrom, dateTo) {
       return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
-        limit: differenceInDays(dateTo, dateFrom),
+        limit: differenceInDays(dateTo, dateFrom) + 1,
         toTs: new Date(dateTo).getTime()
       })
         .then(res => {
