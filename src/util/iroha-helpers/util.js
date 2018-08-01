@@ -23,7 +23,28 @@ const hexStrToByte = string => {
   return new Uint8Array(a)
 }
 
+/**
+ * Transfroms hex string to Uint8Array of bytes
+ * @param {Uint8Array} uint8arr
+ * @returns {Uint8Array} string in hex
+ */
+const byteToHexString = uint8arr => {
+  if (!uint8arr) {
+    return ''
+  }
+
+  let hexStr = ''
+  for (var i = 0; i < uint8arr.length; i++) {
+    var hex = (uint8arr[i] & 0xff).toString(16)
+    hex = (hex.length === 1) ? '0' + hex : hex
+    hexStr += hex
+  }
+
+  return hexStr
+}
+
 export {
   capitalize,
-  hexStrToByte
+  hexStrToByte,
+  byteToHexString
 }
