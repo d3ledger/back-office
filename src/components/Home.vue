@@ -47,9 +47,9 @@
       @close="closeExchangeDialogWith()"
       center
     >
-      <el-form style="width: 100%">
-        <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
+      <el-form ref="settlementForm" :model="settlementForm" :rules="rules">
+        <el-form-item label="I send" prop="offer_amount" >
+          <el-input name="amount" v-model="settlementForm.offer_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogOfferAsset"
               @change="getOfferToRequestPrice()"
@@ -74,8 +74,8 @@
             <span v-else>...</span>
           </span>
         </el-form-item>
-        <el-form-item label="I receive" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
+        <el-form-item label="I receive" prop="request_amount">
+          <el-input name="amount" v-model="settlementForm.request_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogRequestAsset"
               @change="getOfferToRequestPrice()"
@@ -100,14 +100,14 @@
             <span v-else>...</span>
           </span>
         </el-form-item>
-        <el-form-item label="Counterparty">
-          <el-input v-model="exchangeForm.to" placeholder="Account id" />
+        <el-form-item label="Counterparty" prop="to">
+          <el-input v-model="settlementForm.to" placeholder="Account id" />
         </el-form-item>
         <el-form-item label="Additional information">
           <el-input
             type="textarea"
             :rows="2"
-            v-model="exchangeForm.description"
+            v-model="settlementForm.description"
             placeholder="Account id"
             resize="none"
           />
@@ -115,7 +115,7 @@
       </el-form>
       <el-button
         class="fullwidth black clickable"
-        @click="onSubmitExchangeForm()"
+        @click="onSubmitSettlementForm  ()"
         style="margin-top: 40px"
       >
         EXCHANGE
@@ -128,13 +128,14 @@
       @close="closeApprovalDialogWith()"
       center
       >
-      <el-form label-position="top">
+      <el-form ref="approvalForm" :model="approvalForm" :rules="rules">
         <el-form-item>
           Please enter your private key to confirm transaction
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="privateKey" label="Private key">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
+
               <el-input
                 name="privateKey"
                 placeholder="Your private key"
@@ -157,7 +158,7 @@
         <el-form-item style="margin-bottom: 0;">
           <el-button
             class="fullwidth black clickable"
-            @click="closeApprovalDialogWith(privateKey)"
+            @click="submitApprovalDialog()"
             >
             Confirm
           </el-button>
@@ -169,19 +170,30 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import inputValidation from '@/components/mixins/inputValidation'
 
 export default {
   name: 'Home',
-
+  mixins: [
+    inputValidation({
+      privateKey: 'privateKey',
+      to: 'nameDomain',
+      request_amount: 'tokensAmount',
+      offer_amount: 'tokensAmount'
+    })
+  ],
   data () {
     return {
       privateKey: null,
       isCollapsed: true,
-      exchangeForm: {
+      settlementForm: {
         to: null,
         request_amount: null,
         offer_amount: null,
         description: null
+      },
+      approvalForm: {
+        privateKey: null
       }
     }
   },
@@ -245,14 +257,22 @@ export default {
         .then(() => this.$router.push('/login'))
     },
 
-    closeApprovalDialogWith (privateKey) {
-      this.closeApprovalDialog(privateKey)
-      this.privateKey = null
+    closeApprovalDialogWith () {
+      this.closeApprovalDialog()
+      this.approvalForm.privateKey = null
+    },
+
+    submitApprovalDialog () {
+      this.$refs['approvalForm'].validate(valid => {
+        if (!valid) return
+        this.closeApprovalDialog(this.approvalForm.privateKey)
+        this.approvalForm.privateKey = null
+      })
     },
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
-      this.exchangeForm = {
+      this.settlementForm = {
         to: null,
         request_amount: null,
         request_asset: null,
@@ -262,36 +282,39 @@ export default {
       }
     },
 
-    onSubmitExchangeForm () {
+    onSubmitSettlementForm () {
       const s = this.settlementForm
-      this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
-          const offerAsset = this.exchangeDialogOfferAsset
-          const requestAsset = this.exchangeDialogRequestAsset
-          return this.$store.dispatch('createSettlement', {
-            privateKey,
-            to: s.to,
-            offerAssetId: offerAsset,
-            offerAmount: s.offer_amount,
-            requestAssetId: requestAsset,
-            requestAmount: s.request_amount
+      this.$refs['settlementForm'].validate(valid => {
+        if (!valid) return
+        this.openApprovalDialog()
+          .then(privateKey => {
+            if (!privateKey) return
+            const offerAsset = this.exchangeDialogOfferAsset
+            const requestAsset = this.exchangeDialogRequestAsset
+            return this.$store.dispatch('createSettlement', {
+              privateKey,
+              to: s.to,
+              offerAssetId: offerAsset,
+              offerAmount: s.offer_amount,
+              requestAssetId: requestAsset,
+              requestAmount: s.request_amount
+            })
+              .then(() => {
+                this.$message('New settlement has successfully been created')
+              })
+              .catch(err => {
+                console.error(err)
+                this.$message('Failed to create new settlement')
+              })
+              .finally(() => {
+                Object.assign(
+                  this.$data.settlementForm,
+                  this.$options.data().settlementForm
+                )
+                this.closeExchangeDialogWith()
+              })
           })
-            .then(() => {
-              this.$message('New settlement has successfully been created')
-            })
-            .catch(err => {
-              console.error(err)
-              this.$message('Failed to create new settlement')
-            })
-            .finally(() => {
-              Object.assign(
-                this.$data.settlementForm,
-                this.$options.data().settlementForm
-              )
-              this.closeExchangeDialogWith()
-            })
-        })
+      })
     },
 
     onFileChosen (file, fileList) {
