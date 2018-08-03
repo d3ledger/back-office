@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-container v-if="wallets.length">
     <el-main>
       <el-row>
         <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
@@ -98,7 +98,10 @@
         </el-col>
       </el-row>
     </el-dialog>
-  </div>
+  </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
@@ -114,10 +117,14 @@ import differenceInDays from 'date-fns/difference_in_days'
 import isAfter from 'date-fns/is_after'
 import endOfYesterday from 'date-fns/end_of_yesterday'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'reports-page',
   mixins: [dateFormat],
+  components: {
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   data () {
     return {
       reportFormVisible: false,
@@ -154,7 +161,7 @@ export default {
   },
   created () {
     this.$store.dispatch('getAccountAssets')
-    this.selectedWallet = this.wallets && this.wallets[0].name
+    this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].name
   },
   methods: {
     isDisabledDate: (date) => isAfter(date, endOfYesterday()),
