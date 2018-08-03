@@ -109,6 +109,7 @@ import FileSaver from 'file-saver'
 import subMonths from 'date-fns/sub_months'
 import startOfMonth from 'date-fns/start_of_month'
 import endOfMonth from 'date-fns/end_of_month'
+import endOfDay from 'date-fns/end_of_day'
 import differenceInDays from 'date-fns/difference_in_days'
 import isAfter from 'date-fns/is_after'
 import endOfYesterday from 'date-fns/end_of_yesterday'
@@ -138,7 +139,7 @@ export default {
     ]),
     previousMonthReports: function () {
       return this.wallets.map(x => {
-        const previousMonth = subMonths(new Date(), 1)
+        const previousMonth = subMonths(Date.now(), 1)
 
         return {
           assetId: x.assetId,
@@ -162,19 +163,21 @@ export default {
      */
     loadPriceFiatList (asset, dateFrom, dateTo) {
       return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
-        limit: differenceInDays(dateTo, dateFrom) + 1,
-        toTs: (new Date(dateTo).getTime() / 1000).toFixed()
+        limit: differenceInDays(dateTo, dateFrom),
+
+        // convert milliseconds to seconds; round down to prevent it goes next day
+        toTs: Math.floor(dateTo.getTime() / 1000)
       })
-        .then(res => {
-          return res
-            .find(x => (x.asset === asset))
-            .data
-            .map(({ time, close }) => ({ date: time * 1000, price: close }))
-        })
+        .then(res => res
+          .find(x => (x.asset === asset))
+          .data
+          .map(({ time, close }) => ({ date: time * 1000, price: close }))
+        )
     },
 
     download ({ date, assetId }, fileFormat) {
-      const [dateFrom, dateTo] = date
+      const dateFrom = date[0]
+      const dateTo = endOfDay(date[1])
       const wallet = this.wallets.find(x => (x.assetId === assetId))
 
       Promise.all([
