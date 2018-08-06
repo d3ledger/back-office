@@ -1,80 +1,32 @@
 [
   {
-    "assetId": "bitcoin#test",
+    "assetId": "omisego#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 1080368522
-      },
-      "precision": 8
-    }
+    "balance": "10.80368522"
   },
   {
-    "assetId": "bytecoin#test",
+    "assetId": "augur#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 100002
-      },
-      "precision": 2
-    }
+    "balance": "1000.02"
   },
   {
-    "assetId": "ethereum#test",
+    "assetId": "bytom#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 1025
-      },
-      "precision": 2
-    }
+    "balance": "10.25"
   },
   {
     "assetId": "eos#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 1080368522
-      },
-      "precision": 8
-    }
+    "balance":  "10.80368522"
   },
   {
-    "assetId": "dogecoin#test",
+    "assetId": "golem#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 20004
-      },
-      "precision": 2
-    }
+    "balance": "200.04"
   },
   {
-    "assetId": "aeon#test",
+    "assetId": "dgd#test",
     "accountId": "admin@test",
-    "balance": {
-      "value": {
-        "first": 0,
-        "second": 0,
-        "third": 0,
-        "fourth": 3003
-      },
-      "precision": 2
-    }
+    "balance": "30.03"
   }
 ]

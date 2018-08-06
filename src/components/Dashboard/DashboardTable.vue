@@ -44,7 +44,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import _ from 'lodash/collection'
+import includes from 'lodash/includes'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
@@ -70,8 +70,8 @@ export default {
     ]),
     filteredPortfolio () {
       return this.portfolio.filter(crypto => {
-        const isName = _.includes(crypto.name.toLowerCase(), this.filterInput.toLowerCase())
-        const isAsset = _.includes(crypto.asset.toLowerCase(), this.filterInput.toLowerCase())
+        const isName = includes(crypto.name.toLowerCase(), this.filterInput.toLowerCase())
+        const isAsset = includes(crypto.asset.toLowerCase(), this.filterInput.toLowerCase())
         return isName || isAsset
       })
     }

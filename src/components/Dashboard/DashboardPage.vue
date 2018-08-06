@@ -30,20 +30,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import DashboardPortfolio from '@/components/Dashboard/DashboardPortfolio'
-import DashboardDonutChart from '@/components/Dashboard/DashboardDonutChart'
-import DashboardTable from '@/components/Dashboard/DashboardTable'
-import DashboardChart from '@/components/Dashboard/DashboardChart'
-import NoAssetsCard from '@/components/common/NoAssetsCard'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'dashboard-page',
   components: {
-    DashboardPortfolio,
-    DashboardDonutChart,
-    DashboardTable,
-    DashboardChart,
-    NoAssetsCard
+    DashboardPortfolio: lazyComponent('Dashboard/DashboardPortfolio'),
+    DashboardDonutChart: lazyComponent('Dashboard/DashboardDonutChart'),
+    DashboardTable: lazyComponent('Dashboard/DashboardTable'),
+    DashboardChart: lazyComponent('Dashboard/DashboardChart'),
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   data () {
     return {}

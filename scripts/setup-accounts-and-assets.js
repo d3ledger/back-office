@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 /*
- * NODE_IP=localhost:50051 DEBUG=iroha-util node example/setup-accounts-and-assets.js
+ * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup-accounts-and-assets.js
  */
+
 const fs = require('fs')
 const path = require('path')
 const _ = require('lodash')
@@ -21,7 +22,7 @@ const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.pr
 const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
 
 // IP should start with 'http'
-const nodeIp = process.env.NODE_IP || '127.0.0.1:50051'
+const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
 const accounts = [`${testAccFull}`, `${aliceAccFull}`]
 const wallets = require(DUMMY_FILE_PATH).wallets
@@ -33,6 +34,9 @@ console.log('')
 
 irohaUtil.login(`${testAccFull}`, testPrivKeyHex, nodeIp)
   .then(() => tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
+  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
+
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
   .then(() => setupAccountTransactions(`${testAccFull}`, testPrivKeyHex))

@@ -2,10 +2,10 @@
 // file: endpoint.proto
 
 var endpoint_pb = require("./endpoint_pb");
-var block_pb = require("./block_pb");
+var transaction_pb = require("./transaction_pb");
 var queries_pb = require("./queries_pb");
+var qry_responses_pb = require("./qry_responses_pb");
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb");
-var responses_pb = require("./responses_pb");
 var grpc = require("grpc-web-client").grpc;
 
 var CommandService = (function () {
@@ -19,7 +19,16 @@ CommandService.Torii = {
   service: CommandService,
   requestStream: false,
   responseStream: false,
-  requestType: block_pb.Transaction,
+  requestType: transaction_pb.Transaction,
+  responseType: google_protobuf_empty_pb.Empty
+};
+
+CommandService.ListTorii = {
+  methodName: "ListTorii",
+  service: CommandService,
+  requestStream: false,
+  responseStream: false,
+  requestType: endpoint_pb.TxList,
   responseType: google_protobuf_empty_pb.Empty
 };
 
@@ -53,6 +62,27 @@ CommandServiceClient.prototype.torii = function torii(requestMessage, metadata, 
     callback = arguments[1];
   }
   grpc.unary(CommandService.Torii, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          callback(Object.assign(new Error(response.statusMessage), { code: response.status, metadata: response.trailers }), null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+};
+
+CommandServiceClient.prototype.listTorii = function listTorii(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  grpc.unary(CommandService.ListTorii, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,
@@ -142,7 +172,7 @@ QueryService.Find = {
   requestStream: false,
   responseStream: false,
   requestType: queries_pb.Query,
-  responseType: responses_pb.QueryResponse
+  responseType: qry_responses_pb.QueryResponse
 };
 
 QueryService.FetchCommits = {
@@ -151,7 +181,7 @@ QueryService.FetchCommits = {
   requestStream: false,
   responseStream: true,
   requestType: queries_pb.BlocksQuery,
-  responseType: responses_pb.BlockQueryResponse
+  responseType: qry_responses_pb.BlockQueryResponse
 };
 
 exports.QueryService = QueryService;

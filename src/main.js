@@ -6,19 +6,92 @@ import router from './router'
 import store from './store'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload } from '@fortawesome/free-solid-svg-icons'
+
+import { faCog } from '@fortawesome/free-solid-svg-icons/faCog'
+import { faChartLine } from '@fortawesome/free-solid-svg-icons/faChartLine'
+import { faWallet } from '@fortawesome/free-solid-svg-icons/faWallet'
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt'
+import { faFileInvoice } from '@fortawesome/free-solid-svg-icons/faFileInvoice'
+import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt'
+import { faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons/faAngleDoubleDown'
+import { faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons/faAngleDoubleUp'
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
+import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
+import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import locale from 'element-ui/lib/locale/lang/en'
+import {
+  Dialog,
+  Menu,
+  MenuItem,
+  Input,
+  Radio,
+  RadioGroup,
+  Select,
+  Option,
+  Button,
+  Table,
+  TableColumn,
+  DatePicker,
+  Form,
+  FormItem,
+  Tag,
+  Row,
+  Col,
+  Upload,
+  Card,
+  Container,
+  Header,
+  Aside,
+  Main,
+  Loading,
+  Message,
+  MessageBox
+} from 'element-ui'
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
 import 'cryptocoins-icons/webfont/cryptocoins.css'
+
+import ECharts from 'vue-echarts/components/ECharts'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/pie'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/legendScroll'
+
+Vue.component('ECharts', ECharts)
+
+Vue.use(Dialog)
+Vue.use(Menu)
+Vue.use(MenuItem)
+Vue.use(Input)
+Vue.use(Radio)
+Vue.use(RadioGroup)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Button)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(DatePicker)
+Vue.use(Form)
+Vue.use(FormItem)
+Vue.use(Tag)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Upload)
+Vue.use(Card)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Aside)
+Vue.use(Main)
+Vue.use(Loading.directive)
+Vue.prototype.$alert = MessageBox.alert
+Vue.prototype.$message = Message
+locale.use(lang)
 
 library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)
 Vue.component('fa-icon', FontAwesomeIcon)
 
-// TODO: import only necessary components
-Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 
 new Vue({

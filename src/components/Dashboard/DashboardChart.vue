@@ -26,11 +26,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import LineChartTable from '@/components/Dashboard/Charts/LineChartTable'
+import { lazyComponent } from '@router'
 
 export default {
   components: {
-    LineChartTable
+    LineChartTable: lazyComponent('Dashboard/Charts/LineChartTable')
   },
   data () {
     return {
@@ -79,6 +79,10 @@ export default {
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-end;
+}
+
+.card-content_body {
+  height: 100%;
 }
 
 .chart_time-filter {

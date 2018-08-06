@@ -1,34 +1,41 @@
 import Vue from 'vue'
-import _ from 'lodash'
+import map from 'lodash/fp/map'
+import flatMap from 'lodash/fp/flatMap'
+import filter from 'lodash/fp/filter'
+import concat from 'lodash/fp/concat'
+import fromPairs from 'lodash/fp/fromPairs'
+import flow from 'lodash/fp/flow'
+import last from 'lodash/fp/last'
+import nth from 'lodash/fp/nth'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 
-const types = _([
-  'LOAD_DASHBOARD',
-  'GET_PRICE_BY_FILTER',
-  'GET_PORTFOLIO_HISTORY'
-]).chain()
-  .flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE'])
-  .concat([
+const types = flow(
+  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
+  concat([
     'RESET',
     'GET_PORTFOLIO_FULL_PRICE',
     'GET_PORTFOLIO_PRICE_LIST',
     'GET_PORTFOLIO_PRICE_PERCENTAGE',
     'SELECT_CHART_FILTER',
     'SELECT_CHART_CRYPTO'
-  ])
-  .map(x => [x, x])
-  .fromPairs()
-  .value()
+  ]),
+  map(x => [x, x]),
+  fromPairs
+)([
+  'LOAD_DASHBOARD',
+  'GET_PRICE_BY_FILTER',
+  'GET_PORTFOLIO_HISTORY'
+])
 
 const convertData = (obj, wallets) => {
   const getEqTime = (t) => {
-    return _(obj)
-      .filter(c => c.data.length)
-      .map(c => ({
+    return flow(
+      filter(c => c.data.length),
+      map(c => ({
         asset: c.asset,
-        value: _.find(c.data, d => d.time === t)
+        value: c.data.find(d => d.time === t)
       }))
-      .value()
+    )(obj)
   }
   const getSum = (d) => {
     return d.reduce((p, n) => {
@@ -36,12 +43,12 @@ const convertData = (obj, wallets) => {
       return p + (n.value.close * crypto.amount)
     }, 0)
   }
-  const timeKey = _.findKey(obj, (c) => {
-    return c.data.length > 0 && c.data[0].time
+  const timeKey = obj.find(c => {
+    return c.data.length && c.data[0].time
   })
-  return _(obj[timeKey].data)
-    .map('time')
-    .map(t => {
+  return flow(
+    map('time'),
+    map(t => {
       const d = getEqTime(t)
       const s = getSum(d)
       return {
@@ -50,7 +57,7 @@ const convertData = (obj, wallets) => {
         data: d
       }
     })
-    .value()
+  )(timeKey.data)
 }
 
 function initialState () {
@@ -119,8 +126,8 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_FULL_PRICE] (state) {
-    const today = _.last(state.portfolio.assetsHistory).sum
-    const prevDay = _.nth(state.portfolio.assetsHistory, -2).sum
+    const today = last(state.portfolio.assetsHistory).sum
+    const prevDay = nth(-2)(state.portfolio.assetsHistory).sum
     Vue.set(state.portfolio, 'assetsFullPrice', {
       value: today.toFixed(2),
       diff: (today - prevDay).toFixed(2),
@@ -129,7 +136,7 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, wallets) {
-    const today = _.last(state.portfolio.assetsHistory)
+    const today = last(state.portfolio.assetsHistory)
     const currencies = []
     today.data.map(crypto => {
       const walletAsset = wallets.find(w => w.asset === crypto.asset)
@@ -144,8 +151,8 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_PRICE_LIST] (state, wallets) {
-    const today = _.last(state.portfolio.assetsHistory)
-    const prevDay = _.nth(state.portfolio.assetsHistory, -2)
+    const today = last(state.portfolio.assetsHistory)
+    const prevDay = nth(-2)(state.portfolio.assetsHistory)
     const currencies = []
     today.data.map(crypto => {
       const walletAsset = wallets.find(w => w.asset === crypto.asset)

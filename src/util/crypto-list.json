@@ -1,0 +1,57 @@
+[
+  {
+    "name": "OmiseGo",
+    "asset": "OMG",
+    "color": "ffb055"
+  },
+  {
+    "name": "BasicAttentionToken",
+    "asset": "BAT",
+    "color": "0055fe"
+  },
+  {
+    "name": "Augur",
+    "asset": "REP",
+    "color": "494949"
+  },
+  {
+    "name": "EOS",
+    "asset": "EOS",
+    "color": "ffb055"
+  },
+  {
+    "name": "Bytom",
+    "asset": "BTM",
+    "color": "0055fe"
+  },
+  {
+    "name": "Golem",
+    "asset": "GNT",
+    "color": "f4f4f8"
+  },
+  {
+    "name": "DGD",
+    "asset": "DGD",
+    "color": "e6e6ea"
+  },
+  {
+    "name": "Monaco",
+    "asset": "MCO",
+    "color": "fed766"
+  },
+  {
+    "name": "Salt",
+    "asset": "SALT",
+    "color": "2ab7ca"
+  },
+  {
+    "name": "ICONOMI",
+    "asset": "ICN",
+    "color": "fe4a49"
+  },
+  {
+    "name": "ether",
+    "asset": "ETH",
+    "color": "141414"
+  }
+]

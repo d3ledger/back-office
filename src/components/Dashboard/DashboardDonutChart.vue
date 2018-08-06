@@ -16,19 +16,19 @@
         </div>
       </el-col>
       <el-col class="donut-chart" :span="13">
-        <donut-chart :height="200" :data="portfolio"/>
+        <donut-chart :data="portfolio"/>
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script>
-import DonutChart from '@/components/Dashboard/Charts/DonutChart'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'dashboard-donut-chart',
   components: {
-    DonutChart
+    DonutChart: lazyComponent('Dashboard/Charts/DonutChart')
   },
   props: {
     portfolio: {

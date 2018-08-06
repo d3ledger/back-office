@@ -1,10 +1,19 @@
+<template>
+  <div class="echarts">
+    <ECharts
+      :options="chart"
+      :auto-resize="true"
+      @ready="onReady"
+    />
+  </div>
+</template>
+
 <script>
-import { Line } from 'vue-chartjs'
-import { format } from 'date-fns'
+import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
-  extends: Line,
+  name: 'line-chart-table',
   props: {
     data: {
       type: Array,
@@ -18,66 +27,57 @@ export default {
   mixins: [
     currencySymbol
   ],
+  data () {
+    return {
+      chart: {
+        grid: {
+          width: '104%',
+          height: '95%',
+          top: '0%',
+          bottom: '0%',
+          left: '-2%'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: {
+          show: true,
+          data: []
+        },
+        yAxis: {
+          show: false
+        },
+        series: [{
+          type: 'line',
+          symbol: 'none',
+          itemStyle: {
+            color: '#000000'
+          },
+          lineStyle: {
+            width: 1
+          },
+          areaStyle: {
+            color: '#fafafa'
+          },
+          data: []
+        }]
+      }
+    }
+  },
   watch: {
     data () {
-      this.updateChart()
+      this.onReady()
     }
   },
   methods: {
-    updateChart () {
-      const symbol = this.currencySymbol
-      let scales = {
-        xAxes: [{
-          gridLines: {
-            display: true,
-            drawTicks: true
-          },
-          ticks: {
-            display: true,
-            autoSkip: true,
-            maxTicksLimit: 10
-          }
-        }],
-        yAxes: [{
-          gridLines: {
-            display: true,
-            drawTicks: false,
-            drawBorder: false
-          },
-          ticks: {
-            display: false
-          }
-        }]
+    onReady (instance, ECharts) {
+      this.chart.tooltip.formatter = data => {
+        const value = data[0].value
+        const date = data[0].axisValue
+        return `${date}<br/>${value.toFixed(2)} ${this.currencySymbol}`
       }
-
-      this.renderChart({
-        labels: this.data.map(i => this.convertDate(i.time)),
-        datasets: [{
-          bezierCurve: false,
-          lineTension: 0,
-          backgroundColor: '#fafafa',
-          borderColor: '#000000',
-          borderWidth: 1,
-          data: this.data.map(i => i.close),
-          pointRadius: 0,
-          pointHitRadius: 10
-        }]
-      }, {
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        tooltips: {
-          callbacks: {
-            label: function (tooltipItem, data) {
-              const value = data.datasets[0].data[tooltipItem.index] || 0
-              return `${value} ${symbol}`
-            }
-          }
-        },
-        scales
-      })
+      this.chart.xAxis.data = this.data.map(i => this.convertDate(i.time))
+      this.chart.series[0].data = this.data.map(i => i.close)
     },
     convertDate (num) {
       const filterFormat = {
@@ -94,3 +94,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.echarts {
+  height: 432px;
+  width: 100%;
+}
+</style>

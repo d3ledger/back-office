@@ -1,5 +1,11 @@
-import _ from 'lodash'
-import { amountToString } from './iroha-amount'
+import flow from 'lodash/fp/flow'
+import isEmpty from 'lodash/fp/isEmpty'
+import isEqual from 'lodash/fp/isEqual'
+import uniqWith from 'lodash/fp/uniqWith'
+import sortBy from 'lodash/fp/sortBy'
+import reverse from 'lodash/fp/reverse'
+
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
 
 // TODO: To be removed.
 const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
@@ -24,12 +30,12 @@ function findSettlementOfTransaction (settlements = [], transferAsset) {
 }
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
-  if (_.isEmpty(transactions)) return []
+  if (isEmpty(transactions)) return []
 
   const transformed = []
 
   transactions.forEach(t => {
-    const { commandsList, createdTime } = t.payload
+    const { commandsList, createdTime } = t.payload.reducedPayload
 
     commandsList.forEach(c => {
       if (!c.transferAsset) return
@@ -42,9 +48,15 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
       } = c.transferAsset
 
       const tx = {
-        from: srcAccountId === accountId ? 'you' : srcAccountId,
-        to: destAccountId === accountId ? 'you' : destAccountId,
-        amount: amountToString(amount),
+        from: match(srcAccountId)
+          .on(x => x === accountId, () => 'you')
+          .on(x => x === notaryAccount, () => 'notary')
+          .otherwise(x => x),
+        to: match(destAccountId)
+          .on(x => x === accountId, () => 'you')
+          .on(x => x === notaryAccount, () => 'notary')
+          .otherwise(x => x),
+        amount: amount,
         date: createdTime,
         message: description
       }
@@ -79,18 +91,28 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
     *
     * To avoid it, we uniq the transactions.
     */
-  return _(transformed)
-    .chain()
-    .uniqWith(_.isEqual)
-    .sortBy('date')
-    .reverse()
-    .value()
+  return flow(
+    uniqWith(isEqual),
+    sortBy('date'),
+    reverse
+  )(transformed)
 }
 
 // TODO: extract settlements from raw transactions and return
 // TODO: might be able to put together with getTransferAssetsFrom
 export function getSettlementsFrom (transactions) {
-  if (_.isEmpty(transactions)) return []
+  if (isEmpty(transactions)) return []
 
   return DUMMY_SETTLEMENTS
 }
+
+// Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c
+const matched = x => ({
+  on: () => matched(x),
+  otherwise: () => x
+})
+
+const match = x => ({
+  on: (pred, fn) => (pred(x) ? matched(fn(x)) : match(x)),
+  otherwise: fn => fn(x)
+})
