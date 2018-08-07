@@ -376,14 +376,6 @@ export default {
                 message: 'Transfer successful!',
                 type: 'success'
               })
-              if (this.wallet.amount === this.transferForm.amount) {
-                this.$router.push({
-                  name: 'wallets',
-                  params: {
-                    emptyAsset: this.wallet.assetId
-                  }
-                })
-              }
               this.fetchWallet()
               this.resetTransferForm()
               this.transferFormVisible = false
