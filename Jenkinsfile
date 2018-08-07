@@ -1,10 +1,4 @@
 pipeline {
-  environment {
-    GIT_RAW_BASE_URL = "https://raw.githubusercontent.com/d3ledger/back-office"
-    DOCKER_REGISTRY_BASENAME = "d3ledger/back-office"
-
-  }
-
   options {
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
@@ -40,10 +34,6 @@ pipeline {
         }
       }
       post {
-        // success {
-        //   script {
-        //   }
-        // }
         cleanup {
           cleanWs()
         }
