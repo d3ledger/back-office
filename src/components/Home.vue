@@ -244,6 +244,15 @@ export default {
     this.$store.dispatch('loadSettings')
   },
 
+  beforeUpdate () {
+    if (this.exchangeDialogOfferAsset) {
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      this._refreshRules({
+        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount }
+      })
+    }
+  },
+
   methods: {
     ...mapActions([
       'openApprovalDialog',

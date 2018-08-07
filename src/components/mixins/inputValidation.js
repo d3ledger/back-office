@@ -25,11 +25,26 @@ const set = {
   ]
 }
 
+function checkBalance (amount) {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    const max = amount
+    if (Number(value) > Number(max)) errors.push('Current amount is bigger than your available balance')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
-    const validationKey = form[key]
-    rules[key] = set[validationKey]
+    const validationRule = form[key]
+    if (validationRule.pattern === 'tokensAmount') {
+      const tokensAmountRule = Object.assign([], set[validationRule.pattern])
+      tokensAmountRule.push({ validator: checkBalance(validationRule.amount) })
+      rules[key] = tokensAmountRule
+    } else {
+      rules[key] = set[validationRule]
+    }
   })
   return rules
 }
@@ -39,6 +54,12 @@ const inputValidation = (form) => {
     data () {
       return {
         rules: generateRules(form)
+      }
+    },
+    methods: {
+      _refreshRules (form) {
+        const newRules = generateRules(form)
+        this.rules = Object.assign(this.rules, newRules)
       }
     }
   }

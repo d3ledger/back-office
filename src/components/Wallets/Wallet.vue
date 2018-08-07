@@ -314,6 +314,12 @@ export default {
     this.fetchWallet()
   },
 
+  beforeUpdate () {
+    this._refreshRules({
+      amount: { pattern: 'tokensAmount', amount: this.wallet.amount }
+    })
+  },
+
   methods: {
     ...mapActions([
       'openApprovalDialog',
@@ -420,7 +426,6 @@ export default {
       let isValid = true
       this.$refs[ref].validate(valid => {
         if (!valid) isValid = false
-        console.log(isValid)
       })
       return isValid
     }
