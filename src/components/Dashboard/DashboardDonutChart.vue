@@ -1,7 +1,7 @@
 <template>
   <el-card class="card">
     <el-row>
-      <el-col :span="11">
+      <el-col :span="13">
         <div class="list_crypto">
           <div class="list_crypto-content">
             <div v-for="(item, index) in portfolio"
@@ -15,7 +15,7 @@
           </div>
         </div>
       </el-col>
-      <el-col class="donut-chart" :span="13">
+      <el-col class="donut-chart" :span="11">
         <donut-chart :data="portfolio"/>
       </el-col>
     </el-row>
@@ -57,7 +57,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  width: 100%;
+  width: 110%;
   height: 100%;
   overflow-y: scroll;
   padding-right: 17px;
@@ -65,21 +65,23 @@ export default {
 }
 
 .list_crypto-content .list_crypto-content-item {
-  margin-bottom: 5px;
+  min-width: 50px;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .list_crypto-content-color {
-  width: 1rem;
-  height: 1rem;
-  margin-right: 2px;
+  float: left;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 3px;
   border-radius: 1rem;
-  display: inline-block;
+  margin-top: 4px;
   background-color: #445886;
 }
 
 .list_crypto-content-asset {
-  float: right;
-  width: 40px;
+  font-size: 0.9rem;
 }
 
 .donut-chart {
