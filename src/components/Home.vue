@@ -49,7 +49,7 @@
     >
       <el-form style="width: 100%">
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.offer_amount" @input="calculatePriceRequest" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogOfferAsset"
               @change="getOfferToRequestPrice()"
@@ -75,7 +75,7 @@
           </span>
         </el-form-item>
         <el-form-item label="I receive" prop="amount">
-          <el-input name="amount" v-model="exchangeForm.request_amount" @input="calculatePriceOffer" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogRequestAsset"
               @change="getOfferToRequestPrice()"
@@ -292,18 +292,6 @@ export default {
               this.closeExchangeDialogWith()
             })
         })
-    },
-
-    calculatePriceOffer (value) {
-      if (this.exchangeDialogPrice) {
-        this.exchangeForm.offer_amount = value / this.exchangeDialogPrice
-      }
-    },
-
-    calculatePriceRequest (value) {
-      if (this.exchangeDialogPrice) {
-        this.exchangeForm.request_amount = value * this.exchangeDialogPrice
-      }
     },
 
     onFileChosen (file, fileList) {
