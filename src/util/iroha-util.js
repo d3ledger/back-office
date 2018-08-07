@@ -1,13 +1,10 @@
 import { grpc } from 'grpc-web-client'
 import flow from 'lodash/fp/flow'
-import { createKeyPair } from 'ed25519.js'
-import { byteToHexString } from './iroha-helpers/util'
-import queryHelper from './iroha-helpers/query-helper'
-import txHelper from './iroha-helpers/tx-helper'
+import { queryHelper, txHelper, cryptoHelper } from 'iroha-helpers'
 
-import { QueryServiceClient, CommandServiceClient } from './iroha-helpers/proto/endpoint_pb_service.js'
-import * as pbResponse from './iroha-helpers/proto/qry_responses_pb.js'
-import { TxStatus, TxStatusRequest } from './iroha-helpers/proto/endpoint_pb.js'
+import { QueryServiceClient, CommandServiceClient } from 'iroha-helpers/lib/proto/endpoint_pb_service.js'
+import * as pbResponse from 'iroha-helpers/lib/proto/qry_responses_pb.js'
+import { TxStatus, TxStatusRequest } from 'iroha-helpers/lib/proto/endpoint_pb.js'
 
 const debug = require('debug')('iroha-util')
 /**
@@ -104,13 +101,7 @@ function isLoggedIn () {
 /**
  * generate new keypair
  */
-function generateKeypair () {
-  const keys = createKeyPair()
-  const publicKey = byteToHexString(keys.publicKey)
-  const privateKey = byteToHexString(keys.privateKey)
-
-  return { publicKey, privateKey }
-}
+const generateKeypair = cryptoHelper.generateKeyPair
 
 // TODO: implement it
 function acceptSettlement () {
@@ -334,7 +325,7 @@ function command (
   return new Promise((resolve, reject) => {
     let txToSend = flow(
       (t) => txHelper.addMeta(t, { creatorAccountId: cache.username }),
-      (t) => txHelper.sign(t, cache.key)
+      (t) => txHelper.sign(t, privateKey)
     )(tx)
 
     txHash = txHelper.hash(txToSend)
