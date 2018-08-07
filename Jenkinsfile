@@ -3,7 +3,6 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
   }
-
   agent any
   stages {
     stage ('Stop same job builds') {
