@@ -207,13 +207,13 @@
               {{ wallet.asset }}
             </div>
           </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span class="form-item-text-amount">
-              {{ wallet | toUpperCase }}
-            </span>
-          </span>
         </el-form-item>
+        <span class="form-item-text">
+          Available balance:
+          <span class="form-item-text-amount">
+            {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+          </span>
+        </span>
         <el-form-item label="Counterparty" prop="to">
           <el-input v-model="transferForm.to" placeholder="Account id" />
         </el-form-item>
@@ -420,6 +420,7 @@ export default {
       let isValid = true
       this.$refs[ref].validate(valid => {
         if (!valid) isValid = false
+        console.log(isValid)
       })
       return isValid
     }
