@@ -161,7 +161,7 @@ export default {
   },
   created () {
     this.$store.dispatch('getAccountAssets')
-    this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].name
+    this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
   },
   methods: {
     isDisabledDate: (date) => isAfter(date, endOfYesterday()),
