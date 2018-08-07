@@ -1,7 +1,3 @@
-properties([parameters([
-  ])])
-
-
 pipeline {
   environment {
     GIT_RAW_BASE_URL = "https://raw.githubusercontent.com/d3ledger/back-office"
@@ -37,7 +33,10 @@ pipeline {
       agent { label 'x86_64' }
       steps {
         script {
-          docker {image 'node:10-alpine'}
+          iC = docker.image("node:10-slim")
+          iC.inside() {
+            def var = sh(script: "yarn; yarn test:unit; yarn test:e2e", returnStatus: true)
+          }
         }
       }
       post {
