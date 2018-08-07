@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-container v-if="wallets.length">
     <el-main>
       <el-row>
         <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
@@ -69,6 +69,7 @@
             type="daterange"
             start-placeholder="Start date"
             end-placeholder="End date"
+            :picker-options="pickerOptions"
           />
         </el-form-item>
       </el-form>
@@ -97,7 +98,10 @@
         </el-col>
       </el-row>
     </el-dialog>
-  </div>
+  </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
@@ -105,16 +109,30 @@ import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import FileSaver from 'file-saver'
-import { subMonths, startOfMonth, endOfMonth } from 'date-fns'
+import subMonths from 'date-fns/sub_months'
+import startOfMonth from 'date-fns/start_of_month'
+import endOfMonth from 'date-fns/end_of_month'
+import endOfDay from 'date-fns/end_of_day'
+import differenceInDays from 'date-fns/difference_in_days'
+import isAfter from 'date-fns/is_after'
+import endOfYesterday from 'date-fns/end_of_yesterday'
+import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import { lazyComponent } from '@router'
 
 export default {
   name: 'reports-page',
   mixins: [dateFormat],
+  components: {
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   data () {
     return {
       reportFormVisible: false,
       selectedWallet: null,
-      date: ''
+      date: '',
+      pickerOptions: {
+        disabledDate: this.isDisabledDate
+      }
     }
   },
   computed: {
@@ -124,11 +142,11 @@ export default {
     ...mapGetters([
       'wallets',
       'settingsView',
-      'portfolioList'
+      'portfolioHistory'
     ]),
     previousMonthReports: function () {
       return this.wallets.map(x => {
-        const previousMonth = subMonths(new Date(), 1)
+        const previousMonth = subMonths(Date.now(), 1)
 
         return {
           assetId: x.assetId,
@@ -143,36 +161,61 @@ export default {
   },
   created () {
     this.$store.dispatch('getAccountAssets')
+    this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
   },
   methods: {
-    download ({ date, assetId }, fileFormat) {
-      Promise.all([
-        this.$store.dispatch('loadDashboard'),
-        this.$store.dispatch('getAccountAssetTransactions', { assetId })
-      ])
-        .then(() => {
-          const [dateFrom, dateTo] = date
-          const wallet = this.wallets.find(x => (x.assetId === assetId))
-          const priceFiat = this.portfolioList.find(({ asset }) => asset === wallet.asset).price
-          const params = {
-            accountId: this.accountId,
-            wallet,
-            transactions: this.$store.getters.getTransactionsByAssetId(assetId),
-            assetId,
-            priceFiat,
-            dateFrom,
-            dateTo,
-            formatDate: this.formatDate.bind(this),
-            formatDateWith: this.formatDateWith.bind(this),
-            fiat: this.settingsView.fiat
-          }
-          const generating = (fileFormat === 'pdf')
-            ? generatePDF(params)
-            : generateCSV(params)
+    isDisabledDate: (date) => isAfter(date, endOfYesterday()),
 
-          generating.then(({ blob, filename }) => {
-            FileSaver.saveAs(blob, filename)
-          })
+    /*
+     * collect prices from fiat to crypto
+     */
+    loadPriceFiatList (asset, dateFrom, dateTo) {
+      return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
+        limit: differenceInDays(dateTo, dateFrom),
+
+        // convert milliseconds to seconds; round down to prevent it goes next day
+        toTs: Math.floor(dateTo.getTime() / 1000)
+      })
+        .then(res => res
+          .find(x => (x.asset === asset))
+          .data
+          .map(({ time, close }) => ({ date: time * 1000, price: close }))
+        )
+    },
+
+    download ({ date, assetId }, fileFormat) {
+      const dateFrom = date[0]
+      const dateTo = endOfDay(date[1])
+      const wallet = this.wallets.find(x => (x.assetId === assetId))
+
+      Promise.all([
+        this.loadPriceFiatList(wallet.asset, dateFrom, dateTo),
+        this.$store.dispatch('getAccountAssetTransactions', { assetId })
+      ]).then(([priceFiatList]) => {
+        const params = {
+          accountId: this.accountId,
+          wallet,
+          transactions: this.$store.getters.getTransactionsByAssetId(assetId),
+          assetId,
+          priceFiatList,
+          dateFrom,
+          dateTo,
+          formatDate: this.formatDate.bind(this),
+          formatDateWith: this.formatDateWith.bind(this),
+          fiat: this.settingsView.fiat
+        }
+        const generating = (fileFormat === 'pdf')
+          ? generatePDF(params)
+          : generateCSV(params)
+
+        generating.then(({ blob, filename }) => {
+          FileSaver.saveAs(blob, filename)
+        })
+      })
+        .catch(err => {
+          console.error(err)
+
+          this.$message.error(`Failed to generate a report. Please try again later.`)
         })
     }
   }

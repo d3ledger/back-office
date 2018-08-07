@@ -4,12 +4,20 @@ import entries from 'lodash/fp/entries'
 import map from 'lodash/fp/map'
 import values from 'lodash/fp/values'
 import sortBy from 'lodash/fp/sortBy'
-import pdfMake from 'pdfmake/build/pdfmake.min'
-import pdfFonts from 'pdfmake/build/vfs_fonts'
-import { isWithinRange, isAfter, startOfDay, endOfDay } from 'date-fns'
-import { parse as json2csv } from 'json2csv'
+import pdfMake from 'pdfmake-lite/build/pdfmake.min'
+import isWithinRange from 'date-fns/is_within_range'
+import isAfter from 'date-fns/is_after'
+import startOfDay from 'date-fns/start_of_day'
+import endOfDay from 'date-fns/end_of_day'
+import isSameDay from 'date-fns/is_same_day'
+import { encode as json2csv } from 'csv.js'
+import { fontLoader } from './font-util'
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs
+pdfMake.vfs = fontLoader.vfs
+fontLoader.addFont({URL: 'fonts/Roboto-Regular.ttf', name: 'Roboto-Regular.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-Italic.ttf', name: 'Roboto-Italic.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-Medium.ttf', name: 'Roboto-Medium.ttf'})
+fontLoader.addFont({URL: 'fonts/Roboto-MediumItalic.ttf', name: 'Roboto-MediumItalic.ttf'})
 
 const debug = require('debug')('report-util')
 
@@ -21,7 +29,7 @@ const debug = require('debug')('report-util')
 export function generatePDF (params) {
   debug('generating PDF output...')
 
-  return new Promise((resolve, reject) => {
+  return fontLoader.load().then(() => new Promise((resolve, reject) => {
     const formatDate = params.formatDate
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
@@ -96,7 +104,7 @@ export function generatePDF (params) {
 
       resolve({ filename: data.filename, blob })
     })
-  })
+  }))
 }
 
 /**
@@ -110,7 +118,7 @@ export function generateCSV (params) {
   return new Promise((resolve, reject) => {
     const data = generateReportData.call(this, { ext: 'csv', ...params })
     const dataForCSV = data.transactionDetails.map(tx => ({
-      'Time': tx.time,
+      'Time': tx.time.replace(',', ''),
       'To': tx.to,
       'Amount': tx.amount,
       [`Amount in ${data.fiat}`]: tx.amountFiat,
@@ -123,7 +131,7 @@ export function generateCSV (params) {
     let csv
 
     try {
-      csv = json2csv(dataForCSV, { fields })
+      csv = json2csv(dataForCSV, ',', fields)
     } catch (err) {
       return reject(err)
     }
@@ -146,7 +154,9 @@ export function generateCSV (params) {
  * @param {Object} params.wallet - { name, asset, precision, amount }
  * @param {Object[]} params.transactins - an array of TransferAsset transactions
  * @param {String} params.fiat - e.g. 'RUB'
- * @param {Number} params.priceFiat - a price of fiat
+ * @param {Array} params.priceFiatList - a list of prices *from fiat to crypto*
+ * @param {Number} params.priceFiatList[].price
+ * @param {Number} params.priceFiatList[].date
  * @param {Date} params.dateFrom - start of the range
  * @param {Date} params.dateTo - end of the range
  * @param {String} params.ext - e.g. 'pdf'
@@ -158,7 +168,7 @@ export function generateReportData ({
   accountId,
   wallet,
   transactions,
-  priceFiat,
+  priceFiatList,
   dateFrom,
   dateTo,
   ext,
@@ -174,6 +184,9 @@ export function generateReportData ({
     .reduce((sum, x) => sum + x, 0)
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
+  const getDailyPriceFiat = (dateExpected) => {
+    return priceFiatList.find(({ date }) => isSameDay(date, dateExpected)).price
+  }
 
   /*
    * prepare basic data
@@ -199,9 +212,9 @@ export function generateReportData ({
   const transfersOut = sumAmount(txsWithinRange.filter(isFromYou))
   const netChange = transfersIn - transfersOut
   const endingBalance = currentAmount - netChangeAfterRange
-  const endingBalanceFiat = endingBalance * priceFiat
+  const endingBalanceFiat = endingBalance / getDailyPriceFiat(dateTo)
   const startingBalance = endingBalance - netChange
-  const startingBalanceFiat = startingBalance * priceFiat
+  const startingBalanceFiat = startingBalance / getDailyPriceFiat(dateTo)
 
   /*
    * prepare transactionsByDay
@@ -211,9 +224,9 @@ export function generateReportData ({
     entries,
     map(([date, txs]) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
-      const dailyInFiat = dailyIn * priceFiat
+      const dailyInFiat = dailyIn / getDailyPriceFiat(date)
       const dailyOut = sumAmount(txs.filter(isFromYou))
-      const dailyOutFiat = dailyOut * priceFiat
+      const dailyOutFiat = dailyOut / getDailyPriceFiat(date)
       const dailyNet = dailyIn - dailyOut
 
       return {
@@ -245,9 +258,9 @@ export function generateReportData ({
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
-        amountFiat: (amount * priceFiat).toFixed(precision),
+        amountFiat: (amount / getDailyPriceFiat(tx.date)).toFixed(precision),
         balance: balance.toFixed(precision),
-        balanceFiat: (balance * priceFiat).toFixed(precision)
+        balanceFiat: (balance / getDailyPriceFiat(tx.date)).toFixed(precision)
       }
     })
   )(txsWithinRange)
@@ -258,7 +271,8 @@ export function generateReportData ({
     description: 'Starting Balance',
     amount: null,
     amountFiat: null,
-    balance: startingBalance.toFixed(precision)
+    balance: startingBalance.toFixed(precision),
+    balanceFiat: (startingBalance / getDailyPriceFiat(dateFrom)).toFixed(precision)
   })
 
   transactionDetails.push({
@@ -267,7 +281,8 @@ export function generateReportData ({
     description: 'Ending Balance',
     amount: null,
     amountFiat: null,
-    balance: endingBalance.toFixed(precision)
+    balance: endingBalance.toFixed(precision),
+    balanceFiat: (startingBalance / getDailyPriceFiat(dateTo)).toFixed(precision)
   })
 
   /*
