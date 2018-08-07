@@ -35,7 +35,7 @@ pipeline {
         script {
           iC = docker.image("node:10-slim")
           iC.inside() {
-            def var = sh(script: "yarn; yarn test:unit; yarn test:e2e", returnStatus: true)
+            sh(script: "yarn; yarn test:unit; yarn test:e2e")
           }
         }
       }
