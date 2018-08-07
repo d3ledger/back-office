@@ -8,7 +8,6 @@ import path from 'path'
 import _ from 'lodash'
 import irohaUtil from '../src/util/iroha-util'
 import ed25519 from 'ed25519.js'
-import { hexStrToByte } from '../src/util//iroha-helpers/util'
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
@@ -17,9 +16,9 @@ const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
-const testPubKey = ed25519.derivePublicKey(hexStrToByte(testPrivKeyHex))
+const testPubKey = ed25519.derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
-const alicePubKey = ed25519.derivePublicKey(hexStrToByte(alicePrivKeyHex))
+const alicePubKey = ed25519.derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
 // IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
