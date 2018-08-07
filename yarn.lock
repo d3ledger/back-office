@@ -2544,6 +2544,13 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
+buffer@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.2.0.tgz#53cf98241100099e9eeae20ee6d51d21b16e541e"
+  dependencies:
+    base64-js "^1.0.2"
+    ieee754 "^1.1.4"
+
 builtin-modules@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
@@ -3782,7 +3789,7 @@ echarts@^4.0.4, echarts@^4.1.0:
   dependencies:
     zrender "4.0.4"
 
-ed25519.js@^1.3.0:
+ed25519.js@^1.2.0, ed25519.js@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/ed25519.js/-/ed25519.js-1.3.0.tgz#11ff48508c4964302179aee33d2f870371df4ad8"
   dependencies:
@@ -4854,7 +4861,7 @@ globule@^1.0.0:
     lodash "~4.17.10"
     minimatch "~3.0.2"
 
-google-protobuf@^3.6.1:
+google-protobuf@^3.6.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.6.1.tgz#7ef58e2bea137a93cdaf5cfd5afa5f6abdd92025"
 
@@ -5326,6 +5333,18 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
+iroha-helpers@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.0.1.tgz#6f7b5d59fea0ebd6dcd072dbffdc8e4ad85cb5eb"
+  dependencies:
+    buffer "^5.2.0"
+    ed25519.js "^1.2.0"
+    google-protobuf "^3.6.0"
+    grpc-web-client "^0.6.2"
+    js-sha3 "^0.7.0"
+    lodash.clonedeep "^4.5.0"
+    lodash.foreach "^4.5.0"
+
 is-absolute-url@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-absolute-url/-/is-absolute-url-2.1.0.tgz#50530dfb84fcc9aa7dbe7852e83a37b93b9f2aa6"
@@ -5736,9 +5755,9 @@ js-queue@2.0.0:
   dependencies:
     easy-stack "^1.0.0"
 
-js-sha3@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
+js-sha3@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"
@@ -6161,6 +6180,10 @@ lodash.defaultsdeep@4.3.2:
 lodash.defaultsdeep@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.0.tgz#bec1024f85b1bd96cbea405b23c14ad6443a6f81"
+
+lodash.foreach@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.foreach/-/lodash.foreach-4.5.0.tgz#1a6a35eace401280c7f06dddec35165ab27e3e53"
 
 lodash.get@^4.4.2:
   version "4.4.2"
