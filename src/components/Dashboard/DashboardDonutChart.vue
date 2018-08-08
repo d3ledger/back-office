@@ -49,7 +49,7 @@ export default {
 
 .list_crypto {
   height: 190px;
-  width: 100%;
+  width: 105%;
   overflow: hidden;
 }
 
@@ -57,7 +57,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  width: 110%;
+  width: 105%;
   height: 100%;
   overflow-y: scroll;
   padding-right: 17px;
