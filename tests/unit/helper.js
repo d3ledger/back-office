@@ -8,8 +8,8 @@ export default {
   randomAccountId: () => randomHex(5) + '@' + randomHex(5),
   randomAssetId: () => randomHex(5) + '#' + randomHex(5),
   randomNodeIp: () => 'localhost:' + _.random(0, 65535),
-  randomPublicKey: () => randomHex(64),
-  randomPrivateKey: () => randomHex(64),
+  randomPublicKey: () => randomHex(16),
+  randomPrivateKey: () => randomHex(16),
   randomObject: () => ({ [randomHex(5)]: randomHex(5) }),
   randomAmount: () => String(Math.random()).substr(0, _.random(5, 10)),
   randomAmountRng: (obj) => {
