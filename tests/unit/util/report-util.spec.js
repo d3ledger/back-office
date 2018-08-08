@@ -1,5 +1,5 @@
 import chai from 'chai'
-import reportUtilInjector from 'inject-loader!../../../src/util/report-util.js'
+import reportUtilInjector from 'inject-loader!@util/report-util.js'
 
 const expect = chai.expect
 
