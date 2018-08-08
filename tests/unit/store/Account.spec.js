@@ -98,6 +98,7 @@ describe('Account store', () => {
         assets: randomObject(),
         connectionError: new Error()
       }
+
       const expectedState = {
         accountId: '',
         nodeIp: MOCK_NODE_IP,
@@ -182,7 +183,7 @@ describe('Account store', () => {
 
       mutations[types.GET_ACCOUNT_TRANSACTIONS_SUCCESS](state, transactions)
 
-      expect(state.rawTransactions).to.deep.equal(transactions)
+      expect(state.rawTransactions).to.be.deep.equal(transactions)
     })
 
     testErrorHandling('GET_ACCOUNT_TRANSACTIONS_FAILURE')
@@ -199,14 +200,14 @@ describe('Account store', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
         const params = { username: randomAccountId().split('@')[1] }
-
         actions.signup({ commit }, params)
           .then(() => {
-            expect(commit.args).to.deep.equal([
+            expect(commit.args).to.be.deep.equal([
               [types.SIGNUP_REQUEST],
               [types.SIGNUP_SUCCESS, {
                 username: params.username,
-                ...MOCK_KEYPAIR
+                privateKey: commit.args[1][1].privateKey,
+                publicKey: commit.args[1][1].publicKey
               }]
             ])
             done()
