@@ -141,6 +141,7 @@
     <el-dialog
       :title="'Withdraw ' + wallet.asset"
       :visible.sync="withdrawFormVisible"
+      @close="closeWithdrawDialog()"
       width="500px"
       center
     >
@@ -151,13 +152,13 @@
               {{ wallet.asset }}
             </div>
           </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span class="form-item-text-amount">
-              {{ wallet | toUpperCase }}
-            </span>
-          </span>
         </el-form-item>
+        <span class="form-item-text">
+          Available balance:
+          <span class="form-item-text-amount">
+            {{ wallet | toUpperCase }}
+          </span>
+        </span>
         <el-form-item label="Address">
           <el-input
             v-model="withdrawForm.wallet"
@@ -179,7 +180,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="400px"
+      width="500px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -197,12 +198,13 @@
     <el-dialog
       title="Transfer"
       :visible.sync="transferFormVisible"
+      @close="closeTransferForm()"
       width="500px"
       center
     >
       <el-form ref="transferForm" :model="transferForm" :rules="rules">
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model.number="transferForm.amount" placeholder="0">
+          <el-input name="amount" v-model="transferForm.amount" placeholder="0">
             <div slot="append">
               {{ wallet.asset }}
             </div>
@@ -412,14 +414,19 @@ export default {
     },
 
     resetTransferForm () {
-      this.transferForm.to = null
-      this.transferForm.amount = null
-      this.transferForm.description = ''
+      this.$refs.transferForm.resetFields()
     },
 
     resetWithdrawForm () {
-      this.withdrawForm.amount = null
-      this.withdrawForm.wallet = null
+      this.$refs.withdrawForm.resetFields()
+    },
+
+    closeWithdrawDialog () {
+      this.resetWithdrawForm()
+    },
+
+    closeTransferForm () {
+      this.resetTransferForm()
     },
 
     validateForm (ref) {
