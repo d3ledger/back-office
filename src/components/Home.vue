@@ -47,9 +47,9 @@
       @close="closeExchangeDialogWith()"
       center
     >
-      <el-form ref="settlementForm" :model="settlementForm" :rules="rules">
+      <el-form ref="exchangeForm" :model="exchangeForm" :rules="rules">
         <el-form-item label="I send" prop="offer_amount" >
-          <el-input name="amount" v-model="settlementForm.offer_amount" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogOfferAsset"
               @change="getOfferToRequestPrice()"
@@ -66,16 +66,16 @@
               </el-option>
             </el-select>
           </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-              {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
-            </span>
-            <span v-else>...</span>
-          </span>
         </el-form-item>
+        <span class="form-item-text">
+          Available balance:
+          <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
+            {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
+          </span>
+          <span v-else>...</span>
+        </span>
         <el-form-item label="I receive" prop="request_amount">
-          <el-input name="amount" v-model="settlementForm.request_amount" placeholder="0">
+          <el-input name="amount" v-model="exchangeForm.request_amount" placeholder="0">
             <el-select
               v-model="exchangeDialogRequestAsset"
               @change="getOfferToRequestPrice()"
@@ -92,22 +92,22 @@
               </el-option>
             </el-select>
           </el-input>
-          <span class="form-item-text">
-            Market price:
-            <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-              1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
-            </span>
-            <span v-else>...</span>
-          </span>
         </el-form-item>
+        <span class="form-item-text">
+          Market price:
+          <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
+            1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
+          </span>
+          <span v-else>...</span>
+        </span>
         <el-form-item label="Counterparty" prop="to">
-          <el-input v-model="settlementForm.to" placeholder="Account id" />
+          <el-input v-model="exchangeForm.to" placeholder="Account id" />
         </el-form-item>
         <el-form-item label="Additional information">
           <el-input
             type="textarea"
             :rows="2"
-            v-model="settlementForm.description"
+            v-model="exchangeForm.description"
             placeholder="Account id"
             resize="none"
           />
@@ -115,7 +115,7 @@
       </el-form>
       <el-button
         class="fullwidth black clickable"
-        @click="onSubmitSettlementForm  ()"
+        @click="onSubmitExchangeDialog()"
         style="margin-top: 40px"
       >
         EXCHANGE
@@ -132,17 +132,15 @@
         <el-form-item>
           Please enter your private key to confirm transaction
         </el-form-item>
-        <el-form-item prop="privateKey" label="Private key">
+        <el-form-item prop="privateKey">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
-
               <el-input
                 name="privateKey"
                 placeholder="Your private key"
-                v-model="privateKey"
+                v-model="approvalForm.privateKey"
               />
             </el-col>
-
             <el-upload
               action=""
               :auto-upload="false"
@@ -184,9 +182,8 @@ export default {
   ],
   data () {
     return {
-      privateKey: null,
       isCollapsed: true,
-      settlementForm: {
+      exchangeForm: {
         to: null,
         request_amount: null,
         offer_amount: null,
@@ -268,32 +265,24 @@ export default {
 
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
-      this.approvalForm.privateKey = null
+      this.$refs.approvalForm.resetFields()
     },
 
     submitApprovalDialog () {
-      this.$refs['approvalForm'].validate(valid => {
+      this.$refs.approvalForm.validate(valid => {
         if (!valid) return
         this.closeApprovalDialog(this.approvalForm.privateKey)
-        this.approvalForm.privateKey = null
       })
     },
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
-      this.settlementForm = {
-        to: null,
-        request_amount: null,
-        request_asset: null,
-        offer_amount: null,
-        offer_asset: null,
-        description: null
-      }
+      this.$refs.exchangeForm.resetFields()
     },
 
-    onSubmitSettlementForm () {
-      const s = this.settlementForm
-      this.$refs['settlementForm'].validate(valid => {
+    onSubmitExchangeDialog () {
+      const s = this.exchangeForm
+      this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
         this.openApprovalDialog()
           .then(privateKey => {
@@ -317,8 +306,8 @@ export default {
               })
               .finally(() => {
                 Object.assign(
-                  this.$data.settlementForm,
-                  this.$options.data().settlementForm
+                  this.$data.exchangeDialog,
+                  this.$options.data().exchangeDialog
                 )
                 this.closeExchangeDialogWith()
               })
@@ -329,7 +318,7 @@ export default {
     onFileChosen (file, fileList) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        this.privateKey = (ev.target.result || '').trim()
+        this.approvalForm.privateKey = (ev.target.result || '').trim()
       }
       reader.readAsText(file.raw)
     }
