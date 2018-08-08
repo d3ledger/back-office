@@ -49,6 +49,7 @@
       <el-form style="width: 100%">
         <el-form-item label="Wallets">
           <el-select
+            id="wallet-selector"
             v-model="selectedWallet"
             placeholder="Choose wallets for a report"
             style="width: 100%;"
