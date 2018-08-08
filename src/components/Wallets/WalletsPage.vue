@@ -4,7 +4,7 @@
       <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
         v-for="wallet in filteredWallets"
-        :key="wallet.name"
+        :key="wallet.id"
         :walletId="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
@@ -45,31 +45,21 @@ export default {
     }
   },
 
-  created () {
-    Promise.all([
-      this.loadWalletsSortCriterion(),
-      this.getAccountAssets(),
-      this.getAllAssetTransactions()
-    ])
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'wallets' && this.wallets.length) {
+        this.$router.push(`/wallets/${this.wallets[0].id}`)
+      }
+    }
+  },
 
-    if (!this.currentCriterion) this.sort(this.criterions[0])
+  created () {
+    this.$store.dispatch('getAccountAssets')
   },
 
   mounted () {
     if (this.wallets.length) {
-      this.$router.push(`/wallets/${this.sortedWallets[0].id}`)
-    }
-  },
-
-  methods: {
-    ...mapActions([
-      'getAccountAssets',
-      'getAllAssetTransactions',
-      'loadWalletsSortCriterion',
-      'updateWalletsSortCriterion'
-    ]),
-    sort (criterion) {
-      this.updateWalletsSortCriterion(criterion)
+      this.$router.push(`/wallets/${this.wallets[0].id}`)
     }
   }
 }

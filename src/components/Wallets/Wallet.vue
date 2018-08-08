@@ -14,7 +14,7 @@
                   <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
                 </div>
                 <div style="width: 100%; display: flex;">
-                  <div role="button" class="button"  @click="receiveFormVisible = true">
+                  <div role="button" class="button" @click="receiveFormVisible = true">
                     <fa-icon icon="angle-double-down" />
                     <span>Deposit</span>
                   </div>
@@ -26,10 +26,10 @@
                     <fa-icon icon="arrow-right" />
                     <span>Transfer</span>
                   </div>
-                  <router-link class="button" :to="{ path: '/settlements/outgoing', query: { exchange: true, offer_asset: wallet.asset } }" >
+                  <div role="button" class="button" @click="openExchangeDialog(wallet.asset)">
                     <fa-icon icon="exchange-alt" />
                     <span>Exchange</span>
-                  </router-link>
+                  </div>
                 </div>
               </div>
             </el-card>
@@ -154,7 +154,7 @@
           <span class="form-item-text">
             Available balance:
             <span class="form-item-text-amount">
-              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+              {{ wallet | toUpperCase }}
             </span>
           </span>
         </el-form-item>
@@ -177,7 +177,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="350px"
+      width="400px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -208,7 +208,7 @@
           <span class="form-item-text">
             Available balance:
             <span class="form-item-text-amount">
-              {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+              {{ wallet | toUpperCase }}
             </span>
           </span>
         </el-form-item>
@@ -241,7 +241,6 @@
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
 import { mapActions, mapGetters } from 'vuex'
-
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
@@ -299,19 +298,14 @@ export default {
     }
   },
 
-  watch: {
-    '$route' (to, from) {
-      this.fetchWallet()
-    }
-  },
-
   created () {
     this.fetchWallet()
   },
 
   methods: {
     ...mapActions([
-      'openApprovalDialog'
+      'openApprovalDialog',
+      'openExchangeDialog'
     ]),
 
     tagType: function (val) {
@@ -382,8 +376,8 @@ export default {
                 message: 'Transfer successful!',
                 type: 'success'
               })
-              this.resetTransferForm()
               this.fetchWallet()
+              this.resetTransferForm()
               this.transferFormVisible = false
             })
             .catch(err => {
@@ -400,6 +394,13 @@ export default {
       this.transferForm.to = ''
       this.transferForm.amount = '0'
       this.transferForm.description = ''
+    }
+  },
+
+  filters: {
+    toUpperCase (wallet) {
+      if (!wallet || !Object.keys(wallet).length) return null
+      return `${wallet.amount} ${wallet.asset.toUpperCase()}`
     }
   }
 }
