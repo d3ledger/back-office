@@ -153,6 +153,7 @@ const mutations = {
   [types.GET_PORTFOLIO_PRICE_LIST] (state, wallets) {
     const today = last(state.portfolio.assetsHistory)
     const prevDay = nth(-2)(state.portfolio.assetsHistory)
+    const toZero = (v) => isNaN(v) ? 0 : v
     const currencies = []
     today.data.map(crypto => {
       const walletAsset = wallets.find(w => w.asset === crypto.asset)
@@ -164,7 +165,7 @@ const mutations = {
         name: walletAsset.name,
         price: amountToday,
         diff: amountToday - amountPrevDay,
-        percent: 100 - ((amountPrevDay * 100) / amountToday)
+        percent: toZero(100 - ((amountPrevDay * 100) / amountToday))
       })
     })
     state.assetList = currencies

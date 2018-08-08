@@ -44,10 +44,12 @@
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
+      width="400px"
       center
     >
-      <span>Download your private key and keep it secret!</span>
-
+      <div class="dialog-content">
+        <span>Download your private key and keep it secret!</span>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button
           type="primary"
@@ -157,6 +159,12 @@ export default {
     width: 30rem;
     overflow: visible;
     margin-top: 3rem;
+  }
+
+  .dialog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /*
