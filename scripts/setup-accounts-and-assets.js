@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 /*
- * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup-accounts-and-assets.js
+ * NODE_IP=http://localhost:8080 DEBUG=iroha-util node scripts/setup.js
  */
 
-const fs = require('fs')
-const path = require('path')
-const _ = require('lodash')
-const iroha = require('iroha-lib')
-const irohaUtil = require('../src/util/iroha-util')
+import fs from 'fs'
+import path from 'path'
+import _ from 'lodash'
+import irohaUtil from '../src/util/iroha-util'
+import ed25519 from 'ed25519.js'
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
@@ -15,16 +15,15 @@ const aliceAccName = 'alice'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
-const crypto = new iroha.ModelCrypto()
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
-const testPubKey = crypto.fromPrivateKey(testPrivKeyHex).publicKey()
+const testPubKey = ed25519.derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
-const alicePubKey = crypto.fromPrivateKey(alicePrivKeyHex).publicKey()
+const alicePubKey = ed25519.derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
 // IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
-const accounts = [`${testAccFull}`, `${aliceAccFull}`]
+const accounts = [testAccFull, aliceAccFull]
 const wallets = require(DUMMY_FILE_PATH).wallets
 
 console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
@@ -57,7 +56,7 @@ function initializeAssets () {
       .then(() => {
         console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
 
-        return irohaUtil.addAssetQuantity(testPrivKeyHex, `${testAccFull}`, `${w.name.toLowerCase()}#${irohaDomain}`, amount)
+        return irohaUtil.addAssetQuantity(testPrivKeyHex, `${w.name.toLowerCase()}#${irohaDomain}`, amount)
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)

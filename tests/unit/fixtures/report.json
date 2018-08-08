@@ -1,0 +1,352 @@
+{
+  "params": {
+    "accountId": "report@test",
+    "wallet": {
+      "name": "Ethereum",
+      "asset": "ETH",
+      "amount": 10.15,
+      "assetId": "ethereum#test",
+      "precision": 2
+    },
+    "priceFiatList": [
+      {
+        "date": 1530370800000,
+        "price": 0.0023
+      },
+      {
+        "date": 1530457200000,
+        "price": 0.0021
+      },
+      {
+        "date": 1530543600000,
+        "price": 0.0022
+      },
+      {
+        "date": 1530630000000,
+        "price": 0.0023
+      },
+      {
+        "date": 1530716400000,
+        "price": 0.0021
+      },
+      {
+        "date": 1530802800000,
+        "price": 0.0024
+      },
+      {
+        "date": 1530889200000,
+        "price": 0.0024
+      },
+      {
+        "date": 1530975600000,
+        "price": 0.002
+      },
+      {
+        "date": 1531062000000,
+        "price": 0.0022
+      },
+      {
+        "date": 1531148400000,
+        "price": 0.002
+      },
+      {
+        "date": 1531234800000,
+        "price": 0.0023
+      },
+      {
+        "date": 1531321200000,
+        "price": 0.0024
+      },
+      {
+        "date": 1531407600000,
+        "price": 0.0024
+      },
+      {
+        "date": 1531494000000,
+        "price": 0.0021
+      },
+      {
+        "date": 1531580400000,
+        "price": 0.0023
+      },
+      {
+        "date": 1531666800000,
+        "price": 0.0023
+      },
+      {
+        "date": 1531753200000,
+        "price": 0.0022
+      }
+    ],
+    "dateFrom": "Jul. 1, 2018",
+    "dateTo": "Jul. 17, 2018",
+    "fiat": "USD",
+    "ext": "pdf",
+    "transactions": [
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.23",
+        "date": 1531902561757,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.1",
+        "date": 1531811895944,
+        "message": ""
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.59",
+        "date": 1531802515551,
+        "message": "hello"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.85",
+        "date": 1531802515546,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.84",
+        "date": 1531802510422,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.20",
+        "date": 1531802510419,
+        "message": "hello"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.08",
+        "date": 1531802510417,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.24",
+        "date": 1531802505264,
+        "message": "initial tx"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.90",
+        "date": 1531466238473,
+        "message": "hi"
+      },
+      {
+        "from": "alice@test",
+        "to": "you",
+        "amount": "0.83",
+        "date": 1531466238465,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.10",
+        "date": 1531466233368,
+        "message": "hi"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.73",
+        "date": 1531466233363,
+        "message": "hello"
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "0.12",
+        "date": 1531466233357,
+        "message": ""
+      },
+      {
+        "from": "you",
+        "to": "alice@test",
+        "amount": "1.66",
+        "date": 1531466228261,
+        "message": "initial tx"
+      }
+    ]
+  },
+  "expected": {
+    "filename": "report-ethereum-20180701-20180717.pdf",
+    "accountId": "report@test",
+    "walletName": "Ethereum",
+    "cryptoCurrencyUnit": "ETH",
+    "transfersIn": "3.17",
+    "transfersOut": "6.07",
+    "netChange": "-2.90",
+    "endingBalance": "11.38",
+    "startingBalance": "14.28",
+    "transactionsByDay": [
+      {
+        "date": "Jul. 13",
+        "dailyIn": "1.73",
+        "dailyInFiat": "720.83",
+        "dailyOut": "2.61",
+        "dailyOutFiat": "1087.50",
+        "dailyNet": "-0.88"
+      },
+      {
+        "date": "Jul. 17",
+        "dailyIn": "1.44",
+        "dailyInFiat": "654.55",
+        "dailyOut": "3.46",
+        "dailyOutFiat": "1572.73",
+        "dailyNet": "-2.02"
+      }
+    ],
+    "transactionDetails": [
+      {
+        "time": "Jul. 1, 00:00",
+        "to": null,
+        "description": "Starting Balance",
+        "amount": null,
+        "amountFiat": null,
+        "balance": "14.28",
+        "balanceFiat": "6208.70"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "alice@test",
+        "description": "initial tx",
+        "amount": "-1.66",
+        "amountFiat": "-691.67",
+        "balance": "12.62",
+        "balanceFiat": "5258.33"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "alice@test",
+        "description": "",
+        "amount": "-0.12",
+        "amountFiat": "-50.00",
+        "balance": "12.50",
+        "balanceFiat": "5208.33"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "alice@test",
+        "description": "hello",
+        "amount": "-0.73",
+        "amountFiat": "-304.17",
+        "balance": "11.77",
+        "balanceFiat": "4904.17"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "alice@test",
+        "description": "hi",
+        "amount": "-0.10",
+        "amountFiat": "-41.67",
+        "balance": "11.67",
+        "balanceFiat": "4862.50"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "Received",
+        "description": "hi",
+        "amount": "0.83",
+        "amountFiat": "345.83",
+        "balance": "12.50",
+        "balanceFiat": "5208.33"
+      },
+      {
+        "time": "Jul. 13, 16:17",
+        "to": "Received",
+        "description": "hi",
+        "amount": "0.90",
+        "amountFiat": "375.00",
+        "balance": "13.40",
+        "balanceFiat": "5583.33"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "alice@test",
+        "description": "initial tx",
+        "amount": "-1.24",
+        "amountFiat": "-563.64",
+        "balance": "12.16",
+        "balanceFiat": "5527.27"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "alice@test",
+        "description": "",
+        "amount": "-0.08",
+        "amountFiat": "-36.36",
+        "balance": "12.08",
+        "balanceFiat": "5490.91"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "alice@test",
+        "description": "hello",
+        "amount": "-0.20",
+        "amountFiat": "-90.91",
+        "balance": "11.88",
+        "balanceFiat": "5400.00"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "alice@test",
+        "description": "hi",
+        "amount": "-0.84",
+        "amountFiat": "-381.82",
+        "balance": "11.04",
+        "balanceFiat": "5018.18"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "Received",
+        "description": "",
+        "amount": "0.85",
+        "amountFiat": "386.36",
+        "balance": "11.89",
+        "balanceFiat": "5404.55"
+      },
+      {
+        "time": "Jul. 17, 13:41",
+        "to": "Received",
+        "description": "hello",
+        "amount": "0.59",
+        "amountFiat": "268.18",
+        "balance": "12.48",
+        "balanceFiat": "5672.73"
+      },
+      {
+        "time": "Jul. 17, 16:18",
+        "to": "alice@test",
+        "description": "",
+        "amount": "-1.10",
+        "amountFiat": "-500.00",
+        "balance": "11.38",
+        "balanceFiat": "5172.73"
+      },
+      {
+        "time": "Jul. 17, 23:59",
+        "to": null,
+        "description": "Ending Balance",
+        "amount": null,
+        "amountFiat": null,
+        "balance": "11.38",
+        "balanceFiat": "6490.91"
+      }
+    ]
+  }
+}

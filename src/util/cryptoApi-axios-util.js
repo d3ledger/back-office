@@ -6,7 +6,7 @@ let axiosAPI = axios.create({
   baseURL: API_URL
 })
 
-const loadHistoryByLabels = axios => (currencies, settings) => {
+const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
   const currentFiat = settings.fiat
   const history = currencies.map(crypto => {
     return axios
@@ -14,7 +14,8 @@ const loadHistoryByLabels = axios => (currencies, settings) => {
         params: {
           fsym: crypto.asset,
           tsym: currentFiat,
-          limit: 30
+          limit: options.limit || 30,
+          toTs: options.toTs
         }
       })
   })
