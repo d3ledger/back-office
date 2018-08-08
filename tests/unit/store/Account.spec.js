@@ -30,7 +30,7 @@ describe('Account store', () => {
     publicKey: randomPublicKey(),
     privateKey: randomPrivateKey()
   }
-  const irohaUtil = require('../../../src/util/iroha-util')
+  const irohaUtil = require('@util/iroha-util').default
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
     signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
@@ -52,7 +52,7 @@ describe('Account store', () => {
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
       '@util/iroha-util': irohaUtilMock,
-      '@util/store-util': require('../../../src/util/store-util'),
+      '@util/store-util': require('@util/store-util'),
       '@util/notary-util': notaryUtilMock
     }).default)
   })
@@ -206,8 +206,7 @@ describe('Account store', () => {
               [types.SIGNUP_REQUEST],
               [types.SIGNUP_SUCCESS, {
                 username: params.username,
-                privateKey: commit.args[1][1].privateKey,
-                publicKey: commit.args[1][1].publicKey
+                ...MOCK_KEYPAIR
               }]
             ])
             done()
@@ -227,7 +226,7 @@ describe('Account store', () => {
 
         actions.login({ commit }, params)
           .then(() => {
-            expect(commit.args).to.deep.equal([
+            expect(commit.args).to.be.deep.equal([
               [types.LOGIN_REQUEST],
               [types.LOGIN_SUCCESS, MOCK_ACCOUNT_RESPONSE]
             ])
