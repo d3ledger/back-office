@@ -29,7 +29,10 @@ function checkBalance (amount) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     const max = amount
+    if (isNaN(Number(value))) errors.push('Invalid amount')
+    if (value.length === 0) errors.push('Please input amount')
     if (Number(value) > Number(max)) errors.push('Current amount is bigger than your available balance')
+    console.log(errors)
     callback(errors)
   }
 }
