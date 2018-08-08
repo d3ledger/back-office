@@ -30,7 +30,7 @@ describe('Account store', () => {
     publicKey: randomPublicKey(),
     privateKey: randomPrivateKey()
   }
-  const irohaUtil = require('../../../src/util/iroha-util')
+  const irohaUtil = require('@util/iroha-util').default
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
     signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
@@ -52,7 +52,7 @@ describe('Account store', () => {
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
       '@util/iroha-util': irohaUtilMock,
-      '@util/store-util': require('../../../src/util/store-util'),
+      '@util/store-util': require('@util/store-util'),
       '@util/notary-util': notaryUtilMock
     }).default)
   })
@@ -98,6 +98,7 @@ describe('Account store', () => {
         assets: randomObject(),
         connectionError: new Error()
       }
+
       const expectedState = {
         accountId: '',
         nodeIp: MOCK_NODE_IP,
@@ -182,7 +183,7 @@ describe('Account store', () => {
 
       mutations[types.GET_ACCOUNT_TRANSACTIONS_SUCCESS](state, transactions)
 
-      expect(state.rawTransactions).to.deep.equal(transactions)
+      expect(state.rawTransactions).to.be.deep.equal(transactions)
     })
 
     testErrorHandling('GET_ACCOUNT_TRANSACTIONS_FAILURE')
@@ -199,10 +200,9 @@ describe('Account store', () => {
       it('should call mutations in correct order', done => {
         const commit = sinon.spy()
         const params = { username: randomAccountId().split('@')[1] }
-
         actions.signup({ commit }, params)
           .then(() => {
-            expect(commit.args).to.deep.equal([
+            expect(commit.args).to.be.deep.equal([
               [types.SIGNUP_REQUEST],
               [types.SIGNUP_SUCCESS, {
                 username: params.username,
@@ -226,7 +226,7 @@ describe('Account store', () => {
 
         actions.login({ commit }, params)
           .then(() => {
-            expect(commit.args).to.deep.equal([
+            expect(commit.args).to.be.deep.equal([
               [types.LOGIN_REQUEST],
               [types.LOGIN_SUCCESS, MOCK_ACCOUNT_RESPONSE]
             ])
