@@ -26,3 +26,13 @@ Cypress.Commands.add('login', (keyPath) => {
   cy.get('.login-button-container > div > button').click()
   cy.contains('D3').should('be.visible')
 })
+
+Cypress.Commands.add('setTimezone', (timezone) => {
+  cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
+  cy.get('.el-input__inner').type(timezone)
+  cy.contains('ul', timezone).click().should(() => {
+    const view = JSON.parse(localStorage.getItem('settings')).view
+
+    expect(view).to.have.property('timezone', timezone)
+  })
+})
