@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="wallets.length">
+  <el-container id="reports-page" v-if="wallets.length">
     <el-main>
       <el-row>
         <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
@@ -209,7 +209,7 @@ export default {
           : generateCSV(params)
 
         generating.then(({ blob, filename }) => {
-          FileSaver.saveAs(blob, filename)
+          this.saveBlob(blob, filename)
         })
       })
         .catch(err => {
@@ -217,6 +217,14 @@ export default {
 
           this.$message.error(`Failed to generate a report. Please try again later.`)
         })
+    },
+
+    saveBlob (blob, filename) {
+      if (window.Cypress) {
+        alert(`downloading ${filename}`)
+      } else {
+        FileSaver.saveAs(blob, filename)
+      }
     }
   }
 }
