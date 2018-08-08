@@ -48,10 +48,35 @@ describe('Reports page', () => {
 
   it('opens "New Report" dialog', () => {
     cy.get('#reports-page button:contains("New Report")').click()
-    cy.get('#reports-page .el-dialog__header').contains('Reports')
+    cy.get('#reports-page .el-dialog .el-dialog__header').contains('Report')
   })
 
-  it.skip('fills a date range', () => {
-    // cy.get('#reports-page input[placeholder="Start date"]').click()
+  it('fills the form', () => {
+    // TODO: select a wallet by clicking an item of the list
+    cy.get('#reports-page .el-dialog input#wallet-selector').type('Monaco (MCO)', { force: true }).blur()
+    cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type('2018-01-01', { force: true })
+    cy.get('#reports-page .el-dialog input[placeholder="End date"]').type('2018-03-31', { force: true }).blur()
+  })
+
+  it('should download the new report as PDF', () => {
+    const stub = cy.stub()
+    const expectedFilename = `report-monaco-20180101-20180331.pdf`
+
+    cy.on('window:alert', stub)
+    cy.get('#reports-page .el-dialog button:contains("PDF")')
+      .click({ force: true })
+      .should(() => expect(stub.called).to.be.true)
+      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+  })
+
+  it('should download the new report as CSV', () => {
+    const stub = cy.stub()
+    const expectedFilename = `report-monaco-20180101-20180331.csv`
+
+    cy.on('window:alert', stub)
+    cy.get('#reports-page .el-dialog button:contains("CSV")')
+      .click({ force: true })
+      .should(() => expect(stub.called).to.be.true)
+      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
   })
 })
