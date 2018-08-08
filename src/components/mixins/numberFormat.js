@@ -1,8 +1,6 @@
 import numbro from 'numbro'
 
-numbro.zeroFormat('N/A')
-
-var dateFormat = {
+const dateFormat = {
   filters: {
     formatNumberShort: value => numbro(value).format({
       mantissa: 2,
