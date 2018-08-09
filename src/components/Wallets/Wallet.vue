@@ -159,7 +159,7 @@
             {{ wallet | toUpperCase }}
           </span>
         </span>
-        <el-form-item label="Address">
+        <el-form-item label="Address" prop="wallet">
           <el-input
             v-model="withdrawForm.wallet"
             placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
