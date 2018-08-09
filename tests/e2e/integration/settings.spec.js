@@ -1,7 +1,6 @@
-import path from 'path'
 import { URL } from '../config'
 
-const testKeyPath = path.resolve('test@notary.priv')
+const testKeyPath = 'test@notary.priv'
 
 describe('Test settings page', () => {
   it('Make auth', () => {
