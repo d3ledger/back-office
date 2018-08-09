@@ -1,2 +1,2 @@
-export const URL = 'http://127.0.0.1:8082'
-export const IROHA_URL = 'http://127.0.0.1:8081'
+export const URL = process.env.VUE_TEST_SERVER || 'http://localhost:8080'
+export const IROHA_URL = process.env.VUE_TEST_IROHA || 'http://localhost:8081'

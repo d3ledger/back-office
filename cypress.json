@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://127.0.0.1:8082",
+  "baseUrl": "http://127.0.0.1:8080",
   "fileServerFolder": "tests/e2e",
   "fixturesFolder": "tests/e2e/fixtures",
   "integrationFolder": "tests/e2e/integration",
