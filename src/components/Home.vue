@@ -59,7 +59,7 @@
             >
               <el-option
                 v-for="wallet in wallets"
-                :key="wallet.asset"
+                :key="wallet.id"
                 :label="wallet.asset"
                 :value="wallet.asset">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
@@ -85,7 +85,7 @@
             >
               <el-option
                 v-for="wallet in wallets"
-                :key="wallet.asset"
+                :key="wallet.id"
                 :label="wallet.asset"
                 :value="wallet.asset">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
@@ -185,8 +185,8 @@ export default {
       isCollapsed: true,
       exchangeForm: {
         to: null,
-        request_amount: null,
-        offer_amount: null,
+        request_amount: '',
+        offer_amount: '',
         description: null
       },
       approvalForm: {
@@ -245,8 +245,15 @@ export default {
     if (this.exchangeDialogOfferAsset) {
       const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
       this._refreshRules({
-        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount }
+        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount },
+        request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER }
       })
+    }
+  },
+
+  updated () {
+    if (!this.exchangeDialogVisible) {
+      this.$refs.exchangeForm.resetFields()
     }
   },
 
@@ -277,6 +284,7 @@ export default {
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
+      console.log(this.$refs.exchangeForm)
       this.$refs.exchangeForm.resetFields()
     },
 

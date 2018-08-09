@@ -1,3 +1,6 @@
+import gt from 'lodash/fp/gt'
+import lte from 'lodash/fp/lte'
+
 const set = {
   name: [
     { required: true, message: 'Please input username', trigger: 'change' },
@@ -25,14 +28,13 @@ const set = {
   ]
 }
 
-function checkBalance (amount) {
+function checkBalance (max) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
-    const max = amount
     if (isNaN(Number(value))) errors.push('Invalid amount')
-    if (value.length === 0) errors.push('Please input amount')
-    if (Number(value) > Number(max)) errors.push('Current amount is bigger than your available balance')
-    console.log(errors)
+    else if (value !== null && value.length === 0) errors.push('Please input amount')
+    else if (gt(value)(max)) errors.push('Current amount is bigger than your available balance')
+    else if (lte(value)(0)) errors.push('Current amount is smaller or equal to 0')
     callback(errors)
   }
 }
