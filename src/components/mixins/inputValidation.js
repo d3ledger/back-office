@@ -16,7 +16,7 @@ const set = {
   ],
   nodeIp: [
     { required: true, message: 'Please input node ip', trigger: 'change' },
-    { pattern: /(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(:[0-9]{1,5})?$|^[^0-9])/, message: 'Invalid IP', trigger: 'change' }
+    { pattern: /^((https?|http):\/\/)([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{2,5})$/, message: 'Invalid IP', trigger: 'change' }
   ],
   walletAddress: [
     { required: true, message: 'Please input wallet address', trigger: 'change' },
