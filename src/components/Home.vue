@@ -252,7 +252,7 @@ export default {
   },
 
   updated () {
-    if (!this.exchangeDialogVisible) {
+    if (this.$refs.exchangeForm && !this.exchangeDialogVisible) {
       this.$refs.exchangeForm.resetFields()
     }
   },
@@ -284,8 +284,6 @@ export default {
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
-      console.log(this.$refs.exchangeForm)
-      this.$refs.exchangeForm.resetFields()
     },
 
     onSubmitExchangeDialog () {
