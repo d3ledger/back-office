@@ -30,7 +30,6 @@ yarn-error.log*
 *.sln
 *.sw*
 
-# cypress tests e2e
-.Trash-0
-/tests/e2e/videos
-.env
+# Cypress
+tests/e2e/videos
+tests/e2e/screenshots
