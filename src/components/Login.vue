@@ -4,7 +4,7 @@
       <h1 style="font-size: 2.5rem">Login</h1>
     </div>
     <el-card class="login-form-container">
-      <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
+      <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
             name="username"
@@ -70,14 +70,13 @@
 
 <script>
 import inputValidation from '@/components/mixins/inputValidation'
-import listOfNodes from '@/data/nodes'
 
 export default {
   name: 'login',
   mixins: [
     inputValidation({
       username: 'nameDomain',
-      privateKey: 'privateKeyRequired',
+      privateKey: 'privateKey',
       nodeIp: 'nodeIp'
     })
   ],
@@ -88,8 +87,7 @@ export default {
         username: '',
         privateKey: '',
         nodeIp: this.$store.state.Account.nodeIp
-      },
-      listOfNodes
+      }
     }
   },
 
