@@ -74,22 +74,21 @@
 
 <script>
 import FileSaver from 'file-saver'
+import inputValidation from '@/components/mixins/inputValidation'
 
 export default {
   name: 'signup',
-
+  mixins: [
+    inputValidation({
+      username: 'name'
+    })
+  ],
   data () {
     return {
       isLoading: false,
       predefinedDomain: 'notary',
       form: {
         username: ''
-      },
-      rules: {
-        username: [
-          { required: true, message: 'Please input username', trigger: 'change' },
-          { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-Z_0-9]{1,32}', trigger: 'change' }
-        ]
       },
       dialogVisible: false,
       dialog: {

@@ -141,25 +141,28 @@
     <el-dialog
       :title="'Withdraw ' + wallet.asset"
       :visible.sync="withdrawFormVisible"
+      @close="closeWithdrawDialog()"
       width="500px"
       center
     >
-      <el-form>
+      <el-form ref="withdrawForm" :model="withdrawForm" :rules="rules">
         <el-form-item label="Send" prop="amount">
-          <el-input name="amount" v-model="transferForm.amount">
+          <el-input name="amount" v-model="withdrawForm.amount">
             <div slot="append">
               {{ wallet.asset }}
             </div>
           </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span class="form-item-text-amount">
-              {{ wallet | toUpperCase }}
-            </span>
-          </span>
         </el-form-item>
-        <el-form-item label="Address">
-          <el-input v-model="transferForm.description" placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
+        <span class="form-item-text">
+          Available balance:
+          <span class="form-item-text-amount">
+            {{ wallet | toUpperCase }}
+          </span>
+        </span>
+        <el-form-item label="Address" prop="wallet">
+          <el-input
+            v-model="withdrawForm.wallet"
+            placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
@@ -177,7 +180,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="400px"
+      width="500px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -195,31 +198,32 @@
     <el-dialog
       title="Transfer"
       :visible.sync="transferFormVisible"
+      @close="closeTransferForm()"
       width="500px"
       center
     >
-      <el-form style="width: 100%">
+      <el-form ref="transferForm" :model="transferForm" :rules="rules">
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="transferForm.amount" placeholder="0">
             <div slot="append">
               {{ wallet.asset }}
             </div>
           </el-input>
-          <span class="form-item-text">
-            Available balance:
-            <span class="form-item-text-amount">
-              {{ wallet | toUpperCase }}
-            </span>
-          </span>
         </el-form-item>
-        <el-form-item label="Counterparty">
+        <span class="form-item-text">
+          Available balance:
+          <span class="form-item-text-amount">
+            {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+          </span>
+        </span>
+        <el-form-item label="Counterparty" prop="to">
           <el-input v-model="transferForm.to" placeholder="Account id" />
         </el-form-item>
         <el-form-item label="Additional information">
           <el-input
             type="textarea"
             :rows="2"
-            v-model="transferForm.description"
+            :model="transferForm.description"
             placeholder="Details"
             resize="none"
           />
@@ -245,6 +249,7 @@ import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
+import inputValidation from '@/components/mixins/inputValidation'
 
 // Notary account for withdrawal.
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
@@ -254,7 +259,12 @@ export default {
   mixins: [
     dateFormat,
     numberFormat,
-    currencySymbol
+    currencySymbol,
+    inputValidation({
+      to: 'nameDomain',
+      amount: 'tokensAmount',
+      wallet: 'walletAddress'
+    })
   ],
   components: {
     AssetIcon,
@@ -266,6 +276,10 @@ export default {
       withdrawFormVisible: false,
       transferFormVisible: false,
       isSending: false,
+      withdrawForm: {
+        amount: null,
+        wallet: null
+      },
       transferForm: {
         to: null,
         amount: null,
@@ -302,6 +316,12 @@ export default {
     this.fetchWallet()
   },
 
+  beforeUpdate () {
+    this._refreshRules({
+      amount: { pattern: 'tokensAmount', amount: this.wallet.amount, precision: this.wallet.precision }
+    })
+  },
+
   methods: {
     ...mapActions([
       'openApprovalDialog',
@@ -325,6 +345,8 @@ export default {
     },
 
     onSubmitWithdrawalForm () {
+      if (!this.validateForm('withdrawForm')) return
+
       this.openApprovalDialog()
         .then(privateKey => {
           if (!privateKey) return
@@ -335,15 +357,15 @@ export default {
             privateKey,
             assetId: this.wallet.assetId,
             to: notaryAccount,
-            description: this.transferForm.description,
-            amount: this.transferForm.amount.toString()
+            description: this.withdrawForm.wallet,
+            amount: this.withdrawForm.amount.toString()
           })
             .then(() => {
               this.$message({
                 message: 'Withdrawal request is submitted to notary!',
                 type: 'success'
               })
-              this.resetTransferForm()
+              this.resetWithdrawForm()
               this.fetchWallet()
               this.withdrawFormVisible = false
             })
@@ -358,6 +380,7 @@ export default {
     },
 
     onSubmitTransferForm () {
+      if (!this.validateForm('transferForm')) return
       this.openApprovalDialog()
         .then(privateKey => {
           if (!privateKey) return
@@ -391,9 +414,27 @@ export default {
     },
 
     resetTransferForm () {
-      this.transferForm.to = ''
-      this.transferForm.amount = '0'
-      this.transferForm.description = ''
+      this.$refs.transferForm.resetFields()
+    },
+
+    resetWithdrawForm () {
+      this.$refs.withdrawForm.resetFields()
+    },
+
+    closeWithdrawDialog () {
+      this.resetWithdrawForm()
+    },
+
+    closeTransferForm () {
+      this.resetTransferForm()
+    },
+
+    validateForm (ref) {
+      let isValid = true
+      this.$refs[ref].validate(valid => {
+        if (!valid) isValid = false
+      })
+      return isValid
     }
   },
 
