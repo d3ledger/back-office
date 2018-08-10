@@ -28,12 +28,15 @@ const set = {
   ]
 }
 
-function checkBalance (max) {
+const getPrecision = (v) => (v.split('.')[1] || []).length
+
+function checkBalance (maxValue, maxPrecision) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     if (isNaN(Number(value))) errors.push('Invalid amount')
+    else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
-    else if (gt(value)(max)) errors.push('Current amount is bigger than your available balance')
+    else if (gt(value)(maxValue)) errors.push('Current amount is bigger than your available balance')
     else if (lte(value)(0)) errors.push('Current amount is smaller or equal to 0')
     callback(errors)
   }
@@ -45,7 +48,7 @@ function generateRules (form) {
     const validationRule = form[key]
     if (validationRule.pattern === 'tokensAmount') {
       const tokensAmountRule = Object.assign([], set[validationRule.pattern])
-      tokensAmountRule.push({ validator: checkBalance(validationRule.amount) })
+      tokensAmountRule.push({ validator: checkBalance(validationRule.amount, validationRule.precision) })
       rules[key] = tokensAmountRule
     } else {
       rules[key] = set[validationRule]

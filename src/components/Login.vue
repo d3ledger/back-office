@@ -4,7 +4,7 @@
       <h1 style="font-size: 2.5rem">Login</h1>
     </div>
     <el-card class="login-form-container">
-      <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
+      <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
             name="username"

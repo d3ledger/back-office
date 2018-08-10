@@ -245,8 +245,8 @@ export default {
     if (this.exchangeDialogOfferAsset) {
       const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
       this._refreshRules({
-        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount },
-        request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER }
+        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
+        request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
       })
     }
   },
