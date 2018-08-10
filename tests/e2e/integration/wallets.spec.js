@@ -53,30 +53,27 @@ describe('Test wallets page', () => {
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '123'
+      const tokenAmount = '100'
       cy.get(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner').type(tokenAmount)
         .should('have.value', tokenAmount)
-      // TODO: Not implemented due to PR-27 not merged to develop
-      // expect('NOT IMPLEMENTED').to.be.equal('Error should be visible if value incorrected')
-      // expect('NOT IMPLEMENTED').to.be.equal('Error should not be visible if value corrected')
+      cy.get(':nth-child(1) > .el-form-item__content > .el-form-item__error').should('not.be.visible')
+      cy.get(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner').clear()
+      cy.get(':nth-child(1) > .el-form-item__content > .el-form-item__error').should('be.visible')
     })
 
     it('Validate wallet field', () => {
-      const walletAddress = '123'
+      const walletAddress = '0x0000000000000000000000000000000000000000'
       cy.get(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner').type(walletAddress)
         .should('have.value', walletAddress)
-      // TODO: Not implemented due to PR-27 not merged to develop
-      // expect('NOT IMPLEMENTED').to.be.equal('Error should be visible if value incorrected')
-      // expect('NOT IMPLEMENTED').to.be.equal('Error should not be visible if value corrected')
+      cy.get(':nth-child(3) > .el-form-item__content > .el-form-item__error').should('not.be.visible')
+      cy.get(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner').clear()
+      cy.get(':nth-child(3) > .el-form-item__content > .el-form-item__error').should('be.visible')
     })
 
     it('Validate modal - handle an error', () => {
-      cy.get(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner').clear()
-      cy.get(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner').clear()
-      // TODO: Not implemented due to PR-27 not merged to develop
-      // cy.get('.el-form-item__content > .el-button').click()
-      // cy.get('div.el-dialog').eq(4).should('not.be.visible')
-      // cy.get('i.el-dialog__close').eq(4).click()
+      cy.get('.el-form-item__content > .el-button').click()
+      cy.get(':nth-child(1) > .el-form-item__content > .el-form-item__error').should('be.visible')
+      cy.get(':nth-child(3) > .el-form-item__content > .el-form-item__error').should('be.visible')
     })
 
     it('Validate modal - correct', () => {
