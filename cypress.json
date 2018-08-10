@@ -7,5 +7,9 @@
   "screenshotsFolder": "tests/e2e/screenshots",
   "supportFile": "tests/e2e/support",
   "videosFolder": "tests/e2e/videos",
-  "viewportWidth": 1200
+  "viewportWidth": 1200,
+  "env": {
+    "URL": "http://127.0.0.1:8080",
+    "IROHA_URL": "http://127.0.0.1:8081"
+  }
 }
