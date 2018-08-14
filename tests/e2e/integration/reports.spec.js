@@ -36,25 +36,19 @@ describe('Reports page', () => {
   })
 
   it('should download a file when clicking a PDF button', () => {
-    const stub = cy.stub()
     const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
 
-    cy.on('window:alert', stub)
     cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
       .click()
-      .should(() => expect(stub.called).to.be.true)
-      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+      .shouldDownload(expectedFilename)
   })
 
   it('should download a file when clicking a CSV button', () => {
-    const stub = cy.stub()
     const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
 
-    cy.on('window:alert', stub)
     cy.get('#reports-page tr:contains("Monaco") button:contains("CSV")')
       .click()
-      .should(() => expect(stub.called).to.be.true)
-      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+      .shouldDownload(expectedFilename)
   })
 
   it('opens "New Report" dialog', () => {
@@ -70,24 +64,18 @@ describe('Reports page', () => {
   })
 
   it('should download the new report as PDF', () => {
-    const stub = cy.stub()
     const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
 
-    cy.on('window:alert', stub)
     cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
-      .should(() => expect(stub.called).to.be.true)
-      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+      .shouldDownload(expectedFilename)
   })
 
   it('should download the new report as CSV', () => {
-    const stub = cy.stub()
     const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
 
-    cy.on('window:alert', stub)
     cy.get('#reports-page .el-dialog button:contains("CSV")')
       .click({ force: true })
-      .should(() => expect(stub.called).to.be.true)
-      .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+      .shouldDownload(expectedFilename)
   })
 })
