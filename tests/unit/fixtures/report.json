@@ -10,71 +10,71 @@
     },
     "priceFiatList": [
       {
-        "date": 1530370800000,
+        "date": 1530403200000,
         "price": 0.0023
       },
       {
-        "date": 1530457200000,
+        "date": 1530489600000,
         "price": 0.0021
       },
       {
-        "date": 1530543600000,
+        "date": 1530576000000,
         "price": 0.0022
       },
       {
-        "date": 1530630000000,
+        "date": 1530662400000,
         "price": 0.0023
       },
       {
-        "date": 1530716400000,
+        "date": 1530748800000,
         "price": 0.0021
       },
       {
-        "date": 1530802800000,
+        "date": 1530835200000,
         "price": 0.0024
       },
       {
-        "date": 1530889200000,
+        "date": 1530921600000,
         "price": 0.0024
       },
       {
-        "date": 1530975600000,
+        "date": 1531008000000,
         "price": 0.002
       },
       {
-        "date": 1531062000000,
+        "date": 1531094400000,
         "price": 0.0022
       },
       {
-        "date": 1531148400000,
+        "date": 1531180800000,
         "price": 0.002
       },
       {
-        "date": 1531234800000,
+        "date": 1531267200000,
         "price": 0.0023
       },
       {
-        "date": 1531321200000,
+        "date": 1531353600000,
         "price": 0.0024
       },
       {
-        "date": 1531407600000,
+        "date": 1531440000000,
         "price": 0.0024
       },
       {
-        "date": 1531494000000,
+        "date": 1531526400000,
         "price": 0.0021
       },
       {
-        "date": 1531580400000,
+        "date": 1531612800000,
         "price": 0.0023
       },
       {
-        "date": 1531666800000,
+        "date": 1531699200000,
         "price": 0.0023
       },
       {
-        "date": 1531753200000,
+        "date": 1531785600000,
         "price": 0.0022
       }
     ],
@@ -222,7 +222,7 @@
         "balanceFiat": "6208.70"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "alice@test",
         "description": "initial tx",
         "amount": "-1.66",
@@ -231,7 +231,7 @@
         "balanceFiat": "5258.33"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "alice@test",
         "description": "",
         "amount": "-0.12",
@@ -240,7 +240,7 @@
         "balanceFiat": "5208.33"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "alice@test",
         "description": "hello",
         "amount": "-0.73",
@@ -249,7 +249,7 @@
         "balanceFiat": "4904.17"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "alice@test",
         "description": "hi",
         "amount": "-0.10",
@@ -258,7 +258,7 @@
         "balanceFiat": "4862.50"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.83",
@@ -267,7 +267,7 @@
         "balanceFiat": "5208.33"
       },
       {
-        "time": "Jul. 13, 16:17",
+        "time": "Jul. 13, 07:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.90",
@@ -276,7 +276,7 @@
         "balanceFiat": "5583.33"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "alice@test",
         "description": "initial tx",
         "amount": "-1.24",
@@ -285,7 +285,7 @@
         "balanceFiat": "5527.27"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "alice@test",
         "description": "",
         "amount": "-0.08",
@@ -294,7 +294,7 @@
         "balanceFiat": "5490.91"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "alice@test",
         "description": "hello",
         "amount": "-0.20",
@@ -303,7 +303,7 @@
         "balanceFiat": "5400.00"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "alice@test",
         "description": "hi",
         "amount": "-0.84",
@@ -312,7 +312,7 @@
         "balanceFiat": "5018.18"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "Received",
         "description": "",
         "amount": "0.85",
@@ -321,7 +321,7 @@
         "balanceFiat": "5404.55"
       },
       {
-        "time": "Jul. 17, 13:41",
+        "time": "Jul. 17, 04:41",
         "to": "Received",
         "description": "hello",
         "amount": "0.59",
@@ -330,7 +330,7 @@
         "balanceFiat": "5672.73"
       },
       {
-        "time": "Jul. 17, 16:18",
+        "time": "Jul. 17, 07:18",
         "to": "alice@test",
         "description": "",
         "amount": "-1.10",
