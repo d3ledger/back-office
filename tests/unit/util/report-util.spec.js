@@ -19,7 +19,7 @@ describe('report-util', () => {
       expect(() => generateReportData(invalidParams)).to.throw()
     })
 
-    it.skip('should return the correct data', () => {
+    it('should return the correct data', () => {
       const params = {
         formatDate,
         formatDateWith,
