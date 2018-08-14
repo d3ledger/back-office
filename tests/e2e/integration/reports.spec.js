@@ -25,6 +25,16 @@ describe('Reports page', () => {
     cy.get('#reports-page .el-card__header > div').contains('Reports')
   })
 
+  it('lists the previous month\'s reports', () => {
+    const from = format(startOfMonth(previousMonth), 'MMM D, YYYY')
+    const to = format(endOfMonth(previousMonth), 'MMM D, YYYY')
+    const expectedDateRangeString = `${from} - ${to}`
+
+    cy.get('#reports-page tbody tr').each($el => {
+      cy.wrap($el).contains(expectedDateRangeString)
+    })
+  })
+
   it('should download a file when clicking a PDF button', () => {
     const stub = cy.stub()
     const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
