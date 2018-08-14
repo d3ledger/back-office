@@ -4,7 +4,7 @@
       <h1 style="font-size: 2.5rem">Login</h1>
     </div>
     <el-card class="login-form-container">
-      <el-form class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
+      <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
         <el-form-item label="username:" prop="username">
           <el-input
             name="username"
@@ -69,9 +69,17 @@
 </template>
 
 <script>
+import inputValidation from '@/components/mixins/inputValidation'
+
 export default {
   name: 'login',
-
+  mixins: [
+    inputValidation({
+      username: 'nameDomain',
+      privateKey: 'privateKey',
+      nodeIp: 'nodeIp'
+    })
+  ],
   data () {
     return {
       isLoading: false,
@@ -79,21 +87,6 @@ export default {
         username: '',
         privateKey: '',
         nodeIp: this.$store.state.Account.nodeIp
-      },
-      rules: {
-        username: [
-          { required: true, message: 'Please input username', trigger: 'change' },
-          { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
-        ],
-        privateKey: [
-          { required: true, message: 'Please input private key', trigger: 'change' },
-          { pattern: /^[A-Za-z0-9]{64}$/, message: 'Private key should match [A-Za-z0-9]{64}', trigger: 'change' }
-        ],
-        nodeIp: [
-          { required: true, message: 'Please input node ip', trigger: 'change' },
-          // Check an input as IP if it starts with 0-9 (e.g. "255.255.255.255", "255.255.255.255:12345"), or treat the input as a domain name and accept it with no validation.
-          { pattern: /(^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(:[0-9]{1,5})?$|^[^0-9])/, message: 'Invalid IP', trigger: 'change' }
-        ]
       }
     }
   },
@@ -104,7 +97,7 @@ export default {
 
       reader.onload = (ev) => {
         this.form.privateKey = (ev.target.result || '').trim()
-        this.form.username = this.form.username || fileList[0].name.replace('.priv', '')
+        this.form.username = fileList[fileList.length - 1].name.replace('.priv', '')
         this.$refs['form'].validate()
       }
 

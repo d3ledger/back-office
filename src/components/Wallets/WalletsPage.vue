@@ -4,7 +4,7 @@
       <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
       <wallet-menu-item
         v-for="wallet in filteredWallets"
-        :key="wallet.name"
+        :key="wallet.id"
         :walletId="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
@@ -45,8 +45,22 @@ export default {
     }
   },
 
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'wallets' && this.wallets.length) {
+        this.$router.push(`/wallets/${this.wallets[0].id}`)
+      }
+    }
+  },
+
   created () {
     this.$store.dispatch('getAccountAssets')
+  },
+
+  mounted () {
+    if (this.wallets.length) {
+      this.$router.push(`/wallets/${this.wallets[0].id}`)
+    }
   }
 }
 </script>

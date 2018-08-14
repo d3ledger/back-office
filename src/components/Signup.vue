@@ -44,10 +44,12 @@
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
+      width="400px"
       center
     >
-      <span>Download your private key and keep it secret!</span>
-
+      <div class="dialog-content">
+        <span>Download your private key and keep it secret!</span>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button
           type="primary"
@@ -72,22 +74,21 @@
 
 <script>
 import FileSaver from 'file-saver'
+import inputValidation from '@/components/mixins/inputValidation'
 
 export default {
   name: 'signup',
-
+  mixins: [
+    inputValidation({
+      username: 'name'
+    })
+  ],
   data () {
     return {
       isLoading: false,
       predefinedDomain: 'notary',
       form: {
         username: ''
-      },
-      rules: {
-        username: [
-          { required: true, message: 'Please input username', trigger: 'change' },
-          { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-Z_0-9]{1,32}', trigger: 'change' }
-        ]
       },
       dialogVisible: false,
       dialog: {
@@ -157,6 +158,12 @@ export default {
     width: 30rem;
     overflow: visible;
     margin-top: 3rem;
+  }
+
+  .dialog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /*
