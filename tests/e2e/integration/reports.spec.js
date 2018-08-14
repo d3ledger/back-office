@@ -1,14 +1,15 @@
-import path from 'path'
 import { URL } from '../config'
 import { subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 
-const testKeyPath = path.resolve('test@notary.priv')
+const testKeyPath = 'test@notary.priv'
 
 describe('Reports page', () => {
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const previousMonth = subMonths(Date.now(), 1)
   const startOfPreviousMonth = format(startOfMonth(previousMonth), 'YYYYMMDD')
   const endOfPreviousMonth = format(endOfMonth(previousMonth), 'YYYYMMDD')
+  const dateFrom = '2018-01-01'
+  const dateTo = '2018-03-31'
 
   it('does login', () => {
     cy.visit(URL)
@@ -52,15 +53,15 @@ describe('Reports page', () => {
   })
 
   it('fills the form', () => {
-    // TODO: select a wallet by clicking an item of the list
-    cy.get('#reports-page .el-dialog input#wallet-selector').type('Monaco (MCO)', { force: true }).blur()
-    cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type('2018-01-01', { force: true })
-    cy.get('#reports-page .el-dialog input[placeholder="End date"]').type('2018-03-31', { force: true }).blur()
+    cy.get('#reports-page .el-dialog input#wallet-selector').click()
+    cy.get('.el-select-dropdown .el-select-dropdown__item:contains("Monaco")').click({ force: true })
+    cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type(format(dateFrom, 'YYYY-MM-DD'), { force: true })
+    cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
   })
 
   it('should download the new report as PDF', () => {
     const stub = cy.stub()
-    const expectedFilename = `report-monaco-20180101-20180331.pdf`
+    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
 
     cy.on('window:alert', stub)
     cy.get('#reports-page .el-dialog button:contains("PDF")')
@@ -71,7 +72,7 @@ describe('Reports page', () => {
 
   it('should download the new report as CSV', () => {
     const stub = cy.stub()
-    const expectedFilename = `report-monaco-20180101-20180331.csv`
+    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
 
     cy.on('window:alert', stub)
     cy.get('#reports-page .el-dialog button:contains("CSV")')
