@@ -66,6 +66,27 @@
                   </el-row>
                 </div>
               </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Privacy</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <div class="row_sub-header">
+                        <span class="header_small">Avaliable withdrawal addresses</span>
+                      </div>
+                      <el-select
+                        class="time-zone_select"
+                        v-model="withdrawWalletAddresses"
+                        multiple
+                        disabled
+                        placeholder="Select withdrawal address">
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
             </div>
           </el-card>
         </el-col>
@@ -89,7 +110,8 @@ export default {
   computed: {
     ...mapGetters([
       'settingsFiatCurrencies',
-      'settingsCryptoCurrencies'
+      'settingsCryptoCurrencies',
+      'withdrawWalletAddresses'
     ]),
     currentFiat: {
       get () {
@@ -122,6 +144,14 @@ export default {
 <style scoped>
 .settings_item {
   margin-bottom: 20px;
+}
+
+.row_sub-header {
+  margin-bottom: 10px;
+}
+
+.row_sub-header > .header_small {
+  font-size: 0.8rem;
 }
 
 .settings_item-header {
