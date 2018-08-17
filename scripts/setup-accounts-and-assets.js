@@ -20,7 +20,6 @@ const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
-// IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
 const accounts = [testAccFull, aliceAccFull]
@@ -31,15 +30,15 @@ console.log(`accounts: ${accounts.join(', ')}`)
 console.log(`assets: ${wallets.map(w => w.name).join(', ')}`)
 console.log('')
 
-irohaUtil.login(`${testAccFull}`, testPrivKeyHex, nodeIp)
+irohaUtil.login(testAccFull, testPrivKeyHex, nodeIp)
   .then(() => tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
   .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'eth_whitelist', '0xWhitelist-ethereum_wallet'))
   .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
-
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
-  .then(() => setupAccountTransactions(`${testAccFull}`, testPrivKeyHex))
-  .then(() => setupAccountTransactions(`${aliceAccFull}`, alicePrivKeyHex))
+  .then(() => setupAccountTransactions(testAccFull, testPrivKeyHex))
+  .then(() => setupAccountTransactions(aliceAccFull, alicePrivKeyHex))
   .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
