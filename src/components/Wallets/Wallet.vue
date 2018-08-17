@@ -160,9 +160,17 @@
           </span>
         </span>
         <el-form-item label="Address" prop="wallet">
-          <el-input
+          <el-select
+            class="withdraw-wallet_select"
             v-model="withdrawForm.wallet"
-            placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
+            placeholder="Select withdrawal address">
+            <el-option
+              v-for="address in withdrawWalletAddresses"
+              :key="address"
+              :label="address"
+              :value="address">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
@@ -292,7 +300,8 @@ export default {
     ...mapGetters([
       'cryptoInfo',
       'settingsView',
-      'ethWalletAddress'
+      'ethWalletAddress',
+      'withdrawWalletAddresses'
     ]),
 
     wallet () {
@@ -544,5 +553,9 @@ export default {
 .icon {
   width: 17x;
   font-size: 17px;
+}
+
+.withdraw-wallet_select {
+  width: 100%;
 }
 </style>
