@@ -22,7 +22,7 @@ pipeline {
         }
       }
     }
-    stage('Tests (unit, e2e') {
+    stage('Tests (unit, e2e)') {
       agent { label 'x86_64' }
       steps {
         script {
