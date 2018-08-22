@@ -4,7 +4,7 @@ const testKeyPath = 'test@notary.priv'
 
 describe('Test login page', () => {
   it('Log in', () => {
-    cy.visit(URL)
+    cy.visit('/')
     cy.login(testKeyPath)
   })
 
