@@ -29,8 +29,8 @@ describe('Test wallets page', () => {
     cy.get('div.card-header').first().should('contain', TOKEN)
   })
 
-  describe('Test deposit model', () => {
-    it('Open model', () => {
+  describe('Test deposit modal', () => {
+    it('Open modal', () => {
       cy.contains('Deposit').click()
       cy.get('div.el-dialog').eq(1).should('be.visible')
     })
@@ -40,14 +40,14 @@ describe('Test wallets page', () => {
     it.skip('QR Code value and address are equal', () => {
     })
 
-    it('Close model', () => {
+    it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(1).click()
       cy.get('div.el-dialog').eq(1).should('not.be.visible')
     })
   })
 
-  describe('Test withdraw model', () => {
-    it('Open model', () => {
+  describe('Test withdraw modal', () => {
+    it('Open modal', () => {
       cy.contains('Withdraw').click()
       cy.get('div.el-dialog').eq(0).should('be.visible')
     })
@@ -122,14 +122,14 @@ describe('Test wallets page', () => {
         .click()
     })
 
-    it('Close model', () => {
+    it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(0).click()
       cy.get('div.el-dialog').eq(0).should('not.be.visible')
     })
   })
 
-  describe('Test transfer model', () => {
-    it('Open model', () => {
+  describe('Test transfer modal', () => {
+    it('Open modal', () => {
       cy.contains('Transfer').click()
       cy.get('div.el-dialog').eq(2).should('be.visible')
     })
@@ -198,7 +198,7 @@ describe('Test wallets page', () => {
       cy.get('i.el-dialog__close').eq(4).click()
     })
 
-    it('Close model', () => {
+    it('Close modal', () => {
       cy.get('div.el-dialog').eq(2)
         .find('i.el-dialog__close')
         .click()
@@ -208,8 +208,8 @@ describe('Test wallets page', () => {
     })
   })
 
-  describe('Test exchange model', () => {
-    it('Open model', () => {
+  describe('Test exchange modal', () => {
+    it('Open modal', () => {
       cy.contains('Exchange').click()
       cy.get('div.el-dialog').eq(3).should('be.visible')
     })
@@ -315,7 +315,7 @@ describe('Test wallets page', () => {
       cy.get('i.el-dialog__close').eq(4).click()
     })
 
-    it('Close model', () => {
+    it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(3).click()
       cy.get('div.el-dialog').eq(3).should('not.be.visible')
     })
