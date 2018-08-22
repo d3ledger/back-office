@@ -1,3 +1,5 @@
+const CYPRESS_IROHA = process.env.CYPRESS_IROHA || 'http://127.0.0.1:8081'
+
 Cypress.Commands.add('upload_file', (fileName, selector) => {
   return cy.get(selector).then(subject => {
     return cy.fixture(fileName, 'base64')
