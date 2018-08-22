@@ -4,7 +4,7 @@ const TOKEN = 'BasicAttentionToken'
 
 describe('Test wallets page', () => {
   it('Make auth', () => {
-    cy.visit(Cypress.env('URL'))
+    cy.visit('/')
     cy.login(testKeyPath)
     cy.server()
     cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
