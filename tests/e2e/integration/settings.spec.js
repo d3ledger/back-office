@@ -1,10 +1,8 @@
-import { URL } from '../config'
-
 const testKeyPath = 'test@notary.priv'
 
 describe('Test settings page', () => {
   it('Make auth', () => {
-    cy.visit(URL)
+    cy.visit('/')
     cy.login(testKeyPath)
   })
 
