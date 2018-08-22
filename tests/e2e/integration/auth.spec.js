@@ -1,5 +1,3 @@
-import { URL } from '../config'
-
 const testKeyPath = 'test@notary.priv'
 
 describe('Test login page', () => {
@@ -32,6 +30,6 @@ describe('Test register page', () => {
 
   it.skip('Confirm should redirect to Log in', () => {
     cy.contains('Confirm').click()
-    cy.url().should('be.eq', `${URL}/#/login`)
+    cy.url().should('be.eq', `${Cypress.config('baseUrl')}/#/login`)
   })
 })
