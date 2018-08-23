@@ -44,7 +44,6 @@ function checkBalance (maxValue, maxPrecision) {
 function checkWallet () {
   return function validator (rule, value, callback, source, options) {
     const errors = []
-    console.log(value)
     const validateBTC = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value)
     const validateETH = /^0x[a-fA-F0-9]{40}$/.test(value)
     if (!validateBTC && !validateETH) errors.push('Invalid wallet address')
