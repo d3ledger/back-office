@@ -8,7 +8,7 @@ describe('Test settings page', () => {
 
   it('Go to settings page', () => {
     cy.get('li.el-menu-item:nth-of-type(5)').click({ force: true })
-    cy.get('.el-card__header > div').contains('Settings')
+    cy.get('.el-card__header').contains('Settings')
   })
 
   it('Change settings', () => {
@@ -18,7 +18,7 @@ describe('Test settings page', () => {
     cy.get(':nth-child(2) > .el-col > .el-radio-group > :nth-child(3)').click().should(() => {
       expect(localStorage.getItem('settings')).to.eq('{"view":{"fiat":"USD","crypto":"XRP"}}')
     })
-    cy.get('.el-input__inner').type('Europe/Dublin')
+    cy.get(':nth-child(1) > :nth-child(1) > .el-input__inner').type('Europe/Dublin')
     cy.contains('ul', 'Europe/Dublin').click().should(() => {
       expect(localStorage.getItem('settings')).to.eq('{"view":{"fiat":"USD","crypto":"XRP","timezone":"Europe/Dublin"}}')
     })
