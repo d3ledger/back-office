@@ -7,7 +7,8 @@ import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
 import irohaUtil from '../src/util/iroha-util'
-import ed25519 from 'ed25519.js'
+// import ed25519 from 'ed25519.js'
+const ed25519 = require('ed25519.js')
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
