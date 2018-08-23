@@ -17,7 +17,7 @@ describe('Test wallets page', () => {
     cy.url().should('contain', 'wallets/')
   })
 
-  it('Search for waller', () => {
+  it('Search for wallet', () => {
     cy.get('.el-input__inner')
       .type(TOKEN).should('have.value', TOKEN)
     cy.get('aside').find('a.card').should('have.length', 1)
