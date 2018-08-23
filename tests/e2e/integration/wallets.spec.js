@@ -3,12 +3,15 @@ const testKeyPath = 'test@notary.priv'
 const TOKEN = 'BasicAttentionToken'
 
 describe('Test wallets page', () => {
-  it('Make auth', () => {
-    cy.visit('/')
-    cy.login(testKeyPath)
+  before(() => {
     cy.server()
     cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
     cy.route('GET', '/data/histoday*limit=365', 'fixture:crypto-api/histoday365.json').as('getHistoday365')
+  })
+
+  it('Make auth', () => {
+    cy.visit('/')
+    cy.login(testKeyPath)
     cy.wait('@getHistoday365')
   })
 
