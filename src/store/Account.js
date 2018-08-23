@@ -106,7 +106,7 @@ const getters = {
 
   withdrawWalletAddresses (state) {
     const wallet = find('eth_whitelist', state.accountInfo)
-    return wallet ? [wallet.eth_whitelist.split(',')] : []
+    return wallet ? wallet.eth_whitelist.split(',') : []
   }
 }
 
