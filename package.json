@@ -8,7 +8,7 @@
     "build:more-memory": "node --max_old_space_size=4096 node_modules/.bin/vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e --url=http://localhost:8080/"
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.1",
