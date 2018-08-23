@@ -1,5 +1,3 @@
-import { IROHA_URL } from '../config'
-
 Cypress.Commands.add('upload_file', (fileName, selector) => {
   return cy.get(selector).then(subject => {
     return cy.fixture(fileName, 'base64')
@@ -22,7 +20,7 @@ Cypress.Commands.add('login', (keyPath) => {
   cy.get('form > div:nth-child(2) input')
     .should('have.value', '0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33')
   cy.get('form > div:nth-child(3) input')
-    .type(IROHA_URL).should('have.value', IROHA_URL)
+    .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
   cy.get('.login-button-container > div > button').click()
   cy.contains('D3').should('be.visible')
 })
