@@ -32,7 +32,7 @@ pipeline {
             iC = docker.image('cypress/base:10')
             iC.inside("--network='d3-${env.GIT_COMMIT}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
-              var = sh(eturnStatus:true, script: "yarn test:unit")
+              var = sh(returnStatus:true, script: "yarn test:unit")
               if (var != 0) {
                 echo '[FAILURE] Unit tests failed'
                 currentBuild.result = 'FAILURE';
