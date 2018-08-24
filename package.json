@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --public --host 0.0.0.0",
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:more-memory": "node --max_old_space_size=4096 node_modules/.bin/vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e",
-    "test:je2e": "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run"
+    "test:e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.1",
