@@ -306,6 +306,28 @@ function getAllUnsignedTransactions (accountId) {
   })
 }
 
+/**
+ * getPendingTransactions https://iroha.readthedocs.io/en/latest/api/queries.html#get-pending-transactions
+ */
+function getPendingTransactions () {
+  debug('starting getPendingTransactions...')
+
+  return sendQuery(
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getPendingTransactions'),
+    (resolve, reject, responseName, response) => {
+      if (responseName !== 'TRANSACTIONS_RESPONSE') {
+        return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE , actual=${responseName}`))
+      }
+
+      const transactions = response.getTransactionsResponse().toObject().transactionsList
+
+      debug('transactions', transactions)
+
+      resolve(transactions)
+    }
+  )
+}
+
 /*
  * ===== commands =====
  */
@@ -531,6 +553,7 @@ export default {
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
+  getPendingTransactions,
   getAssetInfo,
   getAllUnsignedTransactions,
 
