@@ -32,13 +32,13 @@ pipeline {
             iC = docker.image('cypress/base:10')
             iC.inside("--network='d3-${env.GIT_COMMIT}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
-              def var = sh(eturnStatus:true, script: "yarn test:unit")
+              var = sh(eturnStatus:true, script: "yarn test:unit")
               if (var != 0) {
                 echo '[FAILURE] Unit tests failed'
                 currentBuild.result = 'FAILURE';
                 return var
               }
-              def var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
+              var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
               if (var != 0) {
                 echo '[FAILURE] E2E tests failed'
                 currentBuild.result = 'FAILURE';
