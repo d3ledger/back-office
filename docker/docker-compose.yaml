@@ -1,0 +1,56 @@
+version: '3.5'
+
+services:
+  d3-iroha:
+    image: hyperledger/iroha:develop
+    container_name: d3-iroha-${SUBNET}
+    depends_on:
+      - d3-iroha-postgres
+    tty: true
+    environment:
+      - KEY=keys/node0
+    entrypoint:
+      - /opt/iroha_data/entrypoint.sh
+    networks:
+      - d3-back-office
+    volumes:
+      - ./iroha:/opt/iroha_data
+
+  d3-iroha-postgres:
+    image: postgres:9.5
+    container_name: d3-iroha-postgres-${SUBNET}
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+    networks:
+      - d3-back-office
+
+  grpcwebproxy:
+    build:
+      context: grpcwebproxy/
+    container_name: d3-grpcwebproxy-${SUBNET}
+    depends_on:
+      - d3-iroha
+    entrypoint:
+      - grpcwebproxy
+      - --backend_addr=d3-iroha:50051
+      - --run_tls_server=false
+    networks:
+      - d3-back-office
+    # ports:
+    #   - 8081:8080
+
+  d3-back-office:
+    build:
+      context: back-office
+    container_name: d3-back-office-${SUBNET}
+    depends_on:
+      - grpcwebproxy
+    networks:
+      - d3-back-office
+    volumes:
+      - ..:/app
+      # - /dev/null:/app/node_modules
+
+networks:
+  d3-back-office:
+    name: d3-${SUBNET}
