@@ -2,7 +2,7 @@ version: '3.5'
 
 networks:
   d3-back-office:
-    name: ${SUBNET}
+    name: d3-${SUBNET}
     attachable: true
 
 services:
