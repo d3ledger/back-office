@@ -26,9 +26,14 @@ pipeline {
       agent { label 'docker_3' }
       steps {
         script {
-            sh(returnStdout: true, script: "echo \"SUBNET=${env.GIT_COMMIT}\" > .env && docker-compose -f docker/docker-compose.yaml up --build -d")
+            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}"
+            sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
             sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
-            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} yarn --cwd /app test:je2e")
+            iC = docker.image('docker_d3-back-office')
+            iC.inside('--network-alias=["d3-${env.GIT_COMMIT}"]') {
+               sh(returnStdout: true, script: "yarn --cwd /app test:je2e") 
+            }
+            // sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} yarn --cwd /app test:je2e")
         }
       }
       post {

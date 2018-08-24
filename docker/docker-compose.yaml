@@ -1,5 +1,10 @@
 version: '3.5'
 
+networks:
+  d3-back-office:
+    name: d3-${SUBNET}
+    attachable: true
+
 services:
   d3-iroha:
     image: hyperledger/iroha:develop
@@ -50,7 +55,3 @@ services:
     volumes:
       - ..:/app
       # - /dev/null:/app/node_modules
-
-networks:
-  d3-back-office:
-    name: d3-${SUBNET}
