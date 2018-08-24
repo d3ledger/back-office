@@ -36,12 +36,12 @@ pipeline {
           sh(returnStdout: true, script: "yarn test:je2e")
         }
       }
-      post {
-        cleanup {
-          sh(script: "docker-compose -f docker/docker-compose.yaml down")
-        //   sh(returnStdout: true, script: "docker network rm d3-${env.GIT_COMMIT}")
-          cleanWs()
-        }
+    }
+    post {
+      cleanup {
+        sh(script: "docker-compose -f docker/docker-compose.yaml down")
+      //   sh(returnStdout: true, script: "docker network rm d3-${env.GIT_COMMIT}")
+        cleanWs()
       }
     }
   }
