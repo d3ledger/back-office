@@ -27,9 +27,9 @@ pipeline {
       steps {
         script {
             // sh(returnStdout: true, script: "docker network create --attachable d3-${env.GIT_COMMIT}")
-            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}"
+            writeFile file: ".env", text: "SUBNET=d3-${env.GIT_COMMIT}"
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
-            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
+            sh(returnStdout: true, script: "docker exec docker_d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
             // iC = docker.image('docker_d3-back-office')
             // iC.inside("--network='d3-${env.GIT_COMMIT}' --entrypoint 'ls -al'") {
             //   sh 'ls -al'
