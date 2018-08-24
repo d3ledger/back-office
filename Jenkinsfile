@@ -40,7 +40,7 @@ pipeline {
             iC.inside("--network='d3-${env.GIT_COMMIT}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
             //   sh(script: "yarn test:unit")
-              sh(script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
+              sh(script: "yarn test:je2e")
             //   sh(returnStdout: true, script: "yarn --cwd /app test:je2e") 
             }
             // sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} yarn --cwd /app test:je2e")
