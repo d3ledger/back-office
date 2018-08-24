@@ -3,12 +3,16 @@ import { subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 const testKeyPath = 'test@notary.priv'
 
 describe('Reports page', () => {
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const previousMonth = subMonths(Date.now(), 1)
   const startOfPreviousMonth = format(startOfMonth(previousMonth), 'YYYYMMDD')
   const endOfPreviousMonth = format(endOfMonth(previousMonth), 'YYYYMMDD')
   const dateFrom = '2018-01-01'
   const dateTo = '2018-03-31'
+
+  let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+  // Replace 'UTC' with 'Etc/GMT' because timezone.json has only the latter.
+  if (['Etc/UTC', 'UTC'].includes(timezone)) timezone = 'Etc/GMT'
 
   it('does login', () => {
     cy.visit('/')
