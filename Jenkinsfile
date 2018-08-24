@@ -26,17 +26,30 @@ pipeline {
       agent { label 'x86_64' }
       steps {
         script {
-          iC = docker.image("cypress/base:10")
-          iC.inside("--shm-size 4096m --ipc=host") { //--cap-add=SYS_ADMIN
-            sh(script: "yarn install --frozen-lockfile")
-            sh(script: "yarn global add serve cypress")
-            sh(script: "nohup yarn serve &")
-            sh(script: "yarn test:unit && cypress run --env URL=http://127.0.0.1:8080,IROHA_URL=http://95.179.153.222:8081")
-          }
+            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}"
+            sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
+            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
+            iC = docker.image('cypress/base:10')
+            iC.inside("--network='d3-${env.GIT_COMMIT}' --shm-size 4096m --ipc=host") {
+              sh(script: "yarn global add cypress")
+              var = sh(returnStatus:true, script: "yarn test:unit")
+              if (var != 0) {
+                echo '[FAILURE] Unit tests failed'
+                currentBuild.result = 'FAILURE';
+                return var
+              }
+              var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
+              if (var != 0) {
+                echo '[FAILURE] E2E tests failed'
+                currentBuild.result = 'FAILURE';
+                return var
+              }
+            }
         }
       }
       post {
         cleanup {
+          sh(script: "docker-compose -f docker/docker-compose.yaml down")
           cleanWs()
         }
       }
