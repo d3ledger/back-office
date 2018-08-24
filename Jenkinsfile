@@ -23,7 +23,7 @@ pipeline {
       }
     }
     stage('Tests (unit, e2e)') {
-      agent { label 'docker_3' }
+      agent { label 'x86_64' }
       steps {
         script {
             writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}"
