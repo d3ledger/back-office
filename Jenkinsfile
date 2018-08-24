@@ -23,20 +23,17 @@ pipeline {
       }
     }
     stage('Tests (unit, e2e)') {
-      agent { label 'x86_64' }
+      agent { label 'docker_3' }
       steps {
         script {
-          iC = docker.image("cypress/base:10")
-          iC.inside("--shm-size 4096m --ipc=host") { //--cap-add=SYS_ADMIN
-            sh(script: "yarn install --frozen-lockfile")
-            sh(script: "yarn global add serve cypress")
-            sh(script: "nohup yarn serve &")
-            sh(script: "yarn test:unit && cypress run --env URL=http://127.0.0.1:8080,IROHA_URL=http://95.179.153.222:8081")
-          }
+            sh(script: "echo \"SUBNET=${env.GIT_COMMIT}\" > docker/.env && docker-compose -f docker/docker-compose.yaml up --build -d")
+            sh(script: "docker exec d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
+            sh(script: "docker exec d3-back-office-${env.GIT_COMMIT} CYPRESS_baseUrl=http://localhost:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress -P=/app run")
         }
       }
       post {
         cleanup {
+          sh(script: "docker-compose -f docker/docker-compose.yaml down")
           cleanWs()
         }
       }

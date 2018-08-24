@@ -12,4 +12,4 @@ yarn serve
 
 
 # sleep 30
-# CYPRESS_baseUrl=http://localhost:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run
+# CYPRESS_baseUrl=http://localhost:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress -P=/app run
