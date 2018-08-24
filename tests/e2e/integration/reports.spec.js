@@ -1,4 +1,3 @@
-import { URL } from '../config'
 import { subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 
 const testKeyPath = 'test@notary.priv'
@@ -12,7 +11,7 @@ describe('Reports page', () => {
   const dateTo = '2018-03-31'
 
   it('does login', () => {
-    cy.visit(URL)
+    cy.visit('/')
     cy.login(testKeyPath)
   })
 
