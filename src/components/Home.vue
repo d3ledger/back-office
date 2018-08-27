@@ -161,6 +161,13 @@
             </el-row>
           </el-form-item>
         </template>
+        <el-form-item v-if="accountQuorum > 1">
+          <el-row type="flex" justify="center">
+            <div class="item__private-keys">
+              0/{{ accountQuorum }}
+            </div>
+          </el-row>
+        </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
             class="fullwidth black clickable"
@@ -384,9 +391,12 @@ export default {
   vertical-align: middle;
 }
 
-.dialog__item-center {
+.item__private-keys {
+  width: 40px;
+  height: 40px;
+  border-radius: 24px;
+  border: solid 1px #cccccc;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 </style>
