@@ -157,8 +157,7 @@ const mutations = {
   [types.LOGIN_SUCCESS] (state, account) {
     state.accountId = account.accountId
     state.accountInfo = JSON.parse(account.jsonData)
-    // TODO: should be removed
-    state.accountQuorum = account.quorum === 1 ? 3 : 0
+    state.accountQuorum = account.quorum
   },
 
   [types.LOGIN_FAILURE] (state, err) {
