@@ -479,6 +479,21 @@ function setAccountDetail (privateKey, accountId, key, value) {
 }
 
 /**
+ * setAccountQuorum https://hyperledger.github.io/iroha-api/#set-account-quorum
+ * @param {String} privateKey
+ * @param {String} accountId
+ * @param {Number} quorum
+ */
+function setAccountQuorum (privateKey, accountId, quorum) {
+  debug('starting setAccountQuorum...')
+
+  return command(
+    privateKey,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum })
+  )
+}
+
+/**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
  * @param {String} privateKey
  * @param {String} srcAccountId
@@ -563,5 +578,6 @@ export default {
   transferAsset,
   addAssetQuantity,
   createSettlement,
-  setAccountDetail
+  setAccountDetail,
+  setAccountQuorum
 }
