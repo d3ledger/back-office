@@ -7,8 +7,7 @@ import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
 import irohaUtil from '../src/util/iroha-util'
-// import ed25519 from 'ed25519.js'
-const ed25519 = require('ed25519.js')
+import { derivePublicKey } from 'ed25519.js'
 
 const irohaDomain = 'notary'
 const testAccName = 'test'
@@ -17,9 +16,9 @@ const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
-const testPubKey = ed25519.derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
+const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
-const alicePubKey = ed25519.derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
+const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
 // IP should start with 'http'
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
