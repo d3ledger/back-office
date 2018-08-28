@@ -357,31 +357,43 @@ function command (
     })
   })
     .then(() => {
-      debug('sleep 5 seconds...')
-      return sleep(5000)
-    })
-    .then(() => {
-      debug('sending transaction status request...')
+      debug('opening transaction status stream...')
 
       return new Promise((resolve, reject) => {
         const request = new TxStatusRequest()
 
         request.setTxHash(txHash)
 
-        txClient.status(request, (err, response) => {
-          if (err) {
-            return reject(err)
-          }
+        let stream = txClient.statusStream(request)
 
-          const status = response.getTxStatus()
-          const statusName = getProtoEnumName(
+        // TODO: fix this if (when) https://github.com/improbable-eng/grpc-web/pull/189 is merged
+        const notaryError = () => {
+          reject(new Error('Problem with notary. Please try again later.'))
+          stream.cancel()
+        }
+        let timer = setTimeout(notaryError, timeoutLimit * 2)
+
+        let statuses = []
+
+        stream.on('data', function (response) {
+          clearInterval(timer)
+          statuses.push(response)
+          timer = setTimeout(notaryError, timeoutLimit * 2)
+        })
+
+        stream.on('end', function (end) {
+          clearTimeout(timer)
+
+          const last = statuses[statuses.length - 1].getTxStatus()
+
+          const lastStatusName = getProtoEnumName(
             TxStatus,
             'iroha.protocol.TxStatus',
-            status
+            last
           )
 
-          if (statusName !== 'COMMITTED') {
-            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED, actual=${statusName}`))
+          if (lastStatusName !== 'COMMITTED') {
+            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED, actual=${lastStatusName}`))
           }
 
           resolve()
@@ -484,9 +496,6 @@ function createSettlement () {
 /*
  *  ===== utilities ===
  */
-function sleep (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 const protoEnumName = {}
 function getProtoEnumName (obj, key, value) {
