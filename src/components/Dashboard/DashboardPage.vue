@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="wallets.length" v-loading.fullscreen.lock="dashboardLoading">
+  <el-container v-if="wallets.length  || dashboardLoading" v-loading.fullscreen.lock="dashboardLoading">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
