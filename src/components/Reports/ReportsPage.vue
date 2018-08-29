@@ -221,6 +221,7 @@ export default {
     },
 
     saveBlob (blob, filename) {
+      // do not download a file in headless e2e testing environment
       if (window.Cypress) {
         alert(`downloading ${filename}`)
       } else {
