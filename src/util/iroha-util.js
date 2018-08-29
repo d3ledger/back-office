@@ -376,7 +376,7 @@ function command (
         let statuses = []
 
         stream.on('data', function (response) {
-          clearInterval(timer)
+          clearTimeout(timer)
           statuses.push(response)
           timer = setTimeout(notaryError, timeoutLimit * 2)
         })
