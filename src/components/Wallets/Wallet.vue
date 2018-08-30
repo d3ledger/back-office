@@ -39,35 +39,65 @@
               <div slot="header" class="card-header">
                 <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
               </div>
+
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}</p>
-                    <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
+                    <p
+                      class="card-info-amount"
+                      :title="`the current price in ${settingsView.fiat}`"
+                    >
+                      {{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}
+                    </p>
+
+                    <p
+                      :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']"
+                      :title="`the change (${settingsView.fiat}) for the last 24 hours`"
+                    >
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
                   </el-col>
                   <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}</p>
-                    <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
+                    <p
+                      class="card-info-amount"
+                      :title="`the current price in ${settingsView.crypto}`"
+                    >
+                      {{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}
+                    </p>
+
+                    <p
+                      :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']"
+                      :title="`the change (%) for the last 24 hours`"
+                    >
                       {{ cryptoInfo.current.crypto_change | formatPercent }}
                     </p>
                   </el-col>
                 </el-row>
+
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}</p>
-                    <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p :title="`the market cap in ${settingsView.fiat}`">
+                      {{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}
+                    </p>
+                    <p :title="`the supply in ${wallet.asset}`">
+                      {{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}</p>
-                    <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${settingsView.fiat}`">
+                      {{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}
+                    </p>
+                    <p :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${wallet.asset}`">
+                      {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Circulating Supply</p>
-                    <p> {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p :title="`the supply in ${wallet.asset}`">
+                      {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
                 </el-row>
               </div>
