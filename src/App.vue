@@ -99,7 +99,9 @@ a:hover {
 }
 
 .black.el-button:hover {
-  opacity: 0.8;
+  color: white;
+  background: #36464D;
+  border: 1px solid #36464D;
 }
 
 .monospace {
