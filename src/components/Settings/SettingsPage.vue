@@ -51,7 +51,8 @@
                   <el-row>
                     <el-col>
                       <el-select
-                        class="time-zone_select"
+                        id="timezone_select"
+                        class="full-width_select"
                         v-model="currentZone"
                         filterable
                         placeholder="Select">
@@ -62,6 +63,38 @@
                           :value="zone">
                         </el-option>
                       </el-select>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Privacy</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <div class="row_sub-header">
+                        <span class="header_small">Avaliable withdrawal addresses</span>
+                      </div>
+                      <div class="full-width_select address_list">
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length"
+                          v-for="address in withdrawWalletAddresses"
+                          :key="address"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          {{ address }}
+                        </el-tag>
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length === 0"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          You can withdraw to any address
+                        </el-tag>
+                      </div>
                     </el-col>
                   </el-row>
                 </div>
@@ -89,7 +122,8 @@ export default {
   computed: {
     ...mapGetters([
       'settingsFiatCurrencies',
-      'settingsCryptoCurrencies'
+      'settingsCryptoCurrencies',
+      'withdrawWalletAddresses'
     ]),
     currentFiat: {
       get () {
@@ -124,6 +158,14 @@ export default {
   margin-bottom: 20px;
 }
 
+.row_sub-header {
+  margin-bottom: 10px;
+}
+
+.row_sub-header > .header_small {
+  font-size: 0.8rem;
+}
+
 .settings_item-header {
   margin-bottom: 15px;
 }
@@ -140,7 +182,21 @@ export default {
   width: 5rem;
 }
 
-.time-zone_select {
+.full-width_select {
   width: 100%;
+}
+
+.address_list {
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px 5px 0 5px;
+  width: 100%;
+}
+
+.address_tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
 }
 </style>

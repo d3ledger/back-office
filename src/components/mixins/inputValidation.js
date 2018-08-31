@@ -19,8 +19,7 @@ const set = {
     { pattern: /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/, message: 'Invalid IP', trigger: 'change' }
   ],
   walletAddress: [
-    { required: true, message: 'Please input wallet address', trigger: 'change' },
-    { pattern: /^0x[a-fA-F0-9]{40}$/, message: 'Invalid wallet address', trigger: 'change' }
+    { required: true, message: 'Please input wallet address', trigger: 'change' }
   ],
   tokensAmount: [
     { required: true, message: 'Please input amount', trigger: 'change' },
@@ -42,6 +41,16 @@ function checkBalance (maxValue, maxPrecision) {
   }
 }
 
+function checkWallet () {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    const validateBTC = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value)
+    const validateETH = /^0x[a-fA-F0-9]{40}$/.test(value)
+    if (!validateBTC && !validateETH) errors.push('Invalid wallet address')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
@@ -50,6 +59,10 @@ function generateRules (form) {
       const tokensAmountRule = Object.assign([], set[validationRule.pattern])
       tokensAmountRule.push({ validator: checkBalance(validationRule.amount, validationRule.precision) })
       rules[key] = tokensAmountRule
+    } else if (validationRule === 'walletAddress') {
+      const walletAddressRule = Object.assign([], set[validationRule])
+      walletAddressRule.push({ validator: checkWallet() })
+      rules[key] = walletAddressRule
     } else {
       rules[key] = set[validationRule]
     }
