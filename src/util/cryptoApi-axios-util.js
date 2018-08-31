@@ -70,6 +70,45 @@ const loadPriceByFilter = axios => ({ crypto, filter, to }, settings) => {
     .catch(error => ({ error }))
 }
 
+const loadVolumeByFilter = axios => ({ crypto, filter }) => {
+  const dateFilter = {
+    'ALL': {
+      url: 'histoday',
+      time: 730
+    },
+    '1Y': {
+      url: 'histoday',
+      time: 365
+    },
+    '1M': {
+      url: 'histoday',
+      time: 30
+    },
+    '1W': {
+      url: 'histoday',
+      time: 7
+    },
+    '1D': {
+      url: 'histohour',
+      time: 24
+    },
+    '1H': {
+      url: 'histohour',
+      time: 1
+    }
+  }
+  const search = dateFilter[filter]
+  return axios
+    .get(`data/exchange/${search.url}`, {
+      params: {
+        tsym: crypto,
+        limit: search.time
+      }
+    })
+    .then(({ data }) => data)
+    .catch(error => ({ error }))
+}
+
 const loadFullData = axios => (asset, currencies) => {
   const currentFiat = currencies.fiat
   const currentCrypto = currencies.crypto
@@ -99,6 +138,7 @@ const loadPriceForAssets = axios => (assets) => {
 export default {
   loadHistoryByLabels: loadHistoryByLabels(axiosAPI),
   loadPriceByFilter: loadPriceByFilter(axiosAPI),
+  loadVolumeByFilter: loadVolumeByFilter(axiosAPI),
   loadFullData: loadFullData(axiosAPI),
   loadPriceForAssets: loadPriceForAssets(axiosAPI)
 }

@@ -83,6 +83,7 @@ describe('Wallet store', () => {
     it('GET_CRYPTO_FULL_DATA_SUCCESS should set cryptoInfo data', () => {
       const state = { cryptoInfo: {} }
       const number = randomAmountRng()
+      const price = randomAmountRng()
       const assets = ['BTC', 'ETH']
       const fiats = ['USD', 'EUR']
       const asset = randomArrayElement(assets)
@@ -103,11 +104,17 @@ describe('Wallet store', () => {
           { close: number }
         ]
       }
+      const volumeData = {
+        Data: [
+          { volume: number },
+          { volume: number }
+        ]
+      }
       const priceData = {
         RAW: {
           test: {
             [fiat]: {
-              PRICE: number,
+              PRICE: price,
               CHANGEDAY: number,
               MKTCAP: number,
               SUPPLY: number,
@@ -115,7 +122,7 @@ describe('Wallet store', () => {
               TOTALVOLUME24H: number
             },
             [asset]: {
-              PRICE: number,
+              PRICE: price,
               CHANGEPCTDAY: number
             }
           }
@@ -124,9 +131,9 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            rur: number,
+            rur: price,
             rur_change: 0,
-            crypto: number,
+            crypto: price,
             crypto_change: 0
           },
           market: {
@@ -135,8 +142,8 @@ describe('Wallet store', () => {
               crypto: number
             },
             volume: {
-              rur: number,
-              crypto: number
+              rur: price * (number * 2),
+              crypto: number * 2
             },
             supply: number
           },
@@ -146,6 +153,7 @@ describe('Wallet store', () => {
       mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, {
         historicalDataFiat,
         historicalDataCrypto,
+        volumeData,
         priceData,
         currencies
       })
