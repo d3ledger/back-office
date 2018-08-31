@@ -77,13 +77,24 @@
                       <div class="row_sub-header">
                         <span class="header_small">Avaliable withdrawal addresses</span>
                       </div>
-                      <el-select
-                        class="full-width_select"
-                        v-model="withdrawWalletAddresses"
-                        multiple
-                        disabled
-                        placeholder="You can withdraw to any address">
-                      </el-select>
+                      <div class="full-width_select address_list">
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length"
+                          v-for="address in withdrawWalletAddresses"
+                          :key="address"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          {{ address }}
+                        </el-tag>
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length === 0"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          You can withdraw to any address
+                        </el-tag>
+                      </div>
                     </el-col>
                   </el-row>
                 </div>
@@ -173,5 +184,19 @@ export default {
 
 .full-width_select {
   width: 100%;
+}
+
+.address_list {
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px 5px 0 5px;
+  width: 100%;
+}
+
+.address_tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
 }
 </style>
