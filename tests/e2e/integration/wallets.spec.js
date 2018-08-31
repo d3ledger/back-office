@@ -1,8 +1,9 @@
 const testKeyPath = 'test@notary.priv'
+const aliceKeyPath = 'alice@notary.priv'
 
 const TOKEN = 'BasicAttentionToken'
 
-describe('Test wallets page', () => {
+describe('Test wallets page without white list', () => {
   before(() => {
     cy.server()
     cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
@@ -11,7 +12,7 @@ describe('Test wallets page', () => {
 
   it('Make auth', () => {
     cy.visit('/')
-    cy.login(testKeyPath)
+    cy.login(aliceKeyPath)
     cy.wait('@getHistoday365')
   })
 
@@ -321,6 +322,90 @@ describe('Test wallets page', () => {
     it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(3).click()
       cy.get('div.el-dialog').eq(3).should('not.be.visible')
+    })
+  })
+})
+
+describe('Test wallets page with white list', () => {
+  before(() => {
+    cy.server()
+    cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
+    cy.route('GET', '/data/histoday*limit=365', 'fixture:crypto-api/histoday365.json').as('getHistoday365')
+  })
+
+  it('Make auth', () => {
+    cy.visit('/')
+    cy.login(testKeyPath)
+    cy.wait('@getHistoday365')
+  })
+
+  it('Go to wallets page', () => {
+    cy.get('li.el-menu-item:nth-of-type(2)').click({ force: true })
+    cy.url().should('contain', 'wallets/')
+  })
+
+  describe('Test withdraw modal', () => {
+    it('Open modal', () => {
+      cy.contains('Withdraw').click()
+      cy.get('div.el-dialog').eq(0).should('be.visible')
+    })
+
+    it('Validate amount field', () => {
+      const tokenAmount = '100'
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
+        .should('not.be.visible')
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .clear()
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
+        .should('be.visible')
+    })
+
+    it('Validate modal - handle an error', () => {
+      cy.get('div.el-dialog').eq(0)
+        .find('.el-form-item__content > .el-button')
+        .click()
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
+        .should('be.visible')
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
+        .should('be.visible')
+    })
+
+    it('Validate modal - correct', () => {
+      const tokenAmount = '100'
+      cy.get('div.el-dialog').eq(0)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('div.el-dialog').eq(0)
+        .find('.el-select > .el-input > .el-input__inner')
+        .click()
+      cy.get('.el-select-dropdown__item')
+        .click()
+      cy.get('div.el-dialog').eq(0)
+        .find('.el-form-item__content > .el-button')
+        .click()
+      cy.get('div.el-dialog').eq(0)
+        .get('div.el-dialog')
+        .eq(4)
+        .should('be.visible')
+      cy.get('div.el-dialog').eq(0)
+        .get('i.el-dialog__close')
+        .eq(4)
+        .click()
+    })
+
+    it('Close modal', () => {
+      cy.get('i.el-dialog__close').eq(0).click()
+      cy.get('div.el-dialog').eq(0).should('not.be.visible')
     })
   })
 })

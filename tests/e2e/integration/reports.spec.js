@@ -38,18 +38,18 @@ describe('Reports page', () => {
     })
   })
 
-  it('should download a file when clicking a PDF button', () => {
-    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
-
-    cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
-      .click()
-      .shouldDownload(expectedFilename)
-  })
-
   it('should download a file when clicking a CSV button', () => {
     const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
 
     cy.get('#reports-page tr:contains("Monaco") button:contains("CSV")')
+      .click()
+      .shouldDownload(expectedFilename)
+  })
+
+  it('should download a file when clicking a PDF button', () => {
+    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
+
+    cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
       .click()
       .shouldDownload(expectedFilename)
   })
@@ -66,18 +66,18 @@ describe('Reports page', () => {
     cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
   })
 
-  it('should download the new report as PDF', () => {
-    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
-
-    cy.get('#reports-page .el-dialog button:contains("PDF")')
-      .click({ force: true })
-      .shouldDownload(expectedFilename)
-  })
-
   it('should download the new report as CSV', () => {
     const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
 
     cy.get('#reports-page .el-dialog button:contains("CSV")')
+      .click({ force: true })
+      .shouldDownload(expectedFilename)
+  })
+
+  it('should download the new report as PDF', () => {
+    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
+
+    cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
       .shouldDownload(expectedFilename)
   })
