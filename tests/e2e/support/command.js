@@ -25,7 +25,7 @@ Cypress.Commands.add('login', (keyPath) => {
 
 Cypress.Commands.add('setTimezone', (timezone) => {
   cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
-  cy.get('.time-zone_select .el-input__inner').should('be.visible').type(timezone)
+  cy.get('#timezone_select').should('be.visible').type(timezone)
   cy.get('.el-select-dropdown .el-select-dropdown__list').contains(new RegExp(`^\\s*${timezone}\\s*$`)).click({ force: true }).should(() => {
     const view = JSON.parse(localStorage.getItem('settings')).view
 
