@@ -28,8 +28,9 @@ const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
     }))
 }
 
-const loadPriceByFilter = axios => ({ crypto, filter }, settings) => {
-  const currentFiat = settings.fiat
+const loadPriceByFilter = axios => ({ crypto, filter, to }, settings) => {
+  const fsym = crypto
+  const tsym = to || settings.fiat
   const dateFilter = {
     'ALL': {
       url: 'histoday',
@@ -60,8 +61,8 @@ const loadPriceByFilter = axios => ({ crypto, filter }, settings) => {
   return axios
     .get(`data/${search.url}`, {
       params: {
-        fsym: crypto,
-        tsym: currentFiat,
+        fsym,
+        tsym,
         limit: search.time
       }
     })
