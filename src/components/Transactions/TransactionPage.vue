@@ -24,14 +24,14 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Description" width="300px">
+              <el-table-column label="Description" width="290px">
                 <template slot-scope="scope">
                   <div>
                     {{ `${scope.row.description.substr(0, 100)}...` }}
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Address" width="140px">
+              <el-table-column label="Address" width="110px">
                 <template slot-scope="scope">
                   <span>{{ scope.row.address }}</span>
                 </template>
