@@ -102,6 +102,11 @@ const getters = {
   ethWalletAddress (state) {
     let wallet = find('ethereum_wallet', state.accountInfo)
     return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
+  },
+
+  withdrawWalletAddresses (state) {
+    const wallet = find('eth_whitelist', state.accountInfo)
+    return wallet ? wallet.eth_whitelist.split(',') : []
   }
 }
 

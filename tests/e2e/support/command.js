@@ -15,19 +15,17 @@ Cypress.Commands.add('upload_file', (fileName, selector) => {
 
 Cypress.Commands.add('login', (keyPath) => {
   cy.get('form > div:nth-child(1) input')
-    .type('test@notary').should('have.value', 'test@notary')
+    .type(keyPath).should('have.value', keyPath)
   cy.upload_file(keyPath, 'input.el-upload__input')
-  cy.get('form > div:nth-child(2) input')
-    .should('have.value', '0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33')
   cy.get('form > div:nth-child(3) input')
     .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
   cy.get('.login-button-container > div > button').click()
-  cy.contains('D3').should('be.visible')
+  cy.url().should('be.not.eq', `${Cypress.config('baseUrl')}/#/login`)
 })
 
 Cypress.Commands.add('setTimezone', (timezone) => {
   cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
-  cy.get('.time-zone_select .el-input__inner').should('be.visible').type(timezone)
+  cy.get('#timezone_select').should('be.visible').type(timezone)
   cy.get('.el-select-dropdown .el-select-dropdown__list').contains(new RegExp(`^\\s*${timezone}\\s*$`)).click({ force: true }).should(() => {
     const view = JSON.parse(localStorage.getItem('settings')).view
 
