@@ -48,7 +48,10 @@ import {
   Main,
   Loading,
   Message,
-  MessageBox
+  MessageBox,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -85,6 +88,9 @@ Vue.use(Container)
 Vue.use(Header)
 Vue.use(Aside)
 Vue.use(Main)
+Vue.use(Dropdown)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
 Vue.use(Loading.directive)
 Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$message = Message

@@ -72,27 +72,50 @@ const mutations = {
     Vue.set(state.cryptoInfo, 'isLoading', true)
   },
 
-  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { data, currencies }) {
-    const RAW = Object.values(data.RAW)[0]
+  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { historicalDataFiat, historicalDataCrypto, priceData, currencies }) {
+    // process priceData
+    const RAW = Object.values(priceData.RAW)[0]
     const compareToRUB = RAW[currencies.fiat]
     const compareToCrypto = RAW[currencies.crypto]
+
+    const priceFiat = compareToRUB.PRICE
+    const priceCrypto = compareToCrypto.PRICE
+    const marketcapFiat = compareToRUB.MKTCAP
+    const marketcapCrypto = compareToRUB.SUPPLY
+    // TODO: show the total volume over the specified range
+    const volumeFiat = compareToRUB.TOTALVOLUME24HTO
+    const volumeCrypto = compareToRUB.TOTALVOLUME24H
+    const circulatingSupply = compareToRUB.SUPPLY
+
+    // process historicalDataFiat
+    const getInfo = ({ Data }) => {
+      const closeOfTheFirstSpan = Data.filter(x => x.close !== 0)[0].close
+      const closeOfTheLastSpan = Data[Data.length - 1].close
+      const change = closeOfTheLastSpan - closeOfTheFirstSpan
+      const changePct = (change / closeOfTheFirstSpan) * 100
+
+      return [change, changePct]
+    }
+    const [changeFiat] = getInfo(historicalDataFiat)
+    const [, changePctCrypto] = getInfo(historicalDataCrypto)
+
     Vue.set(state, 'cryptoInfo', {
       current: {
-        rur: compareToRUB.PRICE,
-        rur_change: compareToRUB.CHANGEDAY,
-        crypto: compareToCrypto.PRICE,
-        crypto_change: compareToCrypto.CHANGEPCTDAY
+        rur: priceFiat,
+        rur_change: changeFiat,
+        crypto: priceCrypto,
+        crypto_change: changePctCrypto
       },
       market: {
         cap: {
-          rur: compareToRUB.MKTCAP,
-          crypto: compareToRUB.SUPPLY
+          rur: marketcapFiat,
+          crypto: marketcapCrypto
         },
         volume: {
-          rur: compareToRUB.TOTALVOLUME24HTO,
-          crypto: compareToRUB.TOTALVOLUME24H
+          rur: volumeFiat,
+          crypto: volumeCrypto
         },
-        supply: compareToRUB.SUPPLY
+        supply: circulatingSupply
       },
       isLoading: false
     })
@@ -105,11 +128,19 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { asset }) {
+  getCryptoFullData ({ commit, getters }, { filter, asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
+
     const currencies = getters.settingsView
-    return cryptoCompareUtil.loadFullData(asset, currencies)
-      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { data, currencies }))
+
+    return Promise.all([
+      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
+      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
+      cryptoCompareUtil.loadFullData(asset, currencies)
+    ])
+      .then(([historicalDataFiat, historicalDataCrypto, priceData]) => {
+        commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { historicalDataFiat, historicalDataCrypto, priceData, currencies })
+      })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
         throw err

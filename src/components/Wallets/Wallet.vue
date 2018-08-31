@@ -37,7 +37,28 @@
           <el-col :span="12">
             <el-card body-style="height: 160px;">
               <div slot="header" class="card-header">
-                <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
+                <div>
+                  Market
+
+                  <el-dropdown @command="(command) => { selectedMarketPeriod = command }">
+                    <el-tag
+                      type="info"
+                      size="mini"
+                    >
+                      {{ selectedMarketPeriod }}
+                    </el-tag>
+
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item
+                        v-for="period in marketPeriods"
+                        :key="period"
+                        :command="period"
+                      >
+                        {{ period }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
               </div>
 
               <div class="card-info" v-loading="cryptoInfo.isLoading">
@@ -45,14 +66,14 @@
                   <el-col :span="12">
                     <p
                       class="card-info-amount"
-                      :title="`the current price in ${settingsView.fiat}`"
+                      :title="`the current price of 1 ${wallet.asset} in ${settingsView.fiat}`"
                     >
                       {{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}
                     </p>
 
                     <p
                       :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']"
-                      :title="`the change (${settingsView.fiat}) for the last 24 hours`"
+                      :title="`the change (${settingsView.fiat}) from ${selectedMarketPeriod} ago`"
                     >
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
@@ -60,14 +81,14 @@
                   <el-col :span="12">
                     <p
                       class="card-info-amount"
-                      :title="`the current price in ${settingsView.crypto}`"
+                      :title="`the current price of 1 ${wallet.asset} in ${settingsView.crypto}`"
                     >
                       {{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}
                     </p>
 
                     <p
                       :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']"
-                      :title="`the change (%) for the last 24 hours`"
+                      :title="`the change (%) from ${selectedMarketPeriod} ago`"
                     >
                       {{ cryptoInfo.current.crypto_change | formatPercent }}
                     </p>
@@ -327,7 +348,9 @@ export default {
         to: null,
         amount: null,
         description: ''
-      }
+      },
+      marketPeriods: ['1H', '1D', '1W', '1M', '1Y', 'ALL'],
+      selectedMarketPeriod: '1D'
     }
   },
 
@@ -354,6 +377,10 @@ export default {
     displayPrecision () {
       return this.wallet.precision < 4 ? this.wallet.precision : 4
     }
+  },
+
+  watch: {
+    selectedMarketPeriod () { this.updateMarketCard() }
   },
 
   created () {
@@ -384,8 +411,12 @@ export default {
       this.$store.dispatch('getAccountAssets')
         .then(() => {
           this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
-          this.$store.dispatch('getCryptoFullData', this.wallet)
+          this.updateMarketCard()
         })
+    },
+
+    updateMarketCard () {
+      return this.$store.dispatch('getCryptoFullData', { filter: this.selectedMarketPeriod, asset: this.wallet.asset })
     },
 
     onSubmitWithdrawalForm () {
