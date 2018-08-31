@@ -98,25 +98,40 @@
                 <el-row>
                   <el-col :span="8">
                     <p class="card-info-title">Market Cap</p>
-                    <p :title="`the market cap in ${settingsView.fiat}`">
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the market cap in ${settingsView.fiat}`"
+                    >
                       {{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}
                     </p>
-                    <p :title="`the supply in ${wallet.asset}`">
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the supply in ${wallet.asset}`"
+                    >
                       {{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Volume (24h)</p>
-                    <p :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${settingsView.fiat}`">
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${settingsView.fiat}`"
+                    >
                       {{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}
                     </p>
-                    <p :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${wallet.asset}`">
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${wallet.asset}`"
+                    >
                       {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
                   </el-col>
                   <el-col :span="8">
                     <p class="card-info-title">Circulating Supply</p>
-                    <p :title="`the supply in ${wallet.asset}`">
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the supply in ${wallet.asset}`"
+                    >
                       {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}
                     </p>
                   </el-col>
@@ -614,6 +629,10 @@ export default {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 4px;
+}
+
+.card-info-amount--small {
+  word-break: break-all;
 }
 
 .icon {
