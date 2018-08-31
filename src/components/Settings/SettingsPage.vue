@@ -82,7 +82,7 @@
                         v-model="withdrawWalletAddresses"
                         multiple
                         disabled
-                        placeholder="Select withdrawal address">
+                        placeholder="You can withdraw to any address">
                       </el-select>
                     </el-col>
                   </el-row>
