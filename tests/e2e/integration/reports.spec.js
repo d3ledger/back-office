@@ -66,18 +66,18 @@ describe('Reports page', () => {
     cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
   })
 
-  it('should download the new report as PDF', () => {
-    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
-
-    cy.get('#reports-page .el-dialog button:contains("PDF")')
-      .click({ force: true })
-      .shouldDownload(expectedFilename)
-  })
-
   it('should download the new report as CSV', () => {
     const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
 
     cy.get('#reports-page .el-dialog button:contains("CSV")')
+      .click({ force: true })
+      .shouldDownload(expectedFilename)
+  })
+
+  it('should download the new report as PDF', () => {
+    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
+
+    cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
       .shouldDownload(expectedFilename)
   })
