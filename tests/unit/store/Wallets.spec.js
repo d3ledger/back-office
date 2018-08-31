@@ -91,7 +91,19 @@ describe('Wallet store', () => {
         fiat,
         crypto: asset
       }
-      const data = {
+      const historicalDataFiat = {
+        Data: [
+          { close: number },
+          { close: number }
+        ]
+      }
+      const historicalDataCrypto = {
+        Data: [
+          { close: number },
+          { close: number }
+        ]
+      }
+      const priceData = {
         RAW: {
           test: {
             [fiat]: {
@@ -113,9 +125,9 @@ describe('Wallet store', () => {
         cryptoInfo: {
           current: {
             rur: number,
-            rur_change: number,
+            rur_change: 0,
             crypto: number,
-            crypto_change: number
+            crypto_change: 0
           },
           market: {
             cap: {
@@ -132,7 +144,9 @@ describe('Wallet store', () => {
         }
       }
       mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, {
-        data,
+        historicalDataFiat,
+        historicalDataCrypto,
+        priceData,
         currencies
       })
       expect(state).to.be.deep.equal(expectedState)
@@ -155,6 +169,7 @@ describe('Wallet store', () => {
       it('should call mutations in correct order', async () => {
         const assets = ['BTC', 'ETH']
         const fiats = ['USD', 'EUR']
+        const filter = '1D'
         const asset = randomArrayElement(assets)
         const fiat = randomArrayElement(fiats)
         const getters = {
@@ -164,7 +179,7 @@ describe('Wallet store', () => {
           }
         }
         const commit = sinon.spy()
-        await actions.getCryptoFullData({ commit, getters }, { asset })
+        await actions.getCryptoFullData({ commit, getters }, { filter, asset })
         const response = commit.secondCall.args[1]
         expect(commit.args).to.deep.equal([
           [types.GET_CRYPTO_FULL_DATA_REQUEST],
