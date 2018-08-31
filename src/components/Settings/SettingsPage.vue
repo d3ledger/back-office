@@ -51,7 +51,8 @@
                   <el-row>
                     <el-col>
                       <el-select
-                        class="time-zone_select"
+                        id="timezone_select"
+                        class="full-width_select"
                         v-model="currentZone"
                         filterable
                         placeholder="Select">
@@ -77,7 +78,7 @@
                         <span class="header_small">Avaliable withdrawal addresses</span>
                       </div>
                       <el-select
-                        class="time-zone_select"
+                        class="full-width_select"
                         v-model="withdrawWalletAddresses"
                         multiple
                         disabled
@@ -170,7 +171,7 @@ export default {
   width: 5rem;
 }
 
-.time-zone_select {
+.full-width_select {
   width: 100%;
 }
 </style>
