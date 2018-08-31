@@ -97,6 +97,12 @@ export function generatePDF (params) {
         }
       ]
     }
+
+    // do not create PDF in headless e2e testing environment
+    if (window.Cypress) {
+      return resolve({ filename: data.filename })
+    }
+
     const pdfDocGenerator = pdfMake.createPdf(docDefinition)
 
     pdfDocGenerator.getBlob(blob => {

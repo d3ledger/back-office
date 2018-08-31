@@ -24,3 +24,28 @@ Cypress.Commands.add('login', (keyPath) => {
   cy.get('.login-button-container > div > button').click()
   cy.contains('D3').should('be.visible')
 })
+
+Cypress.Commands.add('setTimezone', (timezone) => {
+  cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
+  cy.get('.time-zone_select .el-input__inner').should('be.visible').type(timezone)
+  cy.get('.el-select-dropdown .el-select-dropdown__list').contains(new RegExp(`^\\s*${timezone}\\s*$`)).click({ force: true }).should(() => {
+    const view = JSON.parse(localStorage.getItem('settings')).view
+
+    expect(view).to.have.property('timezone', timezone)
+  })
+})
+
+/*
+ * In test environment, clicking a download button opens an alert instead of
+ * downloading a file so Cypress can detect window:alert event to verify that
+ * the correct file will be downloaded.
+ */
+Cypress.Commands.add('shouldDownload', {
+  prevSubject: true
+}, (subject, expectedFilename) => {
+  const stub = cy.stub()
+
+  cy.on('window:alert', stub)
+  cy.wrap(subject).should(() => expect(stub.called).to.be.true)
+    .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+})

@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="wallets.length">
+  <el-container id="reports-page" v-if="wallets.length">
     <el-main>
       <el-row>
         <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
@@ -49,6 +49,7 @@
       <el-form style="width: 100%">
         <el-form-item label="Wallets">
           <el-select
+            id="wallet-selector"
             v-model="selectedWallet"
             placeholder="Choose wallets for a report"
             style="width: 100%;"
@@ -209,7 +210,7 @@ export default {
           : generateCSV(params)
 
         generating.then(({ blob, filename }) => {
-          FileSaver.saveAs(blob, filename)
+          this.saveBlob(blob, filename)
         })
       })
         .catch(err => {
@@ -217,6 +218,15 @@ export default {
 
           this.$message.error(`Failed to generate a report. Please try again later.`)
         })
+    },
+
+    saveBlob (blob, filename) {
+      // do not download a file in headless e2e testing environment
+      if (window.Cypress) {
+        alert(`downloading ${filename}`)
+      } else {
+        FileSaver.saveAs(blob, filename)
+      }
     }
   }
 }
