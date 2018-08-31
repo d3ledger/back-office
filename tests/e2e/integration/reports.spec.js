@@ -38,18 +38,18 @@ describe('Reports page', () => {
     })
   })
 
-  it('should download a file when clicking a PDF button', () => {
-    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
-
-    cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
-      .click()
-      .shouldDownload(expectedFilename)
-  })
-
   it('should download a file when clicking a CSV button', () => {
     const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
 
     cy.get('#reports-page tr:contains("Monaco") button:contains("CSV")')
+      .click()
+      .shouldDownload(expectedFilename)
+  })
+
+  it('should download a file when clicking a PDF button', () => {
+    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
+
+    cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
       .click()
       .shouldDownload(expectedFilename)
   })
