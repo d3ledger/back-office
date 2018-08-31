@@ -20,7 +20,7 @@ Cypress.Commands.add('login', (keyPath) => {
   cy.get('form > div:nth-child(3) input')
     .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
   cy.get('.login-button-container > div > button').click()
-  cy.contains('D3').should('be.visible')
+  cy.url().should('be.not.eq', `${Cypress.config('baseUrl')}/#/login`)
 })
 
 Cypress.Commands.add('setTimezone', (timezone) => {
