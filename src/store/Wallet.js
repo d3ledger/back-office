@@ -72,7 +72,16 @@ const mutations = {
     Vue.set(state.cryptoInfo, 'isLoading', true)
   },
 
-  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { historicalDataFiat, historicalDataCrypto, priceData, currencies }) {
+  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (
+    state,
+    {
+      historicalDataFiat,
+      historicalDataCrypto,
+      volumeData,
+      priceData,
+      currencies
+    }
+  ) {
     // process priceData
     const RAW = Object.values(priceData.RAW)[0]
     const compareToRUB = RAW[currencies.fiat]
@@ -82,22 +91,25 @@ const mutations = {
     const priceCrypto = compareToCrypto.PRICE
     const marketcapFiat = compareToRUB.MKTCAP
     const marketcapCrypto = compareToRUB.SUPPLY
-    // TODO: show the total volume over the specified range
-    const volumeFiat = compareToRUB.TOTALVOLUME24HTO
-    const volumeCrypto = compareToRUB.TOTALVOLUME24H
     const circulatingSupply = compareToRUB.SUPPLY
 
-    // process historicalDataFiat
-    const getInfo = ({ Data }) => {
-      const closeOfTheFirstSpan = Data.filter(x => x.close !== 0)[0].close
+    // process historicalData
+    const getChangeInfo = ({ Data }) => {
+      const closeOfTheFirstSpan = Data.filter(x => Number.isFinite(x.close) && x.close > 0)[0].close
       const closeOfTheLastSpan = Data[Data.length - 1].close
       const change = closeOfTheLastSpan - closeOfTheFirstSpan
       const changePct = (change / closeOfTheFirstSpan) * 100
 
       return [change, changePct]
     }
-    const [changeFiat] = getInfo(historicalDataFiat)
-    const [, changePctCrypto] = getInfo(historicalDataCrypto)
+    const [changeFiat] = getChangeInfo(historicalDataFiat)
+    const [, changePctCrypto] = getChangeInfo(historicalDataCrypto)
+
+    // process volumeData
+    const volumeCrypto = volumeData.Data
+      .filter(({ volume }) => Number.isFinite(volume))
+      .reduce((sum, { volume }) => sum + volume, 0)
+    const volumeFiat = priceFiat * volumeCrypto
 
     Vue.set(state, 'cryptoInfo', {
       current: {
@@ -136,10 +148,17 @@ const actions = {
     return Promise.all([
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
+      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset }),
       cryptoCompareUtil.loadFullData(asset, currencies)
     ])
-      .then(([historicalDataFiat, historicalDataCrypto, priceData]) => {
-        commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { historicalDataFiat, historicalDataCrypto, priceData, currencies })
+      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
+        commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
+          historicalDataFiat,
+          historicalDataCrypto,
+          volumeData,
+          priceData,
+          currencies
+        })
       })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
