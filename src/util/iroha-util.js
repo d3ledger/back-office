@@ -371,14 +371,14 @@ function command (
           reject(new Error('Problem with notary. Please try again later.'))
           stream.cancel()
         }
-        let timer = setTimeout(notaryError, timeoutLimit * 2)
+        let timer = setTimeout(notaryError, timeoutLimit * 4)
 
         let statuses = []
 
         stream.on('data', function (response) {
           clearTimeout(timer)
           statuses.push(response)
-          timer = setTimeout(notaryError, timeoutLimit * 2)
+          timer = setTimeout(notaryError, timeoutLimit * 4)
         })
 
         stream.on('end', function (end) {
