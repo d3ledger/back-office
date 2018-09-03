@@ -65,7 +65,7 @@ pipeline {
             }
           }
         }
-        failure {
+        always {
           script {
             withCredentials([usernamePassword(credentialsId: 'ci_nexus', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
               sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/ \\;", returnStdout: true)
