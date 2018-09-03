@@ -49,24 +49,28 @@ pipeline {
       }
       post {
         success {
-          if (env.GIT_LOCAL_BRANCH in ["develop"] || env.CHANGE_BRANCH_LOCAL == 'develop') {
-            def branch = env.CHANGE_BRANCH_LOCAL == 'develop' ? env.CHANGE_BRANCH_LOCAL : env.GIT_LOCAL_BRANCH
-            sshagent(['jenkins-back-office']) {
-              sh "ssh-agent"
-              sh """
-                rsync \
-                -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
-                -rzcv --delete \
-                dist/* \
-                root@95.179.153.222:/var/www/dev/
-              """
+          script {
+            if (env.GIT_LOCAL_BRANCH in ["develop"] || env.CHANGE_BRANCH_LOCAL == 'develop') {
+              def branch = env.CHANGE_BRANCH_LOCAL == 'develop' ? env.CHANGE_BRANCH_LOCAL : env.GIT_LOCAL_BRANCH
+              sshagent(['jenkins-back-office']) {
+                sh "ssh-agent"
+                sh """
+                  rsync \
+                  -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+                  -rzcv --delete \
+                  dist/* \
+                  root@95.179.153.222:/var/www/dev/
+                """
+              }
             }
           }
         }
         failure {
-          withCredentials([usernamePassword(credentialsId: 'ci_nexus', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
-            sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/ \\;", returnStdout: true)
-            echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/"
+          script {
+            withCredentials([usernamePassword(credentialsId: 'ci_nexus', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
+              sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/ \\;", returnStdout: true)
+              echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/"
+            }
           }
         }
         cleanup {
