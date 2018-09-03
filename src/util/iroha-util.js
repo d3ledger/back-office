@@ -407,14 +407,14 @@ function command (
  * @param {String} privateKey
  * @param {String} accountName
  * @param {String} domainId
- * @param {String} mainPubKey
+ * @param {String} publicKey
  */
-function createAccount (privateKey, accountName, domainId, mainPubkey) {
+function createAccount (privateKey, accountName, domainId, publicKey) {
   debug('starting createAccount...')
 
   return command(
     privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, mainPubkey })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey })
   )
 }
 
