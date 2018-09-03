@@ -371,14 +371,14 @@ function command (
           reject(new Error('Problem with notary. Please try again later.'))
           stream.cancel()
         }
-        let timer = setTimeout(notaryError, timeoutLimit * 2)
+        let timer = setTimeout(notaryError, timeoutLimit * 4)
 
         let statuses = []
 
         stream.on('data', function (response) {
           clearTimeout(timer)
           statuses.push(response)
-          timer = setTimeout(notaryError, timeoutLimit * 2)
+          timer = setTimeout(notaryError, timeoutLimit * 4)
         })
 
         stream.on('end', function (end) {
@@ -407,14 +407,14 @@ function command (
  * @param {String} privateKey
  * @param {String} accountName
  * @param {String} domainId
- * @param {String} mainPubKey
+ * @param {String} publicKey
  */
-function createAccount (privateKey, accountName, domainId, mainPubkey) {
+function createAccount (privateKey, accountName, domainId, publicKey) {
   debug('starting createAccount...')
 
   return command(
     privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, mainPubkey })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey })
   )
 }
 
