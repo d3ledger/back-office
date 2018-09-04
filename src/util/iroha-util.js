@@ -511,6 +511,21 @@ function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, descr
   )
 }
 
+/**
+ * addSignatory https://hyperledger.github.io/iroha-api/#add-signatory
+ * @param {String} privateKeys
+ * @param {String} accountId
+ * @param {String} publicKey
+ */
+function addSignatory (privateKeys, accountId, publicKey) {
+  debug('starting addSignatory...')
+
+  return command(
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addSignatory', { accountId, publicKey })
+  )
+}
+
 // TODO: implement it
 function createSettlement () {
   debug('starting createSettlement...')
@@ -576,6 +591,7 @@ export default {
   createAccount,
   createAsset,
   transferAsset,
+  addSignatory,
   addAssetQuantity,
   createSettlement,
   setAccountDetail,
