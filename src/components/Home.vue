@@ -138,21 +138,22 @@
             Please enter your private key
           </el-row>
         </el-form-item>
-        <template v-for="i in accountQuorum">
-          <el-form-item prop="privateKey" :key="i">
+        <template v-for="(quorum, index) in accountQuorum">
+          <el-form-item :key="quorum">
             <el-row type="flex" justify="space-between">
               <el-col :span="20">
                 <el-input
-                  name="privateKey"
+                  name="privateKeys"
                   placeholder="Your private key"
-                  v-model="approvalForm.privateKey"
+                  v-model="approvalForm.privateKeys[index]"
+                  @change="(key) => insertPrivateKey(key, index)"
                 />
               </el-col>
               <el-upload
                 action=""
                 :auto-upload="false"
                 :show-file-list="false"
-                :on-change="onFileChosen"
+                :on-change="(f, l) => onFileChosen(f, l, index)"
                 >
                 <el-button>
                   <fa-icon icon="upload" />
@@ -164,7 +165,7 @@
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
             <div class="item__private-keys">
-              0/{{ accountQuorum }}
+              {{ approvalForm.privateKeys.length }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
@@ -205,6 +206,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import inputValidation from '@/components/mixins/inputValidation'
 
@@ -228,7 +230,7 @@ export default {
         description: null
       },
       approvalForm: {
-        privateKey: null
+        privateKeys: []
       }
     }
   },
@@ -309,6 +311,10 @@ export default {
         .then(() => this.$router.push('/login'))
     },
 
+    insertPrivateKey (key, i) {
+      Vue.set(this.approvalForm.privateKeys, i, key)
+    },
+
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
       this.$refs.approvalForm.resetFields()
@@ -317,7 +323,7 @@ export default {
     submitApprovalDialog () {
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKey)
+        this.closeApprovalDialog(this.approvalForm.privateKeys)
       })
     },
 
@@ -330,12 +336,12 @@ export default {
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
         this.openApprovalDialog()
-          .then(privateKey => {
-            if (!privateKey) return
+          .then(privateKeys => {
+            if (!privateKeys) return
             const offerAsset = this.exchangeDialogOfferAsset
             const requestAsset = this.exchangeDialogRequestAsset
             return this.$store.dispatch('createSettlement', {
-              privateKey,
+              privateKeys,
               to: s.to,
               offerAssetId: offerAsset,
               offerAmount: s.offer_amount,
@@ -360,10 +366,10 @@ export default {
       })
     },
 
-    onFileChosen (file, fileList) {
+    onFileChosen (file, fileList, i) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        this.approvalForm.privateKey = (ev.target.result || '').trim()
+        Vue.set(this.approvalForm.privateKeys, i, (ev.target.result || '').trim())
       }
       reader.readAsText(file.raw)
     }
