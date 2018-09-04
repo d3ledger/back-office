@@ -26,11 +26,11 @@ pipeline {
       agent { label 'x86_64' }
       steps {
         script {
-            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}"
+            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}-${BUILD_NUMBER}"
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
-            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT} /app/docker/back-office/wait-for-up.sh")
+            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT}-${BUILD_NUMBER} /app/docker/back-office/wait-for-up.sh")
             iC = docker.image('cypress/base:10')
-            iC.inside("--network='d3-${env.GIT_COMMIT}' --shm-size 4096m --ipc=host") {
+            iC.inside("--network='d3-${env.GIT_COMMIT}-${BUILD_NUMBER}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
               var = sh(returnStatus:true, script: "yarn test:unit")
               if (var != 0) {
@@ -45,6 +45,11 @@ pipeline {
                 return var
               }
             }
+        }
+      }
+      post {
+        success {
+          script {
             if (env.GIT_LOCAL_BRANCH in ["develop"] || env.CHANGE_BRANCH_LOCAL == 'develop') {
               def branch = env.CHANGE_BRANCH_LOCAL == 'develop' ? env.CHANGE_BRANCH_LOCAL : env.GIT_LOCAL_BRANCH
               sshagent(['jenkins-back-office']) {
@@ -58,9 +63,16 @@ pipeline {
                 """
               }
             }
+          }
         }
-      }
-      post {
+        always {
+          script {
+            withCredentials([usernamePassword(credentialsId: 'jenkins_nexus_creds', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
+              sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/ \\;", returnStdout: true)
+              echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/"
+            }
+          }
+        }
         cleanup {
           sh(script: "docker-compose -f docker/docker-compose.yaml down")
           cleanWs()
