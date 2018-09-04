@@ -362,13 +362,13 @@ export default {
       if (!this.validateForm('withdrawForm')) return
 
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
+        .then(privateKeys => {
+          if (!privateKeys) return
 
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
-            privateKey,
+            privateKeys,
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.withdrawForm.wallet,
@@ -396,13 +396,13 @@ export default {
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
-
+        .then(privateKeys => {
+          if (!privateKeys) return
+          console.log(privateKeys)
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
-            privateKey,
+            privateKeys,
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
