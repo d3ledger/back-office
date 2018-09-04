@@ -20,7 +20,7 @@ const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex'))
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
-const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8080'
+const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8081'
 const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
 const accounts = [testAccFull, aliceAccFull]
 const wallets = require(DUMMY_FILE_PATH).wallets
@@ -89,7 +89,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
           const message = _.sample(['hello', 'hi', '', 'PART_OF_DUMMY_SETTLEMENT'])
           const amount = String(Math.random()).substr(0, precision + 2)
 
-          const p = irohaUtil.transferAsset(testPrivKeyHex, from, to, `${w.name.toLowerCase()}#${irohaDomain}`, message, amount).catch(() => {})
+          const p = irohaUtil.transferAsset(accountPrivKeyHex, from, to, `${w.name.toLowerCase()}#${irohaDomain}`, message, amount).catch(() => {})
 
           txs.push(p)
         })
