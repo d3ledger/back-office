@@ -333,22 +333,22 @@ function getPendingTransactions () {
  */
 /**
  * wrapper function of commands
- * @param {String} privateKey
+ * @param {String} privateKeys array of private keys
  * @param {Object} tx transaction
  * @param {Number} timeoutLimit
  */
 function command (
-  privateKey = '',
+  privateKeys = [''],
   tx,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
   let txClient, txHash
 
   return new Promise((resolve, reject) => {
-    let txToSend = flow(
-      (t) => txHelper.addMeta(t, { creatorAccountId: cache.username }),
-      (t) => txHelper.sign(t, privateKey)
-    )(tx)
+    let txToSend = txHelper.addMeta(tx, { creatorAccountId: cache.username })
+    privateKeys.forEach(key => {
+      txToSend = txHelper.sign(txToSend, key)
+    })
 
     txHash = txHelper.hash(txToSend)
 
@@ -416,97 +416,97 @@ function command (
 
 /**
  * createAccount https://hyperledger.github.io/iroha-api/?protobuf#create-account
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} publicKey
  */
-function createAccount (privateKey, accountName, domainId, publicKey) {
+function createAccount (privateKeys, accountName, domainId, publicKey) {
   debug('starting createAccount...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey })
   )
 }
 
 /**
  * createAsset https://hyperledger.github.io/iroha-api/#create-asset
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
  */
-function createAsset (privateKey, assetName, domainId, precision) {
+function createAsset (privateKeys, assetName, domainId, precision) {
   debug('starting createAsset...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision })
   )
 }
 
 /**
  * addAssetQuantity https://hyperledger.github.io/iroha-api/#add-asset-quantity
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
  */
-function addAssetQuantity (privateKey, assetId, amount) {
+function addAssetQuantity (privateKeys, assetId, amount) {
   debug('starting addAssetQuantity...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount })
   )
 }
 
 /**
  * setAccountDetail https://hyperledger.github.io/iroha-api/#set-account-detail
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} key
  * @param {String} value
  */
-function setAccountDetail (privateKey, accountId, key, value) {
+function setAccountDetail (privateKeys, accountId, key, value) {
   debug('starting setAccountDetail...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value })
   )
 }
 
 /**
  * setAccountQuorum https://hyperledger.github.io/iroha-api/#set-account-quorum
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {Number} quorum
  */
-function setAccountQuorum (privateKey, accountId, quorum) {
+function setAccountQuorum (privateKeys, accountId, quorum) {
   debug('starting setAccountQuorum...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum })
   )
 }
 
 /**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} srcAccountId
  * @param {String} destAccountId
  * @param {String} assetId
  * @param {String} description
  * @param {String} amount
  */
-function transferAsset (privateKey, srcAccountId, destAccountId, assetId, description, amount) {
+function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, description, amount) {
   debug('starting transferAsset...')
 
   return command(
-    privateKey,
+    privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
   )
 }
