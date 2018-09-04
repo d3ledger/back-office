@@ -236,7 +236,7 @@
           <el-input
             type="textarea"
             :rows="2"
-            :model="transferForm.description"
+            v-model="transferForm.description"
             placeholder="Details"
             resize="none"
           />
