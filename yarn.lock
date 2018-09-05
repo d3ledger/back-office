@@ -4871,6 +4871,12 @@ grpc-web-client@^0.6.2:
   dependencies:
     browser-headers "^0.4.0"
 
+grpc-web-client@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/grpc-web-client/-/grpc-web-client-0.6.3.tgz#b3f527db570978cba51a30004d922bad9138962d"
+  dependencies:
+    browser-headers "^0.4.0"
+
 gzip-size@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/gzip-size/-/gzip-size-4.1.0.tgz#8ae096257eabe7d69c45be2b67c448124ffb517c"
