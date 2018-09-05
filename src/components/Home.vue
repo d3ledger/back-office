@@ -26,6 +26,10 @@
           <fa-icon icon="file-invoice" class="menu-icon" />
           <span slot="title">Reports</span>
         </el-menu-item>
+        <el-menu-item v-if="accountQuorum > 1" index="/transactions">
+          <fa-icon icon="clock" class="menu-icon" />
+          <span slot="title">Transactions</span>
+        </el-menu-item>
         <el-menu-item index="/settings">
           <fa-icon icon="cog" class="menu-icon" />
           <span slot="title">Settings</span>
@@ -122,7 +126,7 @@
       </el-button>
     </el-dialog>
     <el-dialog
-      title="Approve transaction"
+      title="Confirm the transaction"
       width="500px"
       :visible="approvalDialogVisible"
       @close="closeApprovalDialogWith()"
@@ -130,27 +134,38 @@
       >
       <el-form ref="approvalForm" :model="approvalForm" :rules="rules">
         <el-form-item>
-          Please enter your private key to confirm transaction
+          <el-row type="flex" justify="center">
+            Please enter your private key
+          </el-row>
         </el-form-item>
-        <el-form-item prop="privateKey">
-          <el-row type="flex" justify="space-between">
-            <el-col :span="20">
-              <el-input
-                name="privateKey"
-                placeholder="Your private key"
-                v-model="approvalForm.privateKey"
-              />
-            </el-col>
-            <el-upload
-              action=""
-              :auto-upload="false"
-              :show-file-list="false"
-              :on-change="onFileChosen"
-              >
-              <el-button>
-                <fa-icon icon="upload" />
-              </el-button>
-            </el-upload>
+        <template v-for="i in accountQuorum">
+          <el-form-item prop="privateKey" :key="i">
+            <el-row type="flex" justify="space-between">
+              <el-col :span="20">
+                <el-input
+                  name="privateKey"
+                  placeholder="Your private key"
+                  v-model="approvalForm.privateKey"
+                />
+              </el-col>
+              <el-upload
+                action=""
+                :auto-upload="false"
+                :show-file-list="false"
+                :on-change="onFileChosen"
+                >
+                <el-button>
+                  <fa-icon icon="upload" />
+                </el-button>
+              </el-upload>
+            </el-row>
+          </el-form-item>
+        </template>
+        <el-form-item v-if="accountQuorum > 1">
+          <el-row type="flex" justify="center">
+            <div class="item__private-keys">
+              0/{{ accountQuorum }}
+            </div>
           </el-row>
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
@@ -200,7 +215,8 @@ export default {
       'wallets',
       'approvalDialogVisible',
       'exchangeDialogVisible',
-      'exchangeDialogPrice'
+      'exchangeDialogPrice',
+      'accountQuorum'
     ]),
 
     ...mapState({
@@ -373,5 +389,14 @@ export default {
   text-align: center;
   font-size: 18px;
   vertical-align: middle;
+}
+
+.item__private-keys {
+  width: 40px;
+  height: 40px;
+  border-radius: 24px;
+  border: solid 1px #cccccc;
+  display: flex;
+  justify-content: center;
 }
 </style>

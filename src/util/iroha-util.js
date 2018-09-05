@@ -306,6 +306,28 @@ function getAllUnsignedTransactions (accountId) {
   })
 }
 
+/**
+ * getPendingTransactions https://iroha.readthedocs.io/en/latest/api/queries.html#get-pending-transactions
+ */
+function getPendingTransactions () {
+  debug('starting getPendingTransactions...')
+
+  return sendQuery(
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getPendingTransactions'),
+    (resolve, reject, responseName, response) => {
+      if (responseName !== 'TRANSACTIONS_RESPONSE') {
+        return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE , actual=${responseName}`))
+      }
+
+      const transactions = response.getTransactionsResponse().toObject().transactionsList
+
+      debug('transactions', transactions)
+
+      resolve(transactions)
+    }
+  )
+}
+
 /*
  * ===== commands =====
  */
@@ -457,6 +479,21 @@ function setAccountDetail (privateKey, accountId, key, value) {
 }
 
 /**
+ * setAccountQuorum https://hyperledger.github.io/iroha-api/#set-account-quorum
+ * @param {String} privateKey
+ * @param {String} accountId
+ * @param {Number} quorum
+ */
+function setAccountQuorum (privateKey, accountId, quorum) {
+  debug('starting setAccountQuorum...')
+
+  return command(
+    privateKey,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum })
+  )
+}
+
+/**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
  * @param {String} privateKey
  * @param {String} srcAccountId
@@ -531,6 +568,7 @@ export default {
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
+  getPendingTransactions,
   getAssetInfo,
   getAllUnsignedTransactions,
 
@@ -540,5 +578,6 @@ export default {
   transferAsset,
   addAssetQuantity,
   createSettlement,
-  setAccountDetail
+  setAccountDetail,
+  setAccountQuorum
 }

@@ -28,6 +28,7 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
+  'GET_PENDING_TRANSACTIONS',
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
@@ -39,9 +40,11 @@ function initialState () {
     accountId: '',
     nodeIp: irohaUtil.getStoredNodeIp(),
     accountInfo: {},
+    accountQuorum: 0,
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
+    rawPengingTransactions: [],
     assets: [],
     connectionError: null
   }
@@ -107,6 +110,10 @@ const getters = {
   withdrawWalletAddresses (state) {
     const wallet = find('eth_whitelist', state.accountInfo)
     return wallet ? wallet.eth_whitelist.split(',') : []
+  },
+
+  accountQuorum (state) {
+    return state.accountQuorum
   }
 }
 
@@ -150,6 +157,7 @@ const mutations = {
   [types.LOGIN_SUCCESS] (state, account) {
     state.accountId = account.accountId
     state.accountInfo = JSON.parse(account.jsonData)
+    state.accountQuorum = account.quorum
   },
 
   [types.LOGIN_FAILURE] (state, err) {
@@ -201,6 +209,16 @@ const mutations = {
   },
 
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
+
+  [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
+    state.rawPengingTransactions = transactions
+  },
+
+  [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -328,6 +346,17 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getPendingTransactions ({ commit }) {
+    commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
+
+    return irohaUtil.getPendingTransactions()
+      .then(res => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
         throw err
       })
   },

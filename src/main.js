@@ -18,6 +18,7 @@ import { faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons/faAngleDouble
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
+import { faClock } from '@fortawesome/free-solid-svg-icons/faClock'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -89,7 +90,20 @@ Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$message = Message
 locale.use(lang)
 
-library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)
+library.add(
+  faCog,
+  faChartLine,
+  faWallet,
+  faSignOutAlt,
+  faFileInvoice,
+  faExchangeAlt,
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+  faArrowRight,
+  faDownload,
+  faUpload,
+  faClock
+)
 Vue.component('fa-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
