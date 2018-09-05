@@ -165,7 +165,7 @@
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
             <div class="item__private-keys">
-              {{ approvalForm.privateKeys.length }}/{{ accountQuorum }}
+              {{ approvalForm.privateKeys | nonEmptyKeys }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
@@ -206,7 +206,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 import inputValidation from '@/components/mixins/inputValidation'
 
@@ -312,15 +311,18 @@ export default {
     },
 
     insertPrivateKey (key, i) {
-      Vue.set(this.approvalForm.privateKeys, i, key)
+      this.$set(this.approvalForm.privateKeys, i, key)
     },
 
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
-      this.$refs.approvalForm.resetFields()
+      // TODO: Fix validation of private key fields
+      // this.$refs.approvalForm.resetFields()
+      this.approvalForm.privateKeys = []
     },
 
     submitApprovalDialog () {
+      // TODO: Fix validation of private key fields
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
         this.closeApprovalDialog(this.approvalForm.privateKeys)
@@ -369,9 +371,16 @@ export default {
     onFileChosen (file, fileList, i) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        Vue.set(this.approvalForm.privateKeys, i, (ev.target.result || '').trim())
+        this.$set(this.approvalForm.privateKeys, i, (ev.target.result || '').trim())
       }
       reader.readAsText(file.raw)
+    }
+  },
+
+  filters: {
+    nonEmptyKeys (value) {
+      if (!value) return ''
+      return value.filter(key => key.length).length
     }
   }
 }
