@@ -331,6 +331,7 @@ export default {
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
+      this.exchangeForm.description = ''
     },
 
     onSubmitExchangeDialog () {
