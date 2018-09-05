@@ -169,29 +169,6 @@
             </div>
           </el-row>
         </el-form-item>
-        <template v-for="i in accountQuorum">
-          <el-form-item prop="privateKey" :key="i">
-            <el-row type="flex" justify="space-between">
-              <el-col :span="20">
-                <el-input
-                  name="privateKey"
-                  placeholder="Your private key"
-                  v-model="approvalForm.privateKey"
-                />
-              </el-col>
-              <el-upload
-                action=""
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="onFileChosen"
-                >
-                <el-button>
-                  <fa-icon icon="upload" />
-                </el-button>
-              </el-upload>
-            </el-row>
-          </el-form-item>
-        </template>
         <el-form-item style="margin-bottom: 0;">
           <el-button
             class="fullwidth black clickable"
