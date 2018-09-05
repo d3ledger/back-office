@@ -146,8 +146,8 @@
       center
     >
       <el-form ref="withdrawForm" :model="withdrawForm" :rules="rules">
-        <el-form-item label="Send" prop="amount">
-          <el-input name="amount" v-model="withdrawForm.amount">
+        <el-form-item label="I send" prop="amount">
+          <el-input name="amount" v-model="withdrawForm.amount" placeholder="0">
             <div slot="append">
               {{ wallet.asset }}
             </div>
@@ -440,6 +440,7 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
+      this.transferForm.description = ''
     },
 
     validateForm (ref) {
