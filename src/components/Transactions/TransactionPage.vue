@@ -2,72 +2,49 @@
   <el-container>
     <el-main>
       <el-row>
-        <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
-          <el-card :body-style="{ padding: '0' }">
-            <div class="header">
-              <span>Pending transactions</span>
+        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
+          <el-card>
+            <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>Waiting transactions</span>
             </div>
             <el-table
-              class="transactions_table"
-              :data="allPendingTransactions">
-              <el-table-column type="expand">
-                <template slot-scope="scope">
-                  <div class="transaction_details">
-                    <p>
-                      {{ scope.row.from }} transfered {{ scope.row.amount }}
-                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
-                    </p>
-                    <div>
-                      <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                      <p>Message: {{ scope.row.message }}</p>
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="Date" width="110">
+              row-class-name="transactions__table-row"
+              :data="mockData">
+              <el-table-column type="expand"></el-table-column>
+              <el-table-column label="Date" width="140px">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" min-width="60">
+              <el-table-column label="Amount" width="140px">
                 <template slot-scope="scope">
-                  {{ scope.row.from === 'you' ? '−' : '+' }}{{Number(scope.row.amount) }}
-                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset}}
-                </template>
-              </el-table-column>
-              <el-table-column label="Address" min-width="90" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
-                </template>
-              </el-table-column>
-              <el-table-column label="Description" min-width="90" show-overflow-tooltip>
-                <template slot-scope="scope">
-                  <div>
-                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
-                    <div v-else>{{ scope.row.message }}</div>
+                  <div class="row__amount">
+                    <span>{{ scope.row.amount.from }} BTC</span>
+                    <span>{{ scope.row.amount.to }} ETH</span>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Expire" width="70">
+              <el-table-column label="Description" width="290px">
                 <template slot-scope="scope">
-                  {{ calculateEstimatedTime(scope.row.date) }}
+                  <div>
+                    {{ `${scope.row.description.substr(0, 100)}...` }}
+                  </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Signs" width="60">
+              <el-table-column label="Address" width="110px">
                 <template slot-scope="scope">
-                  {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                  <span>{{ scope.row.address }}</span>
                 </template>
               </el-table-column>
-              <el-table-column width="210">
+              <el-table-column>
                 <template slot-scope="scope">
-                  <div class="transaction_action">
+                  <div>
                     <el-button
-                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
+                      @click="openApprovalDialog()"
                       size="medium"
                       type="primary"
-                      plain
-                    >
-                      Add signatures
+                      plain>
+                      Confirm
                     </el-button>
                   </div>
                 </template>
@@ -82,100 +59,62 @@
 
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
-import messageMixin from '@/components/mixins/message'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'transaction-page',
   mixins: [
-    dateFormat,
-    messageMixin
+    dateFormat
   ],
   data () {
     return {
-      liveTimeOfTransaction: 24 * 60 * 60 * 1000, // 24h in milliseconds
-      isSending: false
+      mockData: [{
+        date: 1535100895476,
+        amount: {
+          from: '0.0048',
+          to: '0.3223'
+        },
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        address: '0x905f948341241519128'
+      }, {
+        date: 1535100895476,
+        amount: {
+          from: '0.0148',
+          to: '0.7223'
+        },
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        address: '0x333f948341241519128'
+      }, {
+        date: 1535100895476,
+        amount: {
+          from: '0.0048',
+          to: '0.3223'
+        },
+        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        address: '0x583f948341241519128'
+      }]
     }
   },
-  computed: {
-    ...mapGetters([
-      'allPendingTransactions',
-      'wallets',
-      'accountQuorum'
-    ])
-  },
   created () {
-    this.getPendingTransactions()
+    this.$store.dispatch('getPendingTransactions')
   },
   methods: {
     ...mapActions([
-      'openApprovalDialog',
-      'signPendingTransaction',
-      'getPendingTransactions'
-    ]),
-    onSignPendingTransaction (txStoreId, signatures) {
-      this.openApprovalDialog({ signatures })
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.isSending = true
-
-          return this.signPendingTransaction({
-            privateKeys,
-            txStoreId
-          })
-            .then(() => {
-              let completed = privateKeys.length + signatures.length === this.accountQuorum
-              this.showMessageFromStatus(
-                completed,
-                'Transaction succesfuly finalised and sent!',
-                'Operation not completed. You should complete it on transactions page'
-              )
-              this.getPendingTransactions()
-            })
-            .catch(err => {
-              console.error(err)
-              this.$alert(err.message, 'Transaction signing error', {
-                type: 'error'
-              })
-            })
-        })
-        .finally(() => { this.isSending = false })
-    },
-    calculateEstimatedTime (date) {
-      const rightDate = date + this.liveTimeOfTransaction
-      return this.compareDates(rightDate, new Date().getTime())
-    }
+      'openApprovalDialog'
+    ])
   }
 }
 </script>
 
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 1.5rem;
-}
-.transactions_table {
-  padding: 0.9rem 1.5rem;
-}
-.transactions_table >>> .el-table__header th {
-  font-weight: 500;
-}
-.transactions_table >>> .el-table__row td .cell {
-  color: #000000;
-}
-.transactions_table-row {
+<style>
+.transactions__table-row {
   height: 72px;
-  color: #000000;
 }
-.transaction_details {
-  font-size: 0.8rem;
-  color: #000000;
+.row__amount {
+  display: flex;
+  flex-direction: column;
 }
-.transaction_action >>> button {
-  background: #ffffff;
-  text-transform: uppercase;
-  padding: 0.7rem;
+.row__amount span {
+  font-weight: 600;
 }
 </style>
