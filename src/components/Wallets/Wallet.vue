@@ -398,7 +398,6 @@ export default {
       this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
-          console.log(privateKeys)
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
