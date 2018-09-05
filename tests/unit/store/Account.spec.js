@@ -11,7 +11,8 @@ const {
   randomPublicKey,
   randomPrivateKey,
   randomObject,
-  randomAmount
+  randomAmount,
+  randomAmountRng
 } = helper
 const expect = chai.expect
 
@@ -92,9 +93,11 @@ describe('Account store', () => {
         accountId: randomAccountId(),
         nodeIp: randomNodeIp(),
         accountInfo: randomObject(),
+        accountQuorum: randomAmountRng(),
         rawAssetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
+        rawPengingTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -103,9 +106,11 @@ describe('Account store', () => {
         accountId: '',
         nodeIp: MOCK_NODE_IP,
         accountInfo: {},
+        accountQuorum: 0,
         rawAssetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
+        rawPengingTransactions: [],
         assets: [],
         connectionError: null
       }
