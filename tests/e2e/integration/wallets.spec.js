@@ -17,7 +17,7 @@ describe('Test wallets page without white list', () => {
   })
 
   it('Go to wallets page', () => {
-    cy.get('li.el-menu-item:nth-of-type(2)').click({ force: true })
+    cy.get('.el-side-menu .el-menu-item:contains("Wallets")').click({ force: true })
     cy.url().should('contain', 'wallets/')
   })
 
