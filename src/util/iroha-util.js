@@ -340,12 +340,16 @@ function getPendingTransactions () {
 function command (
   privateKeys = [''],
   tx,
+  quorum = 1,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
   let txClient, txHash
 
   return new Promise((resolve, reject) => {
-    let txToSend = txHelper.addMeta(tx, { creatorAccountId: cache.username })
+    let txToSend = txHelper.addMeta(tx, {
+      creatorAccountId: cache.username,
+      quorum
+    })
     privateKeys.forEach(key => {
       txToSend = txHelper.sign(txToSend, key)
     })
@@ -420,13 +424,15 @@ function command (
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} publicKey
+ * @param {Number} accountQuorum
  */
-function createAccount (privateKeys, accountName, domainId, publicKey) {
+function createAccount (privateKeys, accountName, domainId, publicKey, accountQuorum) {
   debug('starting createAccount...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey }),
+    accountQuorum
   )
 }
 
@@ -436,13 +442,15 @@ function createAccount (privateKeys, accountName, domainId, publicKey) {
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
+ * @param {Number} accountQuorum
  */
-function createAsset (privateKeys, assetName, domainId, precision) {
+function createAsset (privateKeys, assetName, domainId, precision, accountQuorum) {
   debug('starting createAsset...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision }),
+    accountQuorum
   )
 }
 
@@ -452,13 +460,15 @@ function createAsset (privateKeys, assetName, domainId, precision) {
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
+ * @param {Number} accountQuorum
  */
-function addAssetQuantity (privateKeys, assetId, amount) {
+function addAssetQuantity (privateKeys, assetId, amount, accountQuorum) {
   debug('starting addAssetQuantity...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount }),
+    accountQuorum
   )
 }
 
@@ -468,13 +478,15 @@ function addAssetQuantity (privateKeys, assetId, amount) {
  * @param {String} accountId
  * @param {String} key
  * @param {String} value
+ * @param {Number} accountQuorum
  */
-function setAccountDetail (privateKeys, accountId, key, value) {
+function setAccountDetail (privateKeys, accountId, key, value, accountQuorum) {
   debug('starting setAccountDetail...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value }),
+    accountQuorum
   )
 }
 
@@ -483,13 +495,15 @@ function setAccountDetail (privateKeys, accountId, key, value) {
  * @param {String} privateKeys
  * @param {String} accountId
  * @param {Number} quorum
+ * @param {Number} accountQuorum
  */
-function setAccountQuorum (privateKeys, accountId, quorum) {
+function setAccountQuorum (privateKeys, accountId, quorum, accountQuorum) {
   debug('starting setAccountQuorum...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum }),
+    accountQuorum
   )
 }
 
@@ -501,13 +515,15 @@ function setAccountQuorum (privateKeys, accountId, quorum) {
  * @param {String} assetId
  * @param {String} description
  * @param {String} amount
+ * @param {Number} accountQuorum
  */
-function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, description, amount) {
+function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, description, amount, accountQuorum) {
   debug('starting transferAsset...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount }),
+    accountQuorum
   )
 }
 
@@ -516,13 +532,15 @@ function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, descr
  * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} publicKey
+ * @param {Number} accountQuorum
  */
-function addSignatory (privateKeys, accountId, publicKey) {
+function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
   debug('starting addSignatory...')
 
   return command(
     privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'addSignatory', { accountId, publicKey })
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addSignatory', { accountId, publicKey }),
+    accountQuorum
   )
 }
 
