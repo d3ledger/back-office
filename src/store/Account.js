@@ -364,7 +364,7 @@ const actions = {
   transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount)
+    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
