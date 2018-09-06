@@ -333,22 +333,26 @@ function getPendingTransactions () {
  */
 /**
  * wrapper function of commands
- * @param {String} privateKey
+ * @param {String} privateKeys array of private keys
  * @param {Object} tx transaction
  * @param {Number} timeoutLimit
  */
 function command (
-  privateKey = '',
+  privateKeys = [''],
   tx,
+  quorum = 1,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
   let txClient, txHash
 
   return new Promise((resolve, reject) => {
-    let txToSend = flow(
-      (t) => txHelper.addMeta(t, { creatorAccountId: cache.username }),
-      (t) => txHelper.sign(t, privateKey)
-    )(tx)
+    let txToSend = txHelper.addMeta(tx, {
+      creatorAccountId: cache.username,
+      quorum
+    })
+    privateKeys.forEach(key => {
+      txToSend = txHelper.sign(txToSend, key)
+    })
 
     txHash = txHelper.hash(txToSend)
 
@@ -416,98 +420,127 @@ function command (
 
 /**
  * createAccount https://hyperledger.github.io/iroha-api/?protobuf#create-account
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} publicKey
+ * @param {Number} accountQuorum
  */
-function createAccount (privateKey, accountName, domainId, publicKey) {
+function createAccount (privateKeys, accountName, domainId, publicKey, accountQuorum) {
   debug('starting createAccount...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAccount', { accountName, domainId, publicKey }),
+    accountQuorum
   )
 }
 
 /**
  * createAsset https://hyperledger.github.io/iroha-api/#create-asset
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
+ * @param {Number} accountQuorum
  */
-function createAsset (privateKey, assetName, domainId, precision) {
+function createAsset (privateKeys, assetName, domainId, precision, accountQuorum) {
   debug('starting createAsset...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'createAsset', { assetName, domainId, precision }),
+    accountQuorum
   )
 }
 
 /**
  * addAssetQuantity https://hyperledger.github.io/iroha-api/#add-asset-quantity
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
+ * @param {Number} accountQuorum
  */
-function addAssetQuantity (privateKey, assetId, amount) {
+function addAssetQuantity (privateKeys, assetId, amount, accountQuorum) {
   debug('starting addAssetQuantity...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addAssetQuantity', { assetId, amount }),
+    accountQuorum
   )
 }
 
 /**
  * setAccountDetail https://hyperledger.github.io/iroha-api/#set-account-detail
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} key
  * @param {String} value
+ * @param {Number} accountQuorum
  */
-function setAccountDetail (privateKey, accountId, key, value) {
+function setAccountDetail (privateKeys, accountId, key, value, accountQuorum) {
   debug('starting setAccountDetail...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountDetail', { accountId, key, value }),
+    accountQuorum
   )
 }
 
 /**
  * setAccountQuorum https://hyperledger.github.io/iroha-api/#set-account-quorum
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {Number} quorum
+ * @param {Number} accountQuorum
  */
-function setAccountQuorum (privateKey, accountId, quorum) {
+function setAccountQuorum (privateKeys, accountId, quorum, accountQuorum) {
   debug('starting setAccountQuorum...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'setAccountQuorum', { accountId, quorum }),
+    accountQuorum
   )
 }
 
 /**
  * transferAsset https://hyperledger.github.io/iroha-api/#transfer-asset
- * @param {String} privateKey
+ * @param {String} privateKeys
  * @param {String} srcAccountId
  * @param {String} destAccountId
  * @param {String} assetId
  * @param {String} description
  * @param {String} amount
+ * @param {Number} accountQuorum
  */
-function transferAsset (privateKey, srcAccountId, destAccountId, assetId, description, amount) {
+function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, description, amount, accountQuorum) {
   debug('starting transferAsset...')
 
   return command(
-    privateKey,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount }),
+    accountQuorum
+  )
+}
+
+/**
+ * addSignatory https://hyperledger.github.io/iroha-api/#add-signatory
+ * @param {String} privateKeys
+ * @param {String} accountId
+ * @param {String} publicKey
+ * @param {Number} accountQuorum
+ */
+function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
+  debug('starting addSignatory...')
+
+  return command(
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'addSignatory', { accountId, publicKey }),
+    accountQuorum
   )
 }
 
@@ -576,6 +609,7 @@ export default {
   createAccount,
   createAsset,
   transferAsset,
+  addSignatory,
   addAssetQuantity,
   createSettlement,
   setAccountDetail,

@@ -146,8 +146,8 @@
       center
     >
       <el-form ref="withdrawForm" :model="withdrawForm" :rules="rules">
-        <el-form-item label="Send" prop="amount">
-          <el-input name="amount" v-model="withdrawForm.amount">
+        <el-form-item label="I send" prop="amount">
+          <el-input name="amount" v-model="withdrawForm.amount" placeholder="0">
             <div slot="append">
               {{ wallet.asset }}
             </div>
@@ -362,13 +362,13 @@ export default {
       if (!this.validateForm('withdrawForm')) return
 
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
+        .then(privateKeys => {
+          if (!privateKeys) return
 
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
-            privateKey,
+            privateKeys,
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.withdrawForm.wallet,
@@ -396,13 +396,12 @@ export default {
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
-
+        .then(privateKeys => {
+          if (!privateKeys) return
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
-            privateKey,
+            privateKeys,
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
@@ -441,6 +440,7 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
+      this.transferForm.description = ''
     },
 
     validateForm (ref) {

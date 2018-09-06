@@ -32,13 +32,15 @@ console.log('')
 
 irohaUtil.login(testAccFull, testPrivKeyHex, nodeIp)
   .then(() => tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
-  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
-  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, testAccFull, 'eth_whitelist', '0x1234567890123456789012345678901234567890'))
-  .then(() => irohaUtil.setAccountDetail(testPrivKeyHex, aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'eth_whitelist', '0x1234567890123456789012345678901234567890'))
+  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
   .then(() => setupAccountTransactions(testAccFull, testPrivKeyHex))
   .then(() => setupAccountTransactions(aliceAccFull, alicePrivKeyHex))
+  // Let's use alice's private key as 2nd key for now
+  .then(() => tryToSetQuorum(testPrivKeyHex, testAccFull, alicePubKey, 2))
   .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
@@ -55,7 +57,7 @@ function initializeAssets () {
       .then(() => {
         console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
 
-        return irohaUtil.addAssetQuantity(testPrivKeyHex, `${w.name.toLowerCase()}#${irohaDomain}`, amount)
+        return irohaUtil.addAssetQuantity([testPrivKeyHex], `${w.name.toLowerCase()}#${irohaDomain}`, amount)
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)
@@ -63,7 +65,7 @@ function initializeAssets () {
         const transferringInitialAssets = _.without(accounts, `${testAccFull}`).map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
-          return irohaUtil.transferAsset(testPrivKeyHex, `${testAccFull}`, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', amount).catch(() => {})
+          return irohaUtil.transferAsset([testPrivKeyHex], `${testAccFull}`, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', amount).catch(() => {})
         })
 
         return Promise.all(transferringInitialAssets)
@@ -89,7 +91,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
           const message = _.sample(['hello', 'hi', '', 'PART_OF_DUMMY_SETTLEMENT'])
           const amount = String(Math.random()).substr(0, precision + 2)
 
-          const p = irohaUtil.transferAsset(accountPrivKeyHex, from, to, `${w.name.toLowerCase()}#${irohaDomain}`, message, amount).catch(() => {})
+          const p = irohaUtil.transferAsset([accountPrivKeyHex], from, to, `${w.name.toLowerCase()}#${irohaDomain}`, message, amount).catch(() => {})
 
           txs.push(p)
         })
@@ -104,7 +106,7 @@ function tryToCreateAccount (accountName, domainId, publicKey) {
   console.log(`trying to create an account: ${accountName}@${domainId}`)
 
   return new Promise((resolve, reject) => {
-    irohaUtil.createAccount(testPrivKeyHex, accountName, domainId, publicKey)
+    irohaUtil.createAccount([testPrivKeyHex], accountName, domainId, publicKey)
       .then(() => {
         console.log(`${accountName}@${domainId} has successfully been created`)
         resolve()
@@ -124,7 +126,7 @@ function tryToCreateAsset (assetName, domainId, precision) {
   console.log(`trying to create an asset: ${assetName}#${domainId} (precision=${precision})`)
 
   return new Promise((resolve, reject) => {
-    irohaUtil.createAsset(testPrivKeyHex, assetName, domainId, precision)
+    irohaUtil.createAsset([testPrivKeyHex], assetName, domainId, precision)
       .then(() => {
         console.log(`${assetName}#${domainId} (precision: ${precision}) has successfully been created`)
         resolve()
@@ -141,5 +143,27 @@ function tryToCreateAsset (assetName, domainId, precision) {
           })
           .catch(() => reject(err))
       })
+  })
+}
+
+function tryToSetQuorum (accountPrivKeyHex, accountId, publicKey, quorum) {
+  console.log(`trying to add signature and set quorum to account: ${accountId}`)
+
+  return new Promise((resolve, reject) => {
+    irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
+      .then(() => {
+        console.log(`add signature to account: ${accountId} (signature:${publicKey})`)
+        irohaUtil.addSignatory([accountPrivKeyHex], accountId, publicKey)
+      })
+      .then(() => {
+        console.log(`set account quorum to account: ${accountId} (quorum:${quorum})`)
+        irohaUtil.setAccountQuorum([accountPrivKeyHex], accountId, quorum)
+      })
+      .then(() => {
+        console.log(`siganture and quorum are added`)
+        irohaUtil.logout()
+        resolve()
+      })
+      .catch((err) => reject(err))
   })
 }
