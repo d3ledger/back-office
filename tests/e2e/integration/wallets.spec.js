@@ -17,7 +17,7 @@ describe('Test wallets page without white list', () => {
   })
 
   it('Go to wallets page', () => {
-    cy.get('li.el-menu-item:nth-of-type(2)').click({ force: true })
+    cy.get('.el-side-menu .el-menu-item:contains("Wallets")').click({ force: true })
     cy.url().should('contain', 'wallets/')
   })
 
@@ -57,7 +57,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -103,7 +103,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       const walletAddress = '0x0000000000000000000000000000000000000000'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -139,7 +139,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -185,7 +185,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       const account = 'james@bond'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -219,7 +219,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate first amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -236,7 +236,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate second amount field', () => {
-      const tokenAmount = '200'
+      const tokenAmount = '0.2'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -297,8 +297,8 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmountFirst = '100'
-      const tokenAmountSecond = '200'
+      const tokenAmountFirst = '0.1'
+      const tokenAmountSecond = '0.2'
       const account = 'james@bond'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -351,7 +351,7 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -380,7 +380,7 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)

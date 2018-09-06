@@ -53,9 +53,9 @@ const mutations = {
       rejectPrompting
     })
   },
-  [types.APPROVAL_DIALOG_CLOSE] (state, privateKey) {
+  [types.APPROVAL_DIALOG_CLOSE] (state, privateKeys) {
     Vue.set(state.approvalDialog, 'isVisible', false)
-    state.approvalDialog.resolvePrompting(privateKey)
+    state.approvalDialog.resolvePrompting(privateKeys)
   },
   [types.EXCHANGE_DIALOG_OPEN] (state, asset) {
     const offerAsset = asset || null
@@ -111,8 +111,8 @@ const actions = {
 
     return prompting
   },
-  closeApprovalDialog ({ commit }, privateKey) {
-    commit(types.APPROVAL_DIALOG_CLOSE, privateKey)
+  closeApprovalDialog ({ commit }, privateKeys) {
+    commit(types.APPROVAL_DIALOG_CLOSE, privateKeys)
   },
   openExchangeDialog ({ commit }, offerAsset) {
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)

@@ -7,7 +7,7 @@ describe('Test login page', () => {
   })
 
   it('Log out', () => {
-    cy.get('li.el-menu-item:nth-of-type(6)').click({ force: true })
+    cy.get('.el-side-menu .el-menu-item:contains("Logout")').click({ force: true })
     cy.contains('Login').should('be.visible')
   })
 })

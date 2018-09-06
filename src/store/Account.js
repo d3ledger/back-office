@@ -379,10 +379,10 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state }, { privateKey, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKey, state.accountId, to, assetId, description, amount)
+    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
@@ -394,12 +394,12 @@ const actions = {
 
   createSettlement (
     { commit, state },
-    { privateKey, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
     return irohaUtil.createSettlement(
-      privateKey,
+      privateKeys,
       state.accountId,
       to,
       offerAssetId,
@@ -417,8 +417,8 @@ const actions = {
       })
   },
 
-  acceptSettlement ({ commit, state }, { privateKey, settlementHash }) {
-    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
+  acceptSettlement ({ commit, state }, { privateKeys, settlementHash }) {
+    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
 
     return irohaUtil.acceptSettlement()
       .then(() => {
@@ -430,8 +430,8 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { privateKey, settlementHash }) {
-    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
+  rejectSettlement ({ commit, state }, { privateKeys, settlementHash }) {
+    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
 
     return irohaUtil.rejectSettlement()
       .then(() => {

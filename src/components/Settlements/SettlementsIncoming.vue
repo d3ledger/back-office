@@ -128,11 +128,11 @@ export default {
 
     onAccept () {
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
+        .then(privateKeys => {
+          if (!privateKeys) return
 
           return this.$store.dispatch('acceptSettlement', {
-            privateKey,
+            privateKeys,
             settlementHash: this.settlementForAcceptance.id
           })
             .then(() => {
@@ -149,11 +149,11 @@ export default {
 
     onReject () {
       this.openApprovalDialog()
-        .then(privateKey => {
-          if (!privateKey) return
+        .then(privateKeys => {
+          if (!privateKeys) return
 
           return this.$store.dispatch('rejectSettlement', {
-            privateKey,
+            privateKeys,
             settlementHash: this.settlementForRejection.id
           })
             .then(() => {
