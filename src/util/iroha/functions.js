@@ -4,6 +4,12 @@ import { cache } from './util'
 import Debug from 'debug'
 const debug = Debug('iroha-util')
 
+const localStorage = global.localStorage || {
+  setItem () {},
+  getItem () {},
+  removeItem () {}
+}
+
 /**
  * login
  * @param {String} username
@@ -75,12 +81,12 @@ function rejectSettlement () {
   })
 }
 
-export default {
-  getStoredNodeIp,
-  clearStorage,
+export {
   login,
   logout,
   isLoggedIn,
+  clearStorage,
+  getStoredNodeIp,
   generateKeypair,
   acceptSettlement,
   rejectSettlement

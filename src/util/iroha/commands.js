@@ -239,7 +239,7 @@ function createSettlement () {
   })
 }
 
-export default {
+export {
   createAccount,
   createAsset,
   transferAsset,

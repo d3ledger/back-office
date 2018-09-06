@@ -224,7 +224,7 @@ function getPendingTransactions () {
   )
 }
 
-export default {
+export {
   getAccount,
   getAccountAssets,
   getAccountAssetTransactions,
