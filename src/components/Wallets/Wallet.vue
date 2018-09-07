@@ -11,7 +11,7 @@
               </div>
               <div class="top-left-card">
                 <div style="margin: 20px">
-                  <h2 class="amount"> {{ wallet.amount + ' ' + wallet.asset }}</h2>
+                  <h2 class="amount"> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
                 </div>
                 <div style="width: 100%; display: flex;">
                   <div role="button" class="button" @click="receiveFormVisible = true">
