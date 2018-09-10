@@ -1,13 +1,13 @@
 <template>
   <el-card class="card">
     <el-row>
-      <el-col :span="14">
+      <el-col :span="16">
         <div class="crypto_header">
           <p class="crypto_header-title">Portfolio structure</p>
         </div>
         <div class="list_crypto">
           <div class="list_crypto-content">
-            <div v-for="(item, index) in portfolio.slice(0, 6)"
+            <div v-for="(item, index) in filterPortfolio"
               :key="index"
               class="list_crypto-content-item"
               >
@@ -22,8 +22,8 @@
           </div>
         </div>
       </el-col>
-      <el-col class="donut-chart" :span="10">
-        <donut-chart :data="portfolio"/>
+      <el-col class="donut-chart" :span="8">
+        <donut-chart :data="filterPortfolio"/>
       </el-col>
     </el-row>
   </el-card>
@@ -45,6 +45,23 @@ export default {
   },
   data () {
     return {}
+  },
+  computed: {
+    filterPortfolio () {
+      const sortedPortfolio = [...this.portfolio].sort((a, b) => b.percent - a.percent)
+      const firstTokens = sortedPortfolio.slice(0, 5)
+      const otherTokens = sortedPortfolio.slice(5, sortedPortfolio.length - 1)
+      console.log(otherTokens)
+      const otherTokensPercent = otherTokens.reduce((t1, t2) => t1 + t2.percent, 0)
+      const otherTokensPrice = otherTokens.reduce((t1, t2) => t1.price + t2.price, 0)
+      const otherToken = {
+        asset: 'Other',
+        color: '0055fe',
+        percent: otherTokensPercent,
+        price: otherTokensPrice
+      }
+      return [...firstTokens, otherToken]
+    }
   }
 }
 </script>
@@ -70,8 +87,8 @@ export default {
 }
 
 .list_crypto-content .list_crypto-content-item {
-  min-width: 80px;
-  margin-right: 35px;
+  min-width: 86px;
+  margin-right: 20px;
   margin-bottom: 15px;
 }
 
