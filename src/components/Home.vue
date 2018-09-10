@@ -1,45 +1,6 @@
 <template>
   <el-container>
-    <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
-      <el-menu
-        :router="true"
-        :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
-        text-color="#a2a2a2"
-        background-color="#2D2D2D"
-        active-text-color="#000"
-        :default-active="currentActiveMenu"
-        >
-        <h1 class="logo">D3</h1>
-        <el-menu-item index="/">
-          <fa-icon icon="chart-line" class="menu-icon" />
-          <span slot="title">Dashboard</span>
-        </el-menu-item>
-        <el-menu-item index="/wallets">
-          <fa-icon icon="wallet" class="menu-icon" />
-          <span slot="title">Wallets</span>
-        </el-menu-item>
-        <el-menu-item index="/settlements/history">
-          <fa-icon icon="exchange-alt" class="menu-icon" />
-          <span slot="title">Settlements</span>
-        </el-menu-item>
-        <el-menu-item index="/reports">
-          <fa-icon icon="file-invoice" class="menu-icon" />
-          <span slot="title">Reports</span>
-        </el-menu-item>
-        <el-menu-item v-if="accountQuorum > 1" index="/transactions">
-          <fa-icon icon="clock" class="menu-icon" />
-          <span slot="title">Transactions</span>
-        </el-menu-item>
-        <el-menu-item index="/settings">
-          <fa-icon icon="cog" class="menu-icon" />
-          <span slot="title">Settings</span>
-        </el-menu-item>
-        <el-menu-item index="/logout" @click="logout">
-          <fa-icon icon="sign-out-alt" class="menu-icon" />
-          <span slot="title">Logout</span>
-        </el-menu-item>
-      </el-menu>
-    </div>
+    <Menu :quorum='accountQuorum'/>
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
       <router-view />
     </el-main>
@@ -199,6 +160,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import { lazyComponent } from '@router'
 import inputValidation from '@/components/mixins/inputValidation'
 
 // TODO: Validate lack of selected asset
@@ -212,9 +174,11 @@ export default {
       offer_amount: 'tokensAmount'
     })
   ],
+  components: {
+    Menu: lazyComponent('Home/Menu')
+  },
   data () {
     return {
-      isCollapsed: true,
       exchangeForm: {
         to: null,
         request_amount: '',
@@ -263,12 +227,6 @@ export default {
 
     numberOfSettlements () {
       return this.$store.getters.waitingSettlements.length
-    },
-
-    currentActiveMenu: function () {
-      if (this.$route.path.includes('wallets')) return '/wallets'
-      if (this.$route.path.includes('settlements')) return '/settlements/history'
-      return this.$route.path
     }
   },
 
@@ -307,9 +265,8 @@ export default {
       'getOfferToRequestPrice'
     ]),
 
-    logout () {
-      this.$store.dispatch('logout')
-        .then(() => this.$router.push('/login'))
+    insertPrivateKey (key, i) {
+      this.$set(this.approvalForm.privateKeys, i, key)
     },
 
     closeApprovalDialogWith () {
@@ -395,46 +352,15 @@ export default {
 </script>
 
 <style>
-.el-menu-item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
-.el-side-menu {
-  height: 100vh;
-  overflow-y: auto;
-  transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border-right: none;
-  z-index: 100;
-  width: 62px;
-
-  /* Getting rid of element.ui styles */
-  position: fixed !important;
-  border-right: none !important;
-}
-
-.el-side-menu:not(.el-menu--collapse) {
-  width: 160px;
-}
-
-.el-side-menu > .el-menu-item.is-active{
-  background: white !important;
-  color: black;
-}
-
 .logo {
-  color: white;
-  display: block;
-  text-align: center;
-  margin: 20px 0;
+  height: 62px;
+  background-color: #e43c34;
+  margin-bottom: 100px;
 }
 
-.menu-icon {
-  margin-left: 2px;
-  margin-right: 8px;
-  width: 24px;
-  text-align: center;
-  font-size: 18px;
-  vertical-align: middle;
+.logo img {
+  height: 62px;
+  width: 62px;
 }
 
 .item__private-keys {
