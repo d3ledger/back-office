@@ -35,8 +35,8 @@
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
         <span slot="title">Settings</span>
       </el-menu-item>
-      <el-menu-item index="/logout" @click="logout">
-        <SvgIcon iconName="Logout" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
+      <el-menu-item class="bottom-icon" index="/logout" @click="logout">
+        <SvgIcon iconName="Logout" iconClass="menu-icon"><LogoutIcon/></SvgIcon>
         <span slot="title">Logout</span>
       </el-menu-item>
     </el-menu>
@@ -50,6 +50,7 @@ import ReportIcon from '@/assets/menu/reports'
 import SettingsIcon from '@/assets/menu/settings'
 import TransactionsIcon from '@/assets/menu/transactions'
 import WalletIcon from '@/assets/menu/wallet'
+import LogoutIcon from '@/assets/menu/logout'
 import SvgIcon from '@/components/common/SvgIcon'
 
 export default {
@@ -72,6 +73,7 @@ export default {
     SettingsIcon,
     TransactionsIcon,
     WalletIcon,
+    LogoutIcon,
     SvgIcon
   },
   methods: {
@@ -121,5 +123,10 @@ export default {
   margin-right: 8px;
   text-align: center;
   color: #ffffff;
+}
+.bottom-icon {
+  position: absolute;
+  bottom: 0;
+  width: 100%
 }
 </style>
