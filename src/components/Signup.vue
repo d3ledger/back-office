@@ -5,7 +5,7 @@
     </div>
     <el-card class="signup-form-container">
       <el-form class="signup-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="username:" prop="username">
+        <el-form-item label="Username:" prop="username">
           <el-input
             name="username"
             v-model="form.username"
@@ -31,7 +31,7 @@
         <p style="margin-bottom: 1rem">Already have an account?</p>
         <router-link
           to="/login"
-          class="el-button fullwidth el-button--info is-plain"
+          class="el-button fullwidth primary"
         >
           Login
         </router-link>
@@ -173,5 +173,9 @@ export default {
   */
   .signup-form >>> .el-form-item__label {
     line-height: 1;
+  }
+
+  .signup-form >>> .el-form-item__label::before {
+    content: '';
   }
 </style>
