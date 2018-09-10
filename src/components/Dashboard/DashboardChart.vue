@@ -89,8 +89,6 @@ export default {
   float: left;
   opacity: 0.3;
   margin-right: 10px;
-}
-.chart_time-filter {
   cursor: pointer;
 }
 .chart_time-filter.selected {
