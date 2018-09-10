@@ -13,22 +13,22 @@
                 <div style="margin: 20px">
                   <h2 class="amount"> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
                 </div>
-                <div style="width: 100%; display: flex;">
-                  <div role="button" class="button" @click="receiveFormVisible = true">
-                    <fa-icon icon="angle-double-down" />
-                    <span>Deposit</span>
+                <div class="card_actions">
+                  <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="angle-double-down" />
+                    <span class="card_actions-button-text">Deposit</span>
                   </div>
-                  <div role="button" class="button" @click="withdrawFormVisible = true">
-                    <fa-icon icon="angle-double-up" />
-                    <span>Withdraw</span>
+                  <div role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="angle-double-up" />
+                    <span class="card_actions-button-text">Withdraw</span>
                   </div>
-                  <div role="button" class="button" @click="transferFormVisible = true">
-                    <fa-icon icon="arrow-right" />
-                    <span>Transfer</span>
+                  <div role="button" class="card_actions-button button" @click="transferFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="arrow-right" />
+                    <span class="card_actions-button-text">Transfer</span>
                   </div>
-                  <div role="button" class="button" @click="openExchangeDialog(wallet.asset)">
-                    <fa-icon icon="exchange-alt" />
-                    <span>Exchange</span>
+                  <div role="button" class="card_actions-button button" @click="openExchangeDialog(wallet.asset)">
+                    <fa-icon class="card_actions-button-text" icon="exchange-alt" />
+                    <span class="card_actions-button-text">Exchange</span>
                   </div>
                 </div>
               </div>
@@ -606,6 +606,23 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.card_actions {
+  width: 100%;
+  display: flex;
+}
+
+.card_actions-button {
+  background-color: #f9fcff;
+}
+
+.card_actions-button:hover {
+  background-color: #f9fcff;
+}
+
+.card_actions-button-text {
+  color: #409eff;
 }
 
 .card-info {
