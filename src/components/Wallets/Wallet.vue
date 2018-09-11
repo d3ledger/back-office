@@ -112,16 +112,16 @@
                     </p>
                   </el-col>
                   <el-col :span="8">
-                    <p class="card-info-title">Volume (24h)</p>
+                    <p class="card-info-title">Volume</p>
                     <p
                       class="card-info-amount--small"
-                      :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${settingsView.fiat}`"
+                      :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
                     >
                       {{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}
                     </p>
                     <p
                       class="card-info-amount--small"
-                      :title="`the amount ${wallet.asset} has been traded in 24 hours against ALL its trading pairs, in terms of ${wallet.asset}`"
+                      :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${wallet.asset}`"
                     >
                       {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
@@ -130,7 +130,7 @@
                     <p class="card-info-title">Circulating Supply</p>
                     <p
                       class="card-info-amount--small"
-                      :title="`the supply in ${wallet.asset}`"
+                      :title="`the total supply in ${wallet.asset}`"
                     >
                       {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}
                     </p>
