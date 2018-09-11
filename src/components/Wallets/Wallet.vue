@@ -63,7 +63,7 @@
 
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
-                  <el-col :span="12">
+                  <el-col :span="9">
                     <p
                       class="card-info-amount"
                       :title="`the current price of 1 ${wallet.asset} in ${settingsView.fiat}`"
@@ -78,7 +78,7 @@
                       {{ cryptoInfo.current.rur_change | formatNumberShort }}
                     </p>
                   </el-col>
-                  <el-col :span="12">
+                  <el-col :span="15">
                     <p
                       class="card-info-amount"
                       :title="`the current price of 1 ${wallet.asset} in ${settingsView.crypto}`"
@@ -96,7 +96,7 @@
                 </el-row>
 
                 <el-row>
-                  <el-col :span="8">
+                  <el-col :span="9">
                     <p class="card-info-title">Market Cap</p>
                     <p
                       class="card-info-amount--small"
@@ -112,7 +112,7 @@
                     </p>
                   </el-col>
                   <el-col :span="8">
-                    <p class="card-info-title">Volume</p>
+                    <p class="card-info-title">Volume ({{ selectedMarketPeriod }})</p>
                     <p
                       class="card-info-amount--small"
                       :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
@@ -126,7 +126,7 @@
                       {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
                   </el-col>
-                  <el-col :span="8">
+                  <el-col :span="7">
                     <p class="card-info-title">Circulating Supply</p>
                     <p
                       class="card-info-amount--small"
