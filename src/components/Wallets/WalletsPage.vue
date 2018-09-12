@@ -68,22 +68,36 @@ export default {
       search: '',
       criterions: [
         { name: 'alphabetical (asc)', icon: 'sort-alpha-down', key: 'name', desc: false },
-        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true }
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true },
+        { name: 'token amount (asc)', icon: 'sort-amount-down', key: 'amount', desc: false, numeric: true },
+        { name: 'token amount (desc)', icon: 'sort-amount-up', key: 'amount', desc: true, numeric: true },
+        { name: 'fiat price (asc)', icon: 'sort-numeric-down', key: 'fiat', desc: false, numeric: true },
+        { name: 'fiat price (desc)', icon: 'sort-numeric-up', key: 'fiat', desc: true, numeric: true }
       ],
       currentCriterion: null
     }
   },
 
   computed: {
-    ...mapGetters({
-      wallets: 'wallets'
-    }),
+    ...mapGetters([
+      'wallets',
+      'portfolioPercent'
+    ]),
+    walletsWithFiatPrice: function () {
+      return this.wallets.map((x, i) => {
+        x.fiat = this.portfolioPercent[i].price
+        return x
+      })
+    },
     filteredWallets: function () {
-      return this.search ? this.wallets.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1) : this.wallets
+      return this.search
+        ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+        : this.walletsWithFiatPrice
     },
     sortedWallets: function () {
-      const sorted = sortBy(this.currentCriterion.key)(this.filteredWallets)
-      return this.currentCriterion.desc ? sorted.reverse() : sorted
+      const { numeric, key, desc } = this.currentCriterion
+      const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredWallets)
+      return desc ? sorted.reverse() : sorted
     }
   },
 
@@ -102,7 +116,7 @@ export default {
 
   mounted () {
     if (this.wallets.length) {
-      this.$router.push(`/wallets/${this.wallets[0].id}`)
+      this.$router.push(`/wallets/${this.sortedWallets[0].id}`)
     }
   },
 
@@ -145,6 +159,7 @@ export default {
   padding: 3px 6px;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .searchbar__icon {
