@@ -6,7 +6,7 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import find from 'lodash/fp/find'
 import { grpc } from 'grpc-web-client'
-import irohaUtil from '@util/iroha-util'
+import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
 
