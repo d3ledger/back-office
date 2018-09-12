@@ -31,7 +31,7 @@ describe('Account store', () => {
     publicKey: randomPublicKey(),
     privateKey: randomPrivateKey()
   }
-  const irohaUtil = require('@util/iroha-util').default
+  const irohaUtil = require('@util/iroha').default
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
     signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
@@ -52,7 +52,7 @@ describe('Account store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
-      '@util/iroha-util': irohaUtilMock,
+      '@util/iroha': irohaUtilMock,
       '@util/store-util': require('@util/store-util'),
       '@util/notary-util': notaryUtilMock
     }).default)

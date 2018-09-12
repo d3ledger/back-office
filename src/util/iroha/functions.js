@@ -1,9 +1,14 @@
 import { cryptoHelper } from 'iroha-helpers'
 import { getAccount } from './queries'
 import { cache } from './util'
-import { getItem, setItem, removeItem } from '../storage-util'
 import Debug from 'debug'
 const debug = Debug('iroha-util')
+
+const localStorage = global.localStorage || {
+  setItem () {},
+  getItem () {},
+  removeItem () {}
+}
 
 /**
  * login
@@ -22,7 +27,7 @@ function login (username, privateKey, nodeIp) {
   cache.key = privateKey
   cache.nodeIp = nodeIp
 
-  setItem('iroha-wallet:nodeIp', nodeIp)
+  localStorage.setItem('iroha-wallet:nodeIp', nodeIp)
 
   return getAccount(username)
     .then(account => {
@@ -44,11 +49,11 @@ function logout () {
 }
 
 function getStoredNodeIp () {
-  return getItem('iroha-wallet:nodeIp') || ''
+  return localStorage.getItem('iroha-wallet:nodeIp') || ''
 }
 
 function clearStorage () {
-  removeItem('iroha-wallet:nodeIp')
+  localStorage.removeItem('iroha-wallet:nodeIp')
 }
 
 function isLoggedIn () {
@@ -58,11 +63,31 @@ function isLoggedIn () {
 // generate new keypair
 const generateKeypair = cryptoHelper.generateKeyPair
 
+// TODO: implement it
+function acceptSettlement () {
+  debug('starting acceptSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
+// TODO: implement it
+function rejectSettlement () {
+  debug('starting rejectSettlement...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(), 500)
+  })
+}
+
 export {
   login,
   logout,
   isLoggedIn,
   clearStorage,
   getStoredNodeIp,
-  generateKeypair
+  generateKeypair,
+  acceptSettlement,
+  rejectSettlement
 }

@@ -6,7 +6,7 @@
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import irohaUtil from '../src/util/iroha-util'
+import irohaUtil from '../src/util/iroha'
 import { derivePublicKey } from 'ed25519.js'
 
 const irohaDomain = 'notary'
