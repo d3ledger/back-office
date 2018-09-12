@@ -12,7 +12,7 @@ const debug = Debug('iroha-util')
 
 /**
  * wrapper function of commands
- * @param {String} privateKeys array of private keys
+ * @param {Array.<String>} privateKeys array of private keys
  * @param {Object} tx transaction
  * @param {Number} timeoutLimit
  */
@@ -66,7 +66,7 @@ function command (
       return new Promise((resolve, reject) => {
         let statuses = []
 
-        const request = new TxStatusRequest()
+        let request = new TxStatusRequest()
         request.setTxHash(txHash)
 
         let stream = txClient.statusStream(request)
@@ -99,7 +99,7 @@ function command (
 /**
  * createAccount
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#cresate-account createAccount - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} publicKey
@@ -118,7 +118,7 @@ function createAccount (privateKeys, accountName, domainId, publicKey, accountQu
 /**
  * createAsset
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#create-asset createAsset - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
@@ -137,7 +137,7 @@ function createAsset (privateKeys, assetName, domainId, precision, accountQuorum
 /**
  * addAssetQuantity
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#add-asset-quantity addAssetQuantity - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
@@ -156,7 +156,7 @@ function addAssetQuantity (privateKeys, assetId, amount, accountQuorum) {
 /**
  * setAccountDetail
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#set-account-detail setAccountDetail - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} accountId
  * @param {String} key
  * @param {String} value
@@ -175,7 +175,7 @@ function setAccountDetail (privateKeys, accountId, key, value, accountQuorum) {
 /**
  * setAccountQuorum
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#set-account-quorum setAccountQuorum - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} accountId
  * @param {Number} quorum
  * @param {Number} accountQuorum
@@ -193,7 +193,7 @@ function setAccountQuorum (privateKeys, accountId, quorum, accountQuorum) {
 /**
  * transferAsset
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#transfer-asset transferAsset - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<Object>} privateKeys
  * @param {String} srcAccountId
  * @param {String} destAccountId
  * @param {String} assetId
@@ -214,7 +214,7 @@ function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, descr
 /**
  * addSignatory
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#add-signatory addSignatory - Iroha docs}
- * @param {String} privateKeys
+ * @param {Array.<String>} privateKeys
  * @param {String} accountId
  * @param {String} publicKey
  * @param {Number} accountQuorum
@@ -229,13 +229,29 @@ function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
   )
 }
 
-function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAsset, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAmount, receiverAsset, timeoutLimit) {
+/**
+ * Create settlement: an exchange request
+ * @param {Array.<String>} senderPrivateKeys
+ * @param {String} senderAccountId
+ * @param {Number} senderQuorum
+ * @param {String} senderAssetId
+ * @param {String} senderAmount
+ * @param {String} description
+ * @param {String} receiverAccountId
+ * @param {Number} receiverQuorum
+ * @param {String} receiverAssetId
+ * @param {String} receiverAmount
+ * @param {Number} timeoutLimit
+ */
+function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting createSettlement...')
 
-  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAsset, description, senderAmount })
+  let txClient
+
+  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
 
-  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAsset, description, receiverAmount })
+  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
@@ -250,13 +266,13 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
   return new Promise((resolve, reject) => {
     debug('submitting transaction...')
     debug('peer ip:', cache.nodeIp)
-    debug('parameters sender:', JSON.stringify(senderTxHash.getPayload(), null, '  '))
-    debug('parameters receiver:', JSON.stringify(receiverTxHash.getPayload(), null, '  '))
+    debug('parameters sender:', JSON.stringify(senderTx.getPayload(), null, '  '))
+    debug('parameters receiver:', JSON.stringify(receiverTx.getPayload(), null, '  '))
     debug('senderTxHash:', Buffer.from(senderTxHash).toString('hex'))
     debug('receiverTxHash:', Buffer.from(receiverTxHash).toString('hex'))
     debug('')
 
-    let txClient = new CommandServiceClient(
+    txClient = new CommandServiceClient(
       cache.nodeIp
     )
 
@@ -276,7 +292,7 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
       resolve()
     })
   })
-    .then((txClient) => {
+    .then(() => {
       return new Promise((resolve, reject) => {
         debug('opening transaction status stream...')
 
@@ -284,7 +300,7 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
         let requests = [senderTxHash, receiverTxHash].map(hash => new Promise((resolve, reject) => {
           let statuses = []
 
-          const request = new TxStatusRequest()
+          let request = new TxStatusRequest()
           request.setTxHash(hash)
 
           let stream = txClient.statusStream(request)
