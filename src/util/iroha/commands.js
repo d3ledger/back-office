@@ -6,14 +6,13 @@ import {
   getProtoEnumName,
   DEFAULT_TIMEOUT_LIMIT
 } from './util'
-import cloneDeep from 'lodash/fp/cloneDeep'
 
 import Debug from 'debug'
 const debug = Debug('iroha-util')
 
 /**
  * wrapper function of commands
- * @param {Array.<String>} privateKeys array of private keys
+ * @param {String} privateKeys array of private keys
  * @param {Object} tx transaction
  * @param {Number} timeoutLimit
  */
@@ -23,50 +22,85 @@ function command (
   quorum = 1,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
-  let txToSend = txHelper.addMeta(tx, {
-    creatorAccountId: cache.username,
-    quorum
+  let txClient, txHash
+
+  return new Promise((resolve, reject) => {
+    let txToSend = txHelper.addMeta(tx, {
+      creatorAccountId: cache.username,
+      quorum
+    })
+    privateKeys.forEach(key => {
+      txToSend = txHelper.sign(txToSend, key)
+    })
+
+    txHash = txHelper.hash(txToSend)
+
+    txClient = new CommandServiceClient(
+      cache.nodeIp
+    )
+
+    debug('submitting transaction...')
+    debug('peer ip:', cache.nodeIp)
+    debug('parameters:', JSON.stringify(txToSend.getPayload(), null, '  '))
+    debug('txhash:', Buffer.from(txHash).toString('hex'))
+    debug('')
+
+    const timer = setTimeout(() => {
+      txClient.$channel.close()
+      reject(new Error('please check IP address OR your internet connection'))
+    }, timeoutLimit)
+
+    txClient.torii(txToSend, (err, data) => {
+      clearTimeout(timer)
+
+      if (err) {
+        return reject(err)
+      }
+
+      debug('submitted transaction successfully!')
+      resolve()
+    })
   })
+    .then(() => {
+      debug('opening transaction status stream...')
 
-  txToSend = signWithArrayOfKeys(txToSend, privateKeys)
+      return new Promise((resolve, reject) => {
+        let statuses = []
 
-  let txClient = new CommandServiceClient(
-    cache.nodeIp
-  )
+        const request = new TxStatusRequest()
+        request.setTxHash(txHash)
 
-  return sendTransactions([txToSend], txClient, timeoutLimit)
-}
+        let stream = txClient.statusStream(request)
+        stream.on('data', function (response) {
+          statuses.push(response)
+        })
 
-/**
- * signPendingTransaction: sign transaction with more keys and send.
- * @param {Array.<String>} privateKeys
- * @param {Object} transaction
- */
-function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-  debug('starting signPendingTransaction...')
+        stream.on('end', function (end) {
+          // Throw error if Iroha closed connection without sending status responses
+          if (statuses.length === 0) return reject(new Error('Problems with notary service. Please try again later.'))
 
-  /*
-    * TODO: Remove clearSignaturesList() after
-    * https://soramitsu.atlassian.net/browse/IR-1680 is completed
-    * Now we should remove signatures because otherwise the transaction
-    * won't get to MST processor and will be immediately commited
-  */
-  let txToSend = cloneDeep(transaction)
-  txToSend.clearSignaturesList()
+          const last = statuses[statuses.length - 1].getTxStatus()
 
-  txToSend = signWithArrayOfKeys(txToSend, privateKeys)
+          const lastStatusName = getProtoEnumName(
+            TxStatus,
+            'iroha.protocol.TxStatus',
+            last
+          )
 
-  let txClient = new CommandServiceClient(
-    cache.nodeIp
-  )
+          if (lastStatusName !== 'COMMITTED') {
+            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED, actual=${lastStatusName}`))
+          }
 
-  return sendTransactions([txToSend], txClient, timeoutLimit)
+          resolve()
+        })
+      })
+    })
 }
 
 /**
  * createAccount
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#cresate-account createAccount - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} accountName
  * @param {String} domainId
  * @param {String} publicKey
@@ -85,7 +119,7 @@ function createAccount (privateKeys, accountName, domainId, publicKey, accountQu
 /**
  * createAsset
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#create-asset createAsset - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} assetName
  * @param {String} domainI
  * @param {Number} precision
@@ -104,7 +138,7 @@ function createAsset (privateKeys, assetName, domainId, precision, accountQuorum
 /**
  * addAssetQuantity
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#add-asset-quantity addAssetQuantity - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} assetId
  * @param {String} amount
@@ -123,7 +157,7 @@ function addAssetQuantity (privateKeys, assetId, amount, accountQuorum) {
 /**
  * setAccountDetail
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#set-account-detail setAccountDetail - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {String} key
  * @param {String} value
@@ -142,7 +176,7 @@ function setAccountDetail (privateKeys, accountId, key, value, accountQuorum) {
 /**
  * setAccountQuorum
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#set-account-quorum setAccountQuorum - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} accountId
  * @param {Number} quorum
  * @param {Number} accountQuorum
@@ -160,7 +194,7 @@ function setAccountQuorum (privateKeys, accountId, quorum, accountQuorum) {
 /**
  * transferAsset
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#transfer-asset transferAsset - Iroha docs}
- * @param {Array.<Object>} privateKeys
+ * @param {String} privateKeys
  * @param {String} srcAccountId
  * @param {String} destAccountId
  * @param {String} assetId
@@ -181,9 +215,9 @@ function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, descr
 /**
  * addSignatory
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#add-signatory addSignatory - Iroha docs}
- * @param {Array.<String>} privateKeys
+ * @param {String} privateKeys
  * @param {String} accountId
- * @param {Buffer} publicKey
+ * @param {String} publicKey
  * @param {Number} accountQuorum
  */
 function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
@@ -196,186 +230,13 @@ function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
   )
 }
 
-/**
- * removeSignatory
- * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#remove-signatory removeSignatory - Iroha docs}
- * @param {Array.<String>} privateKeys
- * @param {String} accountId
- * @param {Buffer} publicKey
- * @param {Number} accountQuorum
- */
-function removeSignatory (privateKeys, accountId, publicKey, accountQuorum) {
-  debug('starting removeSignatory...')
-
-  return command(
-    privateKeys,
-    txHelper.addCommand(txHelper.emptyTransaction(), 'removeSignatory', { accountId, publicKey }),
-    accountQuorum
-  )
-}
-
-/**
- * Create settlement: an exchange request
- * @param {Array.<String>} senderPrivateKeys
- * @param {String} senderAccountId
- * @param {Number} senderQuorum
- * @param {String} senderAssetId
- * @param {String} senderAmount
- * @param {String} description
- * @param {String} receiverAccountId
- * @param {Number} receiverQuorum
- * @param {String} receiverAssetId
- * @param {String} receiverAmount
- * @param {Number} timeoutLimit
- */
-function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+// TODO: implement it
+function createSettlement () {
   debug('starting createSettlement...')
 
-  let txClient = new CommandServiceClient(
-    cache.nodeIp
-  )
-
-  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
-  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
-
-  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
-  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
-
-  const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
-  batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
-
-  return sendTransactions(batchArray, txClient, timeoutLimit)
-}
-
-function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-  debug('starting acceptSettlement')
-  if (!batchArray.length) return
-
-  let txClient = new CommandServiceClient(
-    cache.nodeIp
-  )
-
-  const indexOfUnsigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
-
-  batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit)
-}
-
-function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-  debug('starting acceptSettlement')
-  if (!batchArray.length) return
-
-  let txClient = new CommandServiceClient(
-    cache.nodeIp
-  )
-
-  const indexOfUnsigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
-
-  batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'ENOUGH_SIGNATURES_COLLECTED',
-    'STATEFUL_VALIDATION_FAILED'
-  ])
-}
-
-/**
- * Send transaction: used for sending transactions to iroha
- * @param {Array.<Objects>} txs
- * @param {Object} txClient
- * @param {Number} timeoutLimit - timeout limit of the transaction
- * @param {Array.<String>} requiredStatuses - list of required statuses of the response
- */
-function sendTransactions (txs, txClient, timeoutLimit, requiredStatuses = [
-  'MST_PENDING',
-  'COMMITTED'
-]) {
-  const hashes = txs.map(x => txHelper.hash(x))
-  const txList = txHelper.createTxListFromArray(txs)
-
   return new Promise((resolve, reject) => {
-    debug('submitting transactions...')
-    debug('peer ip:', cache.nodeIp)
-    txs.forEach(x =>
-      debug('parameters sender:', JSON.stringify(x.getPayload(), null, '  '))
-    )
-    hashes.forEach(x =>
-      debug('receiverTxHash:', Buffer.from(x).toString('hex'))
-    )
-    debug('')
-
-    const timer = setTimeout(() => {
-      txClient.$channel.close()
-      reject(new Error('please check IP address OR your internet connection'))
-    }, timeoutLimit)
-
-    // Sending even 1 transaction to listTorii is absolutely ok and valid.
-    txClient.listTorii(txList, (err, data) => {
-      clearTimeout(timer)
-
-      if (err) {
-        return reject(err)
-      }
-
-      debug('submitted transaction successfully!')
-      resolve()
-    })
+    setTimeout(() => resolve(), 500)
   })
-    .then(() => {
-      return new Promise((resolve, reject) => {
-        debug('opening transaction status stream...')
-
-        // Status requests promises
-        let requests = hashes.map(hash => new Promise((resolve, reject) => {
-          let statuses = []
-
-          let request = new TxStatusRequest()
-          request.setTxHash(hash)
-
-          let stream = txClient.statusStream(request)
-          stream.on('data', function (response) {
-            statuses.push(response)
-          })
-
-          stream.on('end', function (end) {
-            statuses.length > 0 ? resolve(statuses[statuses.length - 1].getTxStatus()) : resolve(null)
-          })
-        }))
-
-        Promise.all(requests).then(values => {
-          let statuses = values.map(x => x !== null ? getProtoEnumName(
-            TxStatus,
-            'iroha.protocol.TxStatus',
-            x
-          ) : null)
-          statuses.some(x => requiredStatuses.includes(x))
-            ? resolve()
-            : reject(
-              new Error(`Your transaction wasn't commited: expected: ${requiredStatuses}, actual=${statuses}`)
-            )
-        })
-      })
-    })
-}
-
-function signWithArrayOfKeys (tx, privateKeys) {
-  privateKeys.forEach(key => {
-    tx = txHelper.sign(tx, key)
-  })
-  return tx
 }
 
 export {
@@ -383,12 +244,8 @@ export {
   createAsset,
   transferAsset,
   addSignatory,
-  removeSignatory,
   addAssetQuantity,
   createSettlement,
-  acceptSettlement,
-  rejectSettlement,
   setAccountDetail,
-  setAccountQuorum,
-  signPendingTransaction
+  setAccountQuorum
 }

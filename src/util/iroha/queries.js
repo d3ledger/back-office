@@ -96,30 +96,6 @@ function getAccount (accountId) {
 }
 
 /**
- * getSignatories
- * {@link https://iroha.readthedocs.io/en/latest/api/queries.html#get-signatories getSignatories - Iroha docs}
- * @param {String} accountId
- */
-function getSignatories (accountId) {
-  debug('starting getSignatories...')
-
-  return sendQuery(
-    queryHelper.addQuery(queryHelper.emptyQuery(), 'getSignatories', { accountId }),
-    (resolve, reject, responseName, response) => {
-      if (responseName !== 'SIGNATORIES_RESPONSE') {
-        return reject(new Error(`Query response error: expected=ACCOUNT_RESPONSE, actual=${responseName}`))
-      }
-
-      const account = response.getSignatoriesResponse().toObject().keysList
-
-      debug('account', account)
-
-      resolve(account)
-    }
-  )
-}
-
-/**
  * getAccountTransactions
  * {@link https://iroha.readthedocs.io/en/latest/api/queries.html#get-account-transactions getAccountTransactions - Iroha docs}
  * @param {String} accountId
@@ -128,13 +104,14 @@ function getAccountTransactions (accountId) {
   debug('starting getAccountTransactions...')
 
   return sendQuery(
-    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId }),
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@notary' }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE, actual=${responseName}`))
       }
 
       const transactions = response.getTransactionsResponse().toObject().transactionsList
+
       debug('transactions', transactions)
 
       resolve(transactions)
@@ -215,6 +192,15 @@ function getAssetInfo (assetId) {
   )
 }
 
+// TODO: implement it
+function getAllUnsignedTransactions (accountId) {
+  debug('starting getAllUnsignedTransactions...')
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(['DUMMY']), 500)
+  })
+}
+
 /**
  * getPendingTransactions
  * {@link https://iroha.readthedocs.io/en/latest/api/queries.html#get-pending-transactions getPendingTransactions - Iroha docs}
@@ -228,7 +214,9 @@ function getPendingTransactions () {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE , actual=${responseName}`))
       }
-      const transactions = response.getTransactionsResponse()
+
+      const transactions = response.getTransactionsResponse().toObject().transactionsList
+
       debug('transactions', transactions)
 
       resolve(transactions)
@@ -241,7 +229,7 @@ export {
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
-  getSignatories,
   getPendingTransactions,
-  getAssetInfo
+  getAssetInfo,
+  getAllUnsignedTransactions
 }
