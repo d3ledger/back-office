@@ -3,6 +3,7 @@
     <el-table
       :data="settlements"
       ref="table"
+      class="settlements_table"
       @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
     >
       <el-table-column type="expand">
@@ -15,7 +16,7 @@
           <p>Message: {{ scope.row.message }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="Amount" min-width="220">
+      <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
           {{
             Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset
@@ -24,7 +25,7 @@
           }}
         </template>
       </el-table-column>
-      <el-table-column label="Counterparty" min-width="150">
+      <el-table-column label="Counterparty" min-width="120">
         <template slot-scope="scope">
           to {{ scope.row.to }}
         </template>
@@ -66,3 +67,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.settlements_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.settlements_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+</style>
