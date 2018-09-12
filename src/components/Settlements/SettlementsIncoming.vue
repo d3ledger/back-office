@@ -3,6 +3,7 @@
     <el-table
       :data="settlements"
       ref="table"
+      class="settlements_table"
       @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
     >
       <el-table-column type="expand">
@@ -180,5 +181,11 @@ export default {
   background: #ffffff;
   text-transform: uppercase;
   padding: 0.7rem;
+}
+.settlements_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.settlements_table >>> .el-table__row td .cell {
+  color: #000000;
 }
 </style>
