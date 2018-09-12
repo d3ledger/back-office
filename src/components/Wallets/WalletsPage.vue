@@ -1,7 +1,25 @@
 <template>
   <el-container v-if="wallets.length">
     <el-aside class="column-fullheight wallets-menu" width="280px">
-      <el-input style="width: 100%; padding: 5px;" v-model="search" placeholder="Search" />
+      <div class="searchbar">
+        <div class="searchbar__prefix">
+          <fa-icon icon="search" class="searchbar__icon" />
+        </div>
+
+        <div class="searchbar__input">
+          <el-input placeholder="Search" v-model="search" />
+        </div>
+
+        <div class="searchbar__sort">
+          <div class="searchbar__sort-button" @click="onClickSort">
+            <fa-icon
+              icon="sort-alpha-down"
+              class="searchbar__icon"
+            />
+          </div>
+        </div>
+      </div>
+
       <wallet-menu-item
         v-for="wallet in filteredWallets"
         :key="wallet.id"
@@ -61,6 +79,12 @@ export default {
     if (this.wallets.length) {
       this.$router.push(`/wallets/${this.wallets[0].id}`)
     }
+  },
+
+  methods: {
+    onClickSort () {
+      console.log('sort!')
+    }
   }
 }
 </script>
@@ -69,5 +93,46 @@ export default {
 .wallets-menu {
   background: white;
   box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08);
+}
+
+.searchbar {
+  display: flex;
+  align-items: center;
+}
+
+.searchbar__prefix {
+  flex: 0 1 auto;
+  padding: 20px 15px 20px 20px;
+}
+
+.searchbar__input {
+  flex: 1 1 auto;
+}
+
+.searchbar__sort {
+  flex: 0 1 auto;
+  padding: 20px 20px 20px 15px;
+}
+
+.searchbar__sort-button {
+  display: inline-block;
+  border: 1px solid #c0c4cc;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.searchbar__icon {
+  color: #c0c4cc;
+}
+
+.searchbar .el-input {
+  height: 100%;
+}
+
+.searchbar .el-input >>> input {
+  height: 100%;
+  border: none;
+  padding: 0;
 }
 </style>
