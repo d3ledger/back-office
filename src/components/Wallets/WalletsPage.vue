@@ -11,17 +11,31 @@
         </div>
 
         <div class="searchbar__sort">
-          <div class="searchbar__sort-button" @click="onClickSort">
-            <fa-icon
-              icon="sort-alpha-down"
-              class="searchbar__icon"
-            />
-          </div>
+          <el-dropdown trigger="click" @command="sort">
+            <div class="searchbar__sort-button">
+              <fa-icon
+                :icon="currentCriterion.icon"
+                class="searchbar__icon"
+              />
+            </div>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                v-for="criterion in criterions"
+                :key="criterion.name"
+                :command="criterion"
+                :disabled="currentCriterion.name === criterion.name"
+              >
+                <fa-icon :icon="criterion.icon" />
+                {{ criterion.name }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </div>
 
       <wallet-menu-item
-        v-for="wallet in filteredWallets"
+        v-for="wallet in sortedWallets"
         :key="wallet.id"
         :walletId="wallet.id"
         :name="wallet.name"
@@ -40,6 +54,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
+import sortBy from 'lodash/fp/sortBy'
 
 export default {
   name: 'wallets-page',
@@ -50,7 +65,12 @@ export default {
 
   data () {
     return {
-      search: ''
+      search: '',
+      criterions: [
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-down', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true }
+      ],
+      currentCriterion: null
     }
   },
 
@@ -60,6 +80,10 @@ export default {
     }),
     filteredWallets: function () {
       return this.search ? this.wallets.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1) : this.wallets
+    },
+    sortedWallets: function () {
+      const sorted = sortBy(this.currentCriterion.key)(this.filteredWallets)
+      return this.currentCriterion.desc ? sorted.reverse() : sorted
     }
   },
 
@@ -73,6 +97,7 @@ export default {
 
   created () {
     this.$store.dispatch('getAccountAssets')
+    this.sort(this.criterions[0])
   },
 
   mounted () {
@@ -82,8 +107,8 @@ export default {
   },
 
   methods: {
-    onClickSort () {
-      console.log('sort!')
+    sort (criterion) {
+      this.currentCriterion = criterion
     }
   }
 }

@@ -20,6 +20,7 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock'
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
+import { faSortAlphaUp } from '@fortawesome/free-solid-svg-icons/faSortAlphaUp'
 import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -112,6 +113,7 @@ library.add(
   faUpload,
   faClock,
   faSearch,
+  faSortAlphaUp,
   faSortAlphaDown
 )
 Vue.component('fa-icon', FontAwesomeIcon)
