@@ -65,7 +65,7 @@
                 v-for="wallet in wallets"
                 :key="wallet.id"
                 :label="wallet.asset"
-                :value="wallet.asset">
+                :value="wallet.assetId">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
               </el-option>
             </el-select>
@@ -74,7 +74,7 @@
         <span class="form-item-text">
           Available balance:
           <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
+            {{ wallets.find(x => x.assetId === exchangeDialogOfferAsset).amount + ' ' + exchangeDialogOfferAsset | walletName }}
           </span>
           <span v-else>...</span>
         </span>
@@ -91,7 +91,7 @@
                 v-for="wallet in wallets"
                 :key="wallet.id"
                 :label="wallet.asset"
-                :value="wallet.asset">
+                :value="wallet.assetId">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
               </el-option>
             </el-select>
@@ -100,7 +100,7 @@
         <span class="form-item-text">
           Market price:
           <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-            1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
+            1 {{ exchangeDialogOfferAsset | walletName }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset | walletName }}
           </span>
           <span v-else>...</span>
         </span>
@@ -121,6 +121,7 @@
         class="fullwidth black clickable"
         @click="onSubmitExchangeDialog()"
         style="margin-top: 40px"
+        :loading="isExchangeSending"
       >
         EXCHANGE
       </el-button>
@@ -186,6 +187,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex'
 import inputValidation from '@/components/mixins/inputValidation'
 
+// TODO: Validate lack of selected asset
 export default {
   name: 'Home',
   mixins: [
@@ -207,7 +209,8 @@ export default {
       },
       approvalForm: {
         privateKeys: []
-      }
+      },
+      isExchangeSending: false
     }
   },
 
@@ -260,7 +263,7 @@ export default {
 
   beforeUpdate () {
     if (this.exchangeDialogOfferAsset) {
-      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      const wallet = this.wallets.find(x => x.assetId === this.exchangeDialogOfferAsset)
       this._refreshRules({
         offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
         request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
@@ -318,6 +321,7 @@ export default {
         this.openApprovalDialog()
           .then(privateKeys => {
             if (!privateKeys) return
+            this.isExchangeSending = true
             const offerAsset = this.exchangeDialogOfferAsset
             const requestAsset = this.exchangeDialogRequestAsset
             return this.$store.dispatch('createSettlement', {
@@ -330,17 +334,21 @@ export default {
             })
               .then(() => {
                 this.$message('New settlement has successfully been created')
+                this.closeExchangeDialogWith()
+                // TODO: think, maybe it is a bad idea to close form after success.
+                Object.assign(
+                  this.$data.exchangeForm,
+                  this.$options.data().exchangeForm
+                )
               })
               .catch(err => {
                 console.error(err)
-                this.$message('Failed to create new settlement')
+                this.$alert(err.message, 'Withdrawal error', {
+                  type: 'error'
+                })
               })
               .finally(() => {
-                Object.assign(
-                  this.$data.exchangeDialog,
-                  this.$options.data().exchangeDialog
-                )
-                this.closeExchangeDialogWith()
+                this.isExchangeSending = false
               })
           })
       })
@@ -359,6 +367,9 @@ export default {
     nonEmptyKeys (value) {
       if (!value) return ''
       return value.filter(key => key.length).length
+    },
+    walletName (value) {
+      return value ? value.split('#')[0].toUpperCase() : ''
     }
   }
 }
