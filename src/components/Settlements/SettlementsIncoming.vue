@@ -15,7 +15,7 @@
           <p>Message: {{ scope.row.message }}</p>
         </template>
       </el-table-column>
-      <el-table-column label="Amount" min-width="220">
+      <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
           {{
             Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset
@@ -24,7 +24,7 @@
           }}
         </template>
       </el-table-column>
-      <el-table-column label="Counterparty" min-width="150">
+      <el-table-column label="Counterparty" min-width="120">
         <template slot-scope="scope">
           <div>
             from {{ scope.row.from }}
@@ -36,24 +36,24 @@
           {{ formatDate(scope.row.date) }}
         </template>
       </el-table-column>
-      <el-table-column
-        width="180px"
-      >
+      <el-table-column width="200">
         <template slot-scope="scope">
-          <div style="text-align: right">
+          <div class="list_actions">
             <el-button
-              size="mini"
-              plain type="primary"
+              plain
+              size="medium"
+              type="primary"
               @click="acceptanceDialogVisible = true; settlementForAcceptance = scope.row"
             >
               Accept
             </el-button>
             <el-button
-              size="mini" plain
+              plain
+              size="medium"
               type="danger"
               @click="rejectionDialogVisible = true; settlementForRejection = scope.row"
             >
-              Reject
+              Decline
             </el-button>
           </div>
         </template>
@@ -170,3 +170,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.list_actions {
+  display: flex;
+  justify-content: space-between;
+}
+.list_actions >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
+}
+</style>
