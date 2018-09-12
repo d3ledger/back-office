@@ -29,9 +29,8 @@ function command (
       creatorAccountId: cache.username,
       quorum
     })
-    privateKeys.forEach(key => {
-      txToSend = txHelper.sign(txToSend, key)
-    })
+
+    txToSend = signWithArrayOfKeys(txToSend, privateKeys)
 
     txHash = txHelper.hash(txToSend)
 
@@ -230,13 +229,93 @@ function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
   )
 }
 
-// TODO: implement it
-function createSettlement () {
+function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAsset, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAmount, receiverAsset, timeoutLimit) {
   debug('starting createSettlement...')
 
+  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAsset, description, senderAmount })
+  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
+
+  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAsset, description, receiverAmount })
+  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
+
+  const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
+
+  batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
+
+  const senderTxHash = txHelper.hash(batchArray[0])
+  const receiverTxHash = txHelper.hash(batchArray[1])
+
+  const batch = txHelper.createTxListFromArray(batchArray)
+
   return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 500)
+    debug('submitting transaction...')
+    debug('peer ip:', cache.nodeIp)
+    debug('parameters sender:', JSON.stringify(senderTxHash.getPayload(), null, '  '))
+    debug('parameters receiver:', JSON.stringify(receiverTxHash.getPayload(), null, '  '))
+    debug('senderTxHash:', Buffer.from(senderTxHash).toString('hex'))
+    debug('receiverTxHash:', Buffer.from(receiverTxHash).toString('hex'))
+    debug('')
+
+    let txClient = new CommandServiceClient(
+      cache.nodeIp
+    )
+
+    const timer = setTimeout(() => {
+      txClient.$channel.close()
+      reject(new Error('please check IP address OR your internet connection'))
+    }, timeoutLimit)
+
+    txClient.listTorii(batch, (err, data) => {
+      clearTimeout(timer)
+
+      if (err) {
+        return reject(err)
+      }
+
+      debug('submitted transaction successfully!')
+      resolve()
+    })
   })
+    .then((txClient) => {
+      return new Promise((resolve, reject) => {
+        debug('opening transaction status stream...')
+
+        // Status requests promises
+        let requests = [senderTxHash, receiverTxHash].map(hash => new Promise((resolve, reject) => {
+          let statuses = []
+
+          const request = new TxStatusRequest()
+          request.setTxHash(hash)
+
+          let stream = txClient.statusStream(request)
+          stream.on('data', function (response) {
+            statuses.push(response)
+          })
+
+          stream.on('end', function (end) {
+            statuses.length > 0 ? resolve(statuses[statuses.length - 1].getTxStatus()) : resolve(null)
+          })
+        }))
+
+        Promise.all(requests).then(values => {
+          let statuses = values.map(x => x !== null ? getProtoEnumName(
+            TxStatus,
+            'iroha.protocol.TxStatus',
+            x
+          ) : null)
+
+          statuses.every(x => x === 'MST_PENDING') ? resolve() : reject(new Error(`Your transaction wasn't commited: expected=MST_PENDING, MST_PENDING actual=${statuses[0]}, ${statuses[1]}`))
+        })
+      })
+    })
+}
+
+function signWithArrayOfKeys (tx, privateKeys) {
+  let signedTx
+  privateKeys.forEach(key => {
+    signedTx = txHelper.sign(tx, key)
+  })
+  return signedTx
 }
 
 export {
