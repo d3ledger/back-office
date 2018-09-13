@@ -73,16 +73,16 @@ export default {
         { name: 'token amount (desc)', icon: 'sort-amount-up', key: 'amount', desc: true, numeric: true },
         { name: 'fiat price (asc)', icon: 'sort-numeric-down', key: 'fiat', desc: false, numeric: true },
         { name: 'fiat price (desc)', icon: 'sort-numeric-up', key: 'fiat', desc: true, numeric: true }
-      ],
-      currentCriterion: null
+      ]
     }
   },
 
   computed: {
-    ...mapGetters([
-      'wallets',
-      'portfolioPercent'
-    ]),
+    ...mapGetters({
+      wallets: 'wallets',
+      portfolioPercent: 'portfolioPercent',
+      currentCriterion: 'walletsSortCriterion'
+    }),
     walletsWithFiatPrice: function () {
       return this.wallets.map((x, i) => {
         x.fiat = this.portfolioPercent[i].price
@@ -110,8 +110,10 @@ export default {
   },
 
   created () {
+    this.$store.dispatch('loadWalletsSortCriterion')
     this.$store.dispatch('getAccountAssets')
-    this.sort(this.criterions[0])
+
+    if (!this.currentCriterion) this.sort(this.criterions[0])
   },
 
   mounted () {
@@ -122,7 +124,7 @@ export default {
 
   methods: {
     sort (criterion) {
-      this.currentCriterion = criterion
+      this.$store.dispatch('updateWalletsSortCriterion', criterion)
     }
   }
 }

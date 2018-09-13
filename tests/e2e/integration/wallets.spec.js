@@ -33,6 +33,8 @@ describe('Test wallets page without white list', () => {
     cy.get('div.card-header').first().should('contain', TOKEN)
   })
 
+  // TODO: Test sorting
+
   describe('Test deposit modal', () => {
     it('Open modal', () => {
       cy.contains('Deposit').click()
