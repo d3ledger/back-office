@@ -68,14 +68,14 @@
                       class="card-info-amount"
                       :title="`the current price of 1 ${wallet.asset} in ${settingsView.fiat}`"
                     >
-                      {{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}
+                      {{ cryptoInfo.current.fiat | formatNumberLong }} {{ currencySymbol }}
                     </p>
 
                     <p
-                      :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']"
+                      :class="[cryptoInfo.current.fiat_change > 0 ? 'uptrend' : 'downtrend']"
                       :title="`the change (${settingsView.fiat}) from ${selectedMarketPeriod} ago`"
                     >
-                      {{ cryptoInfo.current.rur_change | formatNumberShort }}
+                      {{ cryptoInfo.current.fiat_change | formatNumberShort }}
                     </p>
                   </el-col>
                   <el-col :span="15">
@@ -102,7 +102,7 @@
                       class="card-info-amount--small"
                       :title="`the market cap in ${settingsView.fiat}`"
                     >
-                      {{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}
+                      {{ cryptoInfo.market.cap.fiat | formatNumberShort }} {{ currencySymbol }}
                     </p>
                     <p
                       class="card-info-amount--small"
@@ -117,7 +117,7 @@
                       class="card-info-amount--small"
                       :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
                     >
-                      {{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}
+                      {{ cryptoInfo.market.volume.fiat | formatNumberShort }} {{ currencySymbol }}
                     </p>
                     <p
                       class="card-info-amount--small"

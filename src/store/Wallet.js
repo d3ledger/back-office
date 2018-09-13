@@ -21,18 +21,18 @@ function initialState () {
   return {
     cryptoInfo: {
       current: {
-        rur: 0,
-        rur_change: 0,
+        fiat: 0,
+        fiat_change: 0,
         crypto: 0,
         crypto_change: 0
       },
       market: {
         cap: {
-          rur: 0,
+          fiat: 0,
           crypto: 0
         },
         volume: {
-          rur: 0,
+          fiat: 0,
           crypto: 0
         },
         supply: 0
@@ -84,14 +84,14 @@ const mutations = {
   ) {
     // process priceData
     const RAW = Object.values(priceData.RAW)[0]
-    const compareToRUB = RAW[currencies.fiat]
+    const compareToFiat = RAW[currencies.fiat]
     const compareToCrypto = RAW[currencies.crypto]
 
-    const priceFiat = compareToRUB.PRICE
+    const priceFiat = compareToFiat.PRICE
     const priceCrypto = compareToCrypto.PRICE
-    const marketcapFiat = compareToRUB.MKTCAP
-    const marketcapCrypto = compareToRUB.SUPPLY
-    const circulatingSupply = compareToRUB.SUPPLY
+    const marketcapFiat = compareToFiat.MKTCAP
+    const marketcapCrypto = compareToFiat.SUPPLY
+    const circulatingSupply = compareToFiat.SUPPLY
 
     // process historicalData
     const getChangeInfo = ({ Data }) => {
@@ -113,18 +113,18 @@ const mutations = {
 
     Vue.set(state, 'cryptoInfo', {
       current: {
-        rur: priceFiat,
-        rur_change: changeFiat,
+        fiat: priceFiat,
+        fiat_change: changeFiat,
         crypto: priceCrypto,
         crypto_change: changePctCrypto
       },
       market: {
         cap: {
-          rur: marketcapFiat,
+          fiat: marketcapFiat,
           crypto: marketcapCrypto
         },
         volume: {
-          rur: volumeFiat,
+          fiat: volumeFiat,
           crypto: volumeCrypto
         },
         supply: circulatingSupply
