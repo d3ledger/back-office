@@ -25,18 +25,18 @@ describe('Wallet store', () => {
       const state = {
         cryptoInfo: {
           current: {
-            rur: randomAmountRng(),
-            rur_change: randomAmountRng(),
+            fiat: randomAmountRng(),
+            fiat_change: randomAmountRng(),
             crypto: randomAmountRng(),
             crypto_change: randomAmountRng()
           },
           market: {
             cap: {
-              rur: randomAmountRng(),
+              fiat: randomAmountRng(),
               crypto: randomAmountRng()
             },
             volume: {
-              rur: randomAmountRng(),
+              fiat: randomAmountRng(),
               crypto: randomAmountRng()
             },
             supply: randomAmountRng()
@@ -48,18 +48,18 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            rur: 0,
-            rur_change: 0,
+            fiat: 0,
+            fiat_change: 0,
             crypto: 0,
             crypto_change: 0
           },
           market: {
             cap: {
-              rur: 0,
+              fiat: 0,
               crypto: 0
             },
             volume: {
-              rur: 0,
+              fiat: 0,
               crypto: 0
             },
             supply: 0
@@ -131,18 +131,18 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            rur: price,
-            rur_change: 0,
+            fiat: price,
+            fiat_change: 0,
             crypto: price,
             crypto_change: 0
           },
           market: {
             cap: {
-              rur: number,
+              fiat: number,
               crypto: number
             },
             volume: {
-              rur: price * (number * 2),
+              fiat: price * (number * 2),
               crypto: number * 2
             },
             supply: number
@@ -203,18 +203,18 @@ describe('Wallet store', () => {
         const state = {
           cryptoInfo: {
             current: {
-              rur: randomAmountRng(),
-              rur_change: randomAmountRng(),
+              fiat: randomAmountRng(),
+              fiat_change: randomAmountRng(),
               crypto: randomAmountRng(),
               crypto_change: randomAmountRng()
             },
             market: {
               cap: {
-                rur: randomAmountRng(),
+                fiat: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               volume: {
-                rur: randomAmountRng(),
+                fiat: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               supply: randomAmountRng()
