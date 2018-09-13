@@ -106,7 +106,7 @@
                     </p>
                     <p
                       class="card-info-amount--small"
-                      :title="`the supply in ${wallet.asset}`"
+                      :title="`the market cap in ${wallet.asset}`"
                     >
                       {{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
