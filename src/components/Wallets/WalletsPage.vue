@@ -12,7 +12,7 @@
 
         <div class="searchbar__sort">
           <el-dropdown trigger="click" @command="sort">
-            <div class="searchbar__sort-button">
+            <div id="wallets-sort-button" class="searchbar__sort-button">
               <fa-icon
                 :icon="currentCriterion.icon"
                 class="searchbar__icon"
