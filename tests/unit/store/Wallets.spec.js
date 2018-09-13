@@ -25,18 +25,18 @@ describe('Wallet store', () => {
       const state = {
         cryptoInfo: {
           current: {
-            rur: randomAmountRng(),
-            rur_change: randomAmountRng(),
+            fiat: randomAmountRng(),
+            fiat_change: randomAmountRng(),
             crypto: randomAmountRng(),
             crypto_change: randomAmountRng()
           },
           market: {
             cap: {
-              rur: randomAmountRng(),
+              fiat: randomAmountRng(),
               crypto: randomAmountRng()
             },
             volume: {
-              rur: randomAmountRng(),
+              fiat: randomAmountRng(),
               crypto: randomAmountRng()
             },
             supply: randomAmountRng()
@@ -48,18 +48,18 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            rur: 0,
-            rur_change: 0,
+            fiat: 0,
+            fiat_change: 0,
             crypto: 0,
             crypto_change: 0
           },
           market: {
             cap: {
-              rur: 0,
+              fiat: 0,
               crypto: 0
             },
             volume: {
-              rur: 0,
+              fiat: 0,
               crypto: 0
             },
             supply: 0
@@ -83,6 +83,7 @@ describe('Wallet store', () => {
     it('GET_CRYPTO_FULL_DATA_SUCCESS should set cryptoInfo data', () => {
       const state = { cryptoInfo: {} }
       const number = randomAmountRng()
+      const price = randomAmountRng()
       const assets = ['BTC', 'ETH']
       const fiats = ['USD', 'EUR']
       const asset = randomArrayElement(assets)
@@ -91,11 +92,29 @@ describe('Wallet store', () => {
         fiat,
         crypto: asset
       }
-      const data = {
+      const historicalDataFiat = {
+        Data: [
+          { close: number },
+          { close: number }
+        ]
+      }
+      const historicalDataCrypto = {
+        Data: [
+          { close: number },
+          { close: number }
+        ]
+      }
+      const volumeData = {
+        Data: [
+          { volume: number },
+          { volume: number }
+        ]
+      }
+      const priceData = {
         RAW: {
           test: {
             [fiat]: {
-              PRICE: number,
+              PRICE: price,
               CHANGEDAY: number,
               MKTCAP: number,
               SUPPLY: number,
@@ -103,7 +122,7 @@ describe('Wallet store', () => {
               TOTALVOLUME24H: number
             },
             [asset]: {
-              PRICE: number,
+              PRICE: price,
               CHANGEPCTDAY: number
             }
           }
@@ -112,19 +131,19 @@ describe('Wallet store', () => {
       const expectedState = {
         cryptoInfo: {
           current: {
-            rur: number,
-            rur_change: number,
-            crypto: number,
-            crypto_change: number
+            fiat: price,
+            fiat_change: 0,
+            crypto: price,
+            crypto_change: 0
           },
           market: {
             cap: {
-              rur: number,
+              fiat: number,
               crypto: number
             },
             volume: {
-              rur: number,
-              crypto: number
+              fiat: price * (number * 2),
+              crypto: number * 2
             },
             supply: number
           },
@@ -132,7 +151,10 @@ describe('Wallet store', () => {
         }
       }
       mutations[types.GET_CRYPTO_FULL_DATA_SUCCESS](state, {
-        data,
+        historicalDataFiat,
+        historicalDataCrypto,
+        volumeData,
+        priceData,
         currencies
       })
       expect(state).to.be.deep.equal(expectedState)
@@ -155,6 +177,7 @@ describe('Wallet store', () => {
       it('should call mutations in correct order', async () => {
         const assets = ['BTC', 'ETH']
         const fiats = ['USD', 'EUR']
+        const filter = '1D'
         const asset = randomArrayElement(assets)
         const fiat = randomArrayElement(fiats)
         const getters = {
@@ -164,7 +187,7 @@ describe('Wallet store', () => {
           }
         }
         const commit = sinon.spy()
-        await actions.getCryptoFullData({ commit, getters }, { asset })
+        await actions.getCryptoFullData({ commit, getters }, { filter, asset })
         const response = commit.secondCall.args[1]
         expect(commit.args).to.deep.equal([
           [types.GET_CRYPTO_FULL_DATA_REQUEST],
@@ -180,18 +203,18 @@ describe('Wallet store', () => {
         const state = {
           cryptoInfo: {
             current: {
-              rur: randomAmountRng(),
-              rur_change: randomAmountRng(),
+              fiat: randomAmountRng(),
+              fiat_change: randomAmountRng(),
               crypto: randomAmountRng(),
               crypto_change: randomAmountRng()
             },
             market: {
               cap: {
-                rur: randomAmountRng(),
+                fiat: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               volume: {
-                rur: randomAmountRng(),
+                fiat: randomAmountRng(),
                 crypto: randomAmountRng()
               },
               supply: randomAmountRng()

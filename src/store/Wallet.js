@@ -21,18 +21,18 @@ function initialState () {
   return {
     cryptoInfo: {
       current: {
-        rur: 0,
-        rur_change: 0,
+        fiat: 0,
+        fiat_change: 0,
         crypto: 0,
         crypto_change: 0
       },
       market: {
         cap: {
-          rur: 0,
+          fiat: 0,
           crypto: 0
         },
         volume: {
-          rur: 0,
+          fiat: 0,
           crypto: 0
         },
         supply: 0
@@ -72,27 +72,62 @@ const mutations = {
     Vue.set(state.cryptoInfo, 'isLoading', true)
   },
 
-  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (state, { data, currencies }) {
-    const RAW = Object.values(data.RAW)[0]
-    const compareToRUB = RAW[currencies.fiat]
+  [types.GET_CRYPTO_FULL_DATA_SUCCESS] (
+    state,
+    {
+      historicalDataFiat,
+      historicalDataCrypto,
+      volumeData,
+      priceData,
+      currencies
+    }
+  ) {
+    // process priceData
+    const RAW = Object.values(priceData.RAW)[0]
+    const compareToFiat = RAW[currencies.fiat]
     const compareToCrypto = RAW[currencies.crypto]
+
+    const priceFiat = compareToFiat.PRICE
+    const priceCrypto = compareToCrypto.PRICE
+    const marketcapFiat = compareToFiat.MKTCAP
+    const marketcapCrypto = compareToFiat.SUPPLY
+    const circulatingSupply = compareToFiat.SUPPLY
+
+    // process historicalData
+    const getChangeInfo = ({ Data }) => {
+      const closeOfTheFirstSpan = Data.filter(x => Number.isFinite(x.close) && x.close > 0)[0].close
+      const closeOfTheLastSpan = Data[Data.length - 1].close
+      const change = closeOfTheLastSpan - closeOfTheFirstSpan
+      const changePct = (change / closeOfTheFirstSpan) * 100
+
+      return [change, changePct]
+    }
+    const [changeFiat] = getChangeInfo(historicalDataFiat)
+    const [, changePctCrypto] = getChangeInfo(historicalDataCrypto)
+
+    // process volumeData
+    const volumeCrypto = volumeData.Data
+      .filter(({ volume }) => Number.isFinite(volume))
+      .reduce((sum, { volume }) => sum + volume, 0)
+    const volumeFiat = priceFiat * volumeCrypto
+
     Vue.set(state, 'cryptoInfo', {
       current: {
-        rur: compareToRUB.PRICE,
-        rur_change: compareToRUB.CHANGEDAY,
-        crypto: compareToCrypto.PRICE,
-        crypto_change: compareToCrypto.CHANGEPCTDAY
+        fiat: priceFiat,
+        fiat_change: changeFiat,
+        crypto: priceCrypto,
+        crypto_change: changePctCrypto
       },
       market: {
         cap: {
-          rur: compareToRUB.MKTCAP,
-          crypto: compareToRUB.SUPPLY
+          fiat: marketcapFiat,
+          crypto: marketcapCrypto
         },
         volume: {
-          rur: compareToRUB.TOTALVOLUME24HTO,
-          crypto: compareToRUB.TOTALVOLUME24H
+          fiat: volumeFiat,
+          crypto: volumeCrypto
         },
-        supply: compareToRUB.SUPPLY
+        supply: circulatingSupply
       },
       isLoading: false
     })
@@ -105,11 +140,26 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { asset }) {
+  getCryptoFullData ({ commit, getters }, { filter, asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
+
     const currencies = getters.settingsView
-    return cryptoCompareUtil.loadFullData(asset, currencies)
-      .then(data => commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, { data, currencies }))
+
+    return Promise.all([
+      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
+      cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
+      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset }),
+      cryptoCompareUtil.loadFullData(asset, currencies)
+    ])
+      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
+        commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
+          historicalDataFiat,
+          historicalDataCrypto,
+          volumeData,
+          priceData,
+          currencies
+        })
+      })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
         throw err

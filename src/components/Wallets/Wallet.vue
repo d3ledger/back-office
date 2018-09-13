@@ -37,37 +37,103 @@
           <el-col :span="12">
             <el-card body-style="height: 160px;">
               <div slot="header" class="card-header">
-                <div>Market <el-tag type="info" size="mini">Today</el-tag></div>
+                <div>
+                  Market
+
+                  <el-dropdown @command="(command) => { selectedMarketPeriod = command }">
+                    <el-tag
+                      type="info"
+                      size="mini"
+                    >
+                      {{ selectedMarketPeriod }}
+                    </el-tag>
+
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item
+                        v-for="period in marketPeriods"
+                        :key="period"
+                        :command="period"
+                      >
+                        {{ period }}
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
               </div>
+
               <div class="card-info" v-loading="cryptoInfo.isLoading">
                 <el-row style="margin-bottom: 20px">
-                  <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.rur | formatNumberLong }} {{ currencySymbol }}</p>
-                    <p :class="[cryptoInfo.current.rur_change > 0 ? 'uptrend' : 'downtrend']">
-                      {{ cryptoInfo.current.rur_change | formatNumberShort }}
+                  <el-col :span="9">
+                    <p
+                      class="card-info-amount"
+                      :title="`the current price of 1 ${wallet.asset} in ${settingsView.fiat}`"
+                    >
+                      {{ cryptoInfo.current.fiat | formatNumberLong }} {{ currencySymbol }}
+                    </p>
+
+                    <p
+                      :class="[cryptoInfo.current.fiat_change > 0 ? 'uptrend' : 'downtrend']"
+                      :title="`the change (${settingsView.fiat}) from ${selectedMarketPeriod} ago`"
+                    >
+                      {{ cryptoInfo.current.fiat_change | formatNumberShort }}
                     </p>
                   </el-col>
-                  <el-col :span="12">
-                    <p class="card-info-amount">{{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}</p>
-                    <p :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']">
+                  <el-col :span="15">
+                    <p
+                      class="card-info-amount"
+                      :title="`the current price of 1 ${wallet.asset} in ${settingsView.crypto}`"
+                    >
+                      {{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}
+                    </p>
+
+                    <p
+                      :class="[cryptoInfo.current.crypto_change > 0 ? 'uptrend' : 'downtrend']"
+                      :title="`the change (%) from ${selectedMarketPeriod} ago`"
+                    >
                       {{ cryptoInfo.current.crypto_change | formatPercent }}
                     </p>
                   </el-col>
                 </el-row>
+
                 <el-row>
-                  <el-col :span="8">
+                  <el-col :span="9">
                     <p class="card-info-title">Market Cap</p>
-                    <p>{{ cryptoInfo.market.cap.rur | formatNumberShort }} {{ currencySymbol }}</p>
-                    <p>{{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the market cap in ${settingsView.fiat}`"
+                    >
+                      {{ cryptoInfo.market.cap.fiat | formatNumberShort }} {{ currencySymbol }}
+                    </p>
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the market cap in ${wallet.asset}`"
+                    >
+                      {{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
                   <el-col :span="8">
-                    <p class="card-info-title">Volume (24h)</p>
-                    <p>{{ cryptoInfo.market.volume.rur | formatNumberShort }} {{ currencySymbol }}</p>
-                    <p>{{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p class="card-info-title">Volume ({{ selectedMarketPeriod }})</p>
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
+                    >
+                      {{ cryptoInfo.market.volume.fiat | formatNumberShort }} {{ currencySymbol }}
+                    </p>
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${wallet.asset}`"
+                    >
+                      {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
-                  <el-col :span="8">
+                  <el-col :span="7">
                     <p class="card-info-title">Circulating Supply</p>
-                    <p> {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}</p>
+                    <p
+                      class="card-info-amount--small"
+                      :title="`the total supply in ${wallet.asset}`"
+                    >
+                      {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}
+                    </p>
                   </el-col>
                 </el-row>
               </div>
@@ -297,7 +363,9 @@ export default {
         to: null,
         amount: null,
         description: ''
-      }
+      },
+      marketPeriods: ['1H', '1D', '1W', '1M', '1Y', 'ALL'],
+      selectedMarketPeriod: '1D'
     }
   },
 
@@ -324,6 +392,10 @@ export default {
     displayPrecision () {
       return this.wallet.precision < 4 ? this.wallet.precision : 4
     }
+  },
+
+  watch: {
+    selectedMarketPeriod () { this.updateMarketCard() }
   },
 
   created () {
@@ -354,8 +426,12 @@ export default {
       this.$store.dispatch('getAccountAssets')
         .then(() => {
           this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
-          this.$store.dispatch('getCryptoFullData', this.wallet)
+          this.updateMarketCard()
         })
+    },
+
+    updateMarketCard () {
+      return this.$store.dispatch('getCryptoFullData', { filter: this.selectedMarketPeriod, asset: this.wallet.asset })
     },
 
     onSubmitWithdrawalForm () {
@@ -553,6 +629,10 @@ export default {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 4px;
+}
+
+.card-info-amount--small {
+  word-break: break-all;
 }
 
 .icon {

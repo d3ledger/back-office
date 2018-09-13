@@ -73,6 +73,7 @@ a:hover {
   overflow: scroll;
 }
 
+.el-popper,
 .el-tooltip__popper, .el-select-dropdown__item {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
