@@ -26,7 +26,7 @@
                     <fa-icon icon="arrow-right" />
                     <span>Transfer</span>
                   </div>
-                  <div role="button" class="button" @click="openExchangeDialog(wallet.assetId)">
+                  <div role="button" class="button" @click="openExchangeDialog(wallet.asset)">
                     <fa-icon icon="exchange-alt" />
                     <span>Exchange</span>
                   </div>

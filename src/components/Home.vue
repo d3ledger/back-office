@@ -65,7 +65,7 @@
                 v-for="wallet in wallets"
                 :key="wallet.id"
                 :label="wallet.asset"
-                :value="wallet.assetId">
+                :value="wallet.asset">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
               </el-option>
             </el-select>
@@ -74,7 +74,7 @@
         <span class="form-item-text">
           Available balance:
           <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.find(x => x.assetId === exchangeDialogOfferAsset).amount + ' ' + exchangeDialogOfferAsset | walletName }}
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount + ' ' + exchangeDialogOfferAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -91,7 +91,7 @@
                 v-for="wallet in wallets"
                 :key="wallet.id"
                 :label="wallet.asset"
-                :value="wallet.assetId">
+                :value="wallet.asset">
                   <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
               </el-option>
             </el-select>
@@ -100,7 +100,7 @@
         <span class="form-item-text">
           Market price:
           <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-            1 {{ exchangeDialogOfferAsset | walletName }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset | walletName }}
+            1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -263,7 +263,7 @@ export default {
 
   beforeUpdate () {
     if (this.exchangeDialogOfferAsset) {
-      const wallet = this.wallets.find(x => x.assetId === this.exchangeDialogOfferAsset)
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
       this._refreshRules({
         offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
         request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
@@ -322,8 +322,8 @@ export default {
           .then(privateKeys => {
             if (!privateKeys) return
             this.isExchangeSending = true
-            const offerAsset = this.exchangeDialogOfferAsset
-            const requestAsset = this.exchangeDialogRequestAsset
+            const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+            const requestAsset = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
             return this.$store.dispatch('createSettlement', {
               privateKeys,
               to: s.to,
@@ -367,9 +367,6 @@ export default {
     nonEmptyKeys (value) {
       if (!value) return ''
       return value.filter(key => key.length).length
-    },
-    walletName (value) {
-      return value ? value.split('#')[0].toUpperCase() : ''
     }
   }
 }
