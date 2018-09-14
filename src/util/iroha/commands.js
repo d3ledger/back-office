@@ -31,7 +31,6 @@ function command (
     })
 
     txToSend = signWithArrayOfKeys(txToSend, privateKeys)
-
     txHash = txHelper.hash(txToSend)
 
     txClient = new CommandServiceClient(
@@ -327,11 +326,10 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 }
 
 function signWithArrayOfKeys (tx, privateKeys) {
-  let signedTx
   privateKeys.forEach(key => {
-    signedTx = txHelper.sign(signedTx, key)
+    tx = txHelper.sign(tx, key)
   })
-  return signedTx
+  return tx
 }
 
 export {
