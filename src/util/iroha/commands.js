@@ -329,7 +329,7 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 function signWithArrayOfKeys (tx, privateKeys) {
   let signedTx
   privateKeys.forEach(key => {
-    signedTx = txHelper.sign(tx, key)
+    signedTx = txHelper.sign(signedTx, key)
   })
   return signedTx
 }
