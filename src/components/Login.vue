@@ -5,14 +5,6 @@
     </div>
     <el-card class="login-form-container">
       <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Username:" prop="username">
-          <el-input
-            name="username"
-            v-model="form.username"
-            :disabled="isLoading"
-          />
-        </el-form-item>
-
         <el-form-item label="Private key:" prop="privateKey">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
@@ -36,7 +28,13 @@
             </el-upload>
           </el-row>
         </el-form-item>
-
+        <el-form-item label="Username:" prop="username">
+          <el-input
+            name="username"
+            v-model="form.username"
+            :disabled="isLoading"
+          />
+        </el-form-item>
         <el-form-item label="Node ip:" prop="nodeIp">
           <el-input
             v-model="form.nodeIp"
