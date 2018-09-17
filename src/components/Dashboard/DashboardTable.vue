@@ -6,7 +6,6 @@
           <el-input
             placeholder="Search"
             prefix-icon="el-icon-search"
-            suffix-icon="el-icon-date"
             v-model="filterInput"/>
         </el-col>
       </el-row>
@@ -27,7 +26,7 @@
                 {{ value | formatName }}
               </div>
               <div class="column balance text-center">
-                {{ value.price | formatNumberShort }}
+                {{ value.price | formatNumberShort }} {{ currencySymbol }}
               </div>
               <div class="column text-right">
                 <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
@@ -92,28 +91,13 @@ export default {
 </script>
 
 <style scoped>
-.card-content {
-  color: #303133;
-  background-color: #fff;
-  border: 1px solid #ebeef5;
-  border-radius: 5px;
-  transition: .3s;
-  min-height: 500px;
-  -webkit-transition: .3s;
-}
-
-.card-content.shadow {
-  -webkit-box-shadow: -5px 2px 12px 0 rgba(0,0,0,.1);
-  box-shadow: -5px 2px 12px 0 rgba(0,0,0,.1);
-}
-
 .card-content_header {
   border-bottom: 1px solid #f5f5f5
 }
 
 .card-content_header >>> .el-input__inner {
   font-size: 20px;
-  height: 4.25rem;
+  height: 3.35rem;
   border: 0;
 }
 
