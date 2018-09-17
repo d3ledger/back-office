@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="wallets.length  || dashboardLoading" v-loading.fullscreen.lock="dashboardLoading">
+  <el-container v-if="wallets.length || dashboardLoading" v-loading.fullscreen.lock="dashboardLoading">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
@@ -12,12 +12,17 @@
       <el-row>
         <el-col :span="24">
           <el-row>
-            <el-col :span="8">
-              <dashboard-table :portfolio="portfolioList"/>
-            </el-col>
-            <el-col :span="16">
-              <dashboard-chart />
-            </el-col>
+            <el-card :body-style="{ padding: '0' }">
+              <el-col :span="8">
+                <dashboard-table :portfolio="portfolioList"/>
+              </el-col>
+              <el-col :span="1">
+                <div class="vertical_devider"></div>
+              </el-col>
+              <el-col :span="15">
+                <dashboard-chart />
+              </el-col>
+            </el-card>
           </el-row>
         </el-col>
       </el-row>
@@ -66,5 +71,12 @@ export default {
 }
 .portfolio_card-padding {
   padding-right: 10px;
+}
+.vertical_devider {
+  top: 1px;
+  bottom: 1px;
+  width: 2px;
+  background: #f5f5f5;
+  position: absolute;
 }
 </style>
