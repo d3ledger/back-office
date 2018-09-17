@@ -4,7 +4,7 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import omit from 'lodash/fp/omit'
 import isEqual from 'lodash/fp/isEqual'
-import { getParsedItem, setParsedItem, setItem } from '@util/storage-util'
+import { getParsedItem, setParsedItem, setStringifyItem } from '@util/storage-util'
 
 const types = flow(
   map(x => [x, x]),
@@ -74,7 +74,7 @@ const actions = {
     if (storage) {
       commit(types.LOAD_SETTINGS, storage)
     } else {
-      setItem('settings', omit('default')(state))
+      setStringifyItem('settings', omit('default')(state))
     }
   },
   updateSettingsViewFiat ({ commit }, fiat) {
