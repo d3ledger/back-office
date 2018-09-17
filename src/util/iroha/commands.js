@@ -85,8 +85,8 @@ function command (
             last
           )
 
-          if (lastStatusName !== 'COMMITTED') {
-            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED, actual=${lastStatusName}`))
+          if (lastStatusName !== 'COMMITTED' && lastStatusName !== 'MST_PENDING') {
+            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED or MST_PENDING, actual=${lastStatusName}`))
           }
 
           resolve()
