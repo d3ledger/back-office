@@ -4,14 +4,16 @@
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-card body-style="height: 160px; padding: 0;">
-              <div slot="header" class="card-header">
-                <div>{{ wallet.name }}</div>
-                <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+            <el-card class="card" :body-style="{ padding: '0' }">
+              <div class="card_header">
+                <div class="card_header-title">
+                  <div>{{ wallet.name }}</div>
+                  <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+                </div>
               </div>
               <div class="top-left-card">
-                <div style="margin: 20px">
-                  <h2 class="amount"> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
+                <div class="amount">
+                  <h2> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
                 </div>
                 <div class="card_actions">
                   <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
@@ -35,29 +37,20 @@
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card body-style="height: 160px;">
-              <div slot="header" class="card-header">
-                <div>
-                  Market
-
-                  <el-dropdown @command="(command) => { selectedMarketPeriod = command }">
-                    <el-tag
-                      type="info"
-                      size="mini"
-                    >
-                      {{ selectedMarketPeriod }}
-                    </el-tag>
-
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item
-                        v-for="period in marketPeriods"
-                        :key="period"
-                        :command="period"
+            <el-card class="card" :body-style="{ padding : '0' }">
+              <div class="card_header-divided">
+                <div class="card_header-title">
+                  <div class="card_header-name">Market</div>
+                  <div class="card_header-filter">
+                    <div
+                      v-for="period in marketPeriods"
+                      :key="period"
+                      :class="[selectedMarketPeriod !== period ? 'chart_time-filter' : 'chart_time-filter selected']"
+                      @click="selectedMarketPeriod = period"
                       >
-                        {{ period }}
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
+                      <p class="chart_time-filter_value">{{ period }}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -144,13 +137,12 @@
     </el-row>
     <el-row>
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
-        <el-card>
-          <div slot="header">
-            History
-          </div>
+        <el-card :body-style="{ padding: '0' }">
+          <div class="card_header">History</div>
           <el-table
             :data="transactions"
             ref="table"
+            class="wallets_table"
             @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
           >
             <el-table-column type="expand">
@@ -172,24 +164,16 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="Amount" width="100">
-              <template slot-scope="scope">
-                {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
-              </template>
-            </el-table-column>
             <el-table-column label="Date" width="120">
               <template slot-scope="scope">
                 {{ formatDate(scope.row.date) }}
               </template>
             </el-table-column>
-            <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+            <el-table-column label="Amount" width="120">
               <template slot-scope="scope">
-                <div v-if="scope.row.from === 'you'">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
-                </div>
-                <div v-else>
-                  {{ scope.row.from === 'notary' ? 'Deposit ' : '' }}from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
-                </div>
+                <span class="table_amount">
+                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
+                </span>
               </template>
             </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
@@ -197,6 +181,16 @@
                 <div v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></div>
                 <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
                 <div v-else>{{ scope.row.message }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div v-if="scope.row.from === 'you'">
+                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                </div>
+                <div v-else>
+                  {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -561,11 +555,49 @@ export default {
 }
 
 .amount {
-  font-size: 2rem;
-  margin: 0;
-  margin-right: 20px;
-  font-weight: bold;
-  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem 1.5rem;
+}
+
+.card {
+  height: 14rem;
+}
+
+.card_header {
+  padding: 0.9rem 1.5rem;
+}
+
+.card_header-divided {
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.card_header-title {
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_header-name {
+  padding: 1rem 0 0 1rem;
+}
+
+.card_header-filter {
+  display: flex;
+  justify-content: center
+}
+
+.chart_time-filter {
+  justify-content: center;
+  opacity: 0.3;
+  padding: 1rem;
+  cursor: pointer;
+}
+.chart_time-filter.selected {
+  opacity: 1;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #000000;
 }
 
 .top-left-card {
@@ -588,8 +620,15 @@ export default {
 }
 
 .top-left-card >>> .button:hover {
-  color: rgba(0, 0, 0, .8);
-  background: #e8e8e8;
+  background: #409eff;
+}
+
+.top-left-card >>> .button:active {
+  background: #227ede;
+}
+
+.top-left-card >>> .button:hover *{
+  color: #ffffff;
 }
 
 .top-left-card >>> .button>span{
@@ -611,6 +650,7 @@ export default {
 .card_actions {
   width: 100%;
   display: flex;
+  margin-top: 1.3rem;
 }
 
 .card_actions-button {
@@ -626,8 +666,10 @@ export default {
 }
 
 .card-info {
+  margin-top: 1.3rem;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.3rem;
+  padding: 0rem 0 0rem 1.5rem;
 }
 
 .card-info .uptrend {
@@ -643,7 +685,7 @@ export default {
 }
 
 .card-info-amount {
-  font-size: 16px;
+  font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 4px;
 }
@@ -659,5 +701,14 @@ export default {
 
 .withdraw-wallet_select {
   width: 100%;
+}
+.wallets_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.wallets_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+.table_amount {
+  font-weight: 600;
 }
 </style>
