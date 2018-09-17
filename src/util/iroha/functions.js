@@ -1,14 +1,9 @@
 import { cryptoHelper } from 'iroha-helpers'
 import { getAccount } from './queries'
 import { cache } from './util'
+import { getItem, setItem, removeItem } from '../storage-util'
 import Debug from 'debug'
 const debug = Debug('iroha-util')
-
-const localStorage = global.localStorage || {
-  setItem () {},
-  getItem () {},
-  removeItem () {}
-}
 
 /**
  * login
@@ -27,7 +22,7 @@ function login (username, privateKey, nodeIp) {
   cache.key = privateKey
   cache.nodeIp = nodeIp
 
-  localStorage.setItem('iroha-wallet:nodeIp', nodeIp)
+  setItem('iroha-wallet:nodeIp', nodeIp)
 
   return getAccount(username)
     .then(account => {
@@ -49,11 +44,11 @@ function logout () {
 }
 
 function getStoredNodeIp () {
-  return localStorage.getItem('iroha-wallet:nodeIp') || ''
+  return getItem('iroha-wallet:nodeIp') || ''
 }
 
 function clearStorage () {
-  localStorage.removeItem('iroha-wallet:nodeIp')
+  removeItem('iroha-wallet:nodeIp')
 }
 
 function isLoggedIn () {
