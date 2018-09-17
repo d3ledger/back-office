@@ -14,13 +14,13 @@
           <el-row>
             <el-card :body-style="{ padding: '0' }">
               <el-col :span="8">
-                <dashboard-table :portfolio="portfolioList"/>
+                <dashboard-table :portfolio="portfolioList" :windowHeight="windowHeight"/>
               </el-col>
               <el-col :span="1">
                 <div class="vertical_devider"></div>
               </el-col>
-              <el-col :span="15">
-                <dashboard-chart />
+              <el-col :span="16">
+                <dashboard-chart :windowHeight="windowHeight"/>
               </el-col>
             </el-card>
           </el-row>
@@ -47,10 +47,24 @@ export default {
     NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   data () {
-    return {}
+    return {
+      windowHeight: 0
+    }
   },
   mounted () {
     this.$store.dispatch('loadDashboard')
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.getWindowHeight)
+      this.getWindowHeight()
+    })
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getWindowHeight)
+  },
+  methods: {
+    getWindowHeight (event) {
+      this.windowHeight = document.documentElement.clientHeight - 350
+    }
   },
   computed: {
     ...mapGetters([
@@ -78,5 +92,8 @@ export default {
   width: 2px;
   background: #f5f5f5;
   position: absolute;
+}
+.column-fullheight {
+  height: 10%;
 }
 </style>

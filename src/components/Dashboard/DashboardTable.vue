@@ -17,7 +17,7 @@
         <div class="table_header-title text-right">Changes</div>
       </el-row>
       <el-row class="table_body">
-        <div class="table_body-content">
+        <div class="table_body-content" :style="{ height: `${windowHeight}px` }">
           <div
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             v-for="(value, index) in filteredPortfolio" :key="index">
@@ -60,6 +60,10 @@ export default {
   props: {
     portfolio: {
       type: Array,
+      required: true
+    },
+    windowHeight: {
+      type: Number,
       required: true
     }
   },
@@ -105,7 +109,8 @@ export default {
   display: flex;
   flex-flow: row wrap;
   color: #888888;
-  padding: 1rem;
+  padding: 0.7rem 1rem;
+  justify-content: space-between
 }
 
 .table_header-title {
@@ -121,16 +126,15 @@ export default {
 }
 
 .table_body {
-  height: 380px;
+  height: 100%;
   width: 100%;
   overflow: hidden;
 }
 
 .table_body-content {
-  width: 104%;
+  width: 100%;
   height: 100%;
   overflow-y: scroll;
-  padding-right: 17px;
   box-sizing: content-box;
 }
 
