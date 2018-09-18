@@ -261,6 +261,12 @@ export default {
     }
   },
 
+  watch: {
+    approvalDialogVisible (isVisible) {
+      if (isVisible) this.beforeOpenApprovalDialog()
+    }
+  },
+
   created () {
     this.$store.dispatch('getAllUnsignedTransactions')
     this.$store.dispatch('loadSettings')
@@ -303,7 +309,7 @@ export default {
     submitApprovalDialog () {
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKeys)
+        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex))
       })
     },
 
@@ -316,7 +322,6 @@ export default {
       const s = this.exchangeForm
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
-        this.beforeOpenApprovalDialog()
         this.openApprovalDialog()
           .then(privateKeys => {
             if (!privateKeys) return
