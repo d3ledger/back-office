@@ -136,7 +136,11 @@
       <el-form ref="approvalForm" :model="approvalForm" @validate="updateNumberOfValidKeys">
         <el-form-item>
           <el-row type="flex" justify="center">
-            Please enter your private key<span v-if="accountQuorum > 1">s</span>
+            <p>
+              Please enter your private key<span v-if="accountQuorum > 1">s</span>.
+              <br>
+              (You need to enter at least 1 key)
+            </p>
           </el-row>
         </el-form-item>
 
@@ -178,6 +182,7 @@
           <el-button
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
+            :disabled="approvalForm.numberOfValidKeys < 1"
             >
             Confirm
           </el-button>
