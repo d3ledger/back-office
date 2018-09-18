@@ -5,6 +5,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import { getParsedItem, setItem } from '@util/storage-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -14,7 +15,9 @@ const types = flow(
     'EXCHANGE_DIALOG_OPEN',
     'EXCHANGE_DIALOG_CLOSE',
     'SET_EXCHANGE_DIALOG_OFFER_ASSET',
-    'SET_EXCHANGE_DIALOG_REQUEST_ASSET'
+    'SET_EXCHANGE_DIALOG_REQUEST_ASSET',
+    'LOAD_WALLETS_SORT_CRITERION',
+    'UPDATE_WALLETS_SORT_CRITERION'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -35,7 +38,8 @@ function initialState () {
       requestAsset: null,
       price: null
     },
-    connectionError: null
+    connectionError: null,
+    walletsSortCriterion: null
   }
 }
 
@@ -85,6 +89,12 @@ const mutations = {
   },
   [types.GET_OFFER_TO_REQUEST_PRICE_FAILURE] (state, err) {
     handleError(state, err)
+  },
+  [types.LOAD_WALLETS_SORT_CRITERION] (state, criterion) {
+    state.walletsSortCriterion = criterion
+  },
+  [types.UPDATE_WALLETS_SORT_CRITERION] (state, criterion) {
+    state.walletsSortCriterion = criterion
   }
 }
 
@@ -134,6 +144,17 @@ const actions = {
           throw err
         })
     }
+  },
+  loadWalletsSortCriterion ({ commit }) {
+    const criterion = getParsedItem('walletsSortCriterion')
+
+    if (criterion) {
+      commit(types.LOAD_WALLETS_SORT_CRITERION, criterion)
+    }
+  },
+  updateWalletsSortCriterion ({ commit }, criterion) {
+    setItem('walletsSortCriterion', criterion)
+    commit(types.UPDATE_WALLETS_SORT_CRITERION, criterion)
   }
 }
 
@@ -152,6 +173,9 @@ const getters = {
   },
   exchangeDialogPrice () {
     return state.exchangeDialog.price
+  },
+  walletsSortCriterion (state) {
+    return state.walletsSortCriterion
   }
 }
 
