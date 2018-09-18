@@ -5285,9 +5285,9 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.1.3.tgz#066e7aa92687ae39137acc1966420dc38f147e2c"
+iroha-helpers@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.2.0.tgz#b0a01fdeaeba0ec5ca33a50cc109d6c340d00f1e"
   dependencies:
     buffer "^5.2.0"
     ed25519.js "^1.3.0"
