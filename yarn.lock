@@ -3845,7 +3845,7 @@ echarts@^4.1.0:
   dependencies:
     zrender "4.0.4"
 
-ed25519.js@^1.2.0, ed25519.js@^1.3.0:
+ed25519.js@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/ed25519.js/-/ed25519.js-1.3.0.tgz#11ff48508c4964302179aee33d2f870371df4ad8"
   dependencies:
@@ -4951,7 +4951,7 @@ globule@^1.0.0:
     lodash "~4.17.10"
     minimatch "~3.0.2"
 
-google-protobuf@^3.6.0:
+google-protobuf@^3.6.1:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.6.1.tgz#7ef58e2bea137a93cdaf5cfd5afa5f6abdd92025"
 
@@ -4962,12 +4962,6 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
 growl@1.10.5:
   version "1.10.5"
   resolved "https://registry.yarnpkg.com/growl/-/growl-1.10.5.tgz#f2735dc2283674fa67478b10181059355c369e5e"
-
-grpc-web-client@^0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/grpc-web-client/-/grpc-web-client-0.6.2.tgz#3be2187edd6314192321cd9929fc1bfb8b715d91"
-  dependencies:
-    browser-headers "^0.4.0"
 
 grpc-web-client@^0.6.3:
   version "0.6.3"
@@ -5389,15 +5383,15 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.1.1.tgz#9db869d0baf09f3d9dd611fd6c5ba82d804ea928"
+iroha-helpers@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.2.0.tgz#b0a01fdeaeba0ec5ca33a50cc109d6c340d00f1e"
   dependencies:
     buffer "^5.2.0"
-    ed25519.js "^1.2.0"
-    google-protobuf "^3.6.0"
-    grpc-web-client "^0.6.2"
-    js-sha3 "^0.7.0"
+    ed25519.js "^1.3.0"
+    google-protobuf "^3.6.1"
+    grpc-web-client "^0.6.3"
+    js-sha3 "^0.8.0"
     lodash.clonedeep "^4.5.0"
     lodash.foreach "^4.5.0"
 
@@ -5823,9 +5817,9 @@ js-queue@2.0.0:
   dependencies:
     easy-stack "^1.0.0"
 
-js-sha3@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.7.0.tgz#0a5c57b36f79882573b2d84051f8bb85dd1bd63a"
+js-sha3@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
 
 js-tokens@^3.0.0, js-tokens@^3.0.2:
   version "3.0.2"

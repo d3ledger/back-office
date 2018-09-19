@@ -401,12 +401,14 @@ const actions = {
     return irohaUtil.createSettlement(
       privateKeys,
       state.accountId,
-      to,
+      state.accountQuorum,
       offerAssetId,
       offerAmount,
+      description,
+      to,
+      1,
       requestAssetId,
-      requestAmount,
-      description
+      requestAmount
     )
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)

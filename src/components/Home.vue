@@ -74,7 +74,7 @@
         <span class="form-item-text">
           Available balance:
           <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount + ' ' + exchangeDialogOfferAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -100,7 +100,7 @@
         <span class="form-item-text">
           Market price:
           <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-            1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
+            1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -121,6 +121,7 @@
         class="fullwidth black clickable"
         @click="onSubmitExchangeDialog()"
         style="margin-top: 40px"
+        :loading="isExchangeSending"
       >
         EXCHANGE
       </el-button>
@@ -208,7 +209,8 @@ export default {
       },
       approvalForm: {
         privateKeys: []
-      }
+      },
+      isExchangeSending: false
     }
   },
 
@@ -319,8 +321,9 @@ export default {
         this.openApprovalDialog()
           .then(privateKeys => {
             if (!privateKeys) return
-            const offerAsset = this.exchangeDialogOfferAsset
-            const requestAsset = this.exchangeDialogRequestAsset
+            this.isExchangeSending = true
+            const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+            const requestAsset = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
             return this.$store.dispatch('createSettlement', {
               privateKeys,
               to: s.to,
@@ -331,17 +334,21 @@ export default {
             })
               .then(() => {
                 this.$message('New settlement has successfully been created')
+                this.closeExchangeDialogWith()
+                // TODO: think, maybe it is a bad idea to close form after success.
+                Object.assign(
+                  this.$data.exchangeForm,
+                  this.$options.data().exchangeForm
+                )
               })
               .catch(err => {
                 console.error(err)
-                this.$message('Failed to create new settlement')
+                this.$alert(err.message, 'Withdrawal error', {
+                  type: 'error'
+                })
               })
               .finally(() => {
-                Object.assign(
-                  this.$data.exchangeDialog,
-                  this.$options.data().exchangeDialog
-                )
-                this.closeExchangeDialogWith()
+                this.isExchangeSending = false
               })
           })
       })
