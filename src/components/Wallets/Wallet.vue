@@ -18,19 +18,19 @@
                 <div class="card_actions">
                   <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
                     <fa-icon class="card_actions-button-text" icon="angle-double-down" />
-                    <span class="card_actions-button-text">Deposit</span>
+                    <span class="card_actions-button-text" data-cy="deposit">Deposit</span>
                   </div>
                   <div role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
                     <fa-icon class="card_actions-button-text" icon="angle-double-up" />
-                    <span class="card_actions-button-text">Withdraw</span>
+                    <span class="card_actions-button-text" data-cy="withdraw">Withdraw</span>
                   </div>
                   <div role="button" class="card_actions-button button" @click="transferFormVisible = true">
                     <fa-icon class="card_actions-button-text" icon="arrow-right" />
-                    <span class="card_actions-button-text">Transfer</span>
+                    <span class="card_actions-button-text" data-cy="transfer">Transfer</span>
                   </div>
                   <div role="button" class="card_actions-button button" @click="openExchangeDialog(wallet.asset)">
                     <fa-icon class="card_actions-button-text" icon="exchange-alt" />
-                    <span class="card_actions-button-text">Exchange</span>
+                    <span class="card_actions-button-text" data-cy="exchange">Exchange</span>
                   </div>
                 </div>
               </div>
