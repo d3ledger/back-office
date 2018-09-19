@@ -147,20 +147,28 @@
           >
             <el-table-column type="expand">
               <template slot-scope="scope">
-                <p>
-                  {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallet.asset}} to {{ scope.row.to }}
-                </p>
-                <div v-if="scope.row.settlement" style="background: #F8FFF0">
-                  <p>This transaction is a part of a succesfull setllement:</p>
-                  <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
-                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.settlement.date) }}</p>
-                  <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
-                  {{ formatDateLong(scope.row.settlement.date) }}</p>
-                  <p>Message: {{ scope.row.settlement.message }}</p>
-                </div>
-                <div v-else>
-                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                  <p>Message: {{ scope.row.message }}</p>
+                <div class="transaction_details">
+                  <div v-if="scope.row.settlement">
+                    <el-row>
+                      <el-col :span="6">{{ formatDateLong(scope.row.settlement.date) }}</el-col>
+                      <el-col :span="6" class="transaction_details-amount">
+                        <p>- {{ scope.row.settlement.offer_amount }} {{ scope.row.settlement.offer_asset }}</p>
+                        <p>+ {{ scope.row.settlement.request_amount }} {{ scope.row.settlement.request_asset }}</p>
+                      </el-col>
+                      <el-col :span="6">{{ scope.row.settlement.message }}</el-col>
+                      <el-col :span="6">{{ scope.row.settlement.to }}</el-col>
+                    </el-row>
+                  </div>
+                  <div v-else>
+                    <el-row>
+                      <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+                      <el-col :span="6" class="transaction_details-amount">
+                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount }}
+                      </el-col>
+                      <el-col :span="6">{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
+                      <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+                    </el-row>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -702,6 +710,19 @@ export default {
   color: #000000;
 }
 .table_amount {
+  font-weight: 600;
+}
+.wallets_table >>> .el-table__expanded-cell {
+  padding: 0rem 1rem 1rem;
+}
+.transaction_details {
+  font-size: 0.8rem;
+  color: #000000;
+  background-color: #f4f4f4;
+  padding: 1rem;
+}
+.transaction_details-amount {
+  flex-wrap: wrap;
   font-weight: 600;
 }
 </style>
