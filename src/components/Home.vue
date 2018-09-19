@@ -127,6 +127,7 @@
       </el-button>
     </el-dialog>
     <el-dialog
+      id="approval-dialog"
       title="Confirm the transaction"
       width="500px"
       :visible="approvalDialogVisible"
@@ -180,6 +181,7 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
+            id="confirm-approval-form"
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
             :disabled="approvalForm.numberOfValidKeys < 1"

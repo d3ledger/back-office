@@ -148,10 +148,46 @@ describe('Test wallets page without white list', () => {
         .get('div.el-dialog')
         .eq(4)
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
-        .get('i.el-dialog__close')
-        .eq(4)
-        .click()
+    })
+
+    it('Validate approval dialog - handle an error', () => {
+      cy.wrap('invalid_private_key').as('invalidPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.invalidPrivateKey)
+            .should('have.value', this.invalidPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('be.disabled')
+    })
+
+    it('Validate approval dialog - correct', () => {
+      cy.fixture(testKeyPath).as('validPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.validPrivateKey)
+            .should('have.value', this.validPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('not.be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('not.be.disabled')
+    })
+
+    it('Close approval modal', () => {
+      cy.get('#approval-dialog i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
@@ -425,10 +461,46 @@ describe('Test wallets page with white list', () => {
         .get('div.el-dialog')
         .eq(4)
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
-        .get('i.el-dialog__close')
-        .eq(4)
-        .click()
+    })
+
+    it('Validate approval dialog - handle an error', () => {
+      cy.wrap('invalid_private_key').as('invalidPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.invalidPrivateKey)
+            .should('have.value', this.invalidPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('be.disabled')
+    })
+
+    it('Validate approval dialog - correct', () => {
+      cy.fixture(testKeyPath).as('validPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.validPrivateKey)
+            .should('have.value', this.validPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('not.be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('not.be.disabled')
+    })
+
+    it('Close approval modal', () => {
+      cy.get('#approval-dialog i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
