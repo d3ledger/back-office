@@ -57,13 +57,13 @@ describe('Test wallets page without white list', () => {
     it('Open wallet', () => {
       cy.get('a.card').first().click()
       cy.url().should('contain', TOKEN.toLowerCase())
-      cy.get('div.card-header').first().should('contain', TOKEN)
+      cy.get('.card_header').first().should('contain', TOKEN)
     })
   })
 
   describe('Test deposit modal', () => {
     it('Open modal', () => {
-      cy.contains('Deposit').click()
+      cy.get('[data-cy=deposit]').click()
       cy.get('div.el-dialog').eq(1).should('be.visible')
     })
 
@@ -80,7 +80,7 @@ describe('Test wallets page without white list', () => {
 
   describe('Test withdraw modal', () => {
     it('Open modal', () => {
-      cy.contains('Withdraw').click()
+      cy.get('[data-cy=withdraw]').click()
       cy.get('div.el-dialog').eq(0).should('be.visible')
     })
 
@@ -198,7 +198,7 @@ describe('Test wallets page without white list', () => {
 
   describe('Test transfer modal', () => {
     it('Open modal', () => {
-      cy.contains('Transfer').click()
+      cy.get('[data-cy=transfer]').click()
       cy.get('div.el-dialog').eq(2).should('be.visible')
     })
 
@@ -278,7 +278,7 @@ describe('Test wallets page without white list', () => {
 
   describe('Test exchange modal', () => {
     it('Open modal', () => {
-      cy.contains('Exchange').click()
+      cy.get('[data-cy=exchange]').click()
       cy.get('div.el-dialog').eq(3).should('be.visible')
     })
 
