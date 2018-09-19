@@ -13,7 +13,7 @@
               </div>
               <div class="top-left-card">
                 <div class="amount">
-                  <h2> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
+                  <h2> {{wallet.amount | formatPrecision}} {{wallet.asset}}</h2>
                 </div>
                 <div class="card_actions">
                   <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
@@ -216,7 +216,7 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{ wallet | toUpperCase }}
+            {{wallet.amount | formatPrecision}} {{wallet.asset}}
           </span>
         </span>
         <el-form-item label="Address" prop="wallet">
@@ -286,7 +286,7 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+            {{wallet.amount | formatPrecision}} {{wallet.asset}}
           </span>
         </span>
         <el-form-item label="Counterparty" prop="to">
@@ -519,13 +519,6 @@ export default {
         if (!valid) isValid = false
       })
       return isValid
-    }
-  },
-
-  filters: {
-    toUpperCase (wallet) {
-      if (!wallet || !Object.keys(wallet).length) return null
-      return `${wallet.amount} ${wallet.asset.toUpperCase()}`
     }
   }
 }

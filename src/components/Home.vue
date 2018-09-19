@@ -35,7 +35,7 @@
         <span class="form-item-text">
           Available balance:
           <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount + ' ' + exchangeDialogOfferAsset }}
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -162,11 +162,13 @@
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import inputValidation from '@/components/mixins/inputValidation'
+import numberFormat from '@/components/mixins/numberFormat'
 
 // TODO: Validate lack of selected asset
 export default {
   name: 'Home',
   mixins: [
+    numberFormat,
     inputValidation({
       privateKey: 'privateKey',
       to: 'nameDomain',
