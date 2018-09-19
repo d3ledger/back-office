@@ -9,7 +9,7 @@
               <div>
                 <el-button class="report_button" type="primary" @click="reportFormVisible = true">
                   <fa-icon class="report_button-icon" icon="file" />
-                  <span>
+                  <span data-cy="getReport">
                     Reports
                   </span>
                 </el-button>

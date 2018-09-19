@@ -25,7 +25,7 @@ describe('Reports page', () => {
 
   it('goes to the reports page', () => {
     cy.get('.el-side-menu .el-menu-item:contains("Reports")').click({ force: true })
-    cy.get('#reports-page .el-card__header > div').contains('Reports')
+    cy.url().should('contain', 'reports')
   })
 
   it('lists the previous month\'s reports', () => {
@@ -55,7 +55,7 @@ describe('Reports page', () => {
   })
 
   it('opens "New Report" dialog', () => {
-    cy.get('#reports-page button:contains("New Report")').click()
+    cy.get('#reports-page [data-cy=getReport]').click()
     cy.get('#reports-page .el-dialog .el-dialog__header').contains('Report')
   })
 
