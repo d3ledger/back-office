@@ -51,7 +51,6 @@ export default {
       const sortedPortfolio = [...this.portfolio].sort((a, b) => b.percent - a.percent)
       const firstTokens = sortedPortfolio.slice(0, 5)
       const otherTokens = sortedPortfolio.slice(5, sortedPortfolio.length - 1)
-      console.log(otherTokens)
       const otherTokensPercent = otherTokens.reduce((t1, t2) => t1 + t2.percent, 0)
       const otherTokensPrice = otherTokens.reduce((t1, t2) => t1.price + t2.price, 0)
       const otherToken = {
