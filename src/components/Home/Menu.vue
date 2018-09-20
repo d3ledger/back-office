@@ -94,7 +94,7 @@ export default {
 
 <style scoped>
 .el-menu-item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 .el-side-menu {
   height: 100vh;
