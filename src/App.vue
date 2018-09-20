@@ -75,7 +75,7 @@ a:hover {
 
 .el-popper,
 .el-tooltip__popper, .el-select-dropdown__item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .form-item-text {
@@ -106,6 +106,6 @@ a:hover {
 }
 
 .monospace {
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 </style>
