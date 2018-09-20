@@ -380,6 +380,8 @@ export default {
     },
 
     updateNumberOfValidKeys () {
+      if (!this.$refs.approvalForm) return
+
       this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => x.validateState === 'success').length
     }
   }
