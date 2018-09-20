@@ -44,7 +44,7 @@ function initialState () {
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
-    rawPengingTransactions: [],
+    rawPendingTransactions: null,
     assets: [],
     connectionError: null
   }
@@ -80,6 +80,13 @@ const getters = {
       state.rawAssetTransactions[assetId],
       state.accountId
     )
+  },
+
+  allPendingTransactions: (state) => {
+    return state.rawPendingTransactions ? getTransferAssetsFrom(
+      state.rawPendingTransactions.toObject().transactionsList,
+      state.accountId
+    ).filter(tx => tx.from === 'you') : []
   },
 
   waitingSettlements () {
@@ -195,7 +202,7 @@ const mutations = {
   [types.GET_ACCOUNT_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawTransactions = transactions
+    Vue.set(state, 'rawTransactions', transactions)
   },
 
   [types.GET_ACCOUNT_TRANSACTIONS_FAILURE] (state, err) {
@@ -215,7 +222,7 @@ const mutations = {
   [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawPengingTransactions = transactions
+    state.rawPendingTransactions = transactions
   },
 
   [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
@@ -354,7 +361,7 @@ const actions = {
     commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
 
     return irohaUtil.getPendingTransactions()
-      .then(res => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, res))
+      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
       .catch(err => {
         commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
         throw err

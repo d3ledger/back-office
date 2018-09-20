@@ -215,8 +215,8 @@ function getPendingTransactions () {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE , actual=${responseName}`))
       }
 
-      const transactions = response.getTransactionsResponse().toObject().transactionsList
-
+      const transactions = response.getTransactionsResponse()
+      console.log(transactions)
       debug('transactions', transactions)
 
       resolve(transactions)
