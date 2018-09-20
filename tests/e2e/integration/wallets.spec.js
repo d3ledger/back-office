@@ -169,7 +169,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate approval dialog - correct', () => {
-      cy.fixture(testKeyPath).as('validPrivateKey')
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
 
       cy.get('#approval-dialog .el-input')
         .each(function ($el, index) {
@@ -482,7 +482,7 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Validate approval dialog - correct', () => {
-      cy.fixture(testKeyPath).as('validPrivateKey')
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
 
       cy.get('#approval-dialog .el-input')
         .each(function ($el, index) {
