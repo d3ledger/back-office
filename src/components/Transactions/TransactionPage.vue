@@ -107,11 +107,4 @@ export default {
 .transactions__table-row {
   height: 72px;
 }
-.row__amount {
-  display: flex;
-  flex-direction: column;
-}
-.row__amount span {
-  font-weight: 600;
-}
 </style>
