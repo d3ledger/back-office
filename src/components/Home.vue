@@ -368,6 +368,7 @@ export default {
     beforeOpenApprovalDialog () {
       const privateKeys = Array.from({ length: this.accountQuorum }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
+      this.updateNumberOfValidKeys()
     },
 
     onFileChosen (file, fileList, key) {
