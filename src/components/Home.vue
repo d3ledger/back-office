@@ -88,53 +88,64 @@
       </el-button>
     </el-dialog>
     <el-dialog
+      id="approval-dialog"
       title="Confirm the transaction"
       width="500px"
       :visible="approvalDialogVisible"
       @close="closeApprovalDialogWith()"
       center
-      >
-      <el-form ref="approvalForm" :model="approvalForm" :rules="rules">
+    >
+      <el-form ref="approvalForm" :model="approvalForm" @validate="updateNumberOfValidKeys">
         <el-form-item>
           <el-row type="flex" justify="center">
-            Please enter your private key
+            <p>
+              Please enter your private key<span v-if="accountQuorum > 1">s</span>.
+              <br>
+              (You need to enter at least 1 key)
+            </p>
           </el-row>
         </el-form-item>
-        <template v-for="(quorum, index) in accountQuorum">
-          <el-form-item :key="quorum">
-            <el-row type="flex" justify="space-between">
-              <el-col :span="20">
-                <el-input
-                  name="privateKeys"
-                  placeholder="Your private key"
-                  v-model="approvalForm.privateKeys[index]"
-                  @change="(key) => insertPrivateKey(key, index)"
-                />
-              </el-col>
-              <el-upload
-                action=""
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="(f, l) => onFileChosen(f, l, index)"
-                >
-                <el-button>
-                  <fa-icon icon="upload" />
-                </el-button>
-              </el-upload>
-            </el-row>
-          </el-form-item>
-        </template>
+
+        <el-form-item
+          v-for="(key, index) in approvalForm.privateKeys"
+          :key="index"
+          :prop="`privateKeys.${index}.hex`"
+          :rules="rules.privateKey"
+        >
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                placeholder="Your private key"
+                v-model="key.hex"
+              />
+            </el-col>
+
+            <el-upload
+              action=""
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="(f, l) => onFileChosen(f, l, key)"
+              >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+        </el-form-item>
+
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
             <div class="item__private-keys">
-              {{ approvalForm.privateKeys | nonEmptyKeys }}/{{ accountQuorum }}
+              {{ approvalForm.numberOfValidKeys }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
+            id="confirm-approval-form"
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
+            :disabled="approvalForm.numberOfValidKeys < 1"
             >
             Confirm
           </el-button>
@@ -174,7 +185,8 @@ export default {
         description: null
       },
       approvalForm: {
-        privateKeys: []
+        privateKeys: [],
+        numberOfValidKeys: 0
       },
       isExchangeSending: false
     }
@@ -216,6 +228,12 @@ export default {
     }
   },
 
+  watch: {
+    approvalDialogVisible (isVisible) {
+      if (isVisible) this.beforeOpenApprovalDialog()
+    }
+  },
+
   created () {
     this.$store.dispatch('getAllUnsignedTransactions')
     this.$store.dispatch('loadSettings')
@@ -245,22 +263,20 @@ export default {
       'getOfferToRequestPrice'
     ]),
 
-    insertPrivateKey (key, i) {
-      this.$set(this.approvalForm.privateKeys, i, key)
+    logout () {
+      this.$store.dispatch('logout')
+        .then(() => this.$router.push('/login'))
     },
 
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
-      // TODO: Fix validation of private key fields
-      // this.$refs.approvalForm.resetFields()
-      this.approvalForm.privateKeys = []
+      this.$refs.approvalForm.resetFields()
     },
 
     submitApprovalDialog () {
-      // TODO: Fix validation of private key fields
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKeys)
+        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex))
       })
     },
 
@@ -309,19 +325,24 @@ export default {
       })
     },
 
-    onFileChosen (file, fileList, i) {
+    beforeOpenApprovalDialog () {
+      const privateKeys = Array.from({ length: this.accountQuorum }, () => ({ hex: '' }))
+      this.$set(this.approvalForm, 'privateKeys', privateKeys)
+      this.updateNumberOfValidKeys()
+    },
+
+    onFileChosen (file, fileList, key) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        this.$set(this.approvalForm.privateKeys, i, (ev.target.result || '').trim())
+        key.hex = (ev.target.result || '').trim()
       }
       reader.readAsText(file.raw)
-    }
-  },
+    },
 
-  filters: {
-    nonEmptyKeys (value) {
-      if (!value) return ''
-      return value.filter(key => key.length).length
+    updateNumberOfValidKeys () {
+      if (!this.$refs.approvalForm) return
+
+      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => x.validateState === 'success').length
     }
   }
 }
