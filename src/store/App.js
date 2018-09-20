@@ -5,7 +5,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
-import { getParsedItem, setItem } from '@util/storage-util'
+import { getParsedItem, setStringifyItem } from '@util/storage-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -153,7 +153,7 @@ const actions = {
     }
   },
   updateWalletsSortCriterion ({ commit }, criterion) {
-    setItem('walletsSortCriterion', criterion)
+    setStringifyItem('walletsSortCriterion', criterion)
     commit(types.UPDATE_WALLETS_SORT_CRITERION, criterion)
   }
 }
