@@ -27,6 +27,7 @@ pipeline {
       steps {
         script {
             writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}-${BUILD_NUMBER}"
+            sh "docker-compose -f docker/docker-compose.yaml pull"
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
             sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT}-${BUILD_NUMBER} /app/docker/back-office/wait-for-up.sh")
             iC = docker.image('cypress/base:10')
