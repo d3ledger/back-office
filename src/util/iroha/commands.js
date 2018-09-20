@@ -37,6 +37,22 @@ function command (
 }
 
 /**
+ * signPendingTransaction: sign transaction with more keys and send.
+ * @param {Array.<String>} privateKeys
+ * @param {Object} transaction
+ */
+function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  debug('starting signPendingTransaction...')
+  let txToSend = signWithArrayOfKeys(transaction, privateKeys)
+
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
+
+  return sendTransactions([txToSend], txClient, timeoutLimit)
+}
+
+/**
  * createAccount
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#cresate-account createAccount - Iroha docs}
  * @param {Array.<String>} privateKeys
@@ -197,7 +213,6 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
-
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit)
@@ -223,6 +238,7 @@ function sendTransactions (txs, txClient, timeoutLimit) {
       reject(new Error('please check IP address OR your internet connection'))
     }, timeoutLimit)
 
+    // Sending even 1 transaction to listTorii is absolutely ok and valid.
     txClient.listTorii(txList, (err, data) => {
       clearTimeout(timer)
 
@@ -283,5 +299,6 @@ export {
   addAssetQuantity,
   createSettlement,
   setAccountDetail,
-  setAccountQuorum
+  setAccountQuorum,
+  signPendingTransaction
 }
