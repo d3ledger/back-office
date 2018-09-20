@@ -22,77 +22,18 @@ function command (
   quorum = 1,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 ) {
-  let txClient, txHash
-
-  return new Promise((resolve, reject) => {
-    let txToSend = txHelper.addMeta(tx, {
-      creatorAccountId: cache.username,
-      quorum
-    })
-
-    txToSend = signWithArrayOfKeys(txToSend, privateKeys)
-    txHash = txHelper.hash(txToSend)
-
-    txClient = new CommandServiceClient(
-      cache.nodeIp
-    )
-
-    debug('submitting transaction...')
-    debug('peer ip:', cache.nodeIp)
-    debug('parameters:', JSON.stringify(txToSend.getPayload(), null, '  '))
-    debug('txhash:', Buffer.from(txHash).toString('hex'))
-    debug('')
-
-    const timer = setTimeout(() => {
-      txClient.$channel.close()
-      reject(new Error('please check IP address OR your internet connection'))
-    }, timeoutLimit)
-
-    txClient.torii(txToSend, (err, data) => {
-      clearTimeout(timer)
-
-      if (err) {
-        return reject(err)
-      }
-
-      debug('submitted transaction successfully!')
-      resolve()
-    })
+  let txToSend = txHelper.addMeta(tx, {
+    creatorAccountId: cache.username,
+    quorum
   })
-    .then(() => {
-      debug('opening transaction status stream...')
 
-      return new Promise((resolve, reject) => {
-        let statuses = []
+  txToSend = signWithArrayOfKeys(txToSend, privateKeys)
 
-        let request = new TxStatusRequest()
-        request.setTxHash(txHash)
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
 
-        let stream = txClient.statusStream(request)
-        stream.on('data', function (response) {
-          statuses.push(response)
-        })
-
-        stream.on('end', function (end) {
-          // Throw error if Iroha closed connection without sending status responses
-          if (statuses.length === 0) return reject(new Error('Problems with notary service. Please try again later.'))
-
-          const last = statuses[statuses.length - 1].getTxStatus()
-
-          const lastStatusName = getProtoEnumName(
-            TxStatus,
-            'iroha.protocol.TxStatus',
-            last
-          )
-
-          if (lastStatusName !== 'COMMITTED' && lastStatusName !== 'MST_PENDING') {
-            return reject(new Error(`Your transaction wasn't commited: expected=COMMITED or MST_PENDING, actual=${lastStatusName}`))
-          }
-
-          resolve()
-        })
-      })
-    })
+  return sendTransactions([txToSend], txClient, timeoutLimit)
 }
 
 /**
@@ -245,7 +186,9 @@ function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
 function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting createSettlement...')
 
-  let txClient
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
 
   let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
@@ -257,30 +200,30 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
-  const senderTxHash = txHelper.hash(batchArray[0])
-  const receiverTxHash = txHelper.hash(batchArray[1])
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
 
-  const batch = txHelper.createTxListFromArray(batchArray)
+function sendTransactions (txs, txClient, timeoutLimit) {
+  const hashes = txs.map(x => txHelper.hash(x))
+  const txList = txHelper.createTxListFromArray(txs)
 
   return new Promise((resolve, reject) => {
-    debug('submitting transaction...')
+    debug('submitting transactions...')
     debug('peer ip:', cache.nodeIp)
-    debug('parameters sender:', JSON.stringify(senderTx.getPayload(), null, '  '))
-    debug('parameters receiver:', JSON.stringify(receiverTx.getPayload(), null, '  '))
-    debug('senderTxHash:', Buffer.from(senderTxHash).toString('hex'))
-    debug('receiverTxHash:', Buffer.from(receiverTxHash).toString('hex'))
-    debug('')
-
-    txClient = new CommandServiceClient(
-      cache.nodeIp
+    txs.forEach(x =>
+      debug('parameters sender:', JSON.stringify(x.getPayload(), null, '  '))
     )
+    hashes.forEach(x =>
+      debug('receiverTxHash:', Buffer.from(x).toString('hex'))
+    )
+    debug('')
 
     const timer = setTimeout(() => {
       txClient.$channel.close()
       reject(new Error('please check IP address OR your internet connection'))
     }, timeoutLimit)
 
-    txClient.listTorii(batch, (err, data) => {
+    txClient.listTorii(txList, (err, data) => {
       clearTimeout(timer)
 
       if (err) {
@@ -296,7 +239,7 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
         debug('opening transaction status stream...')
 
         // Status requests promises
-        let requests = [senderTxHash, receiverTxHash].map(hash => new Promise((resolve, reject) => {
+        let requests = hashes.map(hash => new Promise((resolve, reject) => {
           let statuses = []
 
           let request = new TxStatusRequest()
@@ -319,7 +262,7 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
             x
           ) : null)
 
-          statuses.every(x => x === 'MST_PENDING') ? resolve() : reject(new Error(`Your transaction wasn't commited: expected=MST_PENDING, MST_PENDING actual=${statuses[0]}, ${statuses[1]}`))
+          statuses.every(x => x === 'MST_PENDING' || x === 'COMMITTED') ? resolve() : reject(new Error(`Your transaction wasn't commited: expected: MST_PENDING or COMMITED actual=${statuses}`))
         })
       })
     })
