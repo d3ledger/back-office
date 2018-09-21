@@ -1,11 +1,1 @@
-
-<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56">
-    <g fill="none" fill-rule="evenodd">
-        <path fill="#E43E33" fill-rule="nonzero" d="M0 0h56v56H0z"/>
-        <g transform="translate(4 4)">
-            <circle cx="23.996" cy="23.996" r="23.996" fill="#E43E33" fill-rule="nonzero"/>
-            <ellipse cx="24.017" cy="24.453" stroke="#FFF" stroke-width="3" rx="7.5" ry="7.5"/>
-            <path stroke="#FFF" stroke-linecap="round" stroke-width="3" d="M23.237 16.942H9.804M20.868 23.996H5.552M43.049 23.996h-6.727M23.83 31.95L10 31.9M37.92 16.945h-4.015M37.92 31.047h-4.015"/>
-        </g>
-    </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56"><g fill="none" fill-rule="evenodd"><path fill="#E43E33" fill-rule="nonzero" d="M0 0h56v56H0z"/><g transform="translate(4 4)"><circle cx="23.996" cy="23.996" r="23.996" fill="#E43E33" fill-rule="nonzero"/><ellipse cx="24.017" cy="24.453" stroke="#FFF" stroke-width="3" rx="7.5" ry="7.5"/><path stroke="#FFF" stroke-linecap="round" stroke-width="3" d="M23.237 16.942H9.804m11.064 7.054H5.552m37.497 0h-6.727M23.83 31.95L10 31.9m27.92-14.955h-4.015m4.015 14.102h-4.015"/></g></g></svg>
