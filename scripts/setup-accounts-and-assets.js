@@ -40,7 +40,8 @@ irohaUtil.login(testAccFull, testPrivKeyHex, nodeIp)
   .then(() => setupAccountTransactions(testAccFull, testPrivKeyHex))
   .then(() => setupAccountTransactions(aliceAccFull, alicePrivKeyHex))
   // Let's use alice's private key as 2nd key for now
-  .then(() => tryToSetQuorum(testPrivKeyHex, testAccFull, alicePubKey, 2))
+  .then(() => tryToAddSignatory(testPrivKeyHex, testAccFull, alicePubKey))
+  .then(() => tryToSetQuorum(testPrivKeyHex, testAccFull, 2))
   .then(() => console.log('done!'))
   .catch(err => console.error(err))
 
@@ -146,8 +147,8 @@ function tryToCreateAsset (assetName, domainId, precision) {
   })
 }
 
-function tryToSetQuorum (accountPrivKeyHex, accountId, publicKey, quorum) {
-  console.log(`trying to add signature and set quorum to account: ${accountId}`)
+function tryToAddSignatory (accountPrivKeyHex, accountId, publicKey) {
+  console.log(`trying to add signature to account: ${accountId}`)
 
   return new Promise((resolve, reject) => {
     irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
@@ -155,6 +156,19 @@ function tryToSetQuorum (accountPrivKeyHex, accountId, publicKey, quorum) {
         console.log(`add signature to account: ${accountId} (signature:${publicKey})`)
         irohaUtil.addSignatory([accountPrivKeyHex], accountId, publicKey)
       })
+      .then(() => {
+        console.log(`siganture is added`)
+        irohaUtil.logout()
+        resolve()
+      })
+      .catch((err) => reject(err))
+  })
+}
+function tryToSetQuorum (accountPrivKeyHex, accountId, quorum) {
+  console.log(`trying to add signature and set quorum to account: ${accountId}`)
+
+  return new Promise((resolve, reject) => {
+    irohaUtil.login(accountId, accountPrivKeyHex, nodeIp)
       .then(() => {
         console.log(`set account quorum to account: ${accountId} (quorum:${quorum})`)
         irohaUtil.setAccountQuorum([accountPrivKeyHex], accountId, quorum)
