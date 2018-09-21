@@ -46,7 +46,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background: #f4f4f4;
+  background: #363636;
 }
 
 a {

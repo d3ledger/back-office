@@ -4,7 +4,7 @@
       :router="true"
       :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
       text-color="#a2a2a2"
-      background-color="#2D2D2D"
+      background-color="#1e1e1e"
       active-text-color="#000"
       :default-active="currentActiveMenu"
       >
