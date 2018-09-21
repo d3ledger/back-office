@@ -97,7 +97,7 @@ describe('Account store', () => {
         rawAssetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
-        rawPengingTransactions: [randomObject()],
+        rawPendingTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -110,7 +110,7 @@ describe('Account store', () => {
         rawAssetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
-        rawPengingTransactions: [],
+        rawPendingTransactions: null,
         assets: [],
         connectionError: null
       }
@@ -377,7 +377,7 @@ describe('Account store', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
-        const expectedKeys = ['amount', 'date', 'from', 'to', 'message']
+        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'id', 'assetId', 'signatures']
 
         expect(result)
           .to.be.an('array')

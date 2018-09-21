@@ -2,49 +2,63 @@
   <el-container>
     <el-main>
       <el-row>
-        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
+        <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
           <el-card>
             <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Waiting transactions</span>
+              <span>Waiting transactions to be signed</span>
             </div>
             <el-table
               row-class-name="transactions__table-row"
-              :data="mockData">
-              <el-table-column type="expand"></el-table-column>
+              :data="allPendingTransactions">
+              <el-table-column type="expand">
+                <template slot-scope="scope">
+                  <p>
+                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
+                  </p>
+                  <div>
+                    <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
+                    <p>Message: {{ scope.row.message }}</p>
+                  </div>
+                </template>
+              </el-table-column>
               <el-table-column label="Date" width="140px">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" width="140px">
+              <el-table-column label="Amount" width="150px">
                 <template slot-scope="scope">
-                  <div class="row__amount">
-                    <span>{{ scope.row.amount.from }} BTC</span>
-                    <span>{{ scope.row.amount.to }} ETH</span>
-                  </div>
+                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" width="290px">
+              <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Description" min-width="200">
                 <template slot-scope="scope">
                   <div>
-                    {{ `${scope.row.description.substr(0, 100)}...` }}
+                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
+                    <div v-else>{{ scope.row.message }}</div>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Address" width="110px">
+              <el-table-column label="Signs" min-width="50">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.address }}</span>
+                  {{ scope.row.signatures }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
-              <el-table-column>
+              <el-table-column min-width="130px">
                 <template slot-scope="scope">
                   <div>
                     <el-button
-                      @click="openApprovalDialog()"
+                      @click="onSignPendingTransaction(scope.row.id)"
                       size="medium"
                       type="primary"
-                      plain>
-                      Confirm
+                      plain
+                    >
+                      Add signatures
                     </el-button>
                   </div>
                 </template>
@@ -59,49 +73,63 @@
 
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
-import { mapActions } from 'vuex'
+import numberFormat from '@/components/mixins/numberFormat'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'transaction-page',
   mixins: [
-    dateFormat
+    dateFormat,
+    numberFormat
   ],
   data () {
     return {
-      mockData: [{
-        date: 1535100895476,
-        amount: {
-          from: '0.0048',
-          to: '0.3223'
-        },
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        address: '0x905f948341241519128'
-      }, {
-        date: 1535100895476,
-        amount: {
-          from: '0.0148',
-          to: '0.7223'
-        },
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        address: '0x333f948341241519128'
-      }, {
-        date: 1535100895476,
-        amount: {
-          from: '0.0048',
-          to: '0.3223'
-        },
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        address: '0x583f948341241519128'
-      }]
+      isSending: false
     }
   },
+  computed: {
+    ...mapGetters([
+      'allPendingTransactions',
+      'wallets',
+      'accountQuorum'
+    ])
+  },
   created () {
-    this.$store.dispatch('getPendingTransactions')
+    this.getPendingTransactions()
   },
   methods: {
     ...mapActions([
-      'openApprovalDialog'
-    ])
+      'openApprovalDialog',
+      'signPendingTransaction',
+      'getPendingTransactions'
+    ]),
+    onSignPendingTransaction (txStoreId) {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.isSending = true
+
+          return this.signPendingTransaction({
+            privateKeys,
+            txStoreId
+          })
+            .then(() => {
+              this.$message({
+                message: 'Transaction succesfuly finalised and sent!',
+                type: 'success'
+              })
+              this.getPendingTransactions()
+            })
+            .catch(err => {
+              console.error(err)
+              this.$alert(err.message, 'Transaction signing error', {
+                type: 'error'
+              })
+            })
+        })
+        .finally(() => { this.isSending = false })
+    }
+
   }
 }
 </script>
@@ -109,12 +137,5 @@ export default {
 <style>
 .transactions__table-row {
   height: 72px;
-}
-.row__amount {
-  display: flex;
-  flex-direction: column;
-}
-.row__amount span {
-  font-weight: 600;
 }
 </style>
