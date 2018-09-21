@@ -156,6 +156,7 @@
               <el-input
                 placeholder="Your private key"
                 v-model="key.hex"
+                :class="{ 'is-empty': !key.hex }"
               />
             </el-col>
 
@@ -316,7 +317,7 @@ export default {
     submitApprovalDialog () {
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex))
+        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
       })
     },
 
@@ -382,7 +383,9 @@ export default {
     updateNumberOfValidKeys () {
       if (!this.$refs.approvalForm) return
 
-      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => x.validateState === 'success').length
+      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
+        return x.validateState === 'success' && !!x.fieldValue
+      }).length
     }
   }
 }
@@ -438,5 +441,10 @@ export default {
   border: solid 1px #cccccc;
   display: flex;
   justify-content: center;
+}
+
+/* in order not to make a border green when a private key is empty */
+.el-form-item.is-success .el-input.is-empty .el-input__inner {
+  border-color: #dcdfe6;
 }
 </style>
