@@ -203,7 +203,7 @@ const mutations = {
   [types.GET_ACCOUNT_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_TRANSACTIONS_SUCCESS] (state, transactions) {
-    Vue.set(state, 'rawTransactions', transactions)
+    state.rawTransactions = transactions
   },
 
   [types.GET_ACCOUNT_TRANSACTIONS_FAILURE] (state, err) {
