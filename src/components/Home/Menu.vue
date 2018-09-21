@@ -93,6 +93,15 @@ export default {
 </script>
 
 <style scoped>
+.logo {
+  height: 62px;
+  background-color: #e43c34;
+  margin-bottom: 100px;
+}
+.logo img {
+  height: 62px;
+  width: 62px;
+}
 .el-menu-item {
   font-family: 'IBM Plex Sans', sans-serif;
 }

@@ -354,16 +354,6 @@ export default {
 </script>
 
 <style>
-.logo {
-  height: 62px;
-  background-color: #e43c34;
-  margin-bottom: 100px;
-}
-
-.logo img {
-  height: 62px;
-  width: 62px;
-}
 
 .item__private-keys {
   width: 40px;
