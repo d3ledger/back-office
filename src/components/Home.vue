@@ -12,7 +12,7 @@
       @close="closeExchangeDialogWith()"
       center
     >
-      <el-form ref="exchangeForm" :model="exchangeForm" :rules="rules">
+      <el-form ref="exchangeForm" :model="exchangeForm" class="exchange_form" :rules="rules">
         <el-form-item label="I send" prop="offer_amount" >
           <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
             <el-select
@@ -95,7 +95,7 @@
       @close="closeApprovalDialogWith()"
       center
     >
-      <el-form ref="approvalForm" :model="approvalForm" @validate="updateNumberOfValidKeys">
+      <el-form ref="approvalForm" :model="approvalForm" class="approval_form" @validate="updateNumberOfValidKeys">
         <el-form-item>
           <el-row class="approval_form-desc">
             <p>
@@ -370,5 +370,12 @@ export default {
 }
 .approval_form-desc {
   text-align: center;
+}
+</style>
+
+<style scoped>
+.exchange_form >>> .el-form-item__label::before,
+.approval_form >>> .el-form-item__label::before {
+  content: '';
 }
 </style>

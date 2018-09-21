@@ -213,7 +213,7 @@
       width="500px"
       center
     >
-      <el-form ref="withdrawForm" :model="withdrawForm" :rules="rules">
+      <el-form ref="withdrawForm" :model="withdrawForm" class="withdraw_form" :rules="rules">
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="withdrawForm.amount" placeholder="0">
             <div slot="append">
@@ -283,7 +283,7 @@
       width="500px"
       center
     >
-      <el-form ref="transferForm" :model="transferForm" :rules="rules">
+      <el-form ref="transferForm" :model="transferForm" class="transfer_form" :rules="rules">
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="transferForm.amount" placeholder="0">
             <div slot="append">
@@ -724,5 +724,9 @@ export default {
 .transaction_details-amount {
   flex-wrap: wrap;
   font-weight: 600;
+}
+.withdraw_form >>> .el-form-item__label::before,
+.transfer_form >>> .el-form-item__label::before {
+  content: '';
 }
 </style>
