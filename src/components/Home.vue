@@ -139,7 +139,8 @@
           <el-row type="flex" justify="center">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-              <br>
+            </p>
+            <p v-if="accountQuorum > 1">
               (You need to enter at least 1 key)
             </p>
             <p v-if="approvalForm.numberOfSignatures">This transaction already has {{approvalForm.numberOfSignatures}} signature<span v-if="approvalForm.numberOfSignatures > 1">s</span></p>
