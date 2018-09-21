@@ -11,7 +11,6 @@ const set = {
     { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
   ],
   privateKey: [
-    { required: true, message: 'Please input private key', trigger: 'change' },
     { pattern: /^[A-Za-z0-9]{64}$/, message: 'Private key should match [A-Za-z0-9]{64}', trigger: 'change' }
   ],
   nodeIp: [
@@ -26,6 +25,11 @@ const set = {
     { pattern: /^(?![0.]+$)\d+(\.\d+)?$/, message: 'Invalid amount', trigger: 'change' }
   ]
 }
+
+set['privateKeyRequired'] = [
+  { required: true, message: 'Please input private key', trigger: 'change' },
+  ...set['privateKey']
+]
 
 const getPrecision = (v) => (v.split('.')[1] || []).length
 

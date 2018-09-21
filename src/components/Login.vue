@@ -76,7 +76,7 @@ export default {
   mixins: [
     inputValidation({
       username: 'nameDomain',
-      privateKey: 'privateKey',
+      privateKey: 'privateKeyRequired',
       nodeIp: 'nodeIp'
     })
   ],
