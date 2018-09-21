@@ -151,7 +151,7 @@ export default {
 
 .table_body-item.active {
   background: #f4f4f4;
-  border-bottom: 1px solid #2d2d2d;
+  border-bottom: 2px solid #2d2d2d;
 }
 
 .table_body-item_content {
