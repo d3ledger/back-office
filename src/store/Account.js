@@ -32,7 +32,8 @@ const types = flow(
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT'
+  'REJECT_SETTLEMENT',
+  'SIGN_PENDING'
 ])
 
 function initialState () {
@@ -45,7 +46,7 @@ function initialState () {
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
-    rawPengingTransactions: [],
+    rawPendingTransactions: null,
     assets: [],
     connectionError: null
   }
@@ -81,6 +82,13 @@ const getters = {
       state.rawAssetTransactions[assetId],
       state.accountId
     )
+  },
+
+  allPendingTransactions: (state) => {
+    return state.rawPendingTransactions ? getTransferAssetsFrom(
+      state.rawPendingTransactions.toObject().transactionsList,
+      state.accountId
+    ).filter(tx => tx.from === 'you') : []
   },
 
   waitingSettlements () {
@@ -233,7 +241,7 @@ const mutations = {
   [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawPengingTransactions = transactions
+    state.rawPendingTransactions = transactions
   },
 
   [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
@@ -245,6 +253,14 @@ const mutations = {
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
 
   [types.TRANSFER_ASSET_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SIGN_PENDING_REQUEST] (state) {},
+
+  [types.SIGN_PENDING_SUCCESS] (state) {},
+
+  [types.SIGN_PENDING_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -372,7 +388,7 @@ const actions = {
     commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
 
     return irohaUtil.getPendingTransactions()
-      .then(res => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, res))
+      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
       .catch(err => {
         commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
         throw err
@@ -388,6 +404,19 @@ const actions = {
       })
       .catch(err => {
         commit(types.TRANSFER_ASSET_FAILURE, err)
+        throw err
+      })
+  },
+
+  signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
+    commit(types.SIGN_PENDING_REQUEST)
+
+    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
+      .then(() => {
+        commit(types.SIGN_PENDING_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SIGN_PENDING_FAILURE, err)
         throw err
       })
   },
