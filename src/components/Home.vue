@@ -317,7 +317,7 @@ export default {
     submitApprovalDialog () {
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex))
+        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
       })
     },
 
