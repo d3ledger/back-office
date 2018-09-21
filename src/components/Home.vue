@@ -142,6 +142,7 @@
               <br>
               (You need to enter at least 1 key)
             </p>
+            <p v-if="approvalForm.numberOfSignatures">This transaction already has {{approvalForm.numberOfSignatures}} signature<span v-if="approvalForm.numberOfSignatures > 1">s</span></p>
           </el-row>
         </el-form-item>
 
@@ -176,7 +177,7 @@
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
             <div class="item__private-keys">
-              {{ approvalForm.numberOfValidKeys }}/{{ accountQuorum }}
+              {{ approvalForm.numberOfValidKeys + approvalForm.numberOfSignatures }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
@@ -221,7 +222,8 @@ export default {
       },
       approvalForm: {
         privateKeys: [],
-        numberOfValidKeys: 0
+        numberOfValidKeys: 0,
+        numberOfSignatures: 0
       },
       isExchangeSending: false
     }

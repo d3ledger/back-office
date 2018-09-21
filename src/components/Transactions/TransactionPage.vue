@@ -53,10 +53,11 @@
                 <template slot-scope="scope">
                   <div>
                     <el-button
-                      @click="openApprovalDialog()"
+                      @click="onSubmitTransferForm(row.scope.id)"
                       size="medium"
                       type="primary"
-                      plain>
+                      plain
+                    >
                       Add signatures
                     </el-button>
                   </div>
@@ -98,7 +99,36 @@ export default {
   methods: {
     ...mapActions([
       'openApprovalDialog'
-    ])
+    ]),
+    onSubmitTransferForm (txStoreId) {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.isSending = true
+
+          return this.$store.dispatch('signPendingTransaction', {
+            privateKeys,
+            txStoreId
+          })
+            .then(() => {
+              this.$message({
+                message: 'Transaction succesfuly finalised and sent!',
+                type: 'success'
+              })
+              this.fetchWallet()
+              this.resetTransferForm()
+              this.transferFormVisible = false
+            })
+            .catch(err => {
+              console.error(err)
+              this.$alert(err.message, 'Transaction signing error', {
+                type: 'error'
+              })
+            })
+        })
+        .finally(() => { this.isSending = false })
+    }
+
   }
 }
 </script>

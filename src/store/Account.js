@@ -32,7 +32,8 @@ const types = flow(
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT'
+  'REJECT_SETTLEMENT',
+  'SIGN_PENDING'
 ])
 
 function initialState () {
@@ -237,6 +238,14 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.SIGN_PENDING_REQUEST] (state) {},
+
+  [types.SIGN_PENDING_SUCCESS] (state) {},
+
+  [types.SIGN_PENDING_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.CREATE_SETTLEMENT_REQUEST] (state) {},
 
   [types.CREATE_SETTLEMENT_SUCCESS] (state) {},
@@ -377,6 +386,19 @@ const actions = {
       })
       .catch(err => {
         commit(types.TRANSFER_ASSET_FAILURE, err)
+        throw err
+      })
+  },
+
+  signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
+    commit(types.SIGN_PENDING_REQUEST)
+
+    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
+      .then(() => {
+        commit(types.SIGN_PENDING_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SIGN_PENDING_FAILURE, err)
         throw err
       })
   },

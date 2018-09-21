@@ -216,7 +216,7 @@ function getPendingTransactions () {
       }
 
       const transactions = response.getTransactionsResponse()
-      console.log(transactions)
+      console.log(transactions.getTransactionsList())
       debug('transactions', transactions)
 
       resolve(transactions)
