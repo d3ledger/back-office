@@ -53,7 +53,7 @@
                 <template slot-scope="scope">
                   <div>
                     <el-button
-                      @click="onSubmitTransferForm(row.scope.id)"
+                      @click="onSubmitTransferForm(scope.row.id)"
                       size="medium"
                       type="primary"
                       plain
@@ -84,6 +84,7 @@ export default {
   ],
   data () {
     return {
+      isSending: false
     }
   },
   computed: {
@@ -115,9 +116,7 @@ export default {
                 message: 'Transaction succesfuly finalised and sent!',
                 type: 'success'
               })
-              this.fetchWallet()
-              this.resetTransferForm()
-              this.transferFormVisible = false
+              this.$store.dispatch('getPendingTransactions')
             })
             .catch(err => {
               console.error(err)
