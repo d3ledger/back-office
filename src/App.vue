@@ -108,4 +108,8 @@ a:hover {
 .monospace {
   font-family: 'IBM Plex Sans', sans-serif;
 }
+
+button.el-dialog__headerbtn {
+  font-size: 1.25rem;
+}
 </style>
