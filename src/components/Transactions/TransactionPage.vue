@@ -95,11 +95,13 @@ export default {
     ])
   },
   created () {
-    this.$store.dispatch('getPendingTransactions')
+    this.getPendingTransactions()
   },
   methods: {
     ...mapActions([
-      'openApprovalDialog'
+      'openApprovalDialog',
+      'signPendingTransaction',
+      'getPendingTransactions'
     ]),
     onSignPendingTransaction (txStoreId) {
       this.openApprovalDialog()
@@ -107,7 +109,7 @@ export default {
           if (!privateKeys) return
           this.isSending = true
 
-          return this.$store.dispatch('signPendingTransaction', {
+          return this.signPendingTransaction({
             privateKeys,
             txStoreId
           })
@@ -116,7 +118,7 @@ export default {
                 message: 'Transaction succesfuly finalised and sent!',
                 type: 'success'
               })
-              this.$store.dispatch('getPendingTransactions')
+              this.getPendingTransactions()
             })
             .catch(err => {
               console.error(err)
