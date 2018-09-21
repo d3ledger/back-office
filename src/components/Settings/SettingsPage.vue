@@ -4,9 +4,8 @@
       <el-row>
         <el-col
           :xs="24"
-          :md="{ span: 18, offset: 3 }"
-          :lg="{ span: 16, offset: 4 }"
-          :xl="{ span: 14, offset: 5 }">
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
           <el-card>
             <div slot="header">
               Settings

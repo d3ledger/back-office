@@ -2,7 +2,10 @@
   <el-container id="reports-page" v-if="wallets.length">
     <el-main>
       <el-row>
-        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Reports</span>
@@ -24,7 +27,7 @@
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Wallet" prop="walletName" width="300"></el-table-column>
+              <el-table-column label="Wallet" prop="walletName" width="415"></el-table-column>
               <el-table-column label="Download" width="190">
                 <template slot-scope="scope">
                   <div class="list_actions">

@@ -97,7 +97,7 @@
     >
       <el-form ref="approvalForm" :model="approvalForm" @validate="updateNumberOfValidKeys">
         <el-form-item>
-          <el-row type="flex" justify="center">
+          <el-row class="approval_form-desc">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
             </p>
@@ -377,5 +377,8 @@ export default {
 /* in order not to make a border green when a private key is empty */
 .el-form-item.is-success .el-input.is-empty .el-input__inner {
   border-color: #dcdfe6;
+}
+.approval_form-desc {
+  text-align: center;
 }
 </style>
