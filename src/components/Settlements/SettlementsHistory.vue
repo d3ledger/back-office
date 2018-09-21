@@ -43,6 +43,7 @@
      <el-table-column width="93">
       <template slot-scope="scope">
         <el-tag
+          class="status-tag"
           :type="tagType(scope.row.status)"
         >{{ scope.row.status }}</el-tag>
       </template>
@@ -100,5 +101,8 @@ export default {
 .transaction_details-amount {
   flex-wrap: wrap;
   font-weight: 600;
+}
+.status-tag {
+  text-transform: capitalize;
 }
 </style>
