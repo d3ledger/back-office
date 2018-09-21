@@ -1,7 +1,7 @@
 <template>
   <el-container class="signup-container">
     <div style="margin-top: 4rem">
-      <h1 style="font-size: 2.5rem">Sign Up</h1>
+      <h1 class="signup-title">Sign Up</h1>
     </div>
     <el-card class="signup-form-container">
       <el-form class="signup-form" ref="form" :model="form" :rules="rules" label-position="top">
@@ -147,6 +147,10 @@ export default {
 </script>
 
 <style scoped>
+  .signup-title {
+    font-size: 2.5rem;
+    color: #ffffff;
+  }
   .signup-container {
     display: flex;
     flex-direction: column;
