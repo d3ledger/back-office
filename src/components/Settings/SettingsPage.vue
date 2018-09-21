@@ -18,6 +18,7 @@
                 </div>
                 <div>
                   <el-row class="currencies_list">
+                    <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
                     <el-col>
                       <el-radio-group v-model="currentFiat" size="small">
                         <el-radio
@@ -30,6 +31,7 @@
                     </el-col>
                   </el-row>
                   <el-row class="currencies_list">
+                    <p class="list-title">Wallets (Market)</p>
                     <el-col>
                       <el-radio-group v-model="currentCrypto" size="small">
                         <el-radio
@@ -176,6 +178,11 @@ export default {
 
 .currencies_list {
   margin-bottom: 10px;
+}
+
+.list-title {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
 }
 
 .currencies_list-select {
