@@ -14,13 +14,13 @@
           <el-row>
             <el-card :body-style="{ padding: '0' }">
               <el-col :span="8">
-                <dashboard-table :portfolio="portfolioList" :windowHeight="windowHeight"/>
+                <dashboard-table :portfolio="portfolioList" :dashboardChartHeight="dashboardChartHeight"/>
               </el-col>
               <el-col :span="1">
                 <div class="vertical_devider"></div>
               </el-col>
               <el-col :span="16">
-                <dashboard-chart :windowHeight="windowHeight"/>
+                <dashboard-chart :dashboardChartHeight="dashboardChartHeight"/>
               </el-col>
             </el-card>
           </el-row>
@@ -36,6 +36,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
+import debounce from 'lodash/fp/debounce'
 
 export default {
   name: 'dashboard-page',
@@ -48,22 +49,20 @@ export default {
   },
   data () {
     return {
-      windowHeight: 0
+      dashboardChartHeight: 0
     }
   },
   mounted () {
     this.$store.dispatch('loadDashboard')
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.getWindowHeight)
-      this.getWindowHeight()
-    })
+    window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
+    this.getDashboardChartHeight()
   },
   beforeDestroy () {
-    window.removeEventListener('resize', this.getWindowHeight)
+    window.removeEventListener('resize', this.getDashboardChartHeight)
   },
   methods: {
-    getWindowHeight (event) {
-      this.windowHeight = document.documentElement.clientHeight - 350
+    getDashboardChartHeight (event) {
+      this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }
   },
   computed: {

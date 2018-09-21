@@ -17,7 +17,7 @@
         <div class="table_header-title text-right">Changes</div>
       </el-row>
       <el-row class="table_body">
-        <div class="table_body-content" :style="{ height: `${windowHeight}px` }">
+        <div class="table_body-content" :style="{ height: `${dashboardChartHeight}px` }">
           <div
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             v-for="(value, index) in filteredPortfolio" :key="index">
@@ -62,7 +62,7 @@ export default {
       type: Array,
       required: true
     },
-    windowHeight: {
+    dashboardChartHeight: {
       type: Number,
       required: true
     }

@@ -18,7 +18,7 @@
         </el-col>
       </el-row>
     </div>
-    <div class="card-content_body" :style="{ height: `${windowHeight + 30}px` }">
+    <div class="card-content_body" :style="{ height: `${dashboardChartHeight + 30}px` }">
       <line-chart-table :data="portfolioChart.data" :filter="portfolioChart.filter"/>
     </div>
   </div>
@@ -33,7 +33,7 @@ export default {
     LineChartTable: lazyComponent('Dashboard/Charts/LineChartTable')
   },
   props: {
-    windowHeight: {
+    dashboardChartHeight: {
       type: Number,
       required: true
     }
