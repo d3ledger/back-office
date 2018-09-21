@@ -53,7 +53,7 @@
                 <template slot-scope="scope">
                   <div>
                     <el-button
-                      @click="onSubmitTransferForm(scope.row.id)"
+                      @click="onSignPendingTransaction(scope.row.id)"
                       size="medium"
                       type="primary"
                       plain
@@ -101,7 +101,7 @@ export default {
     ...mapActions([
       'openApprovalDialog'
     ]),
-    onSubmitTransferForm (txStoreId) {
+    onSignPendingTransaction (txStoreId) {
       this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
