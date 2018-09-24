@@ -42,11 +42,11 @@ html {
 }
 
 #app {
-  font-family: 'IBM Plex Sans', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background: #f4f4f4;
+  background: #363636;
 }
 
 a {
@@ -75,7 +75,7 @@ a:hover {
 
 .el-popper,
 .el-tooltip__popper, .el-select-dropdown__item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .form-item-text {
@@ -106,6 +106,10 @@ a:hover {
 }
 
 .monospace {
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+button.el-dialog__headerbtn {
+  font-size: 1.25rem;
 }
 </style>

@@ -4,60 +4,53 @@
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-card body-style="height: 160px; padding: 0;">
-              <div slot="header" class="card-header">
-                <div>{{ wallet.name }}</div>
-                <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+            <el-card class="card" :body-style="{ padding: '0' }">
+              <div class="card_header">
+                <div class="card_header-title">
+                  <div>{{ wallet.name }}</div>
+                  <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+                </div>
               </div>
               <div class="top-left-card">
-                <div style="margin: 20px">
-                  <h2 class="amount"> {{wallet.amount| formatPrecision}} {{wallet.asset}}</h2>
+                <div class="amount">
+                  <h2> {{wallet.amount | formatPrecision}} {{wallet.asset}}</h2>
                 </div>
-                <div style="width: 100%; display: flex;">
-                  <div role="button" class="button" @click="receiveFormVisible = true">
-                    <fa-icon icon="angle-double-down" />
-                    <span>Deposit</span>
+                <div class="card_actions">
+                  <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="angle-double-down" />
+                    <span class="card_actions-button-text" data-cy="deposit">Deposit</span>
                   </div>
-                  <div role="button" class="button" @click="withdrawFormVisible = true">
-                    <fa-icon icon="angle-double-up" />
-                    <span>Withdraw</span>
+                  <div role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="angle-double-up" />
+                    <span class="card_actions-button-text" data-cy="withdraw">Withdraw</span>
                   </div>
-                  <div role="button" class="button" @click="transferFormVisible = true">
-                    <fa-icon icon="arrow-right" />
-                    <span>Transfer</span>
+                  <div role="button" class="card_actions-button button" @click="transferFormVisible = true">
+                    <fa-icon class="card_actions-button-text" icon="arrow-right" />
+                    <span class="card_actions-button-text" data-cy="transfer">Transfer</span>
                   </div>
-                  <div role="button" class="button" @click="openExchangeDialog(wallet.asset)">
-                    <fa-icon icon="exchange-alt" />
-                    <span>Exchange</span>
+                  <div role="button" class="card_actions-button button" @click="openExchangeDialog(wallet.asset)">
+                    <fa-icon class="card_actions-button-text" icon="exchange-alt" />
+                    <span class="card_actions-button-text" data-cy="exchange">Exchange</span>
                   </div>
                 </div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card body-style="height: 160px;">
-              <div slot="header" class="card-header">
-                <div>
-                  Market
-
-                  <el-dropdown @command="(command) => { selectedMarketPeriod = command }">
-                    <el-tag
-                      type="info"
-                      size="mini"
-                    >
-                      {{ selectedMarketPeriod }}
-                    </el-tag>
-
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item
-                        v-for="period in marketPeriods"
-                        :key="period"
-                        :command="period"
+            <el-card class="card" :body-style="{ padding : '0' }">
+              <div class="card_header-divided">
+                <div class="card_header-title">
+                  <div class="card_header-name">Market</div>
+                  <div class="card_header-filter">
+                    <div
+                      v-for="period in marketPeriods"
+                      :key="period"
+                      :class="[selectedMarketPeriod !== period ? 'chart_time-filter' : 'chart_time-filter selected']"
+                      @click="selectedMarketPeriod = period"
                       >
-                        {{ period }}
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
+                      <p class="chart_time-filter_value">{{ period }}</p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -144,37 +137,39 @@
     </el-row>
     <el-row>
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
-        <el-card>
-          <div slot="header">
-            History
-          </div>
+        <el-card :body-style="{ padding: '0' }">
+          <div class="card_header">History</div>
           <el-table
             :data="transactions"
             ref="table"
+            class="wallets_table"
             @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
           >
             <el-table-column type="expand">
               <template slot-scope="scope">
-                <p>
-                  {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallet.asset}} to {{ scope.row.to }}
-                </p>
-                <div v-if="scope.row.settlement" style="background: #F8FFF0">
-                  <p>This transaction is a part of a succesfull setllement:</p>
-                  <p>{{ scope.row.settlement.from }} exchanged {{ scope.row.settlement.offer_amount + ' ' + scope.row.settlement.offer_asset}} for {{ scope.row.settlement.request_amount + ' ' + scope.row.settlement.request_asset}} with {{ scope.row.settlement.to }}</p>
-                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.settlement.date) }}</p>
-                  <p>Was <el-tag :type="tagType(scope.row.settlement.status)" >{{ scope.row.settlement.status }}</el-tag> at
-                  {{ formatDateLong(scope.row.settlement.date) }}</p>
-                  <p>Message: {{ scope.row.settlement.message }}</p>
+                <div class="transaction_details">
+                  <div v-if="scope.row.settlement">
+                    <el-row>
+                      <el-col :span="6">{{ formatDateLong(scope.row.settlement.date) }}</el-col>
+                      <el-col :span="6" class="transaction_details-amount">
+                        <p>- {{ scope.row.settlement.offer_amount }} {{ scope.row.settlement.offer_asset }}</p>
+                        <p>+ {{ scope.row.settlement.request_amount }} {{ scope.row.settlement.request_asset }}</p>
+                      </el-col>
+                      <el-col :span="6">{{ scope.row.settlement.message }}</el-col>
+                      <el-col :span="6">{{ scope.row.settlement.to }}</el-col>
+                    </el-row>
+                  </div>
+                  <div v-else>
+                    <el-row>
+                      <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+                      <el-col :span="6" class="transaction_details-amount">
+                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount }}
+                      </el-col>
+                      <el-col :span="6">{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
+                      <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+                    </el-row>
+                  </div>
                 </div>
-                <div v-else>
-                  <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                  <p>Message: {{ scope.row.message }}</p>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column label="Amount" width="100">
-              <template slot-scope="scope">
-                {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
               </template>
             </el-table-column>
             <el-table-column label="Date" width="120">
@@ -182,14 +177,11 @@
                 {{ formatDate(scope.row.date) }}
               </template>
             </el-table-column>
-            <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+            <el-table-column label="Amount" width="120">
               <template slot-scope="scope">
-                <div v-if="scope.row.from === 'you'">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
-                </div>
-                <div v-else>
-                  {{ scope.row.from === 'notary' ? 'Deposit ' : '' }}from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
-                </div>
+                <span class="table_amount">
+                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
+                </span>
               </template>
             </el-table-column>
             <el-table-column prop="message" label="Description" min-width="200">
@@ -197,6 +189,16 @@
                 <div v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></div>
                 <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
                 <div v-else>{{ scope.row.message }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <div v-if="scope.row.from === 'you'">
+                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                </div>
+                <div v-else>
+                  {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                </div>
               </template>
             </el-table-column>
           </el-table>
@@ -211,7 +213,7 @@
       width="500px"
       center
     >
-      <el-form ref="withdrawForm" :model="withdrawForm" :rules="rules">
+      <el-form ref="withdrawForm" :model="withdrawForm" class="withdraw_form" :rules="rules">
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="withdrawForm.amount" placeholder="0">
             <div slot="append">
@@ -222,7 +224,7 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{ wallet | toUpperCase }}
+            {{wallet.amount | formatPrecision}} {{wallet.asset}}
           </span>
         </span>
         <el-form-item label="Address" prop="wallet">
@@ -281,7 +283,7 @@
       width="500px"
       center
     >
-      <el-form ref="transferForm" :model="transferForm" :rules="rules">
+      <el-form ref="transferForm" :model="transferForm" class="transfer_form" :rules="rules">
         <el-form-item label="I send" prop="amount">
           <el-input name="amount" v-model="transferForm.amount" placeholder="0">
             <div slot="append">
@@ -292,7 +294,7 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{ wallet.amount  + ' ' + wallet.asset.toUpperCase() }}
+            {{wallet.amount | formatPrecision}} {{wallet.asset}}
           </span>
         </span>
         <el-form-item label="Counterparty" prop="to">
@@ -526,13 +528,6 @@ export default {
       })
       return isValid
     }
-  },
-
-  filters: {
-    toUpperCase (wallet) {
-      if (!wallet || !Object.keys(wallet).length) return null
-      return `${wallet.amount} ${wallet.asset.toUpperCase()}`
-    }
   }
 }
 </script>
@@ -561,11 +556,49 @@ export default {
 }
 
 .amount {
-  font-size: 2rem;
-  margin: 0;
-  margin-right: 20px;
-  font-weight: bold;
-  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem 1.5rem;
+}
+
+.card {
+  height: 14rem;
+}
+
+.card_header {
+  padding: 0.9rem 1.5rem;
+}
+
+.card_header-divided {
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.card_header-title {
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_header-name {
+  padding: 1rem 0 0 1rem;
+}
+
+.card_header-filter {
+  display: flex;
+  justify-content: center
+}
+
+.chart_time-filter {
+  justify-content: center;
+  opacity: 0.3;
+  padding: 1rem;
+  cursor: pointer;
+}
+.chart_time-filter.selected {
+  opacity: 1;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #000000;
 }
 
 .top-left-card {
@@ -588,8 +621,15 @@ export default {
 }
 
 .top-left-card >>> .button:hover {
-  color: rgba(0, 0, 0, .8);
-  background: #e8e8e8;
+  background: #409eff;
+}
+
+.top-left-card >>> .button:active {
+  background: #227ede;
+}
+
+.top-left-card >>> .button:hover *{
+  color: #ffffff;
 }
 
 .top-left-card >>> .button>span{
@@ -608,9 +648,29 @@ export default {
   justify-content: space-between;
 }
 
+.card_actions {
+  width: 100%;
+  display: flex;
+  margin-top: 1.3rem;
+}
+
+.card_actions-button {
+  background-color: #f9fcff;
+}
+
+.card_actions-button:hover {
+  background-color: #f9fcff;
+}
+
+.card_actions-button-text {
+  color: #409eff;
+}
+
 .card-info {
+  margin-top: 1.3rem;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.3rem;
+  padding: 0rem 0 0rem 1.5rem;
 }
 
 .card-info .uptrend {
@@ -626,7 +686,7 @@ export default {
 }
 
 .card-info-amount {
-  font-size: 16px;
+  font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 4px;
 }
@@ -642,5 +702,31 @@ export default {
 
 .withdraw-wallet_select {
   width: 100%;
+}
+.wallets_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.wallets_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+.table_amount {
+  font-weight: 600;
+}
+.wallets_table >>> .el-table__expanded-cell {
+  padding: 0rem 1rem 1rem;
+}
+.transaction_details {
+  font-size: 0.8rem;
+  color: #000000;
+  background-color: #f4f4f4;
+  padding: 1rem;
+}
+.transaction_details-amount {
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+.withdraw_form >>> .el-form-item__label::before,
+.transfer_form >>> .el-form-item__label::before {
+  content: '';
 }
 </style>

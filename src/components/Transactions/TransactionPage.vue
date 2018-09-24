@@ -3,12 +3,12 @@
     <el-main>
       <el-row>
         <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
-          <el-card>
-            <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Waiting transactions to be signed</span>
+          <el-card :body-style="{ padding: '0' }">
+            <div class="header">
+              <span>Pending transactions</span>
             </div>
             <el-table
-              row-class-name="transactions__table-row"
+              class="transactions_table"
               :data="allPendingTransactions">
               <el-table-column type="expand">
                 <template slot-scope="scope">
@@ -49,9 +49,9 @@
                   {{ scope.row.signatures }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
-              <el-table-column min-width="130px">
+              <el-table-column min-width="190">
                 <template slot-scope="scope">
-                  <div>
+                  <div class="transaction_action">
                     <el-button
                       @click="onSignPendingTransaction(scope.row.id)"
                       size="medium"
@@ -134,8 +134,29 @@ export default {
 }
 </script>
 
-<style>
-.transactions__table-row {
+<style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.5rem;
+}
+.transactions_table {
+  padding: 0.9rem 1.5rem;
+}
+.transactions_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.transactions_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+.transactions_table-row {
   height: 72px;
+  color: #000000;
+}
+.transaction_action >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
 }
 </style>
