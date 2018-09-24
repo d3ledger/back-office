@@ -85,14 +85,14 @@ export default {
     return {
       filterInput: '',
       criterions: [
-        { name: 'alphabetical (asc)', icon: 'sort-alpha-down', key: 'name', desc: false },
-        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true },
-        { name: 'balance amount (asc)', icon: 'sort-amount-down', key: 'price', desc: false, numeric: true },
-        { name: 'balance amount (desc)', icon: 'sort-amount-up', key: 'price', desc: true, numeric: true },
-        { name: 'price change (asc)', icon: 'sort-numeric-down', key: 'diff', desc: false, numeric: true },
-        { name: 'price change (desc)', icon: 'sort-numeric-up', key: 'diff', desc: true, numeric: true },
-        { name: 'percent change (asc)', icon: 'sort-numeric-down', key: 'percent', desc: false, numeric: true },
-        { name: 'percent change (desc)', icon: 'sort-numeric-up', key: 'percent', desc: true, numeric: true }
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-up', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-down', key: 'name', desc: true },
+        { name: 'balance amount (asc)', icon: 'sort-amount-up', key: 'price', desc: false, numeric: true },
+        { name: 'balance amount (desc)', icon: 'sort-amount-down', key: 'price', desc: true, numeric: true },
+        { name: 'price change (asc)', icon: 'sort-numeric-up', key: 'diff', desc: false, numeric: true },
+        { name: 'price change (desc)', icon: 'sort-numeric-down', key: 'diff', desc: true, numeric: true },
+        { name: 'percent change (asc)', icon: 'sort-numeric-up', key: 'percent', desc: false, numeric: true },
+        { name: 'percent change (desc)', icon: 'sort-numeric-down', key: 'percent', desc: true, numeric: true }
       ]
     }
   },
@@ -124,11 +124,7 @@ export default {
     },
     sortedPortfolio () {
       const { numeric, key, desc } = this.dashboardSortCriterion
-      const sorted = sortBy(x => {
-        console.log(x)
-        return numeric ? parseFloat(x[key]) : x[key]
-      })(this.filteredPortfolio)
-      console.log(sorted)
+      const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredPortfolio)
       return desc ? sorted.reverse() : sorted
     }
   },
@@ -138,7 +134,7 @@ export default {
       return `${crypto.name} (${crypto.asset})`
     }
   },
-  mounted () {
+  created () {
     this.$store.dispatch('loadDashboardSortCriterion')
 
     if (!this.dashboardSortCriterion) this.sort(this.criterions[0])

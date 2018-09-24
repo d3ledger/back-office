@@ -22,13 +22,13 @@
               class="report_table"
               :data="previousMonthReports"
               >
-              <el-table-column label="Date" width="350">
+              <el-table-column label="Date" min-width="100">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Wallet" prop="walletName" width="415"></el-table-column>
-              <el-table-column label="Download" width="190">
+              <el-table-column label="Wallet" prop="walletName" min-width="100"></el-table-column>
+              <el-table-column label="Download" width="225">
                 <template slot-scope="scope">
                   <div class="list_actions">
                     <el-button
@@ -269,7 +269,6 @@ export default {
 }
 .list_actions {
   display: flex;
-  justify-content: space-between;
 }
 .list_actions >>> button {
   background: #ffffff;
@@ -278,6 +277,7 @@ export default {
 }
 .report_table {
   padding: 0.9rem 1.5rem;
+  width: 100%;
 }
 .report_table >>> .el-table__header th {
   font-weight: 500;
