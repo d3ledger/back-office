@@ -17,7 +17,9 @@ const types = flow(
     'SET_EXCHANGE_DIALOG_OFFER_ASSET',
     'SET_EXCHANGE_DIALOG_REQUEST_ASSET',
     'LOAD_WALLETS_SORT_CRITERION',
-    'UPDATE_WALLETS_SORT_CRITERION'
+    'UPDATE_WALLETS_SORT_CRITERION',
+    'LOAD_DASHBOARD_SORT_CRITERION',
+    'UPDATE_DASHBOARD_SORT_CRITERION'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -39,7 +41,8 @@ function initialState () {
       price: null
     },
     connectionError: null,
-    walletsSortCriterion: null
+    walletsSortCriterion: null,
+    dashboardSortCriterion: null
   }
 }
 
@@ -95,6 +98,12 @@ const mutations = {
   },
   [types.UPDATE_WALLETS_SORT_CRITERION] (state, criterion) {
     state.walletsSortCriterion = criterion
+  },
+  [types.LOAD_DASHBOARD_SORT_CRITERION] (state, criterion) {
+    state.dashboardSortCriterion = criterion
+  },
+  [types.UPDATE_DASHBOARD_SORT_CRITERION] (state, criterion) {
+    state.dashboardSortCriterion = criterion
   }
 }
 
@@ -155,6 +164,17 @@ const actions = {
   updateWalletsSortCriterion ({ commit }, criterion) {
     setStringifyItem('walletsSortCriterion', criterion)
     commit(types.UPDATE_WALLETS_SORT_CRITERION, criterion)
+  },
+  loadDashboardSortCriterion ({ commit }) {
+    const criterion = getParsedItem('dashboardSortCriterion')
+
+    if (criterion) {
+      commit(types.LOAD_DASHBOARD_SORT_CRITERION, criterion)
+    }
+  },
+  updateDashboardSortCriterion ({ commit }, criterion) {
+    setStringifyItem('dashboardSortCriterion', criterion)
+    commit(types.UPDATE_DASHBOARD_SORT_CRITERION, criterion)
   }
 }
 
@@ -176,6 +196,9 @@ const getters = {
   },
   walletsSortCriterion (state) {
     return state.walletsSortCriterion
+  },
+  dashboardSortCriterion (state) {
+    return state.dashboardSortCriterion
   }
 }
 

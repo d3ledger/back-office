@@ -3,10 +3,42 @@
     <div class="card-content_header">
       <el-row class="card-content_header-row">
         <el-col :span="24">
-          <el-input
+          <!-- <el-input
             placeholder="Search"
             prefix-icon="el-icon-search"
-            v-model="filterInput"/>
+            v-model="filterInput"/> -->
+          <div class="searchbar">
+            <div class="searchbar__prefix">
+              <fa-icon icon="search" class="searchbar__icon" />
+            </div>
+
+            <div class="searchbar__input">
+              <el-input placeholder="Search" v-model="filterInput" />
+            </div>
+
+            <div class="searchbar__sort">
+              <el-dropdown trigger="click" @command="sort">
+                <div id="wallets-sort-button" class="searchbar__sort-button">
+                  <fa-icon
+                    :icon="dashboardSortCriterion.icon"
+                    class="searchbar__icon"
+                  />
+                </div>
+
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="criterion in criterions"
+                    :key="criterion.name"
+                    :command="criterion"
+                    :disabled="dashboardSortCriterion.name === criterion.name"
+                  >
+                    <fa-icon :icon="criterion.icon" />
+                    {{ criterion.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -20,7 +52,7 @@
         <div class="table_body-content" :style="{ height: `${dashboardChartHeight}px` }">
           <div
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
-            v-for="(value, index) in filteredPortfolio" :key="index">
+            v-for="(value, index) in sortedPortfolio" :key="index">
             <div class="table_body-item_content" @click="selectCrypto(value.asset)">
               <div class="column text-format currency">
                 {{ value | formatName }}
@@ -44,13 +76,24 @@
 <script>
 import { mapGetters } from 'vuex'
 import includes from 'lodash/includes'
+import sortBy from 'lodash/fp/sortBy'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   data () {
     return {
-      filterInput: ''
+      filterInput: '',
+      criterions: [
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-down', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true },
+        { name: 'balance amount (asc)', icon: 'sort-amount-down', key: 'price', desc: false, numeric: true },
+        { name: 'balance amount (desc)', icon: 'sort-amount-up', key: 'price', desc: true, numeric: true },
+        { name: 'price change (asc)', icon: 'sort-numeric-down', key: 'diff', desc: false, numeric: true },
+        { name: 'price change (desc)', icon: 'sort-numeric-up', key: 'diff', desc: true, numeric: true },
+        { name: 'percent change (asc)', icon: 'sort-numeric-down', key: 'percent', desc: false, numeric: true },
+        { name: 'percent change (desc)', icon: 'sort-numeric-up', key: 'percent', desc: true, numeric: true }
+      ]
     }
   },
   mixins: [
@@ -69,7 +112,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'portfolioChart'
+      'portfolioChart',
+      'dashboardSortCriterion'
     ]),
     filteredPortfolio () {
       return this.portfolio.filter(crypto => {
@@ -77,6 +121,15 @@ export default {
         const isAsset = includes(crypto.asset.toLowerCase(), this.filterInput.toLowerCase())
         return isName || isAsset
       })
+    },
+    sortedPortfolio () {
+      const { numeric, key, desc } = this.dashboardSortCriterion
+      const sorted = sortBy(x => {
+        console.log(x)
+        return numeric ? parseFloat(x[key]) : x[key]
+      })(this.filteredPortfolio)
+      console.log(sorted)
+      return desc ? sorted.reverse() : sorted
     }
   },
   filters: {
@@ -84,6 +137,11 @@ export default {
       if (!crypto) return null
       return `${crypto.name} (${crypto.asset})`
     }
+  },
+  mounted () {
+    this.$store.dispatch('loadDashboardSortCriterion')
+
+    if (!this.dashboardSortCriterion) this.sort(this.criterions[0])
   },
   methods: {
     selectCrypto (crypto) {
@@ -95,6 +153,9 @@ export default {
       if (value > 0) className = 'uptrend'
       if (value < 0) className = 'downtrend'
       return className
+    },
+    sort (criterion) {
+      this.$store.dispatch('updateDashboardSortCriterion', criterion)
     }
   }
 }
@@ -105,10 +166,46 @@ export default {
   border-bottom: 1px solid #f5f5f5
 }
 
-.card-content_header >>> .el-input__inner {
-  font-size: 20px;
-  height: 3.35rem;
-  border: 0;
+.searchbar {
+  display: flex;
+  align-items: center;
+}
+
+.searchbar__prefix {
+  flex: 0 1 auto;
+  padding: 15px 15px 15px 20px;
+}
+
+.searchbar__input {
+  flex: 1 1 auto;
+}
+
+.searchbar__sort {
+  flex: 0 1 auto;
+  padding: 13px 20px 13px 15px;
+}
+
+.searchbar__sort-button {
+  display: inline-block;
+  border: 1px solid #c0c4cc;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.searchbar__icon {
+  color: #c0c4cc;
+}
+
+.searchbar .el-input {
+  height: 100%;
+}
+
+.searchbar .el-input >>> input {
+  height: 100%;
+  border: none;
+  padding: 0;
 }
 
 .table_header {
