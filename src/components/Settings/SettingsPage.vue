@@ -4,9 +4,8 @@
       <el-row>
         <el-col
           :xs="24"
-          :md="{ span: 18, offset: 3 }"
-          :lg="{ span: 16, offset: 4 }"
-          :xl="{ span: 14, offset: 5 }">
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
           <el-card>
             <div slot="header">
               Settings
@@ -18,6 +17,7 @@
                 </div>
                 <div>
                   <el-row class="currencies_list">
+                    <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
                     <el-col>
                       <el-radio-group v-model="currentFiat" size="small">
                         <el-radio
@@ -30,6 +30,7 @@
                     </el-col>
                   </el-row>
                   <el-row class="currencies_list">
+                    <p class="list-title">Wallets (Market)</p>
                     <el-col>
                       <el-radio-group v-model="currentCrypto" size="small">
                         <el-radio
@@ -176,6 +177,11 @@ export default {
 
 .currencies_list {
   margin-bottom: 10px;
+}
+
+.list-title {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
 }
 
 .currencies_list-select {

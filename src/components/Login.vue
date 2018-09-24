@@ -1,19 +1,11 @@
 <template>
   <el-container class="login-container">
-    <div style="margin-top: 4rem">
-      <h1 style="font-size: 2.5rem">Login</h1>
+    <div style="margin-top: 2.5rem">
+      <img src="@/assets/logo.svg" alt="D3"/>
     </div>
     <el-card class="login-form-container">
       <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="username:" prop="username">
-          <el-input
-            name="username"
-            v-model="form.username"
-            :disabled="isLoading"
-          />
-        </el-form-item>
-
-        <el-form-item label="private key:" prop="privateKey">
+        <el-form-item label="Private key:" prop="privateKey">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
               <el-input
@@ -36,8 +28,14 @@
             </el-upload>
           </el-row>
         </el-form-item>
-
-        <el-form-item label="node ip:" prop="nodeIp">
+        <el-form-item label="Username:" prop="username">
+          <el-input
+            name="username"
+            v-model="form.username"
+            :disabled="isLoading"
+          />
+        </el-form-item>
+        <el-form-item label="Node ip:" prop="nodeIp">
           <el-input
             v-model="form.nodeIp"
             :disabled="isLoading"
@@ -59,7 +57,7 @@
         <p style="margin-bottom: 1rem">Don't have an account?</p>
         <router-link
           to="/signup"
-          class="el-button fullwidth el-button--info is-plain"
+          class="el-button fullwidth primary"
         >
           Sign Up
         </router-link>
@@ -154,5 +152,9 @@ export default {
   */
   .login-form >>> .el-form-item__label {
     line-height: 1;
+  }
+
+  .login-form >>> .el-form-item__label::before {
+    content: '';
   }
 </style>

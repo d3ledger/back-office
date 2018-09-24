@@ -39,8 +39,8 @@ function checkBalance (maxValue, maxPrecision) {
     if (isNaN(Number(value))) errors.push('Invalid amount')
     else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
-    else if (gt(value)(maxValue)) errors.push('Current amount is bigger than your available balance')
-    else if (lte(value)(0)) errors.push('Current amount is smaller or equal to 0')
+    else if (gt(Number(value))(Number(maxValue))) errors.push('Current amount is bigger than your available balance')
+    else if (lte(Number(value))(0)) errors.push('Current amount is smaller or equal to 0')
     callback(errors)
   }
 }

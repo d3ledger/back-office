@@ -2,34 +2,51 @@
   <el-container id="reports-page" v-if="wallets.length">
     <el-main>
       <el-row>
-        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
-          <el-card>
-            <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
+          <el-card :body-style="{ padding: '0' }">
+            <div class="header">
               <span>Reports</span>
-              <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
+              <div>
+                <el-button class="report_button" type="primary" @click="reportFormVisible = true">
+                  <fa-icon class="report_button-icon" icon="file" />
+                  <span data-cy="getReport">
+                    Reports
+                  </span>
+                </el-button>
+              </div>
             </div>
-            <el-table :data="previousMonthReports">
-              <el-table-column label="date">
+            <el-table
+              class="report_table"
+              :data="previousMonthReports"
+              >
+              <el-table-column label="Date" width="350">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
-              <el-table-column label="wallet" prop="walletName"></el-table-column>
-              <el-table-column label="download" width="160px">
+              <el-table-column label="Wallet" prop="walletName" width="415"></el-table-column>
+              <el-table-column label="Download" width="190">
                 <template slot-scope="scope">
-                  <div>
+                  <div class="list_actions">
                     <el-button
-                      size="mini"
-                      plain type="primary"
+                      plain
+                      size="medium"
+                      type="primary"
                       @click="download(scope.row, 'pdf')"
                     >
+                      <fa-icon class="report_button-icon" icon="file-pdf" />
                       PDF
                     </el-button>
                     <el-button
-                      size="mini"
+                      plain
+                      size="medium"
                       type="primary"
                       @click="download(scope.row, 'csv')"
                     >
+                      <fa-icon class="report_button-icon" icon="file-excel" />
                       CSV
                     </el-button>
                   </div>
@@ -231,3 +248,41 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.5rem;
+}
+.report_button {
+  background-color: #409eff;
+  border: 0;
+  text-transform: uppercase;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  line-height: 1rem;
+}
+.report_button-icon {
+  margin-right: 0.7rem;
+}
+.list_actions {
+  display: flex;
+  justify-content: space-between;
+}
+.list_actions >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
+}
+.report_table {
+  padding: 0.9rem 1.5rem;
+}
+.report_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.report_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+</style>

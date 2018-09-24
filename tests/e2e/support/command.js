@@ -14,11 +14,10 @@ Cypress.Commands.add('upload_file', (fileName, selector) => {
 })
 
 Cypress.Commands.add('login', (keyPath) => {
-  cy.get('form > div:nth-child(1) input')
-    .type(keyPath).should('have.value', keyPath)
   cy.upload_file(keyPath, 'input.el-upload__input')
   cy.get('form > div:nth-child(3) input')
     .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
+  console.log(Cypress.env())
   cy.get('.login-button-container > div > button').click()
   cy.url().should('be.not.eq', `${Cypress.config('baseUrl')}/#/login`)
 })
