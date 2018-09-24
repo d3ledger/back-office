@@ -13,13 +13,13 @@
         <el-col :span="24">
           <el-row>
             <el-card :body-style="{ padding: '0' }">
-              <el-col :span="8">
+              <el-col :span="10">
                 <dashboard-table :portfolio="portfolioList" :dashboardChartHeight="dashboardChartHeight"/>
               </el-col>
               <el-col :span="1">
                 <div class="vertical_devider"></div>
               </el-col>
-              <el-col :span="16">
+              <el-col :span="14">
                 <dashboard-chart :dashboardChartHeight="dashboardChartHeight"/>
               </el-col>
             </el-card>
@@ -91,8 +91,5 @@ export default {
   width: 2px;
   background: #f5f5f5;
   position: absolute;
-}
-.column-fullheight {
-  height: 10%;
 }
 </style>
