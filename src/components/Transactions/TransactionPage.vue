@@ -46,7 +46,7 @@
               </el-table-column>
               <el-table-column label="Signs" min-width="50">
                 <template slot-scope="scope">
-                  {{ scope.row.signatures }} / {{ accountQuorum }}
+                  {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
               <el-table-column min-width="190">
