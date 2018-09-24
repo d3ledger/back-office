@@ -29,8 +29,8 @@
                 {{ value.price | formatNumberShort }} {{ currencySymbol }}
               </div>
               <div class="column text-right changes">
-                <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
-                  {{ value | formatNumberPercentDiff }}
+                <span :class="classTrend(value.diff)">
+                  {{ value.diff | formatNumberShort }} {{ currencySymbol }} ({{value.percent | formatPercent }})
                 </span>
               </div>
             </div>
@@ -89,6 +89,12 @@ export default {
     selectCrypto (crypto) {
       this.selectedCrypto = crypto
       this.$store.dispatch('getPriceByFilter', { crypto })
+    },
+    classTrend (value) {
+      let className = 'neutraltrend'
+      if (value > 0) className = 'uptrend'
+      if (value < 0) className = 'downtrend'
+      return className
     }
   }
 }
@@ -199,6 +205,10 @@ export default {
 
 .table_body-item_content .column .downtrend {
   color: #ff1339;
+}
+
+.table_body-item_content .column .neutraltrend {
+  color: #888888;
 }
 
 @media(max-width: 1200px) {

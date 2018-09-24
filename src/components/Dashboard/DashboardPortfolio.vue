@@ -9,7 +9,9 @@
           <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
         </div>
         <div class="portfolio_diff-price">
-          <p :class="[price.diff > 0 ? 'uptrend' : 'downtrend']">{{ price | formatNumberPercentDiff }}</p>
+          <p :class="classTrend(price.diff)">
+            {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
+          </p>
         </div>
       </el-col>
       <el-col :span="1">
@@ -59,6 +61,14 @@ export default {
   data () {
     return {
       daysLabels: ['1H', '1D', '1W', '1M', '1Y']
+    }
+  },
+  methods: {
+    classTrend (value) {
+      let className = 'neutraltrend'
+      if (value > 0) className = 'uptrend'
+      if (value < 0) className = 'downtrend'
+      return className
     }
   }
 }
