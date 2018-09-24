@@ -67,12 +67,12 @@ export default {
     return {
       search: '',
       criterions: [
-        { name: 'alphabetical (asc)', icon: 'sort-alpha-down', key: 'name', desc: false },
-        { name: 'alphabetical (desc)', icon: 'sort-alpha-up', key: 'name', desc: true },
-        { name: 'token amount (asc)', icon: 'sort-amount-down', key: 'amount', desc: false, numeric: true },
-        { name: 'token amount (desc)', icon: 'sort-amount-up', key: 'amount', desc: true, numeric: true },
-        { name: 'fiat price (asc)', icon: 'sort-numeric-down', key: 'fiat', desc: false, numeric: true },
-        { name: 'fiat price (desc)', icon: 'sort-numeric-up', key: 'fiat', desc: true, numeric: true }
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-up', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-down', key: 'name', desc: true },
+        { name: 'token amount (asc)', icon: 'sort-amount-up', key: 'amount', desc: false, numeric: true },
+        { name: 'token amount (desc)', icon: 'sort-amount-down', key: 'amount', desc: true, numeric: true },
+        { name: 'fiat price (asc)', icon: 'sort-numeric-up', key: 'fiat', desc: false, numeric: true },
+        { name: 'fiat price (desc)', icon: 'sort-numeric-down', key: 'fiat', desc: true, numeric: true }
       ]
     }
   },
