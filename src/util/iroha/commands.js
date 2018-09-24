@@ -44,8 +44,16 @@ function command (
  */
 function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting signPendingTransaction...')
+
+  /*
+    * TODO: Remove clearSignaturesList() after
+    * https://soramitsu.atlassian.net/browse/IR-1680 is completed
+    * Now we should remove signatures because otherwise the transaction
+    * won't get to MST processor and will be immediately commited
+  */
   let txToSend = cloneDeep(transaction)
   txToSend.clearSignaturesList()
+
   txToSend = signWithArrayOfKeys(txToSend, privateKeys)
 
   let txClient = new CommandServiceClient(
