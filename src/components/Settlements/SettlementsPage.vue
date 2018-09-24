@@ -51,7 +51,6 @@ export default {
 .header {
   background: white;
   padding: 0 20px;
-  box-shadow: 0 1px 1px 0 #efefef;
 }
 
 .navlink {
