@@ -134,7 +134,7 @@ export default {
       return `${crypto.name} (${crypto.asset})`
     }
   },
-  mounted () {
+  beforeMount () {
     this.$store.dispatch('loadDashboardSortCriterion')
 
     if (!this.dashboardSortCriterion) this.sort(this.criterions[0])
