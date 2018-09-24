@@ -6,6 +6,7 @@ import {
   getProtoEnumName,
   DEFAULT_TIMEOUT_LIMIT
 } from './util'
+import cloneDeep from 'lodash/fp/cloneDeep'
 
 import Debug from 'debug'
 const debug = Debug('iroha-util')
@@ -43,7 +44,9 @@ function command (
  */
 function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting signPendingTransaction...')
-  let txToSend = signWithArrayOfKeys(transaction, privateKeys)
+  let txToSend = cloneDeep(transaction)
+  txToSend.clearSignaturesList()
+  txToSend = signWithArrayOfKeys(txToSend, privateKeys)
 
   let txClient = new CommandServiceClient(
     cache.nodeIp
