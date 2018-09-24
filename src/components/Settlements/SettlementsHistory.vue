@@ -7,13 +7,17 @@
   >
     <el-table-column type="expand">
       <template slot-scope="scope">
-        <p>
-          {{ scope.row.from }} wanted to exchange {{ scope.row.offer_amount + ' ' + scope.row.offer_asset}} for {{ scope.row.request_amount + ' ' + scope.row.request_asset}} with {{ scope.row.to }}
-        </p>
-        <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-        <p>Was <el-tag :type="tagType(scope.row.status)" >{{ scope.row.status }}</el-tag> at
-        {{ formatDateLong(scope.row.date) }}</p>
-        <p>Message: {{ scope.row.message }}</p>
+        <div class="transaction_details">
+          <el-row>
+            <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+            <el-col :span="6" class="transaction_details-amount">
+              <p>- {{ scope.row.offer_amount }} {{ scope.row.offer_asset }}</p>
+              <p>+ {{ scope.row.request_amount }} {{ scope.row.request_asset }}</p>
+            </el-col>
+            <el-col :span="6">{{ scope.row.message }}</el-col>
+            <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+          </el-row>
+        </div>
       </template>
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
@@ -36,6 +40,7 @@
      <el-table-column width="93">
       <template slot-scope="scope">
         <el-tag
+          class="status-tag"
           :type="tagType(scope.row.status)"
         >{{ scope.row.status }}</el-tag>
       </template>

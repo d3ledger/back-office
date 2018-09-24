@@ -143,7 +143,7 @@ export default {
 
 .searchbar__prefix {
   flex: 0 1 auto;
-  padding: 20px 15px 20px 20px;
+  padding: 20px 15px 15px 20px;
 }
 
 .searchbar__input {
@@ -152,7 +152,7 @@ export default {
 
 .searchbar__sort {
   flex: 0 1 auto;
-  padding: 20px 20px 20px 15px;
+  padding: 20px 20px 15px 15px;
 }
 
 .searchbar__sort-button {
