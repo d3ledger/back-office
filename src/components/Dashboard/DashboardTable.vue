@@ -12,9 +12,9 @@
     </div>
     <div class="card-content_body">
       <el-row justify="center" class="table_header">
-        <div class="table_header-title">Currency</div>
-        <div class="table_header-title text-center">Balance</div>
-        <div class="table_header-title text-right">Changes</div>
+        <div class="table_header-title currency">Currency</div>
+        <div class="table_header-title text-left balance">Balance</div>
+        <div class="table_header-title text-right changes">Changes</div>
       </el-row>
       <el-row class="table_body">
         <div class="table_body-content" :style="{ height: `${dashboardChartHeight}px` }">
@@ -22,13 +22,13 @@
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             v-for="(value, index) in filteredPortfolio" :key="index">
             <div class="table_body-item_content" @click="selectCrypto(value.asset)">
-              <div class="column text-format">
+              <div class="column text-format currency">
                 {{ value | formatName }}
               </div>
-              <div class="column balance text-center">
+              <div class="column balance text-center balance">
                 {{ value.price | formatNumberShort }} {{ currencySymbol }}
               </div>
-              <div class="column text-right">
+              <div class="column text-right changes">
                 <span :class="[value.diff > 0 ? 'uptrend' : 'downtrend']">
                   {{ value | formatNumberPercentDiff }}
                 </span>
@@ -113,16 +113,21 @@ export default {
   justify-content: space-between
 }
 
-.table_header-title {
-  flex: 0 1 33%
+.table_header-title.currency {
+  flex: 0 1 47%;
+}
+
+.table_header-title.balance,
+.table_header-title.changes {
+  flex: auto;
 }
 
 .table_header-title.text-right {
   text-align: right;
 }
 
-.table_header-title.text-center {
-  text-align: center;
+.table_header-title.text-left {
+  text-align: left;
 }
 
 .table_body {
@@ -159,10 +164,16 @@ export default {
   flex-flow: row wrap;
   padding: 2rem 1rem 0;
   height: 100%;
+  font-size: 0.9rem;
 }
 
-.table_body-item_content .column {
-  flex: 0 1 33%
+.table_body-item_content .column.currency {
+  flex: 0 1 40%;
+}
+
+.table_body-item_content .column.balance,
+.table_body-item_content .column.changes {
+  flex: auto;
 }
 
 .table_body-item_content .column.text-format {
