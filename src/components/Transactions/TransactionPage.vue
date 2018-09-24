@@ -28,7 +28,7 @@
               </el-table-column>
               <el-table-column label="Amount" width="150px">
                 <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}}
+                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId === scope.row.assetId).asset}}
                 </template>
               </el-table-column>
               <el-table-column label="Address" min-width="120" show-overflow-tooltip>
