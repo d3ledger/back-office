@@ -16,22 +16,27 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-switch v-model="isWhiteList" active-color="#13ce66" inactive-color="#ff4949" active-text="Whitelist">
+          <el-switch
+            v-model="isWhiteListVisible"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            active-text="Whitelist"
+          >
           </el-switch>
         </el-form-item>
-        <el-form-item v-if="isWhiteList" label="Address:">
+        <el-form-item v-if="isWhiteListVisible" label="Address:">
           <el-input
-                  name="newAddress"
-                  v-model="newAddress"
-                  placeholder="e.g. 0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78"
+            name="newAddress"
+            v-model="newAddress"
+            placeholder="e.g. 0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78"
           >
           </el-input>
           <el-button
-                  class="fullwidth blue"
-                  type="primary"
-                  @click="addAddressToWhiteList(newAddress)"
-                  :loading="isLoading"
-                  style="margin-top: 10px"
+            class="fullwidth blue"
+            type="primary"
+            @click="addAddressToWhiteList(newAddress)"
+            :loading="isLoading"
+            style="margin-top: 10px"
           >
             add to whitelist
           </el-button>
@@ -110,7 +115,7 @@ export default {
   data () {
     return {
       isLoading: false,
-      isWhiteList: false,
+      isWhiteListVisible: false,
       predefinedDomain: 'notary',
       newAddress: '',
       form: {
