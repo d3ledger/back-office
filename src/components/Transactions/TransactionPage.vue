@@ -53,7 +53,7 @@
                 <template slot-scope="scope">
                   <div class="transaction_action">
                     <el-button
-                      @click="onSignPendingTransaction(scope.row.id)"
+                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
                       size="medium"
                       type="primary"
                       plain
@@ -103,8 +103,8 @@ export default {
       'signPendingTransaction',
       'getPendingTransactions'
     ]),
-    onSignPendingTransaction (txStoreId) {
-      this.openApprovalDialog()
+    onSignPendingTransaction (txStoreId, signatures) {
+      this.openApprovalDialog(signatures)
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true

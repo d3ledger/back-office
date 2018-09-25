@@ -104,7 +104,7 @@
             <p v-if="accountQuorum > 1">
               (You need to enter at least 1 key)
             </p>
-            <p v-if="approvalForm.numberOfSignatures">This transaction already has {{approvalForm.numberOfSignatures}} signature<span v-if="approvalForm.numberOfSignatures > 1">s</span></p>
+            <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
           </el-row>
         </el-form-item>
 
@@ -139,7 +139,7 @@
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
             <div class="item__private-keys">
-              {{ approvalForm.numberOfValidKeys + approvalForm.numberOfSignatures }}/{{ accountQuorum }}
+              {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
@@ -189,8 +189,7 @@ export default {
       },
       approvalForm: {
         privateKeys: [],
-        numberOfValidKeys: 0,
-        numberOfSignatures: 0
+        numberOfValidKeys: 0
       },
       isExchangeSending: false
     }
@@ -200,6 +199,7 @@ export default {
     ...mapGetters([
       'wallets',
       'approvalDialogVisible',
+      'approvalDialogSignatures',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum'
@@ -329,7 +329,7 @@ export default {
     },
 
     beforeOpenApprovalDialog () {
-      const privateKeys = Array.from({ length: this.accountQuorum }, () => ({ hex: '' }))
+      const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
     },
