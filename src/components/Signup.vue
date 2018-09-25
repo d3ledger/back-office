@@ -15,7 +15,31 @@
             <template slot="append">@{{ predefinedDomain }}</template>
           </el-input>
         </el-form-item>
-
+        <el-form-item>
+          <el-switch v-model="isWhiteList" active-color="#13ce66" inactive-color="#ff4949" active-text="Whitelist">
+          </el-switch>
+        </el-form-item>
+        <el-form-item v-if="isWhiteList" label="Address:">
+          <el-input
+                  name="newAddress"
+                  v-model="newAddress"
+                  placeholder="e.g. 0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78"
+          >
+          </el-input>
+          <el-button
+                  class="fullwidth blue"
+                  type="primary"
+                  @click="addAddressToWhiteList(newAddress)"
+                  :loading="isLoading"
+                  style="margin-top: 10px"
+          >
+            add to whitelist
+          </el-button>
+          <p>Allowed to withdraw:</p>
+          <div v-for="item in form.whitelist" :key="item.height">
+            {{item}}
+          </div>
+        </el-form-item>
         <el-form-item class="signup-button-container">
           <el-button
             class="fullwidth black"
@@ -86,9 +110,12 @@ export default {
   data () {
     return {
       isLoading: false,
+      isWhiteList: false,
       predefinedDomain: 'notary',
+      newAddress: '',
       form: {
-        username: ''
+        username: '',
+        whitelist: []
       },
       dialogVisible: false,
       dialog: {
@@ -107,7 +134,8 @@ export default {
         this.isLoading = true
 
         this.$store.dispatch('signup', {
-          username: this.form.username
+          username: this.form.username,
+          whitelist: this.form.whitelist
         })
           .then(({ username, privateKey }) => {
             this.dialog.username = username
@@ -141,6 +169,12 @@ export default {
       FileSaver.saveAs(blob, filename)
 
       this.downloaded = true
+    },
+
+    addAddressToWhiteList (address) {
+      if (!this.form.whitelist.includes(address)) {
+        this.form.whitelist.push(address)
+      }
     }
   }
 }
