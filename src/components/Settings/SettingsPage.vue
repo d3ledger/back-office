@@ -1,87 +1,208 @@
 <template>
-  <el-row :gutter="20">
-    <el-col :span="12">
-      <wallets-card
-        title="ETH wallets"
-        :wallets="eth"
-        v-on:add-wallet="newWallet.type = 'ETH'; newWalletForm = true"
-      />
-    </el-col>
-    <el-col :span="12">
-      <wallets-card
-        title="Waves wallets"
-        :wallets="wvs"
-        v-on:add-wallet="newWallet.type = 'ETH'; newWalletForm = true"
-      />
-    </el-col>
-    <el-dialog
-      title="Add a wallet"
-      :visible.sync="newWalletForm"
-      width="500px"
-    >
-      <el-form
-        label-width="4rem"
-      >
-        <el-form-item label="Name:" prop="amount">
-          <el-input name="amount" v-model="newWallet.name">
-            <template slot="append">{{ newWallet.type }}</template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Address:" prop="to">
-          <el-input name="address" v-model="newWallet.address" />
-        </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button type="primary">Add Wallet</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
-  </el-row>
+  <el-container>
+    <el-main>
+      <el-row>
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
+          <el-card>
+            <div slot="header">
+              Settings
+            </div>
+            <div>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Currency</span>
+                </div>
+                <div>
+                  <el-row class="currencies_list">
+                    <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
+                    <el-col>
+                      <el-radio-group v-model="currentFiat" size="small">
+                        <el-radio
+                          v-for="(value, index) in settingsFiatCurrencies"
+                          :key="index"
+                          :label="value"
+                          class="currencies_list-select"
+                          border>{{ value }}</el-radio>
+                      </el-radio-group>
+                    </el-col>
+                  </el-row>
+                  <el-row class="currencies_list">
+                    <p class="list-title">Wallets (Market)</p>
+                    <el-col>
+                      <el-radio-group v-model="currentCrypto" size="small">
+                        <el-radio
+                          v-for="(value, index) in settingsCryptoCurrencies"
+                          :key="index"
+                          :label="value"
+                          class="currencies_list-select"
+                          border>{{ value }}</el-radio>
+                      </el-radio-group>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Time zone</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <el-select
+                        id="timezone_select"
+                        class="full-width_select"
+                        v-model="currentZone"
+                        filterable
+                        placeholder="Select">
+                        <el-option
+                          v-for="(zone, index) in timezones"
+                          :key="index"
+                          :label="zone"
+                          :value="zone">
+                        </el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="header">Privacy</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <div class="row_sub-header">
+                        <span class="header_small">Avaliable withdrawal addresses</span>
+                      </div>
+                      <div class="full-width_select address_list">
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length"
+                          v-for="address in withdrawWalletAddresses"
+                          :key="address"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          {{ address }}
+                        </el-tag>
+                        <el-tag
+                          v-if="withdrawWalletAddresses.length === 0"
+                          class="address_tag"
+                          size="small"
+                          type="info">
+                          You can withdraw to any address
+                        </el-tag>
+                      </div>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
-import WalletsCard from './WalletsCard'
+import dateFormat from '@/components/mixins/dateFormat'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'settings-page',
-  components: {
-    WalletsCard
-  },
   data () {
-    return {
-      newWalletForm: false,
-      newWallet: {
-        name: null,
-        address: null,
-        type: null
+    return {}
+  },
+  mixins: [
+    dateFormat
+  ],
+  computed: {
+    ...mapGetters([
+      'settingsFiatCurrencies',
+      'settingsCryptoCurrencies',
+      'withdrawWalletAddresses'
+    ]),
+    currentFiat: {
+      get () {
+        return this.$store.getters.settingsView.fiat
       },
-      eth: [
-        {
-          name: 'Work wallet',
-          currency: 'ETH',
-          address: 'SomeEthAddress'
-        },
-        {
-          name: 'MyHomeWallet',
-          currency: 'ETH',
-          address: 'SomeOtherEthAddress'
-        }
-      ],
-      wvs: [
-        {
-          name: 'Work wallet',
-          currency: 'WVS',
-          address: 'SomeWVSAddress'
-        },
-        {
-          name: 'MyHomeWallet',
-          currency: 'WVS',
-          address: 'SomeOtherWVSAddress'
-        }
-      ]
+      set (value) {
+        this.$store.dispatch('updateSettingsViewFiat', value)
+      }
+    },
+    currentCrypto: {
+      get () {
+        return this.$store.getters.settingsView.crypto
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewCrypto', value)
+      }
+    },
+    currentZone: {
+      get () {
+        return this.$store.getters.settingsView.timezone
+      },
+      set (value) {
+        this.$store.dispatch('updateSettingsViewTime', value)
+      }
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+.settings_item {
+  margin-bottom: 20px;
+}
+
+.row_sub-header {
+  margin-bottom: 10px;
+}
+
+.row_sub-header > .header_small {
+  font-size: 0.8rem;
+}
+
+.settings_item-header {
+  margin-bottom: 15px;
+}
+
+.settings_item-header > .header {
+  font-size: 1rem;
+}
+
+.currencies_list {
+  margin-bottom: 10px;
+}
+
+.list-title {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.currencies_list-select {
+  width: 5rem;
+}
+
+.full-width_select {
+  width: 100%;
+}
+
+.address_list {
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px 5px 0 5px;
+  width: 100%;
+}
+
+.address_tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
 </style>
