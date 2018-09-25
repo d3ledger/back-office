@@ -29,7 +29,7 @@
           </div>
           <div class="chart_header-divider"></div>
         </div>
-        <line-chart-portfolio :data="chartData"/>
+        <line-chart-portfolio :data="chartData" :filter="portfolioFilter" />
       </el-col>
     </el-card>
   </el-row>

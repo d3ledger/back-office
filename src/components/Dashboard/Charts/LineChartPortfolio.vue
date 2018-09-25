@@ -11,6 +11,7 @@
 <script>
 import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   name: 'line-chart-portfolio',
@@ -18,33 +19,63 @@ export default {
     data: {
       type: Array,
       required: true
+    },
+    filter: {
+      type: String,
+      required: true
     }
   },
   mixins: [
-    currencySymbol
+    currencySymbol,
+    dateFormat
   ],
   data () {
     return {
       chart: {
         grid: {
-          width: '104%',
-          height: '100%',
-          top: '0%',
-          left: '-2%'
+          width: '85%',
+          height: 140,
+          top: 10,
+          left: '15%',
+          bottom: 0
         },
         tooltip: {
           trigger: 'axis'
         },
         xAxis: {
-          show: false,
-          data: []
+          data: [],
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            inside: true,
+            showMinLabel: false
+          },
+          z: 100
         },
         yAxis: {
-          show: false
+          axisLine: {
+            show: false
+          },
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            showMinLabel: false,
+            showMaxLabel: false
+          },
+          splitLine: {
+            show: false
+          }
         },
         series: [{
           type: 'line',
-          symbol: 'none',
+          symbolSize: 10,
+          showSymbol: false,
+          hoverAnimation: false,
           itemStyle: {
             color: '#000000'
           },
@@ -68,15 +99,24 @@ export default {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {
         const value = data[0].value
-        const date = data[0].axisValue
-        return `${date}<br/>${value.toFixed(2)} ${this.currencySymbol}`
+        const time = this.formatDate(data[0].data.time * 1000)
+        return `${time}<br/>${value.toFixed(2)} ${this.currencySymbol}`
       }
-      this.chart.xAxis.data = this.data.map(i => this.convertDate(i.time))
-      this.chart.series[0].data = this.data.map(i => i.sum)
+      this.chart.xAxis.data = this.data.map(i => this.convertTime(i.time))
+      this.chart.series[0].data = this.data.map(i => {
+        return { value: i.sum, time: i.time }
+      })
     },
-    convertDate (num) {
+    convertTime (num) {
+      const filterFormat = {
+        '1Y': 'MMM\'YY',
+        '1M': 'DD MMM',
+        '1W': 'ddd',
+        '1D': 'HH:mm',
+        '1H': 'HH:mm'
+      }
       const date = new Date(num * 1000)
-      return format(date, 'DD MMMM')
+      return format(date, filterFormat[this.filter])
     }
   }
 }
@@ -84,7 +124,7 @@ export default {
 
 <style scoped>
 .echarts {
-  height: 190px;
+  height: 150px;
   width: 100%;
 }
 </style>
