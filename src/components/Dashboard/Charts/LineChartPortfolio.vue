@@ -98,9 +98,9 @@ export default {
   methods: {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {
-        const value = data[0].value
+        const value = parseFloat(data[0].value.toFixed(2)).toLocaleString()
         const time = this.formatDate(data[0].data.time * 1000)
-        return `${time}<br/>${value.toFixed(2)} ${this.currencySymbol}`
+        return `${time}<br/>${value} ${this.currencySymbol}`
       }
       this.chart.xAxis.data = this.data.map(i => this.convertTime(i.time))
       this.chart.series[0].data = this.data.map(i => {

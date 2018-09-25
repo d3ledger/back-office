@@ -9,9 +9,11 @@
           <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
         </div>
         <div class="portfolio_diff-price">
-          <p :class="classTrend(price.diff)">
-            {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
-          </p>
+          <el-tooltip :content="`${parseFloat(price.diff).toLocaleString()} ${currencySymbol}`">
+            <p :class="classTrend(price.diff)">
+              {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
+            </p>
+          </el-tooltip>
         </div>
       </el-col>
       <el-col :span="1">
