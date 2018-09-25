@@ -22,8 +22,9 @@
           <div
             v-for="(value, index) in daysLabels"
             :key="index"
-            :class="['1W' !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
-            >
+            :class="[portfolioFilter !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
+            @click="selectLabel(value)"
+          >
             <p class="chart_time-filter_value">{{ value }}</p>
           </div>
           <div class="chart_header-divider"></div>
@@ -35,6 +36,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
@@ -63,12 +65,21 @@ export default {
       daysLabels: ['1H', '1D', '1W', '1M', '1Y']
     }
   },
+  computed: {
+    ...mapGetters([
+      'portfolioFilter'
+    ])
+  },
   methods: {
     classTrend (value) {
       let className = 'neutraltrend'
       if (value > 0) className = 'uptrend'
       if (value < 0) className = 'downtrend'
       return className
+    },
+
+    selectLabel (label) {
+      this.$store.dispatch('getPortfolioHistory', { filter: label })
     }
   }
 }
