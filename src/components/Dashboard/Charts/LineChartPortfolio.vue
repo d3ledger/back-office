@@ -36,6 +36,8 @@ export default {
           width: '85%',
           height: 140,
           top: 10,
+          // TODO: adjust the width of yAxis to the number of digits of labels
+          // it varies depending on time ranges or fiat currencies.
           left: '15%',
           bottom: 0
         },
