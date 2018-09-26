@@ -19,9 +19,12 @@ describe('Test register page', () => {
   })
 
   it('Register new user', () => {
-    cy.get('.el-input__inner').type('jasonstatham')
+    cy.get('.el-input__inner[name="username"]').type('jasonstatham')
       .should('have.value', 'jasonstatham')
-    cy.get('.el-form-item__content > .el-button').click()
+    cy.get('.el-input__inner[name="newAddress"]').type('0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78')
+      .should('have.value', '0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78')
+    cy.get('.el-form-item__content > .el-button').contains('ADD').click()
+    cy.get('.el-form-item__content > .el-button.fullwidth').click()
     cy.contains('Download').should('be.visible')
     cy.contains('Confirm').should('be.disabled')
     // cy.get('.dialog-footer > .black').click()
