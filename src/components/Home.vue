@@ -112,7 +112,7 @@
           v-for="(key, index) in approvalForm.privateKeys"
           :key="index"
           :prop="`privateKeys.${index}.hex`"
-          :rules="rules.privateKey"
+          :rules="rules.repeatingPrivateKey"
         >
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
@@ -170,7 +170,7 @@ export default {
   mixins: [
     numberFormat,
     inputValidation({
-      privateKey: 'privateKey',
+      privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount'
@@ -249,6 +249,12 @@ export default {
       this._refreshRules({
         offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
         request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
+      })
+    }
+
+    if (this.approvalDialogVisible) {
+      this._refreshRules({
+        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
       })
     }
   },
