@@ -251,12 +251,6 @@ export default {
         request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
       })
     }
-
-    if (this.approvalDialogVisible) {
-      this._refreshRules({
-        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
-      })
-    }
   },
 
   updated () {
@@ -338,6 +332,10 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
+
+      this._refreshRules({
+        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
+      })
     },
 
     onFileChosen (file, fileList, key) {

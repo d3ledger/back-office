@@ -65,7 +65,7 @@ function checkRepeatingPrivateKey (keys) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     if (!!value && !privateKey.pattern.test(value)) errors.push(privateKey.message)
-    else if (privateKey.pattern.test(value) && keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) errors.push('Transaction is already signed with this key')
+    else if (keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) errors.push('Transaction is already signed with this key')
     callback(errors)
   }
 }
@@ -83,8 +83,7 @@ function generateRules (form) {
       walletAddressRule.push({ validator: checkWallet() })
       rules[key] = walletAddressRule
     } else if (validationRule.pattern === 'repeatingPrivateKey') {
-      const privateKeyRule = []
-      privateKeyRule.push({ validator: checkRepeatingPrivateKey(validationRule.keys) })
+      const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
       rules[key] = privateKeyRule
     } else {
       rules[key] = set[validationRule]
