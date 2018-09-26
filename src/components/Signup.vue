@@ -15,39 +15,31 @@
             <template slot="append">@{{ predefinedDomain }}</template>
           </el-input>
         </el-form-item>
-        <el-form-item>
-          <el-switch
-            v-model="isWhiteListVisible"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-text="Whitelist"
-          />
-        </el-form-item>
-        <el-form-item v-if="isWhiteListVisible" label="Whitelist address:" prop="newAddress">
+        <el-form-item label="Whitelist address:" prop="newAddress" ref="newAddress">
           <el-input
             name="newAddress"
             v-model="form.newAddress"
             placeholder="e.g. 0x00000000..."
+            style="width: 355px"
           >
           </el-input>
-        </el-form-item>
-        <el-form-item v-if="isWhiteListVisible">
           <el-button
-            class="fullwidth blue"
+            class="blue"
             type="primary"
             @click="onClickAddAddressToWhiteList"
             :loading="isLoading"
-            style="margin-top: 10px"
+            style="margin-left: 10px"
           >
-            add to whitelist
+            ADD
           </el-button>
-          <p>Allowed to withdraw:</p>
+        </el-form-item>
+        <el-form-item v-if="form.whitelist.length">
+          <p>You will be allowed to withdraw to these addresses:</p>
           <el-tag
             v-for="(item, idx) in form.whitelist"
             :key="item"
-            class="address_tag"
-            size="small"
-            type="info"
+            size="default"
+            type="success"
             closable
             @close="() => onClickRemoveItemFromWitelist(idx)"
           >
@@ -125,7 +117,6 @@ export default {
   data () {
     return {
       isLoading: false,
-      isWhiteListVisible: false,
       predefinedDomain: 'notary',
       form: {
         username: '',
@@ -141,10 +132,15 @@ export default {
     }
   },
 
+  beforeMount () {
+    this.updateWhiteListValidationRules()
+  },
+
   methods: {
     onSubmit () {
-      this.$refs['form'].validate((valid) => {
-        if (!valid) return false
+      this.$refs['newAddress'].clearValidate()
+      this.$refs['form'].validateField('username', (usernameErrorMessage) => {
+        if (usernameErrorMessage) return false
 
         this.isLoading = true
 
@@ -187,12 +183,30 @@ export default {
     },
 
     onClickAddAddressToWhiteList () {
-      if (!this.form.whitelist.includes(this.form.newAddress)) {
+      this.$refs['form'].validateField('newAddress', (errorMessage) => {
+        if (errorMessage) return
+
         this.form.whitelist.push(this.form.newAddress)
-      }
+        this.$refs['newAddress'].resetField()
+
+        this.updateWhiteListValidationRules()
+      })
     },
+
     onClickRemoveItemFromWitelist (index) {
       this.form.whitelist.splice(index, 1)
+
+      /*
+        Update validation rules + re-validate inserted field
+      */
+      this.updateWhiteListValidationRules()
+      this.$refs['form'].validateField('newAddress')
+    },
+
+    updateWhiteListValidationRules () {
+      this._refreshRules({
+        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
+      })
     }
   }
 }
