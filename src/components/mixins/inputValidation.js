@@ -64,7 +64,7 @@ function checkWallet () {
 function checkRepeatingPrivateKey (keys) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
-    if (!!privateKey && !privateKey.pattern.test(value)) errors.push(privateKey.message)
+    if (!!value && !privateKey.pattern.test(value)) errors.push(privateKey.message)
     else if (privateKey.pattern.test(value) && keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) errors.push('Transaction is already signed with this key')
     callback(errors)
   }
