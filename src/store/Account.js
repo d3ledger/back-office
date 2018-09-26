@@ -290,12 +290,12 @@ const mutations = {
 }
 
 const actions = {
-  signup ({ commit }, { username }) {
+  signup ({ commit }, { username, whitelist }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, publicKey)
+    return notaryUtil.signup(username, whitelist, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {

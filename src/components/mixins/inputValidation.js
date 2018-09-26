@@ -45,12 +45,13 @@ function checkBalance (maxValue, maxPrecision) {
   }
 }
 
-function checkWallet () {
+function checkWallet (wallets) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     const validateBTC = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value)
     const validateETH = /^0x[a-fA-F0-9]{40}$/.test(value)
     if (!validateBTC && !validateETH) errors.push('Invalid wallet address')
+    else if (wallets && wallets.includes(value)) errors.push('This wallet is already in the whitelist')
     callback(errors)
   }
 }
@@ -63,9 +64,9 @@ function generateRules (form) {
       const tokensAmountRule = Object.assign([], set[validationRule.pattern])
       tokensAmountRule.push({ validator: checkBalance(validationRule.amount, validationRule.precision) })
       rules[key] = tokensAmountRule
-    } else if (validationRule === 'walletAddress') {
+    } else if (validationRule.pattern === 'walletAddress') {
       const walletAddressRule = Object.assign([], set[validationRule])
-      walletAddressRule.push({ validator: checkWallet() })
+      walletAddressRule.push({ validator: checkWallet(validationRule.wallets) })
       rules[key] = walletAddressRule
     } else {
       rules[key] = set[validationRule]
