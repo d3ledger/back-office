@@ -100,9 +100,9 @@
           <el-row class="approval_form-desc">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-            </p>
-            <p v-if="accountQuorum > 1">
-              (You need to enter at least 1 key)
+              <span v-if="accountQuorum > 1">
+                You need to enter at least 1 key.
+              </span>
             </p>
             <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
           </el-row>
@@ -138,7 +138,7 @@
 
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
-            <div class="item__private-keys">
+            <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
               {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
             </div>
           </el-row>
@@ -368,6 +368,10 @@ export default {
   border: solid 1px #cccccc;
   display: flex;
   justify-content: center;
+}
+
+.item__private-keys-success {
+  border: solid 1px #67c23a;
 }
 
 /* in order not to make a border green when a private key is empty */
