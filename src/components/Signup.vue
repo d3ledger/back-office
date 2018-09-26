@@ -21,28 +21,32 @@
             active-color="#13ce66"
             inactive-color="#ff4949"
             active-text="Whitelist"
-          >
-          </el-switch>
+          />
         </el-form-item>
         <el-form-item v-if="isWhiteListVisible" label="Address:">
           <el-input
             name="newAddress"
             v-model="newAddress"
-            placeholder="e.g. 0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78"
+            placeholder="e.g. 0x070f9d09370fd7ae3a583f....."
           >
           </el-input>
           <el-button
             class="fullwidth blue"
             type="primary"
-            @click="addAddressToWhiteList(newAddress)"
+            @click="onClickAddAddressToWhiteList()"
             :loading="isLoading"
             style="margin-top: 10px"
           >
             add to whitelist
           </el-button>
           <p>Allowed to withdraw:</p>
-          <div v-for="item in form.whitelist" :key="item.height">
-            {{item}}
+          <div v-for="(item, index) in form.whitelist" v-bind:key="index">
+            {{ index + 1 }} {{ item }}
+            <el-button
+              @click="onClickRemoveItemFromWitelist(index)"
+            >
+              ⛔
+            </el-button>
           </div>
         </el-form-item>
         <el-form-item class="signup-button-container">
@@ -176,10 +180,13 @@ export default {
       this.downloaded = true
     },
 
-    addAddressToWhiteList (address) {
-      if (!this.form.whitelist.includes(address)) {
-        this.form.whitelist.push(address)
+    onClickAddAddressToWhiteList () {
+      if (!this.form.whitelist.includes(this.newAddress)) {
+        this.form.whitelist.push(this.newAddress)
       }
+    },
+    onClickRemoveItemFromWitelist (index) {
+      this.form.whitelist.splice(index, 1)
     }
   }
 }
