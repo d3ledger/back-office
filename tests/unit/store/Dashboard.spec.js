@@ -40,7 +40,8 @@ describe('Dashboard store', () => {
             percent: 555
           },
           assetsPercentage: [{}, {}, {}],
-          assetsHistory: [{}, {}, {}]
+          assetsHistory: [{}, {}, {}],
+          filter: 'ALL'
         },
         assetList: [{}, {}, {}],
         assetChart: {
@@ -59,7 +60,8 @@ describe('Dashboard store', () => {
             percent: 0
           },
           assetsPercentage: [],
-          assetsHistory: []
+          assetsHistory: [],
+          filter: '1W'
         },
         assetList: [],
         assetChart: {
@@ -274,16 +276,15 @@ describe('Dashboard store', () => {
             crypto: randomArrayElement(['BTC', 'ETH', 'XRP'])
           }
         }
-        await actions.getPortfolioHistory({ commit, getters })
+        const filter = randomArrayElement(['1Y', '1M', '1W', '1D', '1H'])
+        await actions.getPortfolioHistory({ commit, getters }, { filter })
 
-        const response = commit.secondCall.args[1]
+        const response = commit.thirdCall.args[1]
 
         expect(commit.args).to.deep.equal([
+          [types.SELECT_PORTFOLIO_FILTER, filter],
           [types.GET_PORTFOLIO_HISTORY_REQUEST],
-          [types.GET_PORTFOLIO_HISTORY_SUCCESS, response],
-          [types.GET_PORTFOLIO_FULL_PRICE],
-          [types.GET_PORTFOLIO_PRICE_PERCENTAGE, getters.wallets],
-          [types.GET_PORTFOLIO_PRICE_LIST, getters.wallets]
+          [types.GET_PORTFOLIO_HISTORY_SUCCESS, response]
         ])
       })
     })

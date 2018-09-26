@@ -8,13 +8,41 @@ let axiosAPI = axios.create({
 
 const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
   const currentFiat = settings.fiat
+  const dateFilter = {
+    'ALL': {
+      url: 'histoday',
+      time: 730
+    },
+    '1Y': {
+      url: 'histoday',
+      time: 365
+    },
+    '1M': {
+      url: 'histoday',
+      time: 30
+    },
+    '1W': {
+      url: 'histoday',
+      time: 7
+    },
+    '1D': {
+      url: 'histohour',
+      time: 24
+    },
+    '1H': {
+      url: 'histominute',
+      time: 60
+    }
+  }
+  const search = dateFilter[options.filter]
+  const endpoint = 'data/' + (search ? search.url : 'histoday')
   const history = currencies.map(crypto => {
     return axios
-      .get('data/histoday', {
+      .get(endpoint, {
         params: {
           fsym: crypto.asset,
           tsym: currentFiat,
-          limit: options.limit || 30,
+          limit: options.limit || search.time,
           toTs: options.toTs
         }
       })

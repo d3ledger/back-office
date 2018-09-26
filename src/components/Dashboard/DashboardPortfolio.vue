@@ -6,12 +6,16 @@
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
-          <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+          <el-tooltip :content="`current price: ${parseFloat(price.value).toLocaleString()} ${currencySymbol}`">
+            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+          </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <p :class="classTrend(price.diff)">
-            {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
-          </p>
+          <el-tooltip :content="`difference from the previous day: ${parseFloat(price.diff).toLocaleString()} ${currencySymbol}`">
+            <p :class="classTrend(price.diff)">
+              {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
+            </p>
+          </el-tooltip>
         </div>
       </el-col>
       <el-col :span="1">
@@ -22,19 +26,21 @@
           <div
             v-for="(value, index) in daysLabels"
             :key="index"
-            :class="['1W' !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
-            >
+            :class="[portfolioFilter !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
+            @click="selectLabel(value)"
+          >
             <p class="chart_time-filter_value">{{ value }}</p>
           </div>
           <div class="chart_header-divider"></div>
         </div>
-        <line-chart-portfolio :data="chartData"/>
+        <line-chart-portfolio :data="chartData" :filter="portfolioFilter" />
       </el-col>
     </el-card>
   </el-row>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
@@ -63,12 +69,21 @@ export default {
       daysLabels: ['1H', '1D', '1W', '1M', '1Y']
     }
   },
+  computed: {
+    ...mapGetters([
+      'portfolioFilter'
+    ])
+  },
   methods: {
     classTrend (value) {
       let className = 'neutraltrend'
       if (value > 0) className = 'uptrend'
       if (value < 0) className = 'downtrend'
       return className
+    },
+
+    selectLabel (label) {
+      this.$store.dispatch('getPortfolioHistory', { filter: label })
     }
   }
 }
