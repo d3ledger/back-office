@@ -6,10 +6,12 @@
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
-          <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+          <el-tooltip :content="`current price: ${parseFloat(price.value).toLocaleString()} ${currencySymbol}`">
+            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+          </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <el-tooltip :content="`${parseFloat(price.diff).toLocaleString()} ${currencySymbol}`">
+          <el-tooltip :content="`difference from the previous day: ${parseFloat(price.diff).toLocaleString()} ${currencySymbol}`">
             <p :class="classTrend(price.diff)">
               {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
             </p>
