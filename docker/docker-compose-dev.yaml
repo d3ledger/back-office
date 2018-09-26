@@ -20,6 +20,8 @@ services:
       - d3-back-office
     volumes:
       - ./iroha:/opt/iroha_data
+    ports:
+      - 50051:50051
 
   d3-iroha-postgres:
     image: postgres:9.5
