@@ -35,9 +35,10 @@ const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
     }
   }
   const search = dateFilter[options.filter]
+  const endpoint = 'data/' + (search ? search.url : 'histoday')
   const history = currencies.map(crypto => {
     return axios
-      .get(`data/${search.url}`, {
+      .get(endpoint, {
         params: {
           fsym: crypto.asset,
           tsym: currentFiat,
