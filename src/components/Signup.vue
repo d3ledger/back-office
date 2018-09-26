@@ -23,31 +23,36 @@
             active-text="Whitelist"
           />
         </el-form-item>
-        <el-form-item v-if="isWhiteListVisible" label="Address:">
+        <el-form-item v-if="isWhiteListVisible" label="Whitelist address:" prop="newAddress">
           <el-input
             name="newAddress"
-            v-model="newAddress"
-            placeholder="e.g. 0x070f9d09370fd7ae3a583f....."
+            v-model="form.newAddress"
+            placeholder="e.g. 0x00000000..."
           >
           </el-input>
+        </el-form-item>
+        <el-form-item v-if="isWhiteListVisible">
           <el-button
             class="fullwidth blue"
             type="primary"
-            @click="onClickAddAddressToWhiteList()"
+            @click="onClickAddAddressToWhiteList"
             :loading="isLoading"
             style="margin-top: 10px"
           >
             add to whitelist
           </el-button>
           <p>Allowed to withdraw:</p>
-          <div v-for="(item, index) in form.whitelist" v-bind:key="index">
-            {{ index + 1 }} {{ item }}
-            <el-button
-              @click="onClickRemoveItemFromWitelist(index)"
-            >
-              ⛔
-            </el-button>
-          </div>
+          <el-tag
+            v-for="(item, idx) in form.whitelist"
+            :key="item"
+            class="address_tag"
+            size="small"
+            type="info"
+            closable
+            @close="() => onClickRemoveItemFromWitelist(idx)"
+          >
+            {{ item }}
+          </el-tag>
         </el-form-item>
         <el-form-item class="signup-button-container">
           <el-button
@@ -113,7 +118,8 @@ export default {
   name: 'signup',
   mixins: [
     inputValidation({
-      username: 'name'
+      username: 'name',
+      newAddress: 'walletAddress'
     })
   ],
   data () {
@@ -121,9 +127,9 @@ export default {
       isLoading: false,
       isWhiteListVisible: false,
       predefinedDomain: 'notary',
-      newAddress: '',
       form: {
         username: '',
+        newAddress: '',
         whitelist: []
       },
       dialogVisible: false,
@@ -181,8 +187,8 @@ export default {
     },
 
     onClickAddAddressToWhiteList () {
-      if (!this.form.whitelist.includes(this.newAddress)) {
-        this.form.whitelist.push(this.newAddress)
+      if (!this.form.whitelist.includes(this.form.newAddress)) {
+        this.form.whitelist.push(this.form.newAddress)
       }
     },
     onClickRemoveItemFromWitelist (index) {
@@ -227,5 +233,9 @@ export default {
 
   .signup-form >>> .el-form-item__label::before {
     content: '';
+  }
+
+  .el-tag {
+    margin-right: 10px;
   }
 </style>
