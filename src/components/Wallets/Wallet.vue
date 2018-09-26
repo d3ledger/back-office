@@ -404,6 +404,12 @@ export default {
     this.fetchWallet()
   },
 
+  beforeMount () {
+    this._refreshRules({
+      wallet: { pattern: 'walletAddress' }
+    })
+  },
+
   beforeUpdate () {
     this._refreshRules({
       amount: { pattern: 'tokensAmount', amount: this.wallet.amount, precision: this.wallet.precision }

@@ -15,7 +15,37 @@
             <template slot="append">@{{ predefinedDomain }}</template>
           </el-input>
         </el-form-item>
-
+        <el-form-item label="Whitelist address:" prop="newAddress" ref="newAddress">
+          <el-input
+            name="newAddress"
+            v-model="form.newAddress"
+            placeholder="e.g. 0x00000000..."
+            style="width: 355px"
+          >
+          </el-input>
+          <el-button
+            class="blue"
+            type="primary"
+            @click="onClickAddAddressToWhiteList"
+            :loading="isLoading"
+            style="margin-left: 10px"
+          >
+            ADD
+          </el-button>
+        </el-form-item>
+        <el-form-item v-if="form.whitelist.length">
+          <p>You will be allowed to withdraw to these addresses:</p>
+          <el-tag
+            v-for="(item, idx) in form.whitelist"
+            :key="item"
+            size="default"
+            type="success"
+            closable
+            @close="() => onClickRemoveItemFromWitelist(idx)"
+          >
+            {{ item }}
+          </el-tag>
+        </el-form-item>
         <el-form-item class="signup-button-container">
           <el-button
             class="fullwidth black"
@@ -80,7 +110,8 @@ export default {
   name: 'signup',
   mixins: [
     inputValidation({
-      username: 'name'
+      username: 'name',
+      newAddress: 'walletAddress'
     })
   ],
   data () {
@@ -88,7 +119,9 @@ export default {
       isLoading: false,
       predefinedDomain: 'notary',
       form: {
-        username: ''
+        username: '',
+        newAddress: '',
+        whitelist: []
       },
       dialogVisible: false,
       dialog: {
@@ -99,15 +132,21 @@ export default {
     }
   },
 
+  beforeMount () {
+    this.updateWhiteListValidationRules()
+  },
+
   methods: {
     onSubmit () {
-      this.$refs['form'].validate((valid) => {
-        if (!valid) return false
+      this.$refs['newAddress'].clearValidate()
+      this.$refs['form'].validateField('username', (usernameErrorMessage) => {
+        if (usernameErrorMessage) return false
 
         this.isLoading = true
 
         this.$store.dispatch('signup', {
-          username: this.form.username
+          username: this.form.username,
+          whitelist: this.form.whitelist
         })
           .then(({ username, privateKey }) => {
             this.dialog.username = username
@@ -141,6 +180,33 @@ export default {
       FileSaver.saveAs(blob, filename)
 
       this.downloaded = true
+    },
+
+    onClickAddAddressToWhiteList () {
+      this.$refs['form'].validateField('newAddress', (errorMessage) => {
+        if (errorMessage) return
+
+        this.form.whitelist.push(this.form.newAddress)
+        this.$refs['newAddress'].resetField()
+
+        this.updateWhiteListValidationRules()
+      })
+    },
+
+    onClickRemoveItemFromWitelist (index) {
+      this.form.whitelist.splice(index, 1)
+
+      /*
+        Update validation rules + re-validate inserted field
+      */
+      this.updateWhiteListValidationRules()
+      this.$refs['form'].validateField('newAddress')
+    },
+
+    updateWhiteListValidationRules () {
+      this._refreshRules({
+        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
+      })
     }
   }
 }
@@ -181,5 +247,9 @@ export default {
 
   .signup-form >>> .el-form-item__label::before {
     content: '';
+  }
+
+  .el-tag {
+    margin-right: 10px;
   }
 </style>
