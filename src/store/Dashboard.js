@@ -17,7 +17,8 @@ const types = flow(
     'GET_PORTFOLIO_PRICE_LIST',
     'GET_PORTFOLIO_PRICE_PERCENTAGE',
     'SELECT_CHART_FILTER',
-    'SELECT_CHART_CRYPTO'
+    'SELECT_CHART_CRYPTO',
+    'SELECT_PORTFOLIO_FILTER'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -69,7 +70,8 @@ function initialState () {
         percent: 0
       },
       assetsPercentage: [],
-      assetsHistory: []
+      assetsHistory: [],
+      filter: '1W'
     },
     assetList: [],
     assetChart: {
@@ -90,6 +92,9 @@ const getters = {
   },
   portfolioPercent (state) {
     return state.portfolio.assetsPercentage
+  },
+  portfolioFilter (state) {
+    return state.portfolio.filter
   },
   portfolioChart (state) {
     return state.assetChart
@@ -191,6 +196,10 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.SELECT_PORTFOLIO_FILTER] (state, filter) {
+    Vue.set(state.portfolio, 'filter', filter)
+  },
+
   [types.SELECT_CHART_FILTER] (state, filter) {
     Vue.set(state.assetChart, 'filter', filter)
   },
@@ -218,10 +227,15 @@ const actions = {
     commit(types.LOAD_DASHBOARD_REQUEST)
     dispatch('getAccountAssets')
       .then(async () => {
-        if (getters.wallets.length) {
-          await dispatch('getPortfolioHistory')
-          await dispatch('getPriceByFilter', getters.portfolioChart)
-        }
+        if (!getters.wallets.length) return
+
+        await dispatch('getPortfolioHistory', { filter: getters.portfolioFilter })
+
+        commit('GET_PORTFOLIO_FULL_PRICE')
+        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
+        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
+
+        await dispatch('getPriceByFilter', getters.portfolioChart)
       })
       .then(() => commit(types.LOAD_DASHBOARD_SUCCESS))
       .catch((err) => {
@@ -229,20 +243,17 @@ const actions = {
         throw err
       })
   },
-  async getPortfolioHistory ({ commit, getters }) {
+  async getPortfolioHistory ({ commit, getters }, { filter }) {
+    commit(types.SELECT_PORTFOLIO_FILTER, filter)
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
-    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets, getters.settingsView)
+
+    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets, getters.settingsView, { filter })
       .then(history => {
         commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
       })
       .catch(err => {
         commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err)
         throw err
-      })
-      .then(() => {
-        commit('GET_PORTFOLIO_FULL_PRICE')
-        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
-        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {

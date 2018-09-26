@@ -62,6 +62,7 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
+  Tooltip,
   Switch
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
@@ -102,6 +103,7 @@ Vue.use(Main)
 Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
+Vue.use(Tooltip)
 Vue.use(Switch)
 Vue.use(Loading.directive)
 Vue.prototype.$alert = MessageBox.alert
