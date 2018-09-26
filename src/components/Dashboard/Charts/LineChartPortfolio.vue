@@ -1,6 +1,7 @@
 <template>
   <div class="echarts">
     <ECharts
+      ref="chart"
       :options="chart"
       :auto-resize="true"
       @ready="onReady"
@@ -12,6 +13,7 @@
 import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import dateFormat from '@/components/mixins/dateFormat'
+import debounce from 'lodash/fp/debounce'
 
 export default {
   name: 'line-chart-portfolio',
@@ -30,19 +32,24 @@ export default {
     dateFormat
   ],
   data () {
+    const fontFamily = "'IBM Plex Sans', sans-serif"
+
     return {
       chart: {
         grid: {
-          width: '85%',
-          height: 140,
           top: 10,
-          // TODO: adjust the width of yAxis to the number of digits of labels
-          // it varies depending on time ranges or fiat currencies.
-          left: '15%',
-          bottom: 0
+          height: 115,
+          bottom: 25
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          axisPointer: {
+            type: 'line',
+            z: -1 // render the line behind a symbol
+          },
+          textStyle: {
+            fontFamily
+          }
         },
         xAxis: {
           data: [],
@@ -53,10 +60,8 @@ export default {
             show: false
           },
           axisLabel: {
-            inside: true,
-            showMinLabel: false
-          },
-          z: 100
+            fontFamily
+          }
         },
         yAxis: {
           axisLine: {
@@ -66,6 +71,8 @@ export default {
             show: false
           },
           axisLabel: {
+            formatter: (value) => value.toLocaleString().replace(/,/g, ' '), // "12,345" -> "12 345"
+            fontFamily,
             showMinLabel: false,
             showMaxLabel: false
           },
@@ -97,6 +104,16 @@ export default {
       this.onReady()
     }
   },
+
+  mounted () {
+    this._adjustYAxisWidthDebounced = debounce(500)(this.adjustYAxisWidth.bind(this))
+    window.addEventListener('resize', this._adjustYAxisWidthDebounced)
+  },
+
+  beforeDestroy () {
+    window.removeEventListener('resize', this._adjustYAxisWidthDebounced)
+  },
+
   methods: {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {
@@ -108,6 +125,8 @@ export default {
       this.chart.series[0].data = this.data.map(i => {
         return { value: i.sum, time: i.time }
       })
+
+      this.$nextTick(this.adjustYAxisWidth)
     },
     convertTime (num) {
       const filterFormat = {
@@ -119,6 +138,20 @@ export default {
       }
       const date = new Date(num * 1000)
       return format(date, filterFormat[this.filter])
+    },
+    adjustYAxisWidth () {
+      const chartInstance = this.$refs.chart.chart
+      const maxValue = Math.max.apply(null, this.data.map(i => i.sum))
+      const WIDTH_PER_DIGIT = 10
+      const OFFSET = 10
+      const yAxisWidth = OFFSET + maxValue.toFixed(0).length * WIDTH_PER_DIGIT
+
+      chartInstance.setOption({
+        grid: {
+          left: yAxisWidth,
+          width: chartInstance.width - yAxisWidth
+        }
+      })
     }
   }
 }
