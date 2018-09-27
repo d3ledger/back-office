@@ -10,6 +10,10 @@
     },
     "priceFiatList": [
       {
+        "date": 1530403200000,
+        "price": 0.0023
+      },
+      {
         "date": 1530489600000,
         "price": 0.0021
       },
@@ -197,9 +201,9 @@
       {
         "date": "Jul. 13, 2018 00:00",
         "dailyIn": "1.73",
-        "dailyInFiat": "823.81",
+        "dailyInFiat": "720.83",
         "dailyOut": "2.61",
-        "dailyOutFiat": "1242.86",
+        "dailyOutFiat": "1087.50",
         "dailyNet": "-0.88"
       },
       {
@@ -219,61 +223,61 @@
         "amount": null,
         "amountFiat": null,
         "balance": "14.28",
-        "balanceFiat": "6800.00"
+        "balanceFiat": "6208.70"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "alice@test",
         "description": "initial tx",
         "amount": "-1.66",
-        "amountFiat": "-790.48",
+        "amountFiat": "-691.67",
         "balance": "12.62",
-        "balanceFiat": "6009.52"
+        "balanceFiat": "5258.33"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "alice@test",
         "description": "",
         "amount": "-0.12",
-        "amountFiat": "-57.14",
+        "amountFiat": "-50.00",
         "balance": "12.50",
-        "balanceFiat": "5952.38"
+        "balanceFiat": "5208.33"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "alice@test",
         "description": "hello",
         "amount": "-0.73",
-        "amountFiat": "-347.62",
+        "amountFiat": "-304.17",
         "balance": "11.77",
-        "balanceFiat": "5604.76"
+        "balanceFiat": "4904.17"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "alice@test",
         "description": "hi",
         "amount": "-0.10",
-        "amountFiat": "-47.62",
+        "amountFiat": "-41.67",
         "balance": "11.67",
-        "balanceFiat": "5557.14"
+        "balanceFiat": "4862.50"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.83",
-        "amountFiat": "395.24",
+        "amountFiat": "345.83",
         "balance": "12.50",
-        "balanceFiat": "5952.38"
+        "balanceFiat": "5208.33"
       },
       {
         "time": "Jul. 13, 2018 07:17",
         "to": "Received",
         "description": "hi",
         "amount": "0.90",
-        "amountFiat": "428.57",
+        "amountFiat": "375.00",
         "balance": "13.40",
-        "balanceFiat": "6380.95"
+        "balanceFiat": "5583.33"
       },
       {
         "time": "Jul. 17, 2018 04:41",
