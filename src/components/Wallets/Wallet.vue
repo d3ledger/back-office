@@ -376,7 +376,8 @@ export default {
       'cryptoInfo',
       'settingsView',
       'ethWalletAddress',
-      'withdrawWalletAddresses'
+      'withdrawWalletAddresses',
+      'getTransactionsByAssetId'
     ]),
 
     wallet () {
@@ -388,7 +389,7 @@ export default {
     transactions () {
       if (!this.wallet) return []
 
-      return this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
+      return this.getTransactionsByAssetId(this.wallet.assetId)
     },
 
     displayPrecision () {
