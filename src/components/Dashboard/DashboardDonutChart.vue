@@ -49,7 +49,6 @@ export default {
   computed: {
     filterPortfolio () {
       const portfolio = this.portfolio.filter(t => t.percent !== 0)
-      console.log(portfolio)
       const sortedPortfolio = [...portfolio].sort((a, b) => b.percent - a.percent)
       const firstTokens = sortedPortfolio.slice(0, 5)
       const otherTokens = sortedPortfolio.slice(5, sortedPortfolio.length - 1)
