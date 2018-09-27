@@ -133,7 +133,9 @@ import endOfMonth from 'date-fns/end_of_month'
 import endOfDay from 'date-fns/end_of_day'
 import differenceInDays from 'date-fns/difference_in_days'
 import isAfter from 'date-fns/is_after'
-import endOfYesterday from 'date-fns/end_of_yesterday'
+import endOfToday from 'date-fns/end_of_today'
+import isWithinRange from 'date-fns/is_within_range'
+import addDays from 'date-fns/add_days'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { lazyComponent } from '@router'
 
@@ -182,28 +184,75 @@ export default {
     this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
   },
   methods: {
-    isDisabledDate: (date) => isAfter(date, endOfYesterday()),
+    isDisabledDate: (date) => isAfter(date, endOfToday()),
 
     /*
-     * collect prices from fiat to crypto
+     * Collect prices from fiat to crypto
+     * Use the last minute's close as the today's price if today is within the range.
      */
     loadPriceFiatList (asset, dateFrom, dateTo) {
-      return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
-        limit: differenceInDays(dateTo, dateFrom),
+      const today = new Date()
+      const promises = []
+      const fetchingDailyPrices = cryptoCompareUtil.loadHistoryByLabels(
+        this.wallets,
+        this.settingsView,
+        {
+          limit: differenceInDays(dateTo, dateFrom) + 1,
 
-        // convert milliseconds to seconds; round down to prevent it goes next day
-        toTs: Math.floor(dateTo.getTime() / 1000)
-      })
-        .then(res => res
-          .find(x => (x.asset === asset))
-          .data
-          .map(({ time, close }) => ({ date: time * 1000, price: close }))
+          // convert milliseconds to seconds; round down to prevent it goes next day
+          toTs: Math.floor(addDays(dateTo, 1).getTime() / 1000)
+        }
+      )
+
+      promises.push(fetchingDailyPrices)
+
+      if (isWithinRange(today, dateFrom, dateTo)) {
+        const fetchingMinutePrices = cryptoCompareUtil.loadHistoryByLabels(
+          this.wallets,
+          this.settingsView,
+          {
+            filter: '1H',
+            limit: 1
+          }
         )
+
+        promises.push(fetchingMinutePrices)
+      }
+
+      const mergeDailyAndMinutePrices = ([dailyPrices, minutePrices]) => {
+        if (!minutePrices) return dailyPrices
+
+        minutePrices.forEach(assetMinute => {
+          const utcTomorrow = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1)
+          const currentPrice = assetMinute.data.pop()
+
+          currentPrice.time = Math.floor(utcTomorrow / 1000)
+
+          dailyPrices
+            .find(assetDaily => assetDaily.asset === assetMinute.asset)
+            .data
+            .push(currentPrice)
+        })
+
+        return dailyPrices
+      }
+
+      return Promise.all(promises)
+        .then(mergeDailyAndMinutePrices)
+        .then(res => {
+          return res
+            .find(x => (x.asset === asset))
+            .data
+            .map(({ time, close }) => {
+              return { date: time * 1000, price: close }
+            })
+        })
     },
 
     download ({ date, assetId }, fileFormat) {
+      const now = new Date()
       const dateFrom = date[0]
-      const dateTo = endOfDay(date[1])
+      const dateTo = isAfter(endOfDay(date[1]), now) ? now : endOfDay(date[1])
       const wallet = this.wallets.find(x => (x.assetId === assetId))
 
       Promise.all([
