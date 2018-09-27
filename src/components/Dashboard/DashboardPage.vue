@@ -76,7 +76,7 @@ export default {
       'isDashboardLoading'
     ]),
     hasNonEmptyWallets () {
-      return this.portfolioList.length && !this.portfolioList.filter(t => t.price === 0).length
+      return this.portfolioList.length && (this.portfolioList.length > this.portfolioList.filter(t => t.price === 0).length)
     }
   }
 }
