@@ -1,5 +1,11 @@
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
+import { derivePublicKey } from 'ed25519.js'
+
+const privateKey = {
+  pattern: /^[A-Za-z0-9]{64}$/,
+  message: 'Private key should match [A-Za-z0-9]{64}'
+}
 
 const set = {
   name: [
@@ -11,7 +17,7 @@ const set = {
     { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
   ],
   privateKey: [
-    { pattern: /^[A-Za-z0-9]{64}$/, message: 'Private key should match [A-Za-z0-9]{64}', trigger: 'change' }
+    { pattern: privateKey.pattern, message: privateKey.message, trigger: 'change' }
   ],
   nodeIp: [
     { required: true, message: 'Please input node ip', trigger: 'change' },
@@ -56,6 +62,15 @@ function checkWallet (wallets) {
   }
 }
 
+function checkRepeatingPrivateKey (keys) {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    if (!!value && !privateKey.pattern.test(value)) errors.push(privateKey.message)
+    else if (keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) errors.push('Transaction is already signed with this key')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
@@ -68,6 +83,9 @@ function generateRules (form) {
       const walletAddressRule = Object.assign([], set[validationRule])
       walletAddressRule.push({ validator: checkWallet(validationRule.wallets) })
       rules[key] = walletAddressRule
+    } else if (validationRule.pattern === 'repeatingPrivateKey') {
+      const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
+      rules[key] = privateKeyRule
     } else {
       rules[key] = set[validationRule]
     }

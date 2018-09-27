@@ -36,7 +36,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
 
   transactions.forEach(t => {
     const { commandsList, createdTime } = t.payload.reducedPayload
-    const signaturesAmount = t.signaturesList.length
+    const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
 
     commandsList.forEach((c, idx) => {
       if (!c.transferAsset) return
@@ -62,7 +62,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         date: createdTime,
         message: description,
 
-        signatures: signaturesAmount,
+        signatures,
         id: idx,
         assetId
       }

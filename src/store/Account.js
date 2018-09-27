@@ -5,6 +5,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import find from 'lodash/fp/find'
+import cloneDeep from 'lodash/fp/cloneDeep'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
@@ -85,8 +86,9 @@ const getters = {
   },
 
   allPendingTransactions: (state) => {
-    return state.rawPendingTransactions ? getTransferAssetsFrom(
-      state.rawPendingTransactions.toObject().transactionsList,
+    let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
+    return pendingTransactionsCopy ? getTransferAssetsFrom(
+      pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
     ).filter(tx => tx.from === 'you') : []
   },

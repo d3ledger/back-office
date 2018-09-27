@@ -28,7 +28,7 @@
               </el-table-column>
               <el-table-column label="Amount" width="150px">
                 <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}}
+                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId === scope.row.assetId).asset}}
                 </template>
               </el-table-column>
               <el-table-column label="Address" min-width="120" show-overflow-tooltip>
@@ -46,14 +46,14 @@
               </el-table-column>
               <el-table-column label="Signs" min-width="50">
                 <template slot-scope="scope">
-                  {{ scope.row.signatures }} / {{ accountQuorum }}
+                  {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
               <el-table-column min-width="190">
                 <template slot-scope="scope">
                   <div class="transaction_action">
                     <el-button
-                      @click="onSignPendingTransaction(scope.row.id)"
+                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
                       size="medium"
                       type="primary"
                       plain
@@ -103,8 +103,8 @@ export default {
       'signPendingTransaction',
       'getPendingTransactions'
     ]),
-    onSignPendingTransaction (txStoreId) {
-      this.openApprovalDialog()
+    onSignPendingTransaction (txStoreId, signatures) {
+      this.openApprovalDialog(signatures)
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
