@@ -1,5 +1,5 @@
 <template>
-  <el-container v-if="dashboardLoading" v-loading.fullscreen="dashboardLoading" />
+  <el-container v-if="isDashboardLoading" v-loading.fullscreen="isDashboardLoading" />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
@@ -73,7 +73,7 @@ export default {
       'portfolioPercent',
       'portfolioHistory',
       'portfolioList',
-      'dashboardLoading'
+      'isDashboardLoading'
     ]),
     hasNonEmptyWallets () {
       return this.portfolioList.length && !this.portfolioList.filter(t => t.price === 0).length

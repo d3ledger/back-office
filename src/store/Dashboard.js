@@ -108,7 +108,7 @@ const getters = {
   connectionError (state) {
     return state.connectionError
   },
-  dashboardLoading (state) {
+  isDashboardLoading (state) {
     return state.isLoading
   }
 }
