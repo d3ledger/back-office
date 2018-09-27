@@ -28,9 +28,11 @@
             type="primary"
             @click="onClickAddAddressToWhiteList"
             :loading="isLoading"
-            style="margin-left: 10px"
+            style="margin-left: 10px; float: right;"
           >
-            ADD
+            <span v-if="!isLoading">
+              ADD
+            </span>
           </el-button>
         </el-form-item>
         <el-form-item v-if="form.whitelist.length">
