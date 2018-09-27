@@ -3,10 +3,6 @@
     <div class="card-content_header">
       <el-row class="card-content_header-row">
         <el-col :span="24">
-          <!-- <el-input
-            placeholder="Search"
-            prefix-icon="el-icon-search"
-            v-model="filterInput"/> -->
           <div class="searchbar">
             <div class="searchbar__prefix">
               <fa-icon icon="search" class="searchbar__icon" />
