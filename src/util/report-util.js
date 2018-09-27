@@ -30,7 +30,7 @@ export function generatePDF (params) {
   debug('generating PDF output...')
 
   return fontLoader.load().then(() => new Promise((resolve, reject) => {
-    const formatDate = params.formatDate
+    const { formatDate, formatDateWith } = params
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
       info: {
@@ -66,7 +66,7 @@ export function generatePDF (params) {
             body: [
               ['Date', 'In', `In (${data.fiat})`, 'Out', `Out (${data.fiat})`, 'Net'],
               ...data.transactionsByDay.map(tx => ([
-                formatDate(tx.date),
+                formatDateWith(tx.date, 'MMM. D'),
                 tx.dailyIn,
                 tx.dailyInFiat,
                 tx.dailyOut,
@@ -193,6 +193,7 @@ export function generateReportData ({
   const getDailyPriceFiat = (dateExpected) => {
     return priceFiatList.find(({ date }) => isSameDay(date, dateExpected)).price
   }
+  const formatDateWithYear = (date) => formatDateWith(date, 'MMM. D, YYYY HH:mm')
 
   /*
    * prepare basic data
@@ -236,7 +237,7 @@ export function generateReportData ({
       const dailyNet = dailyIn - dailyOut
 
       return {
-        date: formatDateWith(date, 'MMM. D'),
+        date: formatDateWithYear(date),
         dailyIn: dailyIn.toFixed(precision),
         dailyInFiat: dailyInFiat.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),
@@ -260,7 +261,12 @@ export function generateReportData ({
       const balance = startingBalance + accumulatedAmount
 
       return {
-        time: formatDate(tx.date),
+        // Year is needed even though the year doesn't appear in an output.
+        // In Moscow timezone, for example:
+        // a date omitting an year like `Sep 01 12:34` will be treated as
+        // `Sep 01 2001 12:34`, which applies Moscow Summer Time which is not
+        // used today and generates wrong results.
+        time: formatDateWithYear(tx.date),
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
@@ -272,7 +278,7 @@ export function generateReportData ({
   )(txsWithinRange)
 
   transactionDetails.unshift({
-    time: formatDate(dateFrom),
+    time: formatDateWithYear(dateFrom),
     to: null,
     description: 'Starting Balance',
     amount: null,
@@ -282,7 +288,7 @@ export function generateReportData ({
   })
 
   transactionDetails.push({
-    time: formatDate(endOfDay(dateTo)),
+    time: formatDateWithYear(dateTo),
     to: null,
     description: 'Ending Balance',
     amount: null,
