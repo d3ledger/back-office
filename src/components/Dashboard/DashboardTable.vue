@@ -119,7 +119,8 @@ export default {
       return this.portfolio.filter(crypto => {
         const isName = includes(crypto.name.toLowerCase(), this.filterInput.toLowerCase())
         const isAsset = includes(crypto.asset.toLowerCase(), this.filterInput.toLowerCase())
-        return isName || isAsset
+        const notEmpty = crypto.price !== 0
+        return (isName || isAsset) && notEmpty
       })
     },
     sortedPortfolio () {
