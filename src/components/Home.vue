@@ -100,11 +100,11 @@
           <el-row class="approval_form-desc">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
+              <span v-if="accountQuorum > 1">
+                You need to enter at least 1 key.
+              </span>
             </p>
-            <p v-if="accountQuorum > 1">
-              (You need to enter at least 1 key)
-            </p>
-            <p v-if="approvalForm.numberOfSignatures">This transaction already has {{approvalForm.numberOfSignatures}} signature<span v-if="approvalForm.numberOfSignatures > 1">s</span></p>
+            <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
           </el-row>
         </el-form-item>
 
@@ -112,7 +112,7 @@
           v-for="(key, index) in approvalForm.privateKeys"
           :key="index"
           :prop="`privateKeys.${index}.hex`"
-          :rules="rules.privateKey"
+          :rules="rules.repeatingPrivateKey"
         >
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
@@ -138,8 +138,8 @@
 
         <el-form-item v-if="accountQuorum > 1">
           <el-row type="flex" justify="center">
-            <div class="item__private-keys">
-              {{ approvalForm.numberOfValidKeys + approvalForm.numberOfSignatures }}/{{ accountQuorum }}
+            <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
+              {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
             </div>
           </el-row>
         </el-form-item>
@@ -170,7 +170,7 @@ export default {
   mixins: [
     numberFormat,
     inputValidation({
-      privateKey: 'privateKey',
+      privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount'
@@ -189,8 +189,7 @@ export default {
       },
       approvalForm: {
         privateKeys: [],
-        numberOfValidKeys: 0,
-        numberOfSignatures: 0
+        numberOfValidKeys: 0
       },
       isExchangeSending: false
     }
@@ -200,6 +199,7 @@ export default {
     ...mapGetters([
       'wallets',
       'approvalDialogVisible',
+      'approvalDialogSignatures',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum'
@@ -329,9 +329,13 @@ export default {
     },
 
     beforeOpenApprovalDialog () {
-      const privateKeys = Array.from({ length: this.accountQuorum }, () => ({ hex: '' }))
+      const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
+
+      this._refreshRules({
+        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
+      })
     },
 
     onFileChosen (file, fileList, key) {
@@ -362,6 +366,10 @@ export default {
   border: solid 1px #cccccc;
   display: flex;
   justify-content: center;
+}
+
+.item__private-keys-success {
+  border: solid 1px #67c23a;
 }
 
 /* in order not to make a border green when a private key is empty */
