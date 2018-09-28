@@ -16,7 +16,6 @@ const signup = axios => (name, whitelist, publicKey) => {
   return axios
     .post('users', postData)
     .then(({ data }) => ({ response: data }))
-    .catch(error => ({ error }))
 }
 
 export default {
