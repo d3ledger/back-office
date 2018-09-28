@@ -75,7 +75,7 @@ function initialState () {
     },
     assetList: [],
     assetChart: {
-      filter: '1Y',
+      filter: '1M',
       crypto: null,
       data: []
     },
