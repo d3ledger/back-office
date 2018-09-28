@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import format from 'date-fns/format'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import dateFormat from '@/components/mixins/dateFormat'
 import debounce from 'lodash/fp/debounce'
@@ -138,10 +137,11 @@ export default {
         '1H': 'HH:mm'
       }
       const date = new Date(num * 1000)
-      return format(date, filterFormat[this.filter])
+      return this.formatDateWith(date, filterFormat[this.filter])
     },
     adjustYAxisWidth () {
       const chartInstance = this.$refs.chart.chart
+      const chartWidth = this.$refs.chart.width
       const maxValue = Math.max.apply(null, this.data.map(i => i.sum))
       const WIDTH_PER_DIGIT = 10
       const OFFSET = 10
@@ -150,7 +150,7 @@ export default {
       chartInstance.setOption({
         grid: {
           left: yAxisWidth,
-          width: chartInstance.width - yAxisWidth
+          width: chartWidth - (yAxisWidth + 20)
         }
       })
     }
