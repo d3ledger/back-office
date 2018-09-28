@@ -366,7 +366,7 @@ export default {
         amount: null,
         description: ''
       },
-      marketPeriods: ['1H', '1D', '1W', '1M', '1Y', 'ALL'],
+      marketPeriods: ['1H', '1D', '1W', '1M', '1Y'],
       selectedMarketPeriod: '1D'
     }
   },
