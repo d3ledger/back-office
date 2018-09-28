@@ -138,7 +138,6 @@ export default {
   },
   methods: {
     selectCrypto (crypto) {
-      this.selectedCrypto = crypto
       this.$store.dispatch('getPriceByFilter', { crypto })
     },
     classTrend (value) {
