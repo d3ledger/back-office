@@ -106,7 +106,9 @@ Vue.use(DropdownItem)
 Vue.use(Tooltip)
 Vue.use(Switch)
 Vue.use(Loading.directive)
-Vue.prototype.$alert = MessageBox.alert
+const MsgBox = MessageBox
+Vue.prototype.$prompt = MsgBox.prompt
+Vue.prototype.$alert = MsgBox.alert
 Vue.prototype.$message = Message
 locale.use(lang)
 
