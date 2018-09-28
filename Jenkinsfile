@@ -17,10 +17,10 @@ pipeline {
           // need this for develop->master PR cases
           // CHANGE_BRANCH is not defined if this is a branch build
           try {
-            CHANGE_BRANCH_LOCAL = env.CHANGE_BRANCH
+            scmVars.CHANGE_BRANCH_LOCAL = scmVars.CHANGE_BRANCH
           }
           catch(MissingPropertyException e) { }
-          if (GIT_LOCAL_BRANCH != "develop" && CHANGE_BRANCH_LOCAL != "develop") {
+          if (scmVars.GIT_LOCAL_BRANCH != "develop" && scmVars.CHANGE_BRANCH_LOCAL != "develop") {
             def builds = load ".jenkinsci/cancel-builds-same-job.groovy"
             builds.cancelSameJobBuilds()
           }
