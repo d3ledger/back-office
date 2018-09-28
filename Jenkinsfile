@@ -3,6 +3,7 @@ pipeline {
     DOCKER_NETWORK = ''
   }
   options {
+    skipDefaultCheckout()
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
   }
@@ -12,6 +13,7 @@ pipeline {
       agent { label 'master' }
       steps {
         script {
+          def scmVars = checkout scm
           // need this for develop->master PR cases
           // CHANGE_BRANCH is not defined if this is a branch build
           try {
@@ -29,6 +31,7 @@ pipeline {
       agent { label 'd3-build-agent' }
       steps {
         script {
+            def scmVars = checkout scm
             DOCKER_NETWORK = "${scmVars.CHANGE_ID}-${scmVars.GIT_COMMIT}-${BUILD_NUMBER}"
             writeFile file: ".env", text: "SUBNET=${DOCKER_NETWORK}"
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml pull")
