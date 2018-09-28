@@ -45,7 +45,12 @@ describe('Account store', () => {
   })
 
   const notaryUtilMock = {
-    signup: () => Promise.resolve()
+    _forceFail: false,
+    _MOCK_ERROR: new Error(),
+    signup: () => {
+      if (notaryUtilMock._forceFail) return new Promise(() => { throw notaryUtilMock._MOCK_ERROR })
+      else return Promise.resolve()
+    }
   }
 
   let types, mutations, actions, getters
@@ -56,6 +61,8 @@ describe('Account store', () => {
       '@util/store-util': require('@util/store-util'),
       '@util/notary-util': notaryUtilMock
     }).default)
+
+    notaryUtilMock._forceFail = false
   })
 
   describe('Mutations', () => {
@@ -217,6 +224,22 @@ describe('Account store', () => {
             done()
           })
           .catch(done)
+      })
+
+      it('should call SIGNUP_FAILURE if notary-util fails', done => {
+        const commit = sinon.spy()
+        const params = { username: randomAccountId().split('@')[1] }
+
+        notaryUtilMock._forceFail = true
+        actions.signup({ commit }, params)
+          .then(() => done('it should fail'))
+          .catch(() => {
+            expect(commit.args).to.be.deep.equal([
+              [types.SIGNUP_REQUEST],
+              [types.SIGNUP_FAILURE, notaryUtilMock._MOCK_ERROR]
+            ])
+            done()
+          })
       })
     })
 
