@@ -1,5 +1,9 @@
 pipeline {
+  environment {
+    DOCKER_NETWORK = ''
+  }
   options {
+    skipDefaultCheckout()
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
   }
@@ -9,13 +13,14 @@ pipeline {
       agent { label 'master' }
       steps {
         script {
+          def scmVars = checkout scm
           // need this for develop->master PR cases
           // CHANGE_BRANCH is not defined if this is a branch build
           try {
-            CHANGE_BRANCH_LOCAL = env.CHANGE_BRANCH
+            scmVars.CHANGE_BRANCH_LOCAL = scmVars.CHANGE_BRANCH
           }
           catch(MissingPropertyException e) { }
-          if (GIT_LOCAL_BRANCH != "develop" && CHANGE_BRANCH_LOCAL != "develop") {
+          if (scmVars.GIT_LOCAL_BRANCH != "develop" && scmVars.CHANGE_BRANCH_LOCAL != "develop") {
             def builds = load ".jenkinsci/cancel-builds-same-job.groovy"
             builds.cancelSameJobBuilds()
           }
@@ -23,14 +28,17 @@ pipeline {
       }
     }
     stage('Tests (unit, e2e)') {
-      agent { label 'x86_64' }
+      agent { label 'd3-build-agent' }
       steps {
         script {
-            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}-${BUILD_NUMBER}"
+            def scmVars = checkout scm
+            DOCKER_NETWORK = "${scmVars.CHANGE_ID}-${scmVars.GIT_COMMIT}-${BUILD_NUMBER}"
+            writeFile file: ".env", text: "SUBNET=${DOCKER_NETWORK}"
+            sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml pull")
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
-            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT}-${BUILD_NUMBER} /app/docker/back-office/wait-for-up.sh")
+            sh(returnStdout: true, script: "docker exec d3-back-office-${DOCKER_NETWORK} /app/docker/back-office/wait-for-up.sh")
             iC = docker.image('cypress/base:10')
-            iC.inside("--network='d3-${env.GIT_COMMIT}-${BUILD_NUMBER}' --shm-size 4096m --ipc=host") {
+            iC.inside("--network='d3-${DOCKER_NETWORK}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
               var = sh(returnStatus:true, script: "yarn test:unit")
               if (var != 0) {
@@ -68,13 +76,20 @@ pipeline {
         always {
           script {
             withCredentials([usernamePassword(credentialsId: 'jenkins_nexus_creds', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
-              sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/ \\;", returnStdout: true)
-              echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${GIT_COMMIT}-${BUILD_NUMBER}/"
+              sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${DOCKER_NETWORK}/ \\;", returnStdout: true)
+              echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${DOCKER_NETWORK}/"
             }
           }
         }
         cleanup {
-          sh(script: "docker-compose -f docker/docker-compose.yaml down")
+          sh "mkdir build-logs"
+          sh """
+            while read -r LINE; do \
+              docker logs \$(echo \$LINE | cut -d ' ' -f1) | gzip -6 > build-logs/\$(echo \$LINE | cut -d ' ' -f2).log.gz; \
+            done < <(docker ps --filter "network=d3-${DOCKER_NETWORK}" --format "{{.ID}} {{.Names}}")
+          """
+          archiveArtifacts artifacts: 'build-logs/*.log.gz'
+          sh "docker-compose -f docker/docker-compose.yaml down"
           cleanWs()
         }
       }
