@@ -75,6 +75,7 @@ import 'echarts/lib/chart/candlestick'
 import 'echarts/lib/chart/pie'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/legendScroll'
+import 'echarts/lib/component/dataZoom'
 
 Vue.component('ECharts', ECharts)
 
