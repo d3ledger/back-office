@@ -1,4 +1,7 @@
 pipeline {
+  environment {
+    DOCKER_NETWORK = ''
+  }
   options {
     buildDiscarder(logRotator(numToKeepStr: '20'))
     timestamps()
@@ -26,11 +29,13 @@ pipeline {
       agent { label 'd3-build-agent' }
       steps {
         script {
-            writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}-${BUILD_NUMBER}"
+            DOCKER_NETWORK = "${scmVars.CHANGE_ID}-${scmVars.GIT_COMMIT}-${BUILD_NUMBER}"
+            writeFile file: ".env", text: "SUBNET=${DOCKER_NETWORK}"
+            sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml pull")
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml up --build -d")
-            sh(returnStdout: true, script: "docker exec d3-back-office-${env.GIT_COMMIT}-${BUILD_NUMBER} /app/docker/back-office/wait-for-up.sh")
+            sh(returnStdout: true, script: "docker exec d3-back-office-${DOCKER_NETWORK} /app/docker/back-office/wait-for-up.sh")
             iC = docker.image('cypress/base:10')
-            iC.inside("--network='d3-${env.GIT_COMMIT}-${BUILD_NUMBER}' --shm-size 4096m --ipc=host") {
+            iC.inside("--network='d3-${DOCKER_NETWORK}' --shm-size 4096m --ipc=host") {
               sh(script: "yarn global add cypress")
               var = sh(returnStatus:true, script: "yarn test:unit")
               if (var != 0) {
@@ -74,7 +79,14 @@ pipeline {
           }
         }
         cleanup {
-          sh(script: "docker-compose -f docker/docker-compose.yaml down")
+          sh "mkdir build-logs"
+          sh """
+            while read -r LINE; do \
+              docker logs \$(echo \$LINE | cut -d ' ' -f1) | gzip -6 > build-logs/\$(echo \$LINE | cut -d ' ' -f2).log.gz; \
+            done < <(docker ps --filter "network=d3-${DOCKER_NETWORK}" --format "{{.ID}} {{.Names}}")
+          """
+          archiveArtifacts artifacts: 'build-logs/*.log.gz'
+          sh "docker-compose -f docker/docker-compose.yaml down"
           cleanWs()
         }
       }
