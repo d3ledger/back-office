@@ -4,16 +4,9 @@ const aliceKeyPath = 'alice@notary.priv'
 const TOKEN = 'BasicAttentionToken'
 
 describe('Test wallets page without white list', () => {
-  before(() => {
-    cy.server()
-    cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
-    cy.route('GET', '/data/histoday*limit=365', 'fixture:crypto-api/histoday365.json').as('getHistoday365')
-  })
-
   it('Make auth', () => {
     cy.visit('/')
     cy.login(aliceKeyPath)
-    cy.wait('@getHistoday365')
   })
 
   it('Go to wallets page', () => {
@@ -391,16 +384,9 @@ describe('Test wallets page without white list', () => {
 })
 
 describe('Test wallets page with white list', () => {
-  before(() => {
-    cy.server()
-    cy.route('GET', '/data/histoday*limit=30', 'fixture:crypto-api/histoday30.json')
-    cy.route('GET', '/data/histoday*limit=365', 'fixture:crypto-api/histoday365.json').as('getHistoday365')
-  })
-
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)
-    cy.wait('@getHistoday365')
   })
 
   it('Go to wallets page', () => {
