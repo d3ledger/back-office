@@ -23,7 +23,7 @@ pipeline {
       }
     }
     stage('Tests (unit, e2e)') {
-      agent { label 'x86_64' }
+      agent { label 'd3-build-agent' }
       steps {
         script {
             writeFile file: ".env", text: "SUBNET=${env.GIT_COMMIT}-${BUILD_NUMBER}"
