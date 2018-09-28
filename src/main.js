@@ -18,6 +18,17 @@ import { faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons/faAngleDouble
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
+import { faClock } from '@fortawesome/free-solid-svg-icons/faClock'
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch'
+import { faSortAlphaUp } from '@fortawesome/free-solid-svg-icons/faSortAlphaUp'
+import { faSortAlphaDown } from '@fortawesome/free-solid-svg-icons/faSortAlphaDown'
+import { faSortNumericUp } from '@fortawesome/free-solid-svg-icons/faSortNumericUp'
+import { faSortNumericDown } from '@fortawesome/free-solid-svg-icons/faSortNumericDown'
+import { faSortAmountUp } from '@fortawesome/free-solid-svg-icons/faSortAmountUp'
+import { faSortAmountDown } from '@fortawesome/free-solid-svg-icons/faSortAmountDown'
+import { faFile } from '@fortawesome/free-solid-svg-icons/faFile'
+import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf'
+import { faFileExcel } from '@fortawesome/free-solid-svg-icons/faFileExcel'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -47,7 +58,12 @@ import {
   Main,
   Loading,
   Message,
-  MessageBox
+  MessageBox,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Tooltip,
+  Switch
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -84,12 +100,40 @@ Vue.use(Container)
 Vue.use(Header)
 Vue.use(Aside)
 Vue.use(Main)
+Vue.use(Dropdown)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(Tooltip)
+Vue.use(Switch)
 Vue.use(Loading.directive)
 Vue.prototype.$alert = MessageBox.alert
 Vue.prototype.$message = Message
 locale.use(lang)
 
-library.add(faCog, faChartLine, faWallet, faSignOutAlt, faFileInvoice, faExchangeAlt, faAngleDoubleDown, faAngleDoubleUp, faArrowRight, faDownload, faUpload)
+library.add(
+  faCog,
+  faChartLine,
+  faWallet,
+  faSignOutAlt,
+  faFileInvoice,
+  faExchangeAlt,
+  faAngleDoubleDown,
+  faAngleDoubleUp,
+  faArrowRight,
+  faDownload,
+  faUpload,
+  faClock,
+  faSearch,
+  faSortAlphaUp,
+  faSortAlphaDown,
+  faSortNumericUp,
+  faSortNumericDown,
+  faSortAmountUp,
+  faSortAmountDown,
+  faFile,
+  faFileExcel,
+  faFilePdf
+)
 Vue.component('fa-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false

@@ -1,41 +1,6 @@
 <template>
   <el-container>
-    <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
-      <el-menu
-        :router="true"
-        :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
-        text-color="#a2a2a2"
-        background-color="#2D2D2D"
-        active-text-color="#000"
-        :default-active="currentActiveMenu"
-        >
-        <h1 class="logo">D3</h1>
-        <el-menu-item index="/">
-          <fa-icon icon="chart-line" class="menu-icon" />
-          <span slot="title">Dashboard</span>
-        </el-menu-item>
-        <el-menu-item index="/wallets">
-          <fa-icon icon="wallet" class="menu-icon" />
-          <span slot="title">Wallets</span>
-        </el-menu-item>
-        <el-menu-item index="/settlements/history">
-          <fa-icon icon="exchange-alt" class="menu-icon" />
-          <span slot="title">Settlements</span>
-        </el-menu-item>
-        <el-menu-item index="/reports">
-          <fa-icon icon="file-invoice" class="menu-icon" />
-          <span slot="title">Reports</span>
-        </el-menu-item>
-        <el-menu-item index="/settings">
-          <fa-icon icon="cog" class="menu-icon" />
-          <span slot="title">Settings</span>
-        </el-menu-item>
-        <el-menu-item index="/logout" @click="logout">
-          <fa-icon icon="sign-out-alt" class="menu-icon" />
-          <span slot="title">Logout</span>
-        </el-menu-item>
-      </el-menu>
-    </div>
+    <Menu :quorum='accountQuorum'/>
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
       <router-view />
     </el-main>
@@ -47,7 +12,7 @@
       @close="closeExchangeDialogWith()"
       center
     >
-      <el-form ref="exchangeForm" :model="exchangeForm" :rules="rules">
+      <el-form ref="exchangeForm" :model="exchangeForm" class="exchange_form" :rules="rules">
         <el-form-item label="I send" prop="offer_amount" >
           <el-input name="amount" v-model="exchangeForm.offer_amount" placeholder="0">
             <el-select
@@ -70,7 +35,7 @@
         <span class="form-item-text">
           Available balance:
           <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
-            {{ wallets.filter(x => x.asset === exchangeDialogOfferAsset)[0].amount + ' ' + exchangeDialogOfferAsset.toUpperCase() }}
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -96,7 +61,7 @@
         <span class="form-item-text">
           Market price:
           <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
-            1 {{ exchangeDialogOfferAsset.toUpperCase() }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset.toUpperCase() }}
+            1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
           </span>
           <span v-else>...</span>
         </span>
@@ -117,35 +82,52 @@
         class="fullwidth black clickable"
         @click="onSubmitExchangeDialog()"
         style="margin-top: 40px"
+        :loading="isExchangeSending"
       >
         EXCHANGE
       </el-button>
     </el-dialog>
     <el-dialog
-      title="Approve transaction"
+      id="approval-dialog"
+      title="Confirm the transaction"
       width="500px"
       :visible="approvalDialogVisible"
       @close="closeApprovalDialogWith()"
       center
-      >
-      <el-form ref="approvalForm" :model="approvalForm" :rules="rules">
+    >
+      <el-form ref="approvalForm" :model="approvalForm" class="approval_form" @validate="updateNumberOfValidKeys">
         <el-form-item>
-          Please enter your private key to confirm transaction
+          <el-row class="approval_form-desc">
+            <p>
+              Please enter your private key<span v-if="accountQuorum > 1">s</span>.
+              <span v-if="accountQuorum > 1">
+                You need to enter at least 1 key.
+              </span>
+            </p>
+            <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
+          </el-row>
         </el-form-item>
-        <el-form-item prop="privateKey">
+
+        <el-form-item
+          v-for="(key, index) in approvalForm.privateKeys"
+          :key="index"
+          :prop="`privateKeys.${index}.hex`"
+          :rules="rules.repeatingPrivateKey"
+        >
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
               <el-input
-                name="privateKey"
                 placeholder="Your private key"
-                v-model="approvalForm.privateKey"
+                v-model="key.hex"
+                :class="{ 'is-empty': !key.hex }"
               />
             </el-col>
+
             <el-upload
               action=""
               :auto-upload="false"
               :show-file-list="false"
-              :on-change="onFileChosen"
+              :on-change="(f, l) => onFileChosen(f, l, key)"
               >
               <el-button>
                 <fa-icon icon="upload" />
@@ -153,10 +135,20 @@
             </el-upload>
           </el-row>
         </el-form-item>
+
+        <el-form-item v-if="accountQuorum > 1">
+          <el-row type="flex" justify="center">
+            <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
+              {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
+            </div>
+          </el-row>
+        </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
+            id="confirm-approval-form"
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
+            :disabled="approvalForm.numberOfValidKeys < 1"
             >
             Confirm
           </el-button>
@@ -168,21 +160,27 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import { lazyComponent } from '@router'
 import inputValidation from '@/components/mixins/inputValidation'
+import numberFormat from '@/components/mixins/numberFormat'
 
+// TODO: Validate lack of selected asset
 export default {
   name: 'Home',
   mixins: [
+    numberFormat,
     inputValidation({
-      privateKey: 'privateKey',
+      privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount'
     })
   ],
+  components: {
+    Menu: lazyComponent('Home/Menu')
+  },
   data () {
     return {
-      isCollapsed: true,
       exchangeForm: {
         to: null,
         request_amount: '',
@@ -190,8 +188,10 @@ export default {
         description: null
       },
       approvalForm: {
-        privateKey: null
-      }
+        privateKeys: [],
+        numberOfValidKeys: 0
+      },
+      isExchangeSending: false
     }
   },
 
@@ -199,8 +199,10 @@ export default {
     ...mapGetters([
       'wallets',
       'approvalDialogVisible',
+      'approvalDialogSignatures',
       'exchangeDialogVisible',
-      'exchangeDialogPrice'
+      'exchangeDialogPrice',
+      'accountQuorum'
     ]),
 
     ...mapState({
@@ -227,12 +229,12 @@ export default {
 
     numberOfSettlements () {
       return this.$store.getters.waitingSettlements.length
-    },
+    }
+  },
 
-    currentActiveMenu: function () {
-      if (this.$route.path.includes('wallets')) return '/wallets'
-      if (this.$route.path.includes('settlements')) return '/settlements/history'
-      return this.$route.path
+  watch: {
+    approvalDialogVisible (isVisible) {
+      if (isVisible) this.beforeOpenApprovalDialog()
     }
   },
 
@@ -265,9 +267,8 @@ export default {
       'getOfferToRequestPrice'
     ]),
 
-    logout () {
-      this.$store.dispatch('logout')
-        .then(() => this.$router.push('/login'))
+    insertPrivateKey (key, i) {
+      this.$set(this.approvalForm.privateKeys, i, key)
     },
 
     closeApprovalDialogWith () {
@@ -278,12 +279,13 @@ export default {
     submitApprovalDialog () {
       this.$refs.approvalForm.validate(valid => {
         if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKey)
+        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
       })
     },
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
+      this.exchangeForm.description = ''
     },
 
     onSubmitExchangeDialog () {
@@ -291,12 +293,13 @@ export default {
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
         this.openApprovalDialog()
-          .then(privateKey => {
-            if (!privateKey) return
-            const offerAsset = this.exchangeDialogOfferAsset
-            const requestAsset = this.exchangeDialogRequestAsset
+          .then(privateKeys => {
+            if (!privateKeys) return
+            this.isExchangeSending = true
+            const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+            const requestAsset = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
             return this.$store.dispatch('createSettlement', {
-              privateKey,
+              privateKeys,
               to: s.to,
               offerAssetId: offerAsset,
               offerAmount: s.offer_amount,
@@ -305,73 +308,82 @@ export default {
             })
               .then(() => {
                 this.$message('New settlement has successfully been created')
+                this.closeExchangeDialogWith()
+                // TODO: think, maybe it is a bad idea to close form after success.
+                Object.assign(
+                  this.$data.exchangeForm,
+                  this.$options.data().exchangeForm
+                )
               })
               .catch(err => {
                 console.error(err)
-                this.$message('Failed to create new settlement')
+                this.$alert(err.message, 'Withdrawal error', {
+                  type: 'error'
+                })
               })
               .finally(() => {
-                Object.assign(
-                  this.$data.exchangeDialog,
-                  this.$options.data().exchangeDialog
-                )
-                this.closeExchangeDialogWith()
+                this.isExchangeSending = false
               })
           })
       })
     },
 
-    onFileChosen (file, fileList) {
+    beforeOpenApprovalDialog () {
+      const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
+      this.$set(this.approvalForm, 'privateKeys', privateKeys)
+      this.updateNumberOfValidKeys()
+
+      this._refreshRules({
+        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
+      })
+    },
+
+    onFileChosen (file, fileList, key) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        this.approvalForm.privateKey = (ev.target.result || '').trim()
+        key.hex = (ev.target.result || '').trim()
       }
       reader.readAsText(file.raw)
+    },
+
+    updateNumberOfValidKeys () {
+      if (!this.$refs.approvalForm) return
+
+      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
+        return x.validateState === 'success' && !!x.fieldValue
+      }).length
     }
   }
 }
 </script>
 
 <style>
-.el-menu-item {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+.item__private-keys {
+  width: 40px;
+  height: 40px;
+  border-radius: 24px;
+  border: solid 1px #cccccc;
+  display: flex;
+  justify-content: center;
 }
 
-.el-side-menu {
-  height: 100vh;
-  overflow-y: auto;
-  transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border-right: none;
-  z-index: 100;
-  width: 62px;
-
-  /* Getting rid of element.ui styles */
-  position: fixed !important;
-  border-right: none !important;
+.item__private-keys-success {
+  border: solid 1px #67c23a;
 }
 
-.el-side-menu:not(.el-menu--collapse) {
-  width: 160px;
+/* in order not to make a border green when a private key is empty */
+.el-form-item.is-success .el-input.is-empty .el-input__inner {
+  border-color: #dcdfe6;
 }
-
-.el-side-menu > .el-menu-item.is-active{
-  background: white !important;
-  color: black;
-}
-
-.logo {
-  color: white;
-  display: block;
+.approval_form-desc {
   text-align: center;
-  margin: 20px 0;
 }
+</style>
 
-.menu-icon {
-  margin-left: 2px;
-  margin-right: 8px;
-  width: 24px;
-  text-align: center;
-  font-size: 18px;
-  vertical-align: middle;
+<style scoped>
+.exchange_form >>> .el-form-item__label::before,
+.approval_form >>> .el-form-item__label::before {
+  content: '';
 }
 </style>

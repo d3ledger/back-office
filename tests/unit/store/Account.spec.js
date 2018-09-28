@@ -11,7 +11,8 @@ const {
   randomPublicKey,
   randomPrivateKey,
   randomObject,
-  randomAmount
+  randomAmount,
+  randomAmountRng
 } = helper
 const expect = chai.expect
 
@@ -30,7 +31,7 @@ describe('Account store', () => {
     publicKey: randomPublicKey(),
     privateKey: randomPrivateKey()
   }
-  const irohaUtil = require('@util/iroha-util').default
+  const irohaUtil = require('@util/iroha').default
   const irohaUtilMock = Object.assign(irohaUtil, {
     getStoredNodeIp: () => MOCK_NODE_IP,
     signup: (username) => Promise.resolve({ username, ...MOCK_KEYPAIR }),
@@ -44,17 +45,24 @@ describe('Account store', () => {
   })
 
   const notaryUtilMock = {
-    signup: () => Promise.resolve()
+    _forceFail: false,
+    _MOCK_ERROR: new Error(),
+    signup: () => {
+      if (notaryUtilMock._forceFail) return new Promise(() => { throw notaryUtilMock._MOCK_ERROR })
+      else return Promise.resolve()
+    }
   }
 
   let types, mutations, actions, getters
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = AccountInjector({
-      '@util/iroha-util': irohaUtilMock,
+      '@util/iroha': irohaUtilMock,
       '@util/store-util': require('@util/store-util'),
       '@util/notary-util': notaryUtilMock
     }).default)
+
+    notaryUtilMock._forceFail = false
   })
 
   describe('Mutations', () => {
@@ -92,9 +100,11 @@ describe('Account store', () => {
         accountId: randomAccountId(),
         nodeIp: randomNodeIp(),
         accountInfo: randomObject(),
+        accountQuorum: randomAmountRng(),
         rawAssetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
+        rawPendingTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -103,9 +113,11 @@ describe('Account store', () => {
         accountId: '',
         nodeIp: MOCK_NODE_IP,
         accountInfo: {},
+        accountQuorum: 0,
         rawAssetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
+        rawPendingTransactions: null,
         assets: [],
         connectionError: null
       }
@@ -212,6 +224,22 @@ describe('Account store', () => {
             done()
           })
           .catch(done)
+      })
+
+      it('should call SIGNUP_FAILURE if notary-util fails', done => {
+        const commit = sinon.spy()
+        const params = { username: randomAccountId().split('@')[1] }
+
+        notaryUtilMock._forceFail = true
+        actions.signup({ commit }, params)
+          .then(() => done('it should fail'))
+          .catch(() => {
+            expect(commit.args).to.be.deep.equal([
+              [types.SIGNUP_REQUEST],
+              [types.SIGNUP_FAILURE, notaryUtilMock._MOCK_ERROR]
+            ])
+            done()
+          })
       })
     })
 
@@ -372,7 +400,7 @@ describe('Account store', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
-        const expectedKeys = ['amount', 'date', 'from', 'to', 'message']
+        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'id', 'assetId', 'signatures']
 
         expect(result)
           .to.be.an('array')

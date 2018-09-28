@@ -2,34 +2,51 @@
   <el-container id="reports-page" v-if="wallets.length">
     <el-main>
       <el-row>
-        <el-col :xs="24" :md="{ span: 18, offset: 3}" :lg="{ span: 16, offset: 4 }" :xl="{ span: 14, offset: 5 }">
-          <el-card>
-            <div slot="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }">
+          <el-card :body-style="{ padding: '0' }">
+            <div class="header">
               <span>Reports</span>
-              <el-button type="primary" @click="reportFormVisible = true" plain>New Report</el-button>
+              <div>
+                <el-button class="report_button" type="primary" @click="reportFormVisible = true">
+                  <fa-icon class="report_button-icon" icon="file" />
+                  <span data-cy="getReport">
+                    Reports
+                  </span>
+                </el-button>
+              </div>
             </div>
-            <el-table :data="previousMonthReports">
-              <el-table-column label="date">
+            <el-table
+              class="report_table"
+              :data="previousMonthReports"
+              >
+              <el-table-column label="Date" min-width="100">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
-              <el-table-column label="wallet" prop="walletName"></el-table-column>
-              <el-table-column label="download" width="160px">
+              <el-table-column label="Wallet" prop="walletName" min-width="100"></el-table-column>
+              <el-table-column label="Download" width="225">
                 <template slot-scope="scope">
-                  <div>
+                  <div class="list_actions">
                     <el-button
-                      size="mini"
-                      plain type="primary"
+                      plain
+                      size="medium"
+                      type="primary"
                       @click="download(scope.row, 'pdf')"
                     >
+                      <fa-icon class="report_button-icon" icon="file-pdf" />
                       PDF
                     </el-button>
                     <el-button
-                      size="mini"
+                      plain
+                      size="medium"
                       type="primary"
                       @click="download(scope.row, 'csv')"
                     >
+                      <fa-icon class="report_button-icon" icon="file-excel" />
                       CSV
                     </el-button>
                   </div>
@@ -116,7 +133,9 @@ import endOfMonth from 'date-fns/end_of_month'
 import endOfDay from 'date-fns/end_of_day'
 import differenceInDays from 'date-fns/difference_in_days'
 import isAfter from 'date-fns/is_after'
-import endOfYesterday from 'date-fns/end_of_yesterday'
+import endOfToday from 'date-fns/end_of_today'
+import isWithinRange from 'date-fns/is_within_range'
+import addDays from 'date-fns/add_days'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { lazyComponent } from '@router'
 
@@ -165,28 +184,75 @@ export default {
     this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
   },
   methods: {
-    isDisabledDate: (date) => isAfter(date, endOfYesterday()),
+    isDisabledDate: (date) => isAfter(date, endOfToday()),
 
     /*
-     * collect prices from fiat to crypto
+     * Collect prices from fiat to crypto
+     * Use the last minute's close as the today's price if today is within the range.
      */
     loadPriceFiatList (asset, dateFrom, dateTo) {
-      return cryptoCompareUtil.loadHistoryByLabels(this.wallets, this.settingsView, {
-        limit: differenceInDays(dateTo, dateFrom),
+      const today = new Date()
+      const promises = []
+      const fetchingDailyPrices = cryptoCompareUtil.loadHistoryByLabels(
+        this.wallets,
+        this.settingsView,
+        {
+          limit: differenceInDays(dateTo, dateFrom) + 1,
 
-        // convert milliseconds to seconds; round down to prevent it goes next day
-        toTs: Math.floor(dateTo.getTime() / 1000)
-      })
-        .then(res => res
-          .find(x => (x.asset === asset))
-          .data
-          .map(({ time, close }) => ({ date: time * 1000, price: close }))
+          // convert milliseconds to seconds; round down to prevent it goes next day
+          toTs: Math.floor(addDays(dateTo, 1).getTime() / 1000)
+        }
+      )
+
+      promises.push(fetchingDailyPrices)
+
+      if (isWithinRange(today, dateFrom, dateTo)) {
+        const fetchingMinutePrices = cryptoCompareUtil.loadHistoryByLabels(
+          this.wallets,
+          this.settingsView,
+          {
+            filter: '1H',
+            limit: 1
+          }
         )
+
+        promises.push(fetchingMinutePrices)
+      }
+
+      const mergeDailyAndMinutePrices = ([dailyPrices, minutePrices]) => {
+        if (!minutePrices) return dailyPrices
+
+        minutePrices.forEach(assetMinute => {
+          const utcTomorrow = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1)
+          const currentPrice = assetMinute.data.pop()
+
+          currentPrice.time = Math.floor(utcTomorrow / 1000)
+
+          dailyPrices
+            .find(assetDaily => assetDaily.asset === assetMinute.asset)
+            .data
+            .push(currentPrice)
+        })
+
+        return dailyPrices
+      }
+
+      return Promise.all(promises)
+        .then(mergeDailyAndMinutePrices)
+        .then(res => {
+          return res
+            .find(x => (x.asset === asset))
+            .data
+            .map(({ time, close }) => {
+              return { date: time * 1000, price: close }
+            })
+        })
     },
 
     download ({ date, assetId }, fileFormat) {
+      const now = new Date()
       const dateFrom = date[0]
-      const dateTo = endOfDay(date[1])
+      const dateTo = isAfter(endOfDay(date[1]), now) ? now : endOfDay(date[1])
       const wallet = this.wallets.find(x => (x.assetId === assetId))
 
       Promise.all([
@@ -231,3 +297,41 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.5rem;
+}
+.report_button {
+  background-color: #409eff;
+  border: 0;
+  text-transform: uppercase;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  line-height: 1rem;
+}
+.report_button-icon {
+  margin-right: 0.7rem;
+}
+.list_actions {
+  display: flex;
+}
+.list_actions >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
+}
+.report_table {
+  padding: 0.9rem 1.5rem;
+  width: 100%;
+}
+.report_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.report_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+</style>

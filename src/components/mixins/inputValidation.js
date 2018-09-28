@@ -1,5 +1,11 @@
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
+import { derivePublicKey } from 'ed25519.js'
+
+const privateKey = {
+  pattern: /^[A-Za-z0-9]{64}$/,
+  message: 'Private key should match [A-Za-z0-9]{64}'
+}
 
 const set = {
   name: [
@@ -11,8 +17,7 @@ const set = {
     { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
   ],
   privateKey: [
-    { required: true, message: 'Please input private key', trigger: 'change' },
-    { pattern: /^[A-Za-z0-9]{64}$/, message: 'Private key should match [A-Za-z0-9]{64}', trigger: 'change' }
+    { pattern: privateKey.pattern, message: privateKey.message, trigger: 'change' }
   ],
   nodeIp: [
     { required: true, message: 'Please input node ip', trigger: 'change' },
@@ -27,6 +32,11 @@ const set = {
   ]
 }
 
+set['privateKeyRequired'] = [
+  { required: true, message: 'Please input private key', trigger: 'change' },
+  ...set['privateKey']
+]
+
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
 function checkBalance (maxValue, maxPrecision) {
@@ -35,18 +45,28 @@ function checkBalance (maxValue, maxPrecision) {
     if (isNaN(Number(value))) errors.push('Invalid amount')
     else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
-    else if (gt(value)(maxValue)) errors.push('Current amount is bigger than your available balance')
-    else if (lte(value)(0)) errors.push('Current amount is smaller or equal to 0')
+    else if (gt(Number(value))(Number(maxValue))) errors.push('Current amount is bigger than your available balance')
+    else if (lte(Number(value))(0)) errors.push('Current amount is smaller or equal to 0')
     callback(errors)
   }
 }
 
-function checkWallet () {
+function checkWallet (wallets) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     const validateBTC = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value)
     const validateETH = /^0x[a-fA-F0-9]{40}$/.test(value)
     if (!validateBTC && !validateETH) errors.push('Invalid wallet address')
+    else if (wallets && wallets.includes(value)) errors.push('This wallet is already in the whitelist')
+    callback(errors)
+  }
+}
+
+function checkRepeatingPrivateKey (keys) {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    if (!!value && !privateKey.pattern.test(value)) errors.push(privateKey.message)
+    else if (keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) errors.push('Transaction is already signed with this key')
     callback(errors)
   }
 }
@@ -59,10 +79,13 @@ function generateRules (form) {
       const tokensAmountRule = Object.assign([], set[validationRule.pattern])
       tokensAmountRule.push({ validator: checkBalance(validationRule.amount, validationRule.precision) })
       rules[key] = tokensAmountRule
-    } else if (validationRule === 'walletAddress') {
+    } else if (validationRule.pattern === 'walletAddress') {
       const walletAddressRule = Object.assign([], set[validationRule])
-      walletAddressRule.push({ validator: checkWallet() })
+      walletAddressRule.push({ validator: checkWallet(validationRule.wallets) })
       rules[key] = walletAddressRule
+    } else if (validationRule.pattern === 'repeatingPrivateKey') {
+      const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
+      rules[key] = privateKeyRule
     } else {
       rules[key] = set[validationRule]
     }

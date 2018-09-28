@@ -5,8 +5,9 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import find from 'lodash/fp/find'
+import cloneDeep from 'lodash/fp/cloneDeep'
 import { grpc } from 'grpc-web-client'
-import irohaUtil from '@util/iroha-util'
+import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
 
@@ -28,10 +29,12 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
+  'GET_PENDING_TRANSACTIONS',
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
-  'REJECT_SETTLEMENT'
+  'REJECT_SETTLEMENT',
+  'SIGN_PENDING'
 ])
 
 function initialState () {
@@ -39,9 +42,11 @@ function initialState () {
     accountId: '',
     nodeIp: irohaUtil.getStoredNodeIp(),
     accountInfo: {},
+    accountQuorum: 0,
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
+    rawPendingTransactions: null,
     assets: [],
     connectionError: null
   }
@@ -79,6 +84,14 @@ const getters = {
     )
   },
 
+  allPendingTransactions: (state) => {
+    let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
+    return pendingTransactionsCopy ? getTransferAssetsFrom(
+      pendingTransactionsCopy.toObject().transactionsList,
+      state.accountId
+    ).filter(tx => tx.from === 'you') : []
+  },
+
   waitingSettlements () {
     return getSettlementsFrom(state.rawUnsignedTransactions)
       .filter(x => x.status === 'waiting')
@@ -107,6 +120,10 @@ const getters = {
   withdrawWalletAddresses (state) {
     const wallet = find('eth_whitelist', state.accountInfo)
     return wallet ? wallet.eth_whitelist.split(',') : []
+  },
+
+  accountQuorum (state) {
+    return state.accountQuorum
   }
 }
 
@@ -150,6 +167,7 @@ const mutations = {
   [types.LOGIN_SUCCESS] (state, account) {
     state.accountId = account.accountId
     state.accountInfo = JSON.parse(account.jsonData)
+    state.accountQuorum = account.quorum
   },
 
   [types.LOGIN_FAILURE] (state, err) {
@@ -204,11 +222,29 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
+
+  [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
+    state.rawPendingTransactions = transactions
+  },
+
+  [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.TRANSFER_ASSET_REQUEST] (state) {},
 
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
 
   [types.TRANSFER_ASSET_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SIGN_PENDING_REQUEST] (state) {},
+
+  [types.SIGN_PENDING_SUCCESS] (state) {},
+
+  [types.SIGN_PENDING_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -238,12 +274,12 @@ const mutations = {
 }
 
 const actions = {
-  signup ({ commit }, { username }) {
+  signup ({ commit }, { username, whitelist }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, publicKey)
+    return notaryUtil.signup(username, whitelist, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
@@ -332,10 +368,21 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state }, { privateKey, assetId, to, description = '', amount }) {
+  getPendingTransactions ({ commit }) {
+    commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
+
+    return irohaUtil.getPendingTransactions()
+      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
+      .catch(err => {
+        commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
+  },
+
+  transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKey, state.accountId, to, assetId, description, amount)
+    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
@@ -345,21 +392,36 @@ const actions = {
       })
   },
 
+  signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
+    commit(types.SIGN_PENDING_REQUEST)
+
+    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
+      .then(() => {
+        commit(types.SIGN_PENDING_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SIGN_PENDING_FAILURE, err)
+        throw err
+      })
+  },
+
   createSettlement (
     { commit, state },
-    { privateKey, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
     return irohaUtil.createSettlement(
-      privateKey,
+      privateKeys,
       state.accountId,
-      to,
+      state.accountQuorum,
       offerAssetId,
       offerAmount,
+      description,
+      to,
+      1,
       requestAssetId,
-      requestAmount,
-      description
+      requestAmount
     )
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
@@ -370,8 +432,8 @@ const actions = {
       })
   },
 
-  acceptSettlement ({ commit, state }, { privateKey, settlementHash }) {
-    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
+  acceptSettlement ({ commit, state }, { privateKeys, settlementHash }) {
+    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
 
     return irohaUtil.acceptSettlement()
       .then(() => {
@@ -383,8 +445,8 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { privateKey, settlementHash }) {
-    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKey, settlementHash })
+  rejectSettlement ({ commit, state }, { privateKeys, settlementHash }) {
+    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
 
     return irohaUtil.rejectSettlement()
       .then(() => {

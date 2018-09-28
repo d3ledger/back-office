@@ -46,7 +46,7 @@ export default {
 .card.router-link-active {
   background: #f4f4f4;
   padding-bottom: 14px;
-  border-bottom: 1px solid #2d2d2d;
+  border-bottom: 2px solid #2d2d2d;
 }
 
 .info-container {
@@ -63,7 +63,12 @@ export default {
 }
 
 .card.router-link-active > .info-container > .label {
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.card.router-link-active > .info-container > .asset {
+  color: #000000;
+  font-weight: 600;
 }
 
 .asset {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import irohaUtil from '@util/iroha-util'
+import irohaUtil from '@util/iroha'
 
 Vue.use(Router)
 
@@ -55,6 +55,11 @@ const defaultRouter = new Router({
           path: 'reports',
           name: 'reports',
           component: lazyComponent('Reports/ReportsPage')
+        },
+        {
+          path: 'transactions',
+          name: 'transactions',
+          component: lazyComponent('Transactions/TransactionPage')
         },
         {
           path: 'settings',

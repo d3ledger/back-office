@@ -5,6 +5,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import { getParsedItem, setStringifyItem } from '@util/storage-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -14,7 +15,11 @@ const types = flow(
     'EXCHANGE_DIALOG_OPEN',
     'EXCHANGE_DIALOG_CLOSE',
     'SET_EXCHANGE_DIALOG_OFFER_ASSET',
-    'SET_EXCHANGE_DIALOG_REQUEST_ASSET'
+    'SET_EXCHANGE_DIALOG_REQUEST_ASSET',
+    'LOAD_WALLETS_SORT_CRITERION',
+    'UPDATE_WALLETS_SORT_CRITERION',
+    'LOAD_DASHBOARD_SORT_CRITERION',
+    'UPDATE_DASHBOARD_SORT_CRITERION'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -26,6 +31,7 @@ function initialState () {
   return {
     approvalDialog: {
       isVisible: false,
+      signatures: [],
       resolvePrompting: null,
       rejectPrompting: null
     },
@@ -35,7 +41,9 @@ function initialState () {
       requestAsset: null,
       price: null
     },
-    connectionError: null
+    connectionError: null,
+    walletsSortCriterion: null,
+    dashboardSortCriterion: null
   }
 }
 
@@ -46,16 +54,18 @@ function handleError (state, err) {
 const state = initialState()
 
 const mutations = {
-  [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting }) {
+  [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting, signatures }) {
     Vue.set(state, 'approvalDialog', {
       isVisible: true,
       resolvePrompting,
-      rejectPrompting
+      rejectPrompting,
+      signatures
     })
   },
-  [types.APPROVAL_DIALOG_CLOSE] (state, privateKey) {
+  [types.APPROVAL_DIALOG_CLOSE] (state, privateKeys) {
     Vue.set(state.approvalDialog, 'isVisible', false)
-    state.approvalDialog.resolvePrompting(privateKey)
+    Vue.set(state.approvalDialog, 'signatures', [])
+    state.approvalDialog.resolvePrompting(privateKeys)
   },
   [types.EXCHANGE_DIALOG_OPEN] (state, asset) {
     const offerAsset = asset || null
@@ -85,6 +95,18 @@ const mutations = {
   },
   [types.GET_OFFER_TO_REQUEST_PRICE_FAILURE] (state, err) {
     handleError(state, err)
+  },
+  [types.LOAD_WALLETS_SORT_CRITERION] (state, criterion) {
+    state.walletsSortCriterion = criterion
+  },
+  [types.UPDATE_WALLETS_SORT_CRITERION] (state, criterion) {
+    state.walletsSortCriterion = criterion
+  },
+  [types.LOAD_DASHBOARD_SORT_CRITERION] (state, criterion) {
+    state.dashboardSortCriterion = criterion
+  },
+  [types.UPDATE_DASHBOARD_SORT_CRITERION] (state, criterion) {
+    state.dashboardSortCriterion = criterion
   }
 }
 
@@ -100,19 +122,19 @@ const actions = {
    * resolve the Promise at closeApprovalDialog.
    * c.f. https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope
    */
-  openApprovalDialog ({ commit }) {
+  openApprovalDialog ({ commit }, signatures = []) {
     let resolvePrompting, rejectPrompting
     const prompting = new Promise((resolve, reject) => {
       resolvePrompting = resolve
       rejectPrompting = reject
     })
 
-    commit(types.APPROVAL_DIALOG_OPEN, { resolvePrompting, rejectPrompting })
+    commit(types.APPROVAL_DIALOG_OPEN, { resolvePrompting, rejectPrompting, signatures })
 
     return prompting
   },
-  closeApprovalDialog ({ commit }, privateKey) {
-    commit(types.APPROVAL_DIALOG_CLOSE, privateKey)
+  closeApprovalDialog ({ commit }, privateKeys) {
+    commit(types.APPROVAL_DIALOG_CLOSE, privateKeys)
   },
   openExchangeDialog ({ commit }, offerAsset) {
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
@@ -134,12 +156,37 @@ const actions = {
           throw err
         })
     }
+  },
+  loadWalletsSortCriterion ({ commit }) {
+    const criterion = getParsedItem('walletsSortCriterion')
+
+    if (criterion) {
+      commit(types.LOAD_WALLETS_SORT_CRITERION, criterion)
+    }
+  },
+  updateWalletsSortCriterion ({ commit }, criterion) {
+    setStringifyItem('walletsSortCriterion', criterion)
+    commit(types.UPDATE_WALLETS_SORT_CRITERION, criterion)
+  },
+  loadDashboardSortCriterion ({ commit }) {
+    const criterion = getParsedItem('dashboardSortCriterion')
+
+    if (criterion) {
+      commit(types.LOAD_DASHBOARD_SORT_CRITERION, criterion)
+    }
+  },
+  updateDashboardSortCriterion ({ commit }, criterion) {
+    setStringifyItem('dashboardSortCriterion', criterion)
+    commit(types.UPDATE_DASHBOARD_SORT_CRITERION, criterion)
   }
 }
 
 const getters = {
   approvalDialogVisible () {
     return state.approvalDialog.isVisible
+  },
+  approvalDialogSignatures () {
+    return state.approvalDialog.signatures
   },
   exchangeDialogVisible () {
     return state.exchangeDialog.isVisible
@@ -152,6 +199,12 @@ const getters = {
   },
   exchangeDialogPrice () {
     return state.exchangeDialog.price
+  },
+  walletsSortCriterion (state) {
+    return state.walletsSortCriterion
+  },
+  dashboardSortCriterion (state) {
+    return state.dashboardSortCriterion
   }
 }
 

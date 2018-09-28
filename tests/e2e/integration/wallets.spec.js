@@ -17,25 +17,53 @@ describe('Test wallets page without white list', () => {
   })
 
   it('Go to wallets page', () => {
-    cy.get('li.el-menu-item:nth-of-type(2)').click({ force: true })
-    cy.url().should('contain', 'wallets/')
+    cy.get('.el-side-menu .el-menu-item:contains("Wallets")').click({ force: true })
+    cy.url().should('contain', 'wallets')
   })
 
-  it('Search for wallet', () => {
-    cy.get('.el-input__inner')
-      .type(TOKEN).should('have.value', TOKEN)
-    cy.get('aside').find('a.card').should('have.length', 1)
+  describe('Test sorting', () => {
+    it('Sort wallets with alphabetical descending order', () => {
+      cy.get('#wallets-sort-button').click({ force: true })
+      cy.get('.el-dropdown-menu__item:contains("alphabetical (desc)")').click({ force: true })
+
+      cy.get('a.card .label').first().invoke('text').as('firstWalletName')
+      cy.get('a.card .label').last().invoke('text').as('lastWalletName')
+
+      cy.get('@firstWalletName').then(firstWalletName => {
+        cy.get('@lastWalletName').should('lte', firstWalletName)
+      })
+    })
+
+    it('Sort wallets with alphabetical ascending order', () => {
+      cy.get('#wallets-sort-button').click({ force: true })
+      cy.get('.el-dropdown-menu__item:contains("alphabetical (asc)")').click({ force: true })
+
+      cy.get('a.card .label').first().invoke('text').as('firstWalletName')
+      cy.get('a.card .label').last().invoke('text').as('lastWalletName')
+
+      cy.get('@firstWalletName').then(firstWalletName => {
+        cy.get('@lastWalletName').should('gte', firstWalletName)
+      })
+    })
   })
 
-  it('Open wallet', () => {
-    cy.get('a.card').first().click()
-    cy.url().should('contain', TOKEN.toLowerCase())
-    cy.get('div.card-header').first().should('contain', TOKEN)
+  describe('Test search', () => {
+    it('Search for wallet', () => {
+      cy.get('.el-input__inner')
+        .type(TOKEN).should('have.value', TOKEN)
+      cy.get('aside').find('a.card').should('have.length', 1)
+    })
+
+    it('Open wallet', () => {
+      cy.get('a.card').first().click()
+      cy.url().should('contain', TOKEN.toLowerCase())
+      cy.get('.card_header').first().should('contain', TOKEN)
+    })
   })
 
   describe('Test deposit modal', () => {
     it('Open modal', () => {
-      cy.contains('Deposit').click()
+      cy.get('[data-cy=deposit]').click()
       cy.get('div.el-dialog').eq(1).should('be.visible')
     })
 
@@ -52,12 +80,12 @@ describe('Test wallets page without white list', () => {
 
   describe('Test withdraw modal', () => {
     it('Open modal', () => {
-      cy.contains('Withdraw').click()
+      cy.get('[data-cy=withdraw]').click()
       cy.get('div.el-dialog').eq(0).should('be.visible')
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -103,7 +131,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       const walletAddress = '0x0000000000000000000000000000000000000000'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -120,10 +148,46 @@ describe('Test wallets page without white list', () => {
         .get('div.el-dialog')
         .eq(4)
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
-        .get('i.el-dialog__close')
-        .eq(4)
-        .click()
+    })
+
+    it('Validate approval dialog - handle an error', () => {
+      cy.wrap('invalid_private_key').as('invalidPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.invalidPrivateKey)
+            .should('have.value', this.invalidPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('be.disabled')
+    })
+
+    it('Validate approval dialog - correct', () => {
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.validPrivateKey)
+            .should('have.value', this.validPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('not.be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('not.be.disabled')
+    })
+
+    it('Close approval modal', () => {
+      cy.get('#approval-dialog i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
@@ -134,12 +198,12 @@ describe('Test wallets page without white list', () => {
 
   describe('Test transfer modal', () => {
     it('Open modal', () => {
-      cy.contains('Transfer').click()
+      cy.get('[data-cy=transfer]').click()
       cy.get('div.el-dialog').eq(2).should('be.visible')
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -185,7 +249,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       const account = 'james@bond'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -214,12 +278,12 @@ describe('Test wallets page without white list', () => {
 
   describe('Test exchange modal', () => {
     it('Open modal', () => {
-      cy.contains('Exchange').click()
+      cy.get('[data-cy=exchange]').click()
       cy.get('div.el-dialog').eq(3).should('be.visible')
     })
 
     it('Validate first amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -236,7 +300,7 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate second amount field', () => {
-      const tokenAmount = '200'
+      const tokenAmount = '0.2'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -297,8 +361,8 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmountFirst = '100'
-      const tokenAmountSecond = '200'
+      const tokenAmountFirst = '0.1'
+      const tokenAmountSecond = '0.2'
       const account = 'james@bond'
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -351,7 +415,7 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Validate amount field', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -380,7 +444,7 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '100'
+      const tokenAmount = '0.1'
       cy.get('div.el-dialog').eq(0)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -397,10 +461,46 @@ describe('Test wallets page with white list', () => {
         .get('div.el-dialog')
         .eq(4)
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
-        .get('i.el-dialog__close')
-        .eq(4)
-        .click()
+    })
+
+    it('Validate approval dialog - handle an error', () => {
+      cy.wrap('invalid_private_key').as('invalidPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.invalidPrivateKey)
+            .should('have.value', this.invalidPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('be.disabled')
+    })
+
+    it('Validate approval dialog - correct', () => {
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
+
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .clear()
+            .type(this.validPrivateKey)
+            .should('have.value', this.validPrivateKey)
+
+          cy.get('#approval-dialog .el-form-item__error').eq(index)
+            .should('not.be.visible')
+        })
+
+      cy.get('#confirm-approval-form')
+        .should('not.be.disabled')
+    })
+
+    it('Close approval modal', () => {
+      cy.get('#approval-dialog i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
