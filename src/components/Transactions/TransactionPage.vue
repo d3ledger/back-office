@@ -12,12 +12,14 @@
               :data="allPendingTransactions">
               <el-table-column type="expand">
                 <template slot-scope="scope">
-                  <p>
-                    {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
-                  </p>
-                  <div>
-                    <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                    <p>Message: {{ scope.row.message }}</p>
+                  <div class="transaction_details">
+                    <p>
+                      {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
+                    </p>
+                    <div>
+                      <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
+                      <p>Message: {{ scope.row.message }}</p>
+                    </div>
                   </div>
                 </template>
               </el-table-column>
@@ -33,10 +35,10 @@
               </el-table-column>
               <el-table-column label="Address" min-width="90" show-overflow-tooltip>
                 <template slot-scope="scope">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" min-width="90">
+              <el-table-column label="Description" min-width="90" show-overflow-tooltip>
                 <template slot-scope="scope">
                   <div>
                     <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
@@ -44,12 +46,17 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Signs" min-width="60">
+              <el-table-column label="Expire" width="70">
+                <template slot-scope="scope">
+                  {{ calculateEstimatedTime(scope.row.date) }}
+                </template>
+              </el-table-column>
+              <el-table-column label="Signs" width="60">
                 <template slot-scope="scope">
                   {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
-              <el-table-column min-width="190">
+              <el-table-column width="210">
                 <template slot-scope="scope">
                   <div class="transaction_action">
                     <el-button
@@ -84,6 +91,7 @@ export default {
   ],
   data () {
     return {
+      liveTimeOfTransaction: 24 * 60 * 60 * 1000, // 24h in milliseconds
       isSending: false
     }
   },
@@ -128,8 +136,11 @@ export default {
             })
         })
         .finally(() => { this.isSending = false })
+    },
+    calculateEstimatedTime (date) {
+      const rightDate = date + this.liveTimeOfTransaction
+      return this.compareDates(rightDate, new Date().getTime())
     }
-
   }
 }
 </script>
@@ -152,6 +163,10 @@ export default {
 }
 .transactions_table-row {
   height: 72px;
+  color: #000000;
+}
+.transaction_details {
+  font-size: 0.8rem;
   color: #000000;
 }
 .transaction_action >>> button {
