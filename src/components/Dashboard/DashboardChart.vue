@@ -40,7 +40,7 @@ export default {
   },
   data () {
     return {
-      daysLabels: ['1H', '1D', '1W', '1M', '1Y', 'ALL']
+      daysLabels: ['1H', '1D', '1W', '1M', '1Y']
     }
   },
   computed: {

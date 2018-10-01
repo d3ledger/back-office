@@ -65,7 +65,7 @@ describe('Dashboard store', () => {
         },
         assetList: [],
         assetChart: {
-          filter: '1Y',
+          filter: '1M',
           crypto: null,
           data: []
         },
