@@ -4,6 +4,7 @@ import sortedUniq from 'lodash/fp/sortedUniq'
 import flow from 'lodash/fp/flow'
 import tz from 'timezones.json'
 import format from 'date-fns/format'
+import differenceInMinutes from 'date-fns/difference_in_minutes'
 
 const timezones = flow(map(t => t.utc), flatten, sortedUniq)(tz)
 
@@ -34,6 +35,12 @@ const dateFormat = {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)
       return format(time, formatString)
+    },
+    compareDates (laterDate, earlierDate) {
+      const diff = differenceInMinutes(laterDate, earlierDate)
+      const hours = ~~(diff / 60) // return the quotient from division
+      const minutes = diff % 60
+      return `${hours}:${minutes}`
     }
   },
   data () {
