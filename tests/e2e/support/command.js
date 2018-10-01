@@ -13,6 +13,12 @@ Cypress.Commands.add('upload_file', (fileName, selector) => {
   })
 })
 
+Cypress.Commands.add('goToPage', (url, expect) => {
+  cy.wait(1000)
+  cy.get(`.el-side-menu .el-menu-item:contains("${expect}")`).click({ force: true })
+  cy.url().should('contain', url)
+})
+
 Cypress.Commands.add('login', (keyPath) => {
   cy.upload_file(keyPath, 'input.el-upload__input')
   cy.get('form > div:nth-child(3) input')
@@ -22,7 +28,7 @@ Cypress.Commands.add('login', (keyPath) => {
 })
 
 Cypress.Commands.add('setTimezone', (timezone) => {
-  cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
+  cy.goToPage('settings', 'Settings')
   cy.get('#timezone_select').should('be.visible').type(timezone)
   cy.get('.el-select-dropdown .el-select-dropdown__list').contains(new RegExp(`^\\s*${timezone}\\s*$`)).click({ force: true }).should(() => {
     const view = JSON.parse(localStorage.getItem('settings')).view

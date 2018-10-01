@@ -71,9 +71,11 @@ import 'cryptocoins-icons/webfont/cryptocoins.css'
 
 import ECharts from 'vue-echarts/components/ECharts'
 import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/candlestick'
 import 'echarts/lib/chart/pie'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/legendScroll'
+import 'echarts/lib/component/dataZoom'
 
 Vue.component('ECharts', ECharts)
 
