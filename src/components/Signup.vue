@@ -47,6 +47,10 @@
           </el-tag>
         </el-form-item>
         <el-form-item class="signup-button-container">
+          <div class="signup-settings" @click="openNotaryIpPrompt">
+            <fa-icon icon="cog" />
+          </div>
+
           <el-button
             class="fullwidth black"
             type="primary"
@@ -103,6 +107,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 
@@ -132,11 +137,21 @@ export default {
     }
   },
 
+  computed: {
+    ...mapState({
+      notaryIp: state => state.Account.notaryIp
+    })
+  },
+
   beforeMount () {
     this.updateWhiteListValidationRules()
   },
 
   methods: {
+    ...mapActions([
+      'setNotaryIp'
+    ]),
+
     onSubmit () {
       this.$refs['newAddress'].clearValidate()
       this.$refs['form'].validateField('username', (usernameErrorMessage) => {
@@ -207,6 +222,20 @@ export default {
       this._refreshRules({
         newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
       })
+    },
+
+    openNotaryIpPrompt () {
+      this.$prompt('Please input the registration service IP', 'Registration Service IP', {
+        inputValue: this.notaryIp,
+        inputPlaceholder: 'e.g. http://localhost:8083/'
+      })
+        .then(({ value }) => {
+          if (value === this.notaryIp) return
+
+          this.setNotaryIp({ ip: value })
+          this.$message.success(`Registration service IP has been updated`)
+        })
+        .catch(() => {})
     }
   }
 }
@@ -251,5 +280,12 @@ export default {
 
   .el-tag {
     margin-right: 10px;
+  }
+
+  .signup-settings {
+    float: right;
+    cursor: pointer;
+    line-height: 1;
+    margin-bottom: 10px;
   }
 </style>

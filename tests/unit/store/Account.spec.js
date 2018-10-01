@@ -26,6 +26,7 @@ describe('Account store', () => {
   const MOCK_ASSET_TRANSACTIONS = require('../fixtures/transactions.json')
   const MOCK_TRANSACTIONS = MOCK_ASSET_TRANSACTIONS['omisego#test']
   const MOCK_NODE_IP = 'MOCK_NODE_IP'
+  const MOCK_NOTARY_IP = 'MOCK_NOTARY_IP'
   const MOCK_ACCOUNT_RESPONSE = { accountId: randomAccountId() }
   const MOCK_KEYPAIR = {
     publicKey: randomPublicKey(),
@@ -47,6 +48,7 @@ describe('Account store', () => {
   const notaryUtilMock = {
     _forceFail: false,
     _MOCK_ERROR: new Error(),
+    baseURL: MOCK_NOTARY_IP,
     signup: () => {
       if (notaryUtilMock._forceFail) return new Promise(() => { throw notaryUtilMock._MOCK_ERROR })
       else return Promise.resolve()
@@ -99,6 +101,7 @@ describe('Account store', () => {
       const state = {
         accountId: randomAccountId(),
         nodeIp: randomNodeIp(),
+        notaryIp: randomNodeIp(),
         accountInfo: randomObject(),
         accountQuorum: randomAmountRng(),
         rawAssetTransactions: randomObject(),
@@ -112,6 +115,7 @@ describe('Account store', () => {
       const expectedState = {
         accountId: '',
         nodeIp: MOCK_NODE_IP,
+        notaryIp: MOCK_NOTARY_IP,
         accountInfo: {},
         accountQuorum: 0,
         rawAssetTransactions: {},

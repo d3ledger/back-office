@@ -19,5 +19,7 @@ const signup = axios => (name, whitelist, publicKey) => {
 }
 
 export default {
+  get baseURL () { return axiosNotary.defaults.baseURL },
+  set baseURL (baseURL) { axiosNotary.defaults.baseURL = baseURL },
   signup: signup(axiosNotary)
 }

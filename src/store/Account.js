@@ -17,7 +17,8 @@ const ASSETS = require('@util/crypto-list.json')
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
   concat([
-    'RESET'
+    'RESET',
+    'SET_NOTARY_IP'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -41,6 +42,7 @@ function initialState () {
   return {
     accountId: '',
     nodeIp: irohaUtil.getStoredNodeIp(),
+    notaryIp: notaryUtil.baseURL,
     accountInfo: {},
     accountQuorum: 0,
     rawAssetTransactions: {},
@@ -145,6 +147,11 @@ function handleError (state, err) {
 }
 
 const mutations = {
+  [types.SET_NOTARY_IP] (state, ip) {
+    notaryUtil.baseURL = ip
+    state.notaryIp = ip
+  },
+
   [types.RESET] (state) {
     const s = initialState()
 
@@ -274,6 +281,10 @@ const mutations = {
 }
 
 const actions = {
+  setNotaryIp ({ commit }, { ip }) {
+    commit(types.SET_NOTARY_IP, ip)
+  },
+
   signup ({ commit }, { username, whitelist }) {
     commit(types.SIGNUP_REQUEST)
 
