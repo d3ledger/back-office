@@ -7,8 +7,7 @@ describe('Test settings page', () => {
   })
 
   it('Go to settings page', () => {
-    cy.get('.el-side-menu .el-menu-item:contains("Settings")').click({ force: true })
-    cy.url().should('be.eq', `${Cypress.config('baseUrl')}/#/settings`)
+    cy.goToPage('settings', 'Settings')
   })
 
   it('Change settings', () => {

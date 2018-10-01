@@ -14,7 +14,7 @@
 
             <div class="searchbar__sort">
               <el-dropdown trigger="click" @command="sort">
-                <div id="wallets-sort-button" class="searchbar__sort-button">
+                <div id="dashboard-sort-button" class="searchbar__sort-button">
                   <fa-icon
                     :icon="dashboardSortCriterion.icon"
                     class="searchbar__icon"

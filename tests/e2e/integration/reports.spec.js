@@ -24,8 +24,7 @@ describe('Reports page', () => {
   })
 
   it('goes to the reports page', () => {
-    cy.get('.el-side-menu .el-menu-item:contains("Reports")').click({ force: true })
-    cy.url().should('contain', 'reports')
+    cy.goToPage('reports', 'Reports')
   })
 
   it('lists the previous month\'s reports', () => {
