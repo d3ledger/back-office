@@ -108,7 +108,7 @@ const getters = {
   connectionError (state) {
     return state.connectionError
   },
-  dashboardLoading (state) {
+  isDashboardLoading (state) {
     return state.isLoading
   }
 }
@@ -257,7 +257,8 @@ const actions = {
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
-    const crypto = (getters.wallets.length && !data.crypto) ? getters.wallets[0].asset : data.crypto
+    const wallets = getters.wallets.filter(w => Number(w.amount) !== 0)
+    const crypto = (wallets.length && !data.crypto) ? getters.portfolioChart.crypto || wallets[0].asset : data.crypto
     if (crypto) {
       commit(types.SELECT_CHART_CRYPTO, crypto)
     }
