@@ -45,7 +45,7 @@ export default {
 
 .card.router-link-active {
   background: #f4f4f4;
-  padding-bottom: 14px;
+  padding-bottom: 13px;
   border-bottom: 2px solid #2d2d2d;
 }
 

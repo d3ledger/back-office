@@ -69,6 +69,9 @@ export default {
       this.onReady()
     }
   },
+  created () {
+    this.onReady()
+  },
   methods: {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {

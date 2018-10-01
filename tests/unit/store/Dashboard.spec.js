@@ -403,10 +403,10 @@ describe('Dashboard store', () => {
         expect(result).to.be.a('null')
       })
     })
-    describe('dashboardLoading', () => {
+    describe('isDashboardLoading', () => {
       it('should return false', () => {
         const state = { isLoading: false }
-        const result = getters.dashboardLoading(state)
+        const result = getters.isDashboardLoading(state)
         expect(result).to.be.false
       })
     })
