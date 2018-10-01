@@ -73,6 +73,8 @@ a:hover {
   overflow: scroll;
 }
 
+.el-message,
+.el-message-box,
 .el-popper,
 .el-tooltip__popper, .el-select-dropdown__item {
   font-family: 'IBM Plex Sans', sans-serif;

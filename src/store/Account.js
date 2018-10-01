@@ -17,7 +17,8 @@ const ASSETS = require('@util/crypto-list.json')
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
   concat([
-    'RESET'
+    'RESET',
+    'SET_NOTARY_IP'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -292,6 +293,10 @@ const mutations = {
 }
 
 const actions = {
+  setNotaryIp ({ commit }, { ip }) {
+    commit(types.SET_NOTARY_IP, ip)
+  },
+
   signup ({ commit }, { username, whitelist }) {
     commit(types.SIGNUP_REQUEST)
 
