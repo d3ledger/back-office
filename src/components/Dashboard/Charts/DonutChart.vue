@@ -57,6 +57,9 @@ export default {
       this.onReady()
     }
   },
+  created () {
+    this.onReady()
+  },
   methods: {
     onReady (instance, ECharts) {
       this.chart.series[0].data = this.data.map(a => ({

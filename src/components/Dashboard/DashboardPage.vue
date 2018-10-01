@@ -1,5 +1,6 @@
 <template>
-  <el-container v-if="wallets.length || dashboardLoading" v-loading.fullscreen.lock="dashboardLoading">
+  <el-container v-if="isDashboardLoading" v-loading.fullscreen="isDashboardLoading" />
+  <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
@@ -52,7 +53,7 @@ export default {
       dashboardChartHeight: 0
     }
   },
-  mounted () {
+  created () {
     this.$store.dispatch('loadDashboard')
     window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
     this.getDashboardChartHeight()
@@ -72,8 +73,11 @@ export default {
       'portfolioPercent',
       'portfolioHistory',
       'portfolioList',
-      'dashboardLoading'
-    ])
+      'isDashboardLoading'
+    ]),
+    hasNonEmptyWallets () {
+      return this.portfolioList.length && (this.portfolioList.length > this.portfolioList.filter(t => t.price === 0).length)
+    }
   }
 }
 </script>

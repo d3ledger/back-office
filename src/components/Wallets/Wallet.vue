@@ -150,23 +150,23 @@
                 <div class="transaction_details">
                   <div v-if="scope.row.settlement">
                     <el-row>
-                      <el-col :span="6">{{ formatDateLong(scope.row.settlement.date) }}</el-col>
-                      <el-col :span="6" class="transaction_details-amount">
+                      <el-col :span="4">{{ formatDateLong(scope.row.settlement.date) }}</el-col>
+                      <el-col :span="2" class="transaction_details-amount">
                         <p>- {{ scope.row.settlement.offer_amount }} {{ scope.row.settlement.offer_asset }}</p>
                         <p>+ {{ scope.row.settlement.request_amount }} {{ scope.row.settlement.request_asset }}</p>
                       </el-col>
-                      <el-col :span="6">{{ scope.row.settlement.message }}</el-col>
-                      <el-col :span="6">{{ scope.row.settlement.to }}</el-col>
+                      <el-col>{{ scope.row.settlement.message }}</el-col>
+                      <el-col :span="2">{{ scope.row.settlement.to }}</el-col>
                     </el-row>
                   </div>
                   <div v-else>
                     <el-row>
-                      <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
-                      <el-col :span="6" class="transaction_details-amount">
+                      <el-col :span="4">{{ formatDateLong(scope.row.date) }}</el-col>
+                      <el-col :span="2" class="transaction_details-amount">
                         {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount }}
                       </el-col>
-                      <el-col :span="6">{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
-                      <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+                      <el-col>{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
+                      <el-col :span="2">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
                     </el-row>
                   </div>
                 </div>
@@ -184,21 +184,21 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="message" label="Description" min-width="200">
+            <el-table-column prop="message" label="Description" min-width="200" show-overflow-tooltip>
               <template slot-scope="scope">
-                <div v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></div>
-                <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
-                <div v-else>{{ scope.row.message }}</div>
+                <p v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></p>
+                <p v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
+                <p v-else>{{ scope.row.message }}</p>
               </template>
             </el-table-column>
             <el-table-column label="Address" min-width="120" show-overflow-tooltip>
               <template slot-scope="scope">
-                <div v-if="scope.row.from === 'you'">
+                <span v-if="scope.row.from === 'you'">
                   {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
-                </div>
-                <div v-else>
+                </span>
+                <span v-else>
                   {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
-                </div>
+                </span>
               </template>
             </el-table-column>
           </el-table>
@@ -376,7 +376,8 @@ export default {
       'cryptoInfo',
       'settingsView',
       'ethWalletAddress',
-      'withdrawWalletAddresses'
+      'withdrawWalletAddresses',
+      'getTransactionsByAssetId'
     ]),
 
     wallet () {
@@ -388,7 +389,7 @@ export default {
     transactions () {
       if (!this.wallet) return []
 
-      return this.$store.getters.getTransactionsByAssetId(this.wallet.assetId)
+      return this.getTransactionsByAssetId(this.wallet.assetId)
     },
 
     displayPrecision () {

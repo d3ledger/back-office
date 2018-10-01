@@ -105,9 +105,10 @@ export default {
     }
   },
 
-  mounted () {
+  created () {
     this._adjustYAxisWidthDebounced = debounce(500)(this.adjustYAxisWidth.bind(this))
     window.addEventListener('resize', this._adjustYAxisWidthDebounced)
+    this.onReady()
   },
 
   beforeDestroy () {
