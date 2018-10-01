@@ -21,22 +21,22 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Date" width="140px">
+              <el-table-column label="Date" width="110">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" width="150px">
+              <el-table-column label="Amount" min-width="60">
                 <template slot-scope="scope">
                   {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId === scope.row.assetId).asset}}
                 </template>
               </el-table-column>
-              <el-table-column label="Address" min-width="120" show-overflow-tooltip>
+              <el-table-column label="Address" min-width="90" show-overflow-tooltip>
                 <template slot-scope="scope">
                   {{ scope.row.to === 'notary' ? 'Withdrawal ' : '' }}to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" min-width="200">
+              <el-table-column label="Description" min-width="90">
                 <template slot-scope="scope">
                   <div>
                     <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
@@ -44,7 +44,7 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Signs" min-width="50">
+              <el-table-column label="Signs" min-width="60">
                 <template slot-scope="scope">
                   {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
