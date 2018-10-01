@@ -504,7 +504,7 @@ describe('Test transfer with one private key', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '0.1'
+      const tokenAmount = '0.001'
       const account = 'test@notary'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -553,7 +553,7 @@ describe('Test transfer with two private keys', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '0.1'
+      const tokenAmount = '0.001'
       const account = 'alice@notary'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
@@ -609,7 +609,7 @@ describe('Test transfer with one private key and quorum 2', () => {
     })
 
     it('Validate modal - correct', () => {
-      const tokenAmount = '0.1'
+      const tokenAmount = '0.001'
       const account = 'alice@notary'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
