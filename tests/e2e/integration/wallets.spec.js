@@ -10,8 +10,7 @@ describe('Test wallets page without white list', () => {
   })
 
   it('Go to wallets page', () => {
-    cy.get('.el-side-menu .el-menu-item:contains("Wallets")').click({ force: true })
-    cy.url().should('contain', 'wallets')
+    cy.goToPage('wallets', 'Wallets')
   })
 
   describe('Test sorting', () => {
@@ -62,8 +61,7 @@ describe('Test wallets page without white list', () => {
 
     it.skip('Wallet address expect to be valid', () => {})
 
-    it.skip('QR Code value and address are equal', () => {
-    })
+    it.skip('QR Code value and address are equal', () => {})
 
     it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(1).click()
@@ -170,9 +168,6 @@ describe('Test wallets page without white list', () => {
             .clear()
             .type(this.validPrivateKey)
             .should('have.value', this.validPrivateKey)
-
-          cy.get('#approval-dialog .el-form-item__error').eq(index)
-            .should('not.be.visible')
         })
 
       cy.get('#confirm-approval-form')
@@ -390,8 +385,7 @@ describe('Test wallets page with white list', () => {
   })
 
   it('Go to wallets page', () => {
-    cy.get('li.el-menu-item:nth-of-type(2)').click({ force: true })
-    cy.url().should('contain', 'wallets/')
+    cy.goToPage('wallets', 'Wallets')
   })
 
   describe('Test withdraw modal', () => {
@@ -476,9 +470,6 @@ describe('Test wallets page with white list', () => {
             .clear()
             .type(this.validPrivateKey)
             .should('have.value', this.validPrivateKey)
-
-          cy.get('#approval-dialog .el-form-item__error').eq(index)
-            .should('not.be.visible')
         })
 
       cy.get('#confirm-approval-form')
@@ -492,6 +483,183 @@ describe('Test wallets page with white list', () => {
     it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(0).click()
       cy.get('div.el-dialog').eq(0).should('not.be.visible')
+    })
+  })
+})
+
+describe('Test transfer with one private key', () => {
+  it('Make auth', () => {
+    cy.visit('/')
+    cy.login(aliceKeyPath)
+  })
+
+  it('Go to wallets page', () => {
+    cy.goToPage('wallets', 'Wallets')
+  })
+
+  describe('Test transfer with one key', () => {
+    it('Open modal', () => {
+      cy.get('[data-cy=transfer]').click()
+      cy.get('div.el-dialog').eq(2).should('be.visible')
+    })
+
+    it('Validate modal - correct', () => {
+      const tokenAmount = '0.1'
+      const account = 'test@notary'
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(account)
+        .should('have.value', account)
+      cy.get('div.el-dialog').eq(2)
+        .find('.el-dialog__body > .el-button')
+        .click()
+    })
+
+    it('Enter one private key and send', () => {
+      cy.wrap('9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1').as('validPrivateKey')
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          cy.wrap($el).find('.el-input__inner')
+            .type(this.validPrivateKey)
+            .should('have.value', this.validPrivateKey)
+        })
+      cy.get('#confirm-approval-form').click({ force: true })
+    })
+
+    it('Handle success message', () => {
+      cy.get('.el-message', { timeout: 10000 }).should('be.visible')
+    })
+  })
+})
+
+describe('Test transfer with two private keys', () => {
+  it('Make auth', () => {
+    cy.visit('/')
+    cy.login(testKeyPath)
+  })
+
+  it('Go to wallets page', () => {
+    cy.goToPage('wallets', 'Wallets')
+  })
+
+  describe('Test transfer with two keys', () => {
+    it('Open modal', () => {
+      cy.get('[data-cy=transfer]').click()
+      cy.get('div.el-dialog').eq(2).should('be.visible')
+    })
+
+    it('Validate modal - correct', () => {
+      const tokenAmount = '0.1'
+      const account = 'alice@notary'
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(account)
+        .should('have.value', account)
+      cy.get('div.el-dialog').eq(2)
+        .find('.el-dialog__body > .el-button')
+        .click()
+    })
+
+    it('Enter two private keys and send', () => {
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey1')
+      cy.wrap('9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1').as('validPrivateKey2')
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          if (index === 0) {
+            cy.wrap($el).find('.el-input__inner')
+              .type(this.validPrivateKey1)
+              .should('have.value', this.validPrivateKey1)
+          } else {
+            cy.wrap($el).find('.el-input__inner')
+              .type(this.validPrivateKey2)
+              .should('have.value', this.validPrivateKey2)
+          }
+        })
+      cy.get('#confirm-approval-form').click({ force: true })
+    })
+
+    it('Handle success message', () => {
+      cy.get('.el-message', { timeout: 10000 }).should('be.visible')
+    })
+  })
+})
+
+describe('Test transfer with one private key and quorum 2', () => {
+  it('Make auth', () => {
+    cy.visit('/')
+    cy.login(testKeyPath)
+  })
+
+  it('Go to wallets page', () => {
+    cy.goToPage('wallets', 'Wallets')
+  })
+
+  describe('Test transfer with one key and quorum 2', () => {
+    it('Open modal', () => {
+      cy.get('[data-cy=transfer]').click()
+      cy.get('div.el-dialog').eq(2).should('be.visible')
+    })
+
+    it('Validate modal - correct', () => {
+      const tokenAmount = '0.1'
+      const account = 'alice@notary'
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('div.el-dialog').eq(2)
+        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(account)
+        .should('have.value', account)
+      cy.get('div.el-dialog').eq(2)
+        .find('.el-dialog__body > .el-button')
+        .click()
+    })
+
+    it('Enter one private key', () => {
+      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey1')
+      cy.get('#approval-dialog .el-input')
+        .each(function ($el, index) {
+          if (index === 0) {
+            cy.wrap($el).find('.el-input__inner')
+              .type(this.validPrivateKey1)
+              .should('have.value', this.validPrivateKey1)
+          }
+        })
+      cy.get('#confirm-approval-form').click({ force: true })
+    })
+
+    it('Handle success message', () => {
+      cy.get('.el-message', { timeout: 15000 }).should('be.visible')
+    })
+
+    it('Go to transactions page', () => {
+      cy.goToPage('transactions', 'Transactions')
+    })
+
+    it('Open add signature modal', () => {
+      cy.get('.transaction_action > .el-button').eq(0).click()
+    })
+
+    it('Enter second private key', () => {
+      const validPrivateKey2 = '9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1'
+      cy.get('#approval-dialog .el-input__inner')
+        .type(validPrivateKey2)
+        .should('have.value', validPrivateKey2)
+      cy.get('#confirm-approval-form').click({ force: true })
+    })
+
+    it('Show message that transaction signed correctly', () => {
+      cy.wait(1000)
+      cy.get('.el-message', { timeout: 10000 }).should('be.visible')
     })
   })
 })
