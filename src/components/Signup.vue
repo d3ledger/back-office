@@ -48,11 +48,30 @@
             {{ item }}
           </el-tag>
         </el-form-item>
+        <el-form-item
+          v-if="this.$route.fullPath.includes('#url')"
+          label="Registration ip:"
+          prop="nodeIp"
+        >
+          <el-select
+            v-model="form.nodeIp"
+            :disabled="isLoading"
+            style="width: 100%;"
+            filterable
+            allow-create
+            @change="selectNotaryIp"
+          >
+            <el-option
+              v-for="node in notaryIPs"
+              :key="node.value"
+              :label="node.label"
+              :value="node.value">
+              <span class="option left">{{ node.label }}</span>
+              <span class="option right">{{ node.value }}</span>
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item class="signup-button-container">
-          <!-- <div class="signup-settings" @click="openNotaryIpPrompt">
-            <fa-icon icon="cog" />
-          </div> -->
-
           <el-button
             class="fullwidth black"
             type="primary"
@@ -112,23 +131,27 @@
 import { mapState, mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
+import notaryIPs from '@/mocks/notaryIPs.json'
 
 export default {
   name: 'signup',
   mixins: [
     inputValidation({
       username: 'name',
-      newAddress: 'walletAddress'
+      newAddress: 'walletAddress',
+      nodeIp: 'nodeIp'
     })
   ],
   data () {
     return {
+      notaryIPs,
       isLoading: false,
       predefinedDomain: 'notary',
       form: {
         username: '',
         newAddress: '',
-        whitelist: []
+        whitelist: [],
+        nodeIp: ''
       },
       dialogVisible: false,
       dialog: {
@@ -225,19 +248,8 @@ export default {
         newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
       })
     },
-
-    openNotaryIpPrompt () {
-      this.$prompt('Please input the registration service IP', 'Registration Service IP', {
-        inputValue: this.notaryIp,
-        inputPlaceholder: 'e.g. http://localhost:8083/'
-      })
-        .then(({ value }) => {
-          if (value === this.notaryIp) return
-
-          this.setNotaryIp({ ip: value })
-          this.$message.success(`Registration service IP has been updated`)
-        })
-        .catch(() => {})
+    selectNotaryIp () {
+      this.setNotaryIp({ ip: this.form.nodeIp })
     }
   }
 }
@@ -289,5 +301,15 @@ export default {
     cursor: pointer;
     line-height: 1;
     margin-bottom: 10px;
+  }
+
+  .option.left {
+    float: left;
+  }
+
+  .option.right {
+    float: right;
+    font-size: 0.8rem;
+    color: #8492a6;
   }
 </style>
