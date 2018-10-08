@@ -184,7 +184,7 @@ describe('Test wallets page without white list', () => {
     })
   })
 
-  describe('Test transfer modal', () => {
+  describe.skip('Test transfer modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
       cy.get('div.el-dialog').eq(2).should('be.visible')
@@ -264,7 +264,7 @@ describe('Test wallets page without white list', () => {
     })
   })
 
-  describe('Test exchange modal', () => {
+  describe.skip('Test exchange modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=exchange]').click()
       cy.get('div.el-dialog').eq(3).should('be.visible')
@@ -487,7 +487,7 @@ describe('Test wallets page with white list', () => {
   })
 })
 
-describe('Test transfer with one private key', () => {
+describe.skip('Test transfer with one private key', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(aliceKeyPath)
@@ -536,7 +536,7 @@ describe('Test transfer with one private key', () => {
   })
 })
 
-describe('Test transfer with two private keys', () => {
+describe.skip('Test transfer with two private keys', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)
@@ -592,7 +592,7 @@ describe('Test transfer with two private keys', () => {
   })
 })
 
-describe('Test transfer with one private key and quorum 2', () => {
+describe.skip('Test transfer with one private key and quorum 2', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)
