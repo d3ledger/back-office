@@ -19,18 +19,18 @@
         <SvgIcon iconName="Wallet" iconClass="menu-icon"><WalletIcon/></SvgIcon>
         <span slot="title">Wallets</span>
       </el-menu-item>
-      <el-menu-item index="/settlements/history">
+      <!-- <el-menu-item index="/settlements/history">
         <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
         <span slot="title">Exchange</span>
-      </el-menu-item>
+      </el-menu-item> -->
       <el-menu-item index="/reports">
         <SvgIcon iconName="Report" iconClass="menu-icon"><ReportIcon/></SvgIcon>
         <span slot="title">Reports</span>
       </el-menu-item>
-      <el-menu-item v-if="quorum > 1" index="/transactions">
+      <!-- <el-menu-item v-if="quorum > 1" index="/transactions">
         <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span slot="title">Transactions</span>
-      </el-menu-item>
+      </el-menu-item> -->
       <el-menu-item index="/settings">
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
         <span slot="title">Settings</span>
