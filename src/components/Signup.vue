@@ -49,9 +49,9 @@
           </el-tag>
         </el-form-item>
         <el-form-item class="signup-button-container">
-          <div class="signup-settings" @click="openNotaryIpPrompt">
+          <!-- <div class="signup-settings" @click="openNotaryIpPrompt">
             <fa-icon icon="cog" />
-          </div>
+          </div> -->
 
           <el-button
             class="fullwidth black"
