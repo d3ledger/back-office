@@ -5,7 +5,9 @@
 </p>
 
 ## What is it?
-**D3** is a web application for D3 ledger user.
+Distributed Digital Depository is a service platform for decentralized safekeeping and settlements of tokenized crypto assets. Financial intermediaries, or custodians, directly participate in the maintenance of the system by auditing exchange process, and by voting during sidechain-to-D3 tokenization process.
+
+[Hyperledger Iroha](https://github.com/hyperledger/iroha) is D3 ledger, which is used for voting (via multisignature accounts) and decentralized data storage.
 
 ## Getting started
 To start use this application you should run this commands in terminal.
