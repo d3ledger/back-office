@@ -184,13 +184,6 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="message" label="Description" min-width="200" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <p v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></p>
-                <p v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
-                <p v-else>{{ scope.row.message }}</p>
-              </template>
-            </el-table-column>
             <el-table-column label="Address" min-width="120" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="scope.row.from === 'you'">
@@ -199,6 +192,13 @@
                 <span v-else>
                   {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                 </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="message" label="Description" min-width="200" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <p v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></p>
+                <p v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
+                <p v-else>{{ scope.row.message }}</p>
               </template>
             </el-table-column>
           </el-table>
