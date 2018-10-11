@@ -80,7 +80,7 @@
 
 <script>
 import inputValidation from '@/components/mixins/inputValidation'
-import listOfNodes from '@/mocks/nodes.json'
+import listOfNodes from '@/data/nodes.json'
 
 export default {
   name: 'login',

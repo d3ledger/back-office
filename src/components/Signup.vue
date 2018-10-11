@@ -131,7 +131,7 @@
 import { mapState, mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
-import notaryIPs from '@/mocks/notaryIPs.json'
+import notaryIPs from '@/data/notaryIPs.json'
 
 export default {
   name: 'signup',
