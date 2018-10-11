@@ -163,7 +163,7 @@
                     <el-row>
                       <el-col :span="4">{{ formatDateLong(scope.row.date) }}</el-col>
                       <el-col :span="2" class="transaction_details-amount">
-                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount }}
+                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount | formatPrecision }}
                       </el-col>
                       <el-col>{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
                       <el-col :span="2">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
@@ -180,7 +180,7 @@
             <el-table-column label="Amount" width="120">
               <template slot-scope="scope">
                 <span class="table_amount">
-                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
+                  {{ (scope.row.from === 'you' ? '−' : '+')  }}{{ scope.row.amount | formatPrecision }}
                 </span>
               </template>
             </el-table-column>
