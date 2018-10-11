@@ -21,7 +21,9 @@ $ yarn
 
 #### ENV
 `VUE_APP_NOTARY_URL=http://127.0.0.1:8083` - Used to connect to notary registration service, provide IP of notary. Use this ENV when going to run or build application
+
 `CYPRESS_IROHA=http://127.0.0.1:8081` - Used to run e2e tests, provide IP of gRPC IROHA.
+
 `CYPRESS_baseUrl=http://127.0.0.1:8080 - Can be used in e2e tests, provide IP of D3 application
 
 #### Data
