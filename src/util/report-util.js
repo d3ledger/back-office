@@ -30,7 +30,7 @@ export function generatePDF (params) {
   debug('generating PDF output...')
 
   return fontLoader.load().then(() => new Promise((resolve, reject) => {
-    const { formatDate, formatDateWith } = params
+    const { formatDate, formatDateWith, formatPrecision } = params
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
       info: {
@@ -49,13 +49,13 @@ export function generatePDF (params) {
         { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
 
         { text: `Summary`, style: 'heading1' },
-        { text: `Ending Balance: ${data.endingBalance} ${data.cryptoCurrencyUnit}` },
-        { text: `Ending Balance in ${data.fiat}: ${data.endingBalanceFiat}` },
-        { text: `Starting Balance: ${data.startingBalance} ${data.cryptoCurrencyUnit}` },
-        { text: `Starting Balance in ${data.fiat}: ${data.startingBalanceFiat}` },
-        { text: `Net Change: ${data.netChange} ${data.cryptoCurrencyUnit}` },
-        { text: `Transfers In: ${data.transfersIn} ${data.cryptoCurrencyUnit}` },
-        { text: `Transfers Out: ${data.transfersOut} ${data.cryptoCurrencyUnit}` },
+        { text: `Ending Balance: ${formatPrecision(data.endingBalance)} ${data.cryptoCurrencyUnit}` },
+        { text: `Ending Balance in ${data.fiat}: ${formatPrecision(data.endingBalanceFiat)}` },
+        { text: `Starting Balance: ${formatPrecision(data.startingBalance)} ${data.cryptoCurrencyUnit}` },
+        { text: `Starting Balance in ${data.fiat}: ${formatPrecision(data.startingBalanceFiat)}` },
+        { text: `Net Change: ${formatPrecision(data.netChange)} ${data.cryptoCurrencyUnit}` },
+        { text: `Transfers In: ${formatPrecision(data.transfersIn)} ${data.cryptoCurrencyUnit}` },
+        { text: `Transfers Out: ${formatPrecision(data.transfersOut)} ${data.cryptoCurrencyUnit}` },
 
         { text: `Transactions By Day`, style: 'heading1' },
         {
@@ -67,11 +67,11 @@ export function generatePDF (params) {
               ['Date', 'In', `In (${data.fiat})`, 'Out', `Out (${data.fiat})`, 'Net'],
               ...data.transactionsByDay.map(tx => ([
                 formatDateWith(tx.date, 'MMM. D'),
-                tx.dailyIn,
-                tx.dailyInFiat,
-                tx.dailyOut,
-                tx.dailyOutFiat,
-                tx.dailyNet
+                formatPrecision(tx.dailyIn),
+                formatPrecision(tx.dailyInFiat),
+                formatPrecision(tx.dailyOut),
+                formatPrecision(tx.dailyOutFiat),
+                formatPrecision(tx.dailyNet)
               ]))
             ]
           }
@@ -88,9 +88,9 @@ export function generatePDF (params) {
               ...data.transactionDetails.map(tx => ([
                 formatDate(tx.time),
                 tx.description,
-                tx.amount,
-                tx.amountFiat,
-                tx.balance
+                formatPrecision(tx.amount),
+                formatPrecision(tx.amountFiat),
+                formatPrecision(tx.balance)
               ]))
             ]
           }
@@ -281,8 +281,8 @@ export function generateReportData ({
     time: formatDateWithYear(dateFrom),
     to: null,
     description: 'Starting Balance',
-    amount: null,
-    amountFiat: null,
+    amount: '',
+    amountFiat: '',
     balance: startingBalance.toFixed(precision),
     balanceFiat: (startingBalance / getDailyPriceFiat(dateFrom)).toFixed(precision)
   })
@@ -291,8 +291,8 @@ export function generateReportData ({
     time: formatDateWithYear(dateTo),
     to: null,
     description: 'Ending Balance',
-    amount: null,
-    amountFiat: null,
+    amount: '',
+    amountFiat: '',
     balance: endingBalance.toFixed(precision),
     balanceFiat: (startingBalance / getDailyPriceFiat(dateTo)).toFixed(precision)
   })
