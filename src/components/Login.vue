@@ -36,10 +36,22 @@
           />
         </el-form-item>
         <el-form-item label="Node ip:" prop="nodeIp">
-          <el-input
+          <el-select
             v-model="form.nodeIp"
             :disabled="isLoading"
-          ></el-input>
+            style="width: 100%;"
+            filterable
+            allow-create
+          >
+            <el-option
+              v-for="node in listOfNodes"
+              :key="node.value"
+              :label="node.label"
+              :value="node.value">
+              <span class="option left">{{ node.label }}</span>
+              <span class="option right">{{ node.value }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item class="login-button-container">
@@ -68,6 +80,7 @@
 
 <script>
 import inputValidation from '@/components/mixins/inputValidation'
+import listOfNodes from '@/data/nodes.json'
 
 export default {
   name: 'login',
@@ -85,7 +98,8 @@ export default {
         username: '',
         privateKey: '',
         nodeIp: this.$store.state.Account.nodeIp
-      }
+      },
+      listOfNodes
     }
   },
 
@@ -156,5 +170,15 @@ export default {
 
   .login-form >>> .el-form-item__label::before {
     content: '';
+  }
+
+  .option.left {
+    float: left;
+  }
+
+  .option.right {
+    float: right;
+    font-size: 0.8rem;
+    color: #8492a6;
   }
 </style>
