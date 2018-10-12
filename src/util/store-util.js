@@ -8,7 +8,7 @@ import reverse from 'lodash/fp/reverse'
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
 
 // TODO: To be removed.
-const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
+const DUMMY_SETTLEMENTS = require('@/data/settlements.json')
 
 // TODO: check if transferAsset is a part of a settlement by meta info.
 function findSettlementOfTransaction (settlements = [], transferAsset) {
