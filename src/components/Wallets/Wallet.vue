@@ -13,7 +13,11 @@
               </div>
               <div class="top-left-card">
                 <div class="amount">
-                  <h2> {{wallet.amount | formatPrecision}} {{wallet.asset}}</h2>
+                  <el-tooltip class="item" effect="dark" :content="`${wallet.amount} ${wallet.asset}`" placement="top">
+                    <h2>
+                      {{ wallet.amount | fitAmount }} {{ wallet.asset }}
+                    </h2>
+                  </el-tooltip>
                 </div>
                 <div class="card_actions">
                   <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
@@ -534,6 +538,13 @@ export default {
         if (!valid) isValid = false
       })
       return isValid
+    }
+  },
+
+  filters: {
+    fitAmount (amount) {
+      const withoutZeros = numberFormat.filters.formatPrecision(amount)
+      return withoutZeros.length > 15 ? `${withoutZeros.substr(0, 15)}...` : withoutZeros
     }
   }
 }
