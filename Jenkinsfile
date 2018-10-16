@@ -58,8 +58,9 @@ pipeline {
       post {
         success {
           script {
-            if (env.GIT_LOCAL_BRANCH in ["develop"] || env.CHANGE_BRANCH_LOCAL == 'develop') {
-              def branch = env.CHANGE_BRANCH_LOCAL == 'develop' ? env.CHANGE_BRANCH_LOCAL : env.GIT_LOCAL_BRANCH
+            def scmVars = checkout scm
+            if (scmVars.GIT_LOCAL_BRANCH in ["develop"] || scmVars.CHANGE_BRANCH_LOCAL == 'develop') {
+              def branch = scmVars.CHANGE_BRANCH_LOCAL == 'develop' ? scmVars.CHANGE_BRANCH_LOCAL : scmVars.GIT_LOCAL_BRANCH
               sshagent(['jenkins-back-office']) {
                 sh "ssh-agent"
                 sh """
