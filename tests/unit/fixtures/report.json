@@ -220,8 +220,8 @@
         "time": "Jul. 1, 2018 00:00",
         "to": null,
         "description": "Starting Balance",
-        "amount": null,
-        "amountFiat": null,
+        "amount": "",
+        "amountFiat": "",
         "balance": "14.28",
         "balanceFiat": "6208.70"
       },
@@ -346,8 +346,8 @@
         "time": "Jul. 17, 2018 23:59",
         "to": null,
         "description": "Ending Balance",
-        "amount": null,
-        "amountFiat": null,
+        "amount": "",
+        "amountFiat": "",
         "balance": "11.38",
         "balanceFiat": "6490.91"
       }
