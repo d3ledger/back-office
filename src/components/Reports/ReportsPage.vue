@@ -126,6 +126,7 @@
 import { mapState, mapGetters } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
 import FileSaver from 'file-saver'
 import subMonths from 'date-fns/sub_months'
 import startOfMonth from 'date-fns/start_of_month'
@@ -141,7 +142,10 @@ import { lazyComponent } from '@router'
 
 export default {
   name: 'reports-page',
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat,
+    numberFormat
+  ],
   components: {
     NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
@@ -269,6 +273,7 @@ export default {
           dateTo,
           formatDate: this.formatDate.bind(this),
           formatDateWith: this.formatDateWith.bind(this),
+          formatPrecision: numberFormat.filters.formatPrecision.bind(this),
           fiat: this.settingsView.fiat
         }
         const generating = (fileFormat === 'pdf')
