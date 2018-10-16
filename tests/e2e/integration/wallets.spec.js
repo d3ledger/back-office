@@ -1,7 +1,8 @@
 const testKeyPath = 'test@notary.priv'
 const aliceKeyPath = 'alice@notary.priv'
 
-const TOKEN = 'BasicAttentionToken'
+const TOKEN_BAT = 'BasicAttentionToken'
+const TOKEN_REP = 'Augur'
 
 describe('Test wallets page without white list', () => {
   it('Make auth', () => {
@@ -42,14 +43,14 @@ describe('Test wallets page without white list', () => {
   describe('Test search', () => {
     it('Search for wallet', () => {
       cy.get('.el-input__inner')
-        .type(TOKEN).should('have.value', TOKEN)
+        .type(TOKEN_BAT).should('have.value', TOKEN_BAT)
       cy.get('aside').find('a.card').should('have.length', 1)
     })
 
     it('Open wallet', () => {
       cy.get('a.card').first().click()
-      cy.url().should('contain', TOKEN.toLowerCase())
-      cy.get('.card_header').first().should('contain', TOKEN)
+      cy.url().should('contain', TOKEN_BAT.toLowerCase())
+      cy.get('.card_header').first().should('contain', TOKEN_BAT)
     })
   })
 
@@ -497,6 +498,14 @@ describe('Test transfer with one private key', () => {
     cy.goToPage('wallets', 'Wallets')
   })
 
+  it('Open wallet', () => {
+    cy.get('.el-input__inner')
+      .type(TOKEN_REP).should('have.value', TOKEN_REP)
+    cy.get('a.card').first().click()
+    cy.url().should('contain', TOKEN_REP.toLowerCase())
+    cy.get('.card_header').first().should('contain', TOKEN_REP)
+  })
+
   describe('Test transfer with one key', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
@@ -544,6 +553,14 @@ describe('Test transfer with two private keys', () => {
 
   it('Go to wallets page', () => {
     cy.goToPage('wallets', 'Wallets')
+  })
+
+  it('Open wallet', () => {
+    cy.get('.el-input__inner')
+      .type(TOKEN_REP).should('have.value', TOKEN_REP)
+    cy.get('a.card').first().click()
+    cy.url().should('contain', TOKEN_REP.toLowerCase())
+    cy.get('.card_header').first().should('contain', TOKEN_REP)
   })
 
   describe('Test transfer with two keys', () => {
@@ -600,6 +617,14 @@ describe('Test transfer with one private key and quorum 2', () => {
 
   it('Go to wallets page', () => {
     cy.goToPage('wallets', 'Wallets')
+  })
+
+  it('Open wallet', () => {
+    cy.get('.el-input__inner')
+      .type(TOKEN_REP).should('have.value', TOKEN_REP)
+    cy.get('a.card').first().click()
+    cy.url().should('contain', TOKEN_REP.toLowerCase())
+    cy.get('.card_header').first().should('contain', TOKEN_REP)
   })
 
   describe('Test transfer with one key and quorum 2', () => {
