@@ -163,7 +163,7 @@
                     <el-row>
                       <el-col :span="4">{{ formatDateLong(scope.row.date) }}</el-col>
                       <el-col :span="2" class="transaction_details-amount">
-                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount }}
+                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount | formatPrecision }}
                       </el-col>
                       <el-col>{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
                       <el-col :span="2">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
@@ -180,15 +180,8 @@
             <el-table-column label="Amount" width="120">
               <template slot-scope="scope">
                 <span class="table_amount">
-                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount).toFixed(displayPrecision)}}
+                  {{ (scope.row.from === 'you' ? '−' : '+')  }}{{ scope.row.amount | formatPrecision }}
                 </span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="message" label="Description" min-width="200" show-overflow-tooltip>
-              <template slot-scope="scope">
-                <p v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></p>
-                <p v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
-                <p v-else>{{ scope.row.message }}</p>
               </template>
             </el-table-column>
             <el-table-column label="Address" min-width="120" show-overflow-tooltip>
@@ -199,6 +192,13 @@
                 <span v-else>
                   {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                 </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="message" label="Description" min-width="200" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <p v-if="scope.row.settlement">Part of a settlement <fa-icon icon="exchange-alt" /></p>
+                <p v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
+                <p v-else>{{ scope.row.message }}</p>
               </template>
             </el-table-column>
           </el-table>
