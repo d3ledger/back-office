@@ -25,7 +25,7 @@ $ yarn
 3. `CYPRESS_baseUrl=http://127.0.0.1:8080` - Can be used in e2e tests, provide IP of D3 application
 
 #### Data
-In our application we are use mock data that historically became our main data. We are use them to fill IROHA, to provide list of nodes or registration services. You can check them in `mocks` folder.
+In our application we are use mock data that historically became our main data. We are use them to fill IROHA, to provide list of nodes or registration services. You can check them in `data` folder.
 
 ### How to run
 To run application

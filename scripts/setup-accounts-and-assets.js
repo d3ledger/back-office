@@ -21,7 +21,7 @@ const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.pr
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex'))
 
 const nodeIp = process.env.NODE_IP || 'http://127.0.0.1:8081'
-const DUMMY_FILE_PATH = path.join(__dirname, '../src/mocks/wallets.json')
+const DUMMY_FILE_PATH = path.join(__dirname, '../src/data/wallets.json')
 const accounts = [testAccFull, aliceAccFull]
 const wallets = require(DUMMY_FILE_PATH).wallets
 
