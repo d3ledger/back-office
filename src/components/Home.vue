@@ -304,7 +304,8 @@ export default {
               offerAssetId: offerAsset,
               offerAmount: s.offer_amount,
               requestAssetId: requestAsset,
-              requestAmount: s.request_amount
+              requestAmount: s.request_amount,
+              description: s.description
             })
               .then(() => {
                 this.$message('New settlement has successfully been created')
