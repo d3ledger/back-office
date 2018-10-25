@@ -58,31 +58,11 @@ function isLoggedIn () {
 // generate new keypair
 const generateKeypair = cryptoHelper.generateKeyPair
 
-// TODO: implement it
-function acceptSettlement () {
-  debug('starting acceptSettlement...')
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 500)
-  })
-}
-
-// TODO: implement it
-function rejectSettlement () {
-  debug('starting rejectSettlement...')
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 500)
-  })
-}
-
 export {
   login,
   logout,
   isLoggedIn,
   clearStorage,
   getStoredNodeIp,
-  generateKeypair,
-  acceptSettlement,
-  rejectSettlement
+  generateKeypair
 }
