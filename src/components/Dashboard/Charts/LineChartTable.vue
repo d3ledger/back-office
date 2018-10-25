@@ -117,10 +117,10 @@ export default {
           symbol: 'none',
           itemStyle: {
             normal: {
-              color: '#ff1339',
-              color0: '#06b023',
-              borderColor: '#ff1339',
-              borderColor0: '#06b023'
+              color0: '#ff1339',
+              color: '#06b023',
+              borderColor0: '#ff1339',
+              borderColor: '#06b023'
             }
           },
           lineStyle: {
