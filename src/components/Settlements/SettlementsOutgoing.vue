@@ -10,13 +10,13 @@
         <template slot-scope="scope">
           <div class="transaction_details">
             <el-row>
-              <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+              <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
               <el-col :span="6" class="transaction_details-amount">
-                <p>- {{ scope.row.offer_amount }} {{ scope.row.offer_asset }}</p>
-                <p>+ {{ scope.row.request_amount }} {{ scope.row.request_asset }}</p>
+                <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
+                <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
-              <el-col :span="6">{{ scope.row.message }}</el-col>
-              <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+              <el-col :span="6">{{ scope.row.from.message }}</el-col>
+              <el-col :span="6">{{ scope.row.from.to }}</el-col>
             </el-row>
           </div>
         </template>
@@ -24,20 +24,20 @@
       <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
           {{
-            Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset
+            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
             + ' → ' +
-            Number(scope.row.request_amount).toFixed(4) + ' ' + scope.row.request_asset
+            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
           }}
         </template>
       </el-table-column>
       <el-table-column label="Counterparty" min-width="120">
         <template slot-scope="scope">
-          to {{ scope.row.to }}
+          to {{ scope.row.from.to }}
         </template>
       </el-table-column>
       <el-table-column label="Date" width="120">
         <template slot-scope="scope">
-          {{ formatDate(scope.row.date) }}
+          {{ formatDate(scope.row.from.date) }}
         </template>
       </el-table-column>
     </el-table>
@@ -57,7 +57,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      settlements: 'outgoingSettlements'
+      settlements: 'outgoingSettlements',
+      wallets: 'wallets'
     })
   },
 
@@ -68,6 +69,11 @@ export default {
   methods: {
     fetchAllUnsignedTransactions () {
       this.$store.dispatch('getAllUnsignedTransactions')
+    },
+    assetName (assetId) {
+      console.log(assetId, this.wallets)
+      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
+      return wallet.asset
     }
   }
 }

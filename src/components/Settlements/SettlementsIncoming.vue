@@ -10,13 +10,13 @@
         <template slot-scope="scope">
           <div class="transaction_details">
             <el-row>
-              <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+              <el-col :span="6">{{ formatDateLong(scope.row.to.date) }}</el-col>
               <el-col :span="6" class="transaction_details-amount">
-                <p>- {{ scope.row.offer_amount }} {{ scope.row.offer_asset }}</p>
-                <p>+ {{ scope.row.request_amount }} {{ scope.row.request_asset }}</p>
+                <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
+                <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
-              <el-col :span="6">{{ scope.row.message }}</el-col>
-              <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+              <el-col :span="6">{{ scope.row.from.message }}</el-col>
+              <el-col :span="6">{{ scope.row.from.to }}</el-col>
             </el-row>
           </div>
         </template>
@@ -24,22 +24,22 @@
       <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
           {{
-            Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset
+            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
             + ' → ' +
-            Number(scope.row.request_amount).toFixed(4) + ' ' + scope.row.request_asset
+            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
           }}
         </template>
       </el-table-column>
       <el-table-column label="Counterparty" min-width="120">
         <template slot-scope="scope">
           <div>
-            from {{ scope.row.from }}
+            from {{ scope.row.from.to }}
           </div>
         </template>
       </el-table-column>
       <el-table-column label="Date" width="120">
         <template slot-scope="scope">
-          {{ formatDate(scope.row.date) }}
+          {{ formatDate(scope.row.from.date) }}
         </template>
       </el-table-column>
       <el-table-column width="200">
@@ -65,15 +65,15 @@
         </template>
       </el-table-column>
     </el-table>
-     <el-dialog
+    <el-dialog
       title="Accept settlement?"
       :visible.sync="acceptanceDialogVisible"
       width="500px"
       center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange {{ settlementForAcceptance.offer_amount + settlementForAcceptance.offer_asset }}
-        for {{ settlementForAcceptance.request_amount + settlementForAcceptance.request_asset }} with {{ settlementForAcceptance.from }}?
+        Are you sure want to exchange {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
+        for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }} with {{ settlementForAcceptance.to.from }}?
       </div>
       <div slot="footer">
         <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
@@ -86,8 +86,8 @@
       center
     >
       <div v-if="settlementForRejection">
-        Are you sure want to reject {{ settlementForRejection.offer_amount + settlementForRejection.offer_asset }}
-        for {{ settlementForRejection.request_amount + settlementForRejection.request_asset }} with {{ settlementForRejection.from }}?
+        Are you sure want to reject {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
+        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }} with {{ settlementForRejection.to.from }}?
       </div>
       <div slot="footer">
         <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
@@ -115,7 +115,8 @@ export default {
 
   computed: {
     ...mapGetters({
-      settlements: 'incomingSettlements'
+      settlements: 'incomingSettlements',
+      wallets: 'wallets'
     })
   },
 
@@ -139,7 +140,7 @@ export default {
 
           return this.$store.dispatch('acceptSettlement', {
             privateKeys,
-            settlementHash: this.settlementForAcceptance.id
+            settlementBatch: this.settlementForAcceptance.from.batch
           })
             .then(() => {
               this.$message('Accepted')
@@ -160,7 +161,7 @@ export default {
 
           return this.$store.dispatch('rejectSettlement', {
             privateKeys,
-            settlementHash: this.settlementForRejection.id
+            settlementBatch: this.settlementForRejection.from.batch
           })
             .then(() => {
               this.$message('Rejected')
@@ -172,6 +173,12 @@ export default {
             })
             .finally(() => { this.rejectionDialogVisible = false })
         })
+    },
+
+    assetName (assetId) {
+      console.log(assetId, this.wallets)
+      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
+      return wallet.asset
     }
   }
 }

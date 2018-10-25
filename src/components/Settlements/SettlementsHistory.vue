@@ -69,6 +69,7 @@ export default {
   },
   created () {
     this.$store.dispatch('getAccountTransactions')
+    this.$store.dispatch('getPendingTransactions')
   },
   methods: {
     tagType: function (val) {
