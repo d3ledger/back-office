@@ -225,7 +225,46 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
+  console.log('CREATE_BATCH_ARRAY', batchArray)
 
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
+
+function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  debug('starting acceptSettlement')
+  if (!batchArray.length) return
+  console.log('PRIVATE HASH', privateKeys)
+  console.log('SETTLEMENT HASH', batchArray)
+
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
+
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  console.log('SIGNED', batchArray, indexOfUnsigned)
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
+
+function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  debug('starting acceptSettlement')
+  if (!batchArray.length) return
+  console.log('PRIVATE HASH', privateKeys)
+  console.log('SETTLEMENT HASH', batchArray)
+
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
+
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  console.log('SIGNED', batchArray, indexOfUnsigned)
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
 
@@ -309,6 +348,8 @@ export {
   addSignatory,
   addAssetQuantity,
   createSettlement,
+  acceptSettlement,
+  rejectSettlement,
   setAccountDetail,
   setAccountQuorum,
   signPendingTransaction
