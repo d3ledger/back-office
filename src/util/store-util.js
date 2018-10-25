@@ -4,41 +4,49 @@ import isEqual from 'lodash/fp/isEqual'
 import uniqWith from 'lodash/fp/uniqWith'
 import sortBy from 'lodash/fp/sortBy'
 import reverse from 'lodash/fp/reverse'
+import groupBy from 'lodash/fp/groupBy'
+import filter from 'lodash/fp/filter'
+import values from 'lodash/fp/values'
+import map from 'lodash/fp/map'
+import chunk from 'lodash/fp/chunk'
+import cloneDeep from 'lodash/fp/cloneDeep'
 
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
 // TODO: To be removed.
-const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
+// const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
 
 // TODO: check if transferAsset is a part of a settlement by meta info.
-function findSettlementOfTransaction (settlements = [], transferAsset) {
-  if (!transferAsset) return null
-  if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') return null
+// function findSettlementOfTransaction (settlements = [], transferAsset) {
+//   console.log('SETTLEMENT', settlements)
+//   console.log('ASSET', transferAsset)
+//   if (!transferAsset) return null
+//   if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') return null
 
-  return {
-    'id': 1,
-    'from': 'you',
-    'offer_amount': 0.796463,
-    'offer_asset': 'WVS',
-    'to': 'yuriy@ru',
-    'request_amount': 0.26483,
-    'request_asset': 'ETH',
-    'date': '2018-03-24T00:19:35Z',
-    'message': 'Hello. This is a settlement.',
-    'status': 'accepted'
-  }
-}
+//   return {
+//     id: 1,
+//     from: 'you',
+//     offer_amount: '0.796463',
+//     offer_asset: 'WVS',
+//     to: 'yuriy@ru',
+//     request_amount: '0.26483',
+//     request_asset: 'ETH',
+//     date: '2018-03-24T00:19:35Z',
+//     message: 'Hello. This is a settlement.',
+//     status: 'accepted'
+//   }
+// }
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
   if (isEmpty(transactions)) return []
-
+  console.log(transactions)
   const transformed = []
 
-  transactions.forEach(t => {
+  transactions.forEach((t, idx) => {
     const { commandsList, createdTime } = t.payload.reducedPayload
     const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
 
-    commandsList.forEach((c, idx) => {
+    commandsList.forEach(c => {
       if (!c.transferAsset) return
 
       const {
@@ -67,9 +75,10 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         assetId
       }
 
-      const settlement = findSettlementOfTransaction(settlements, c.transferAsset)
+      // const settlement = findSettlementOfTransaction(settlements, tx.transferAsset)
+      // console.log('SETTLEMENTS', settlement)
 
-      if (settlement) tx.settlement = settlement
+      // if (settlement) tx.settlement = settlement
 
       transformed.push(tx)
     })
@@ -106,10 +115,71 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
 
 // TODO: extract settlements from raw transactions and return
 // TODO: might be able to put together with getTransferAssetsFrom
-export function getSettlementsFrom (transactions) {
+export function getSettlementsFrom (transactions, accountId) {
   if (isEmpty(transactions)) return []
+  console.log('SETTLEMENTS_FROM', transactions)
+  const settlements = flow([
+    filter(tr => tr.payload.batch),
+    map(tr => {
+      const commands = []
+      const { commandsList, createdTime } = tr.payload.reducedPayload
+      const batch = tr.payload.batch
+      const signatures = tr.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
+      commandsList.forEach(c => {
+        if (!c.transferAsset) return
+        const {
+          amount,
+          destAccountId,
+          srcAccountId,
+          description,
+          assetId
+        } = c.transferAsset
 
-  return DUMMY_SETTLEMENTS
+        const tx = {
+          from: srcAccountId,
+          to: destAccountId,
+          amount: amount,
+          date: createdTime,
+          message: description,
+          signatures,
+          assetId,
+          batch
+        }
+        commands.push(tx)
+      })
+      if (commands.length > 1) return
+      return commands[0]
+    }),
+    groupBy(tr => tr.batch.reducedHashesList),
+    values,
+    map(tr => {
+      let from = {}
+      let to = {}
+      tr.forEach(obj => { obj.to === accountId ? to = obj : from = obj })
+      return { from, to }
+    }),
+    sortBy(tr => tr.from.date)
+  ])(transactions)
+  console.log('FORMTATTED_SETTLEMETNS', settlements)
+  return settlements
+}
+
+export function getSettlementsRawPair (transactions) {
+  if (isEmpty(transactions)) return []
+  // convert elements to pairs by two elements in pair
+  const settlements = chunk(2)(transactions.getTransactionsList())
+  return settlements
+}
+
+export function findBatchFromRaw (rawUnsignedTransactions, settlement) {
+  let rawUnsignedTransactionsCopy = cloneDeep(rawUnsignedTransactions)
+  const rawPairs = getSettlementsRawPair(rawUnsignedTransactionsCopy)
+  console.log('RAW PAIRS', rawPairs)
+  let batch = rawPairs.find(tr => {
+    return isEqual(tr[0].toObject().payload.batch, settlement) || isEqual(tr[1].toObject().payload.batch, settlement)
+  }) || []
+  console.log('FINDED BATCH', batch)
+  return batch
 }
 
 // Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c
