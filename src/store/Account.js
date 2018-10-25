@@ -9,7 +9,7 @@ import cloneDeep from 'lodash/fp/cloneDeep'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
-import { getTransferAssetsFrom, getSettlementsFrom } from '@util/store-util'
+import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -95,18 +95,23 @@ const getters = {
   },
 
   waitingSettlements () {
-    return getSettlementsFrom(state.rawUnsignedTransactions)
-      .filter(x => x.status === 'waiting')
+    let rawUnsignedTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
+    return rawUnsignedTransactionsCopy ? getSettlementsFrom(
+      rawUnsignedTransactionsCopy.toObject().transactionsList,
+      state.accountId
+    ) : []
   },
 
-  // todo: 'you' -> accountId :)
-
   incomingSettlements () {
-    return getters.waitingSettlements().filter(x => x.to === 'you')
+    return getters.waitingSettlements().filter(pair => {
+      return pair.to.signatures.length > 0
+    })
   },
 
   outgoingSettlements () {
-    return getters.waitingSettlements().filter(x => x.from === 'you')
+    return getters.waitingSettlements().filter(pair => {
+      return pair.from.signatures.length > 0
+    })
   },
 
   resolvedSettlements (state) {
@@ -368,10 +373,9 @@ const actions = {
 
   getAllUnsignedTransactions ({ commit, state }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
-
-    return irohaUtil.getAllUnsignedTransactions(state.accountId)
-      .then(responses => {
-        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, responses)
+    return irohaUtil.getPendingTransactions()
+      .then(transactions => {
+        commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, transactions)
       })
       .catch(err => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
@@ -443,10 +447,10 @@ const actions = {
       })
   },
 
-  acceptSettlement ({ commit, state }, { privateKeys, settlementHash }) {
-    commit(types.ACCEPT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
-
-    return irohaUtil.acceptSettlement()
+  acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
+    commit(types.ACCEPT_SETTLEMENT_REQUEST)
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    return irohaUtil.acceptSettlement(privateKeys, batch)
       .then(() => {
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
@@ -456,10 +460,11 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { privateKeys, settlementHash }) {
-    commit(types.REJECT_SETTLEMENT_REQUEST, { privateKeys, settlementHash })
-
-    return irohaUtil.rejectSettlement()
+  rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
+    commit(types.REJECT_SETTLEMENT_REQUEST)
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    const fake = ['1234567890123456789012345678901234567890123456789012345678901234']
+    return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)
       })
