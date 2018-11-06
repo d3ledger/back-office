@@ -243,6 +243,11 @@ function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
     .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
+
+  batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
   console.log('SIGNED', batchArray, indexOfUnsigned)
@@ -262,6 +267,11 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
     .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
+
+  batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
   console.log('SIGNED', batchArray, indexOfUnsigned)
