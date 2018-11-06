@@ -29,6 +29,9 @@ import { faSortAmountDown } from '@fortawesome/free-solid-svg-icons/faSortAmount
 import { faFile } from '@fortawesome/free-solid-svg-icons/faFile'
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf'
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons/faFileExcel'
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -136,7 +139,10 @@ library.add(
   faSortAmountDown,
   faFile,
   faFileExcel,
-  faFilePdf
+  faFilePdf,
+  faPlus,
+  faPencilAlt,
+  faTrashAlt
 )
 Vue.component('fa-icon', FontAwesomeIcon)
 

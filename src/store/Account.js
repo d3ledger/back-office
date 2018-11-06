@@ -31,6 +31,7 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_ASSET_TRANSACTIONS',
+  'GET_ACCOUNT_SIGNATORIES',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
   'GET_PENDING_TRANSACTIONS',
   'TRANSFER_ASSET',
@@ -47,6 +48,7 @@ function initialState () {
     notaryIp: notaryUtil.baseURL,
     accountInfo: {},
     accountQuorum: 0,
+    accountSignatories: [],
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
@@ -140,6 +142,10 @@ const getters = {
 
   accountQuorum (state) {
     return state.accountQuorum
+  },
+
+  accountSignatories (state) {
+    return state.accountSignatories
   }
 }
 
@@ -230,6 +236,16 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_SIGNATORIES_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_SIGNATORIES_SUCCESS] (state, signatories) {
+    state.accountSignatories = signatories
+  },
+
+  [types.GET_ACCOUNT_SIGNATORIES_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -506,6 +522,26 @@ const actions = {
       })
       .catch(err => {
         commit(types.REJECT_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  getSignatories ({ commit, state }) {
+    commit(types.GET_ACCOUNT_SIGNATORIES_REQUEST)
+    return irohaUtil.getSignatories(state.accountId)
+      .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
+        throw err
+      })
+  },
+
+  editAccountQuorum ({ commit, state }, quorum) {
+    commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
+    return irohaUtil.setAccountQuorum([], state.accountId, quorum, state.accountQuorum)
+      .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
+      .catch(err => {
+        commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
         throw err
       })
   }
