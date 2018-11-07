@@ -121,17 +121,14 @@ export default {
   },
 
   created () {
-    this.fetchAllUnsignedTransactions()
+    this.getAllUnsignedTransactions()
   },
 
   methods: {
     ...mapActions([
-      'openApprovalDialog'
+      'openApprovalDialog',
+      'getAllUnsignedTransactions'
     ]),
-
-    fetchAllUnsignedTransactions () {
-      this.$store.dispatch('getAllUnsignedTransactions')
-    },
 
     onAccept () {
       this.openApprovalDialog()
@@ -144,7 +141,7 @@ export default {
           })
             .then(() => {
               this.$message('Accepted')
-              this.fetchAllUnsignedTransactions()
+              this.getAllUnsignedTransactions()
             })
             .catch(err => {
               console.error(err)
@@ -165,7 +162,7 @@ export default {
           })
             .then(() => {
               this.$message('Rejected')
-              this.fetchAllUnsignedTransactions()
+              this.getAllUnsignedTransactions()
             })
             .catch(err => {
               console.error(err)
@@ -176,7 +173,6 @@ export default {
     },
 
     assetName (assetId) {
-      console.log(assetId, this.wallets)
       const wallet = this.wallets.find(w => w.assetId === assetId) || {}
       return wallet.asset
     }

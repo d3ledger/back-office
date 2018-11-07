@@ -225,7 +225,6 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
-  console.log('CREATE_BATCH_ARRAY', batchArray)
 
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
@@ -233,8 +232,6 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
 function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting acceptSettlement')
   if (!batchArray.length) return
-  console.log('PRIVATE HASH', privateKeys)
-  console.log('SETTLEMENT HASH', batchArray)
 
   let txClient = new CommandServiceClient(
     cache.nodeIp
@@ -250,15 +247,12 @@ function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  console.log('SIGNED', batchArray, indexOfUnsigned)
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
 
 function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   debug('starting acceptSettlement')
   if (!batchArray.length) return
-  console.log('PRIVATE HASH', privateKeys)
-  console.log('SETTLEMENT HASH', batchArray)
 
   let txClient = new CommandServiceClient(
     cache.nodeIp
@@ -274,7 +268,6 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  console.log('SIGNED', batchArray, indexOfUnsigned)
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
 

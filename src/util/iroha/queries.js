@@ -111,7 +111,6 @@ function getAccountTransactions (accountId) {
       }
 
       const transactions = response.getTransactionsResponse().toObject().transactionsList
-      console.log(transactions)
       debug('transactions', transactions)
 
       resolve(transactions)
@@ -205,7 +204,6 @@ function getPendingTransactions () {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE , actual=${responseName}`))
       }
-      console.log('PENDING', response)
       const transactions = response.getTransactionsResponse()
       debug('transactions', transactions)
 

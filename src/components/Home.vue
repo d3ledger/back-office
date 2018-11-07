@@ -228,7 +228,7 @@ export default {
     },
 
     numberOfSettlements () {
-      return this.$store.getters.waitingSettlements.length
+      return this.$store.getters.incomingSettlements.length
     }
   },
 

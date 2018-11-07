@@ -44,7 +44,7 @@
   </section>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
@@ -63,15 +63,14 @@ export default {
   },
 
   created () {
-    this.fetchAllUnsignedTransactions()
+    this.getAllUnsignedTransactions()
   },
 
   methods: {
-    fetchAllUnsignedTransactions () {
-      this.$store.dispatch('getAllUnsignedTransactions')
-    },
+    ...mapActions([
+      'getAllUnsignedTransactions'
+    ]),
     assetName (assetId) {
-      console.log(assetId, this.wallets)
       const wallet = this.wallets.find(w => w.assetId === assetId) || {}
       return wallet.asset
     }

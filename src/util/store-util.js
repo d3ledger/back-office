@@ -13,33 +13,8 @@ import cloneDeep from 'lodash/fp/cloneDeep'
 
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
-// TODO: To be removed.
-// const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
-
-// TODO: check if transferAsset is a part of a settlement by meta info.
-// function findSettlementOfTransaction (settlements = [], transferAsset) {
-//   console.log('SETTLEMENT', settlements)
-//   console.log('ASSET', transferAsset)
-//   if (!transferAsset) return null
-//   if (transferAsset.description !== 'PART_OF_DUMMY_SETTLEMENT') return null
-
-//   return {
-//     id: 1,
-//     from: 'you',
-//     offer_amount: '0.796463',
-//     offer_asset: 'WVS',
-//     to: 'yuriy@ru',
-//     request_amount: '0.26483',
-//     request_asset: 'ETH',
-//     date: '2018-03-24T00:19:35Z',
-//     message: 'Hello. This is a settlement.',
-//     status: 'accepted'
-//   }
-// }
-
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
   if (isEmpty(transactions)) return []
-  console.log(transactions)
   const transformed = []
 
   transactions.forEach((t, idx) => {
@@ -75,11 +50,6 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         assetId
       }
 
-      // const settlement = findSettlementOfTransaction(settlements, tx.transferAsset)
-      // console.log('SETTLEMENTS', settlement)
-
-      // if (settlement) tx.settlement = settlement
-
       transformed.push(tx)
     })
   })
@@ -113,11 +83,9 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
   )(transformed)
 }
 
-// TODO: extract settlements from raw transactions and return
-// TODO: might be able to put together with getTransferAssetsFrom
+// TODO: think about to use hashMap
 export function getSettlementsFrom (transactions, accountId) {
   if (isEmpty(transactions)) return []
-  console.log('SETTLEMENTS_FROM', transactions)
   const settlements = flow([
     filter(tr => tr.payload.batch),
     map(tr => {
@@ -160,7 +128,6 @@ export function getSettlementsFrom (transactions, accountId) {
     }),
     sortBy(tr => tr.from.date)
   ])(transactions)
-  console.log('FORMTATTED_SETTLEMETNS', settlements)
   return settlements
 }
 
@@ -174,11 +141,9 @@ export function getSettlementsRawPair (transactions) {
 export function findBatchFromRaw (rawUnsignedTransactions, settlement) {
   let rawUnsignedTransactionsCopy = cloneDeep(rawUnsignedTransactions)
   const rawPairs = getSettlementsRawPair(rawUnsignedTransactionsCopy)
-  console.log('RAW PAIRS', rawPairs)
   let batch = rawPairs.find(tr => {
     return isEqual(tr[0].toObject().payload.batch, settlement) || isEqual(tr[1].toObject().payload.batch, settlement)
   }) || []
-  console.log('FINDED BATCH', batch)
   return batch
 }
 

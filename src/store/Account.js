@@ -6,6 +6,7 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import find from 'lodash/fp/find'
 import cloneDeep from 'lodash/fp/cloneDeep'
+import flatten from 'lodash/fp/flatten'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
@@ -29,6 +30,7 @@ const types = flow(
   'GET_ACCOUNT_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
+  'GET_ALL_ASSET_TRANSACTIONS',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
   'GET_PENDING_TRANSACTIONS',
   'TRANSFER_ASSET',
@@ -86,6 +88,10 @@ const getters = {
     )
   },
 
+  allAssetTransactions () {
+    return flatten(Object.values(state.rawAssetTransactions))
+  },
+
   allPendingTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
     return pendingTransactionsCopy ? getTransferAssetsFrom(
@@ -96,7 +102,7 @@ const getters = {
 
   waitingSettlements () {
     let rawUnsignedTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
-    return rawUnsignedTransactionsCopy ? getSettlementsFrom(
+    return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
       rawUnsignedTransactionsCopy.toObject().transactionsList,
       state.accountId
     ) : []
@@ -115,8 +121,11 @@ const getters = {
   },
 
   resolvedSettlements (state) {
-    return getSettlementsFrom(state.rawTransactions)
-      .filter(x => x.status !== 'waiting')
+    let allAssetTransactionsCopy = getters.allAssetTransactions()
+    return getSettlementsFrom(
+      allAssetTransactionsCopy,
+      state.accountId
+    )
   },
 
   ethWalletAddress (state) {
@@ -282,6 +291,14 @@ const mutations = {
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.GET_ALL_ASSET_TRANSACTIONS_REQUEST] (state) {},
+
+  [types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS] (state) {},
+
+  [types.GET_ALL_ASSET_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -381,6 +398,24 @@ const actions = {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE, err)
         throw err
       })
+  },
+
+  getAllAssetTransactions ({ commit, dispatch, state }) {
+    commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
+    return new Promise((resolve, reject) => {
+      state.assets.map(({ assetId }) => {
+        dispatch('getAccountAssetTransactions', { assetId })
+          .then(() => {
+            commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
+            resolve()
+          })
+          .catch((err) => {
+            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE)
+            reject(err)
+            throw err
+          })
+      })
+    })
   },
 
   getPendingTransactions ({ commit }) {
