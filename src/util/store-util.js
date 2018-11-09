@@ -5,7 +5,7 @@ import uniqWith from 'lodash/fp/uniqWith'
 import sortBy from 'lodash/fp/sortBy'
 import reverse from 'lodash/fp/reverse'
 
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
 // TODO: To be removed.
 const DUMMY_SETTLEMENTS = require('@/mocks/settlements.json')
