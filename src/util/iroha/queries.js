@@ -106,7 +106,6 @@ function getAccountTransactions (accountId) {
 
   return sendQuery(
     queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId }),
-    // queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@d3' }),
 
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
