@@ -83,6 +83,7 @@ function getAccount (accountId) {
     queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccount', { accountId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'ACCOUNT_RESPONSE') {
+        console.log(response, accountId)
         return reject(new Error(`Query response error: expected=ACCOUNT_RESPONSE, actual=${responseName}`))
       }
 
@@ -104,7 +105,9 @@ function getAccountTransactions (accountId) {
   debug('starting getAccountTransactions...')
 
   return sendQuery(
-    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@notary' }),
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId }),
+    // queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@d3' }),
+
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE, actual=${responseName}`))

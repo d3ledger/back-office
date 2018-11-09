@@ -146,7 +146,7 @@ export default {
     return {
       notaryIPs,
       isLoading: false,
-      predefinedDomain: 'notary',
+      predefinedDomain: 'd3',
       form: {
         username: '',
         newAddress: '',

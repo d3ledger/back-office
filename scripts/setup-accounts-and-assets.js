@@ -9,7 +9,7 @@ import _ from 'lodash'
 import irohaUtil from '../src/util/iroha'
 import { derivePublicKey } from 'ed25519.js'
 
-const irohaDomain = 'notary'
+const irohaDomain = 'd3'
 const testAccName = 'test'
 const aliceAccName = 'alice'
 const testAccFull = `${testAccName}@${irohaDomain}`
@@ -164,6 +164,7 @@ function tryToAddSignatory (accountPrivKeyHex, accountId, publicKey) {
       .catch((err) => reject(err))
   })
 }
+
 function tryToSetQuorum (accountPrivKeyHex, accountId, quorum) {
   console.log(`trying to add signature and set quorum to account: ${accountId}`)
 
