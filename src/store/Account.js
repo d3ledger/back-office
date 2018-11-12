@@ -36,6 +36,7 @@ const types = flow(
   'GET_ALL_UNSIGNED_TRANSACTIONS',
   'GET_PENDING_TRANSACTIONS',
   'ADD_ACCOUNT_SIGNATORY',
+  'REMOVE_ACCOUNT_SIGNATORY',
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
@@ -325,6 +326,14 @@ const mutations = {
 
   [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_REQUEST] (state) {},
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -546,6 +555,16 @@ const actions = {
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
         commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
+        throw err
+      })
+  },
+
+  removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
+    commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
+    return irohaUtil.removeSignatory(privateKeys, state.accountId, publicKey, state.accountQuorum)
+      .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
+      .catch(err => {
+        commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
         throw err
       })
   },

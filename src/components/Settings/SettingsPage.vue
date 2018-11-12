@@ -82,7 +82,7 @@
             :body-style="{ padding: '0' }">
             <div class="header_btn">
               <span>Public keys</span>
-              <el-button class="action_button" @click="keysFormVisible = true">
+              <el-button class="action_button" @click="addKeyFormVisible = true">
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
@@ -91,7 +91,10 @@
                 <template v-for="(pubKey, index) in accountSignatories">
                   <div class="settings-item_row" :key="index">
                     <span class="settings-item_row-key">{{ pubKey | substrKey}}</span>
-                    <el-button class="settings-item_row-delete"><fa-icon icon="trash-alt"/></el-button>
+                    <el-button class="settings-item_row-delete"
+                      @click="removeKeyFormVisible = true; keyToRemove = pubKey">
+                      <fa-icon icon="trash-alt"/>
+                    </el-button>
                   </div>
                 </template>
               </div>
@@ -156,10 +159,9 @@
     </el-dialog>
     <el-dialog
       title="Public key"
-      :visible.sync="keysFormVisible"
+      :visible.sync="addKeyFormVisible"
       width="500px"
-      center
-    >
+      center>
       <div class="approval_form-desc">
         Are you sure want to add new public key?
       </div>
@@ -173,13 +175,29 @@
       </div>
     </el-dialog>
     <el-dialog
+      title="Public key"
+      :visible.sync="removeKeyFormVisible"
+      width="500px"
+      center>
+      <div class="approval_form-desc">
+        Are you sure want to remove <b>{{ keyToRemove }}</b> public key?
+      </div>
+      <div slot="footer">
+        <el-button
+          @click="removePublicKey"
+          class="fullwidth"
+          type="danger"
+          :disabled="removingKey">Remove
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
       title="Private key"
       :visible.sync="downloadKeyVisible"
       :close-on-click-modal="false"
       :show-close="false"
       width="500px"
-      center
-    >
+      center>
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
@@ -214,14 +232,17 @@ export default {
   data () {
     return {
       quorumFormVisible: false,
-      keysFormVisible: false,
+      addKeyFormVisible: false,
+      removeKeyFormVisible: false,
       downloadKeyVisible: false,
       quorumForm: {
         amount: 0
       },
       fileData: null,
       downloaded: false,
-      addingNewKey: false
+      addingNewKey: false,
+      keyToRemove: null,
+      removingKey: false
     }
   },
   mixins: [
@@ -267,7 +288,8 @@ export default {
     ...mapActions([
       'openApprovalDialog',
       'getSignatories',
-      'addSignatory'
+      'addSignatory',
+      'removeSignatory'
     ]),
     addPublicKey () {
       this.openApprovalDialog()
@@ -287,7 +309,30 @@ export default {
         })
         .finally(() => {
           this.addingNewKey = false
-          this.keysFormVisible = false
+          this.addKeyFormVisible = false
+          this.getSignatories()
+        })
+    },
+    removePublicKey () {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.removingKey = true
+          return this.removeSignatory({
+            privateKeys,
+            publicKey: this.keyToRemove
+          })
+            .then((fileData) => {
+              this.$message.success('Public key is removed')
+            })
+            .catch(err => {
+              this.$message.error('Failed to remove public key')
+              console.error(err)
+            })
+        })
+        .finally(() => {
+          this.removingKey = false
+          this.removeKeyFormVisible = false
           this.getSignatories()
         })
     },
