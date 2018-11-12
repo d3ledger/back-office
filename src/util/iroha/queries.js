@@ -83,7 +83,6 @@ function getAccount (accountId) {
     queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccount', { accountId }),
     (resolve, reject, responseName, response) => {
       if (responseName !== 'ACCOUNT_RESPONSE') {
-        console.log(response, accountId)
         return reject(new Error(`Query response error: expected=ACCOUNT_RESPONSE, actual=${responseName}`))
       }
 
