@@ -82,7 +82,7 @@
             :body-style="{ padding: '0' }">
             <div class="header_btn">
               <span>Public keys</span>
-              <el-button class="action_button">
+              <el-button class="action_button" @click="keysFormVisible = true">
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
@@ -101,7 +101,7 @@
             class="card"
             :body-style="{ padding: '0' }">
             <div class="header_only">
-              <span>Quorum: <b> {{ accountQuorum }} </b></span>
+              <span>Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b></span>
               <el-button
                 class="action_button"
                 @click="quorumFormVisible = true">
@@ -114,9 +114,6 @@
             :body-style="{ padding: '0' }">
             <div class="header_btn">
               <span>White list</span>
-              <el-button class="action_button">
-                <fa-icon class="action_button-icon" icon="plus" /> Add
-              </el-button>
             </div>
             <div>
               <div class="settings-item">
@@ -126,7 +123,6 @@
                     class="settings-item_row"
                     :key="index">
                     <span class="settings-item_row-key">{{ address }}</span>
-                    <el-button class="settings-item_row-delete"><fa-icon icon="trash-alt"/></el-button>
                   </div>
                 </template>
                 <div
@@ -145,21 +141,71 @@
       :visible.sync="quorumFormVisible"
       width="500px"
       center>
-      <el-form ref="editQuorumForm">
-        <el-form-item label="Quorum">
-          <el-input :value="accountQuorum"/>
+      <el-form ref="editQuorumForm" class="quorum_form" :model="quorumForm">
+        <el-form-item>
+          <el-input-number v-model="quorumForm.amount" :min="1" :max="accountSignatories.length"></el-input-number>
         </el-form-item>
-        <el-form-item label="Additional information">
+        <el-form-item style="margin-bottom: 0;">
+          <el-button
+            class="fullwidth black clickable"
+            :disabled="quorumForm.amount >= accountSignatories.length">
+            Update
+          </el-button>
         </el-form-item>
       </el-form>
-      <el-button>
-        EDIT
-      </el-button>
+    </el-dialog>
+    <el-dialog
+      title="Public key"
+      :visible.sync="keysFormVisible"
+      width="500px"
+      center
+    >
+      <div class="approval_form-desc">
+        Are you sure want to add new public key?
+      </div>
+      <div slot="footer">
+        <el-button
+          type="danger"
+          @click="addPublicKey"
+          class="fullwidth black clickable"
+          :disabled="addingNewKey">Add
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      title="Private key"
+      :visible.sync="downloadKeyVisible"
+      :close-on-click-modal="false"
+      :show-close="false"
+      width="500px"
+      center
+    >
+      <div class="dialog-content">
+        <span>Download your private key and keep it secret!</span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          class="black"
+          @click="onClickDownload"
+        >
+          <fa-icon icon="download"/>
+          Download
+        </el-button>
+
+        <el-button
+          type="default"
+          :disabled="!downloaded"
+          @click="downloadKeyVisible = false">
+          Confirm
+        </el-button>
+      </span>
     </el-dialog>
   </el-container>
 </template>
 
 <script>
+import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
 import { mapGetters, mapActions } from 'vuex'
 
@@ -167,7 +213,15 @@ export default {
   name: 'settings-page',
   data () {
     return {
-      quorumFormVisible: false
+      quorumFormVisible: false,
+      keysFormVisible: false,
+      downloadKeyVisible: false,
+      quorumForm: {
+        amount: 0
+      },
+      fileData: null,
+      downloaded: false,
+      addingNewKey: false
     }
   },
   mixins: [
@@ -211,8 +265,44 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getSignatories'
-    ])
+      'openApprovalDialog',
+      'getSignatories',
+      'addSignatory'
+    ]),
+    addPublicKey () {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.addingNewKey = true
+          return this.addSignatory(privateKeys)
+            .then((fileData) => {
+              this.fileData = fileData
+              this.downloaded = false
+              this.downloadKeyVisible = true
+            })
+            .catch(err => {
+              this.$message.error('Failed to add new public key')
+              console.error(err)
+            })
+        })
+        .finally(() => {
+          this.addingNewKey = false
+          this.keysFormVisible = false
+          this.getSignatories()
+        })
+    },
+    onClickDownload () {
+      const filename = `${this.fileData.username}.priv`
+      const blob = new Blob(
+        [this.fileData.privateKey],
+        { type: 'text/plain;charset=utf-8' }
+      )
+
+      FileSaver.saveAs(blob, filename)
+
+      this.downloaded = true
+      this.fileData = null
+    }
   },
   filters: {
     substrKey (key) {
@@ -365,5 +455,13 @@ export default {
   height: 0.8rem;
   margin-left: -0.2rem;
   margin-right: 0.3rem;
+}
+
+.approval_form-desc {
+  text-align: center;
+}
+
+.quorum_form >>> .el-input-number {
+  width: 100%;
 }
 </style>

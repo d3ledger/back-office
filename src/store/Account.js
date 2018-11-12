@@ -11,6 +11,7 @@ import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
+import { derivePublicKey } from 'ed25519.js'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -34,6 +35,7 @@ const types = flow(
   'GET_ACCOUNT_SIGNATORIES',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
   'GET_PENDING_TRANSACTIONS',
+  'ADD_ACCOUNT_SIGNATORY',
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
@@ -315,6 +317,14 @@ const mutations = {
 
   [types.GET_ALL_ASSET_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
+
+  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+
+  [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -500,9 +510,9 @@ const actions = {
 
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.ACCEPT_SETTLEMENT_REQUEST)
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    return irohaUtil.acceptSettlement(privateKeys, batch)
       .then(() => {
+    return irohaUtil.acceptSettlement(privateKeys, batch)
+      const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
       .catch(err => {
@@ -513,15 +523,29 @@ const actions = {
 
   rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    .fill('1234567890123456789012345678901234567890123456789012345678901234')
     const fake = new Array(state.accountQuorum)
-      .fill('1234567890123456789012345678901234567890123456789012345678901234')
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)
       })
       .catch(err => {
         commit(types.REJECT_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  addSignatory ({ commit, state }, privateKeys) {
+    commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
+
+    const { privateKey } = irohaUtil.generateKeypair()
+    const publicKeyBuffer = derivePublicKey(Buffer.from(privateKey, 'hex'))
+    return irohaUtil.addSignatory(privateKeys, state.accountId, publicKeyBuffer, state.accountQuorum)
+      .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(() => ({ username: state.accountId, privateKey }))
+      .catch(err => {
+        commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
         throw err
       })
   },
