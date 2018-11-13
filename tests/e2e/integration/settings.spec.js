@@ -1,4 +1,4 @@
-const testKeyPath = 'test@notary.priv'
+const testKeyPath = 'test@d3.priv'
 
 describe('Test settings page', () => {
   it('Make auth', () => {
