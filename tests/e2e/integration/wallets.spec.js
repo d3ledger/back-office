@@ -1,5 +1,5 @@
-const testKeyPath = 'test@notary.priv'
-const aliceKeyPath = 'alice@notary.priv'
+const testKeyPath = 'test@d3.priv'
+const aliceKeyPath = 'alice@d3.priv'
 
 const TOKEN_BAT = 'BasicAttentionToken'
 const TOKEN_REP = 'Augur'
@@ -514,7 +514,7 @@ describe('Test transfer with one private key', () => {
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.001'
-      const account = 'test@notary'
+      const account = 'test@d3'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -571,7 +571,7 @@ describe('Test transfer with two private keys', () => {
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.001'
-      const account = 'alice@notary'
+      const account = 'alice@d3'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
@@ -635,7 +635,7 @@ describe('Test transfer with one private key and quorum 2', () => {
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.001'
-      const account = 'alice@notary'
+      const account = 'alice@d3'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
