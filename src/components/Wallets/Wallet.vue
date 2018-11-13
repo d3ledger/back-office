@@ -337,7 +337,7 @@ import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
 
 // Notary account for withdrawal.
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary_red@notary'
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
 export default {
   name: 'wallet',
