@@ -1,6 +1,6 @@
 import { subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 
-const testKeyPath = 'test@notary.priv'
+const testKeyPath = 'test@d3.priv'
 
 describe('Reports page', () => {
   const previousMonth = subMonths(Date.now(), 1)

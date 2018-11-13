@@ -104,7 +104,8 @@ function getAccountTransactions (accountId) {
   debug('starting getAccountTransactions...')
 
   return sendQuery(
-    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId: 'test@notary' }),
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getAccountTransactions', { accountId }),
+
     (resolve, reject, responseName, response) => {
       if (responseName !== 'TRANSACTIONS_RESPONSE') {
         return reject(new Error(`Query response error: expected=TRANSACTIONS_RESPONSE, actual=${responseName}`))
