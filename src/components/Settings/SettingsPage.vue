@@ -150,8 +150,9 @@
         </el-form-item>
         <el-form-item style="margin-bottom: 0;">
           <el-button
+            @click="updateQuorum"
             class="fullwidth black clickable"
-            :disabled="quorumForm.amount >= accountSignatories.length">
+            :disabled="quorumForm.amount > accountSignatories.length">
             Update
           </el-button>
         </el-form-item>
@@ -289,7 +290,9 @@ export default {
       'openApprovalDialog',
       'getSignatories',
       'addSignatory',
-      'removeSignatory'
+      'removeSignatory',
+      'editAccountQuorum',
+      'getAccountQuorum'
     ]),
     addPublicKey () {
       this.openApprovalDialog()
@@ -334,6 +337,28 @@ export default {
           this.removingKey = false
           this.removeKeyFormVisible = false
           this.getSignatories()
+        })
+    },
+    updateQuorum () {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+
+          return this.editAccountQuorum({
+            privateKeys,
+            quorum: this.quorumForm.amount
+          })
+            .then(() => {
+              this.$message.success('Quorum successfully updated')
+            })
+            .catch((err) => {
+              this.$message.error('Failed to update quorum')
+              console.error(err)
+            })
+        })
+        .finally(() => {
+          this.getAccountQuorum()
+          this.quorumFormVisible = false
         })
     },
     onClickDownload () {

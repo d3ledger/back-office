@@ -41,7 +41,9 @@ const types = flow(
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
   'REJECT_SETTLEMENT',
-  'SIGN_PENDING'
+  'SIGN_PENDING',
+  'EDIT_ACCOUNT_QUORUM',
+  'GET_ACCOUNT_QUORUM'
 ])
 
 function initialState () {
@@ -334,6 +336,24 @@ const mutations = {
 
   [types.REMOVE_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.EDIT_ACCOUNT_QUORUM_REQUEST] (state) {},
+
+  [types.EDIT_ACCOUNT_QUORUM_SUCCESS] (state) {},
+
+  [types.EDIT_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
+    state.accountQuorum = quorum
+  },
+
+  [types.GET_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -579,12 +599,22 @@ const actions = {
       })
   },
 
-  editAccountQuorum ({ commit, state }, quorum) {
+  editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum([], state.accountId, quorum, state.accountQuorum)
+    return irohaUtil.setAccountQuorum(privateKeys, state.accountId, quorum, state.accountQuorum)
       .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
       .catch(err => {
         commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountQuorum ({ commit, state }) {
+    commit(types.GET_ACCOUNT_QUORUM_REQUEST)
+    return irohaUtil.getAccount(state.accountId)
+      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
       })
   }
