@@ -73,7 +73,7 @@
             type="textarea"
             :rows="2"
             v-model="exchangeForm.description"
-            placeholder="Account id"
+            placeholder="Description"
             resize="none"
           />
         </el-form-item>
@@ -100,7 +100,7 @@
           <el-row class="approval_form-desc">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-              <span v-if="accountQuorum > 1">
+              <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
                 You need to enter at least 1 key.
               </span>
             </p>
@@ -148,7 +148,7 @@
             id="confirm-approval-form"
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
-            :disabled="approvalForm.numberOfValidKeys < 1"
+            :disabled="disableConfig()"
             >
             Confirm
           </el-button>
@@ -244,13 +244,22 @@ export default {
   },
 
   beforeUpdate () {
-    if (this.exchangeDialogOfferAsset) {
-      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
-      this._refreshRules({
-        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
-        request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
-      })
-    }
+    const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+    const { amount, precision } = wallet || { amount: 0, precision: 0 }
+    this._refreshRules({
+      offer_amount: {
+        pattern: 'tokensAmount',
+        amount: amount,
+        precision: precision,
+        asset: this.exchangeDialogOfferAsset
+      },
+      request_amount: {
+        pattern: 'tokensAmount',
+        amount: Number.MAX_SAFE_INTEGER,
+        precision: precision,
+        asset: this.exchangeDialogRequestAsset
+      }
+    })
   },
 
   updated () {
@@ -286,12 +295,15 @@ export default {
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
       this.exchangeForm.description = ''
+      this.exchangeDialogOfferAsset = ''
+      this.exchangeDialogRequestAsset = ''
     },
 
     onSubmitExchangeDialog () {
       const s = this.exchangeForm
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
+
         this.openApprovalDialog()
           .then(privateKeys => {
             if (!privateKeys) return
@@ -353,6 +365,14 @@ export default {
       this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
         return x.validateState === 'success' && !!x.fieldValue
       }).length
+    },
+
+    disableConfig () {
+      if (this.exchangeDialogVisible) {
+        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
+      } else {
+        return this.approvalForm.numberOfValidKeys < 1
+      }
     }
   }
 }
