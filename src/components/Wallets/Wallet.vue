@@ -417,7 +417,12 @@ export default {
 
   beforeUpdate () {
     this._refreshRules({
-      amount: { pattern: 'tokensAmount', amount: this.wallet.amount, precision: this.wallet.precision }
+      amount: {
+        pattern: 'tokensAmount',
+        amount: this.wallet.amount,
+        precision: this.wallet.precision,
+        asset: this.wallet.assetId
+      }
     })
   },
 
