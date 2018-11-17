@@ -271,7 +271,7 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span class="monospace"> {{ ethWalletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
         </div>
         <qrcode-vue
           :value="ethWalletAddress"
