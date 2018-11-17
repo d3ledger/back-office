@@ -49,7 +49,7 @@ describe('Test settings page', () => {
     })
 
     it('Download private key', () => {
-      cy.get('[data-cy="downloadPrivateKeyDialog"]', { timeout: 5000 })
+      cy.get('[data-cy="downloadPrivateKeyDialog"]', { timeout: 10000 })
         .should('be.visible')
       cy.get('[data-cy="buttonDownload"]')
         .click()
@@ -80,7 +80,7 @@ describe('Test settings page', () => {
     })
 
     it('Handle success message', () => {
-      cy.get('.el-message', { timeout: 5000 }).should('be.visible')
+      cy.get('.el-message', { timeout: 10000 }).should('be.visible')
       cy.get('[data-cy="accountSignatories"]').children()
         .then($children => {
           expect($children.length).eq(accountSignatories)
