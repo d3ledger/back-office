@@ -82,16 +82,18 @@
             :body-style="{ padding: '0' }">
             <div class="header_btn">
               <span>Public keys</span>
-              <el-button class="action_button" @click="addKeyFormVisible = true">
+              <el-button class="action_button" data-cy="addPublicKey" @click="addKeyFormVisible = true">
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
             <div>
-              <div class="settings-item">
+              <div class="settings-item" data-cy="accountSignatories">
                 <template v-for="(pubKey, index) in accountSignatories">
                   <div class="settings-item_row" :key="index">
                     <span class="settings-item_row-key">{{ pubKey | substrKey}}</span>
-                    <el-button class="settings-item_row-delete"
+                    <el-button
+                      data-cy="removeSignatory"
+                      class="settings-item_row-delete"
                       @click="removeKeyFormVisible = true; keyToRemove = pubKey">
                       <fa-icon icon="trash-alt"/>
                     </el-button>
@@ -106,6 +108,7 @@
             <div class="header_only">
               <span>Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b></span>
               <el-button
+                data-cy="editQuorum"
                 class="action_button"
                 @click="quorumFormVisible = true">
                 <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
@@ -159,6 +162,7 @@
       </el-form>
     </el-dialog>
     <el-dialog
+      data-cy="addPublicKeyDialog"
       title="Public key"
       :visible.sync="addKeyFormVisible"
       width="500px"
@@ -176,6 +180,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      data-cy="removePublicKeyDialog"
       title="Public key"
       :visible.sync="removeKeyFormVisible"
       width="500px"
@@ -193,6 +198,7 @@
       </div>
     </el-dialog>
     <el-dialog
+      data-cy="downloadPrivateKeyDialog"
       title="Private key"
       :visible.sync="downloadKeyVisible"
       :close-on-click-modal="false"
@@ -206,6 +212,7 @@
         <el-button
           type="primary"
           class="black"
+          data-cy="buttonDownload"
           @click="onClickDownload"
         >
           <fa-icon icon="download"/>
@@ -215,6 +222,7 @@
         <el-button
           type="default"
           :disabled="!downloaded"
+          data-cy="buttonConfirm"
           @click="downloadKeyVisible = false">
           Confirm
         </el-button>
@@ -367,6 +375,12 @@ export default {
         [this.fileData.privateKey],
         { type: 'text/plain;charset=utf-8' }
       )
+
+      if (window.Cypress) {
+        this.downloaded = true
+        this.fileData = null
+        return filename
+      }
 
       FileSaver.saveAs(blob, filename)
 
