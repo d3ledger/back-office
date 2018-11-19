@@ -75,7 +75,11 @@
                     "can_get_my_acc_txs",
                     "can_get_my_txs",
                     "can_transfer",
-                    "can_receive"
+                    "can_receive",
+                    "can_set_quorum",
+                    "can_add_signatory",
+                    "can_get_my_signatories",
+                    "can_remove_signatory"
                   ]
                 }
               },

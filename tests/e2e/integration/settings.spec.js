@@ -1,4 +1,4 @@
-const testKeyPath = 'test@d3.priv'
+const testKeyPath = 'alice@d3.priv'
 
 describe('Test settings page', () => {
   it('Make auth', () => {
@@ -34,7 +34,7 @@ describe('Test settings page', () => {
     })
 
     it('Add public key', () => {
-      cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
+      cy.wrap('9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1').as('validPrivateKey')
       cy.get('[data-cy="addPublicKey"]').click()
       cy.get('[data-cy="addPublicKeyDialog"]')
         .should('be.visible')
@@ -58,7 +58,7 @@ describe('Test settings page', () => {
     })
 
     it('Check new public key', () => {
-      cy.get('[data-cy="accountSignatories"]').children()
+      cy.get('[data-cy="accountSignatories"]', { timeout: 5000 }).children()
         .then($children => {
           expect($children.length).eq(accountSignatories + 1)
         })
