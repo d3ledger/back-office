@@ -64,8 +64,11 @@ describe('Test settings page', () => {
         })
     })
 
-    it('Remove public key', () => {
-      cy.get('[data-cy="removeSignatory"]').eq(0).click({ force: true })
+    it.skip('Remove public key', () => {
+      // TODO: This test should not pick main public key
+      // const mainPublicKey = 'iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8='
+      let keyToRemove = 0
+      cy.get('[data-cy="removeSignatory"]').eq(keyToRemove).click({ force: true })
       cy.get('[data-cy="removePublicKeyDialog"]')
         .find('.el-button')
         .click()
@@ -79,7 +82,7 @@ describe('Test settings page', () => {
       cy.get('#confirm-approval-form').click({ force: true })
     })
 
-    it('Handle success message', () => {
+    it.skip('Handle success message', () => {
       cy.get('.el-message', { timeout: 10000 }).should('be.visible')
       cy.get('[data-cy="accountSignatories"]').children()
         .then($children => {
