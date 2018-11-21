@@ -381,7 +381,8 @@ export default {
       'settingsView',
       'ethWalletAddress',
       'withdrawWalletAddresses',
-      'getTransactionsByAssetId'
+      'getTransactionsByAssetId',
+      'accountQuorum'
     ]),
 
     wallet () {
@@ -458,7 +459,6 @@ export default {
       this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
-
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
@@ -469,9 +469,18 @@ export default {
             amount: this.withdrawForm.amount.toString()
           })
             .then(() => {
+              let completed = privateKeys.length === this.accountQuorum
+              let message = completed
+                ? 'Withdrawal request is submitted to notary!'
+                : 'Operation not completed. You should complete it on transactions page'
+
+              let type = completed
+                ? 'success'
+                : 'warning'
+
               this.$message({
-                message: 'Withdrawal request is submitted to notary!',
-                type: 'success'
+                message,
+                type
               })
               this.resetWithdrawForm()
               this.fetchWallet()
@@ -502,10 +511,20 @@ export default {
             amount: this.transferForm.amount.toString()
           })
             .then(() => {
+              let completed = privateKeys.length === this.accountQuorum
+              let message = completed
+                ? 'Transfer successful!'
+                : 'Operation not completed. You should complete it on transactions page'
+
+              let type = completed
+                ? 'success'
+                : 'warning'
+
               this.$message({
-                message: 'Transfer successful!',
-                type: 'success'
+                message,
+                type
               })
+
               this.fetchWallet()
               this.resetTransferForm()
               this.transferFormVisible = false
