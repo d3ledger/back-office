@@ -321,7 +321,20 @@ export default {
               description: s.description
             })
               .then(() => {
-                this.$message('New settlement has successfully been created')
+                let completed = privateKeys.length === this.accountQuorum
+                let message = completed
+                  ? 'New settlement has successfully been created!'
+                  : 'Operation not completed. You should complete it on transactions page'
+
+                let type = completed
+                  ? 'success'
+                  : 'warning'
+
+                this.$message({
+                  message,
+                  type
+                })
+
                 this.closeExchangeDialogWith()
                 // TODO: think, maybe it is a bad idea to close form after success.
                 Object.assign(

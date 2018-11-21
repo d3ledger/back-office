@@ -122,10 +122,21 @@ export default {
             txStoreId
           })
             .then(() => {
+              console.log(privateKeys, this.accountQuorum)
+              let completed = privateKeys.length + signatures.length === this.accountQuorum
+              let message = completed
+                ? 'Transaction succesfuly finalised and sent!'
+                : 'Operation not completed. You should complete it on transactions page'
+
+              let type = completed
+                ? 'success'
+                : 'warning'
+
               this.$message({
-                message: 'Transaction succesfuly finalised and sent!',
-                type: 'success'
+                message,
+                type
               })
+
               this.getPendingTransactions()
             })
             .catch(err => {
