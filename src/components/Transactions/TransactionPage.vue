@@ -122,7 +122,6 @@ export default {
             txStoreId
           })
             .then(() => {
-              console.log(privateKeys, this.accountQuorum)
               let completed = privateKeys.length + signatures.length === this.accountQuorum
               let message = completed
                 ? 'Transaction succesfuly finalised and sent!'
