@@ -271,10 +271,10 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ walletAddress }}</span></p>
         </div>
         <qrcode-vue
-          :value="ethWalletAddress"
+          :value="walletAddress"
           :size="270"
         />
       </div>
@@ -381,7 +381,7 @@ export default {
     ...mapGetters([
       'cryptoInfo',
       'settingsView',
-      'ethWalletAddress',
+      'walletAddress',
       'withdrawWalletAddresses',
       'getTransactionsByAssetId',
       'accountQuorum'

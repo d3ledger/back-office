@@ -49,7 +49,6 @@
           </el-tag>
         </el-form-item>
         <el-form-item
-          v-if="this.$route.fullPath.includes('#url')"
           label="Registration ip:"
           prop="nodeIp"
         >
@@ -151,7 +150,7 @@ export default {
         username: '',
         newAddress: '',
         whitelist: [],
-        nodeIp: ''
+        nodeIp: notaryIPs[0].value
       },
       dialogVisible: false,
       dialog: {

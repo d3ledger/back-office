@@ -1,8 +1,8 @@
 <template>
   <el-main class="column-fullheight card-wrapper">
-    <el-card class="card">You have no assets at the moment. Please transfer your ETH/ERC20 tokens to <span class="monospace">{{ ethWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
+    <el-card class="card">You have no assets at the moment. Please transfer your {{ walletType === walletTypes.BTC ? "bitcoins" : "ETH/ERC20 tokens" }}  to <span class="monospace">{{ walletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
       <qrcode-vue
-        :value="ethWalletAddress"
+        :value="walletAddress"
         :size="270"
         class="qr"
       />
@@ -13,6 +13,7 @@
 <script>
 import QrcodeVue from 'qrcode.vue'
 import { mapState, mapGetters } from 'vuex'
+import { WalletTypes } from '@/data/enums'
 
 export default {
   name: 'no-assets-card',
@@ -21,6 +22,7 @@ export default {
   },
   data () {
     return {
+      walletTypes: WalletTypes
     }
   },
 
@@ -28,7 +30,10 @@ export default {
     ...mapState({
       accountId: state => state.Account.accountId
     }),
-    ...mapGetters(['ethWalletAddress'])
+    ...mapGetters([
+      'walletAddress',
+      'walletType'
+    ])
   }
 }
 </script>
