@@ -1,10 +1,9 @@
 [{
-  "value": "http://localhost:8081",
-  "label": "Local registration 1"
-}, {
-  "value": "http://localhost:8082",
-  "label": "Local registration 2"
-}, {
   "value": "http://localhost:8083",
-  "label": "Local registration 3"
-}]
+  "label": "Local registration Etherium"
+}, 
+{
+  "value": "http://localhost:8084",
+  "label": "Local registration Bitcoin"
+}
+]
