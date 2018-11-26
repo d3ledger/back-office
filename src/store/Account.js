@@ -12,6 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
+import { WalletTypes } from '@/data/enums'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -135,9 +136,23 @@ const getters = {
     )
   },
 
-  ethWalletAddress (state) {
-    let wallet = find('ethereum_wallet', state.accountInfo)
-    return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
+  walletType (state) {
+    if (find('ethereum_wallet', state.accountInfo)) {
+      return WalletTypes.ETH
+    }
+
+    if (find('bitcoin', state.accountInfo)) {
+      return WalletTypes.BTC
+    }
+
+    return WalletTypes.NONE
+  },
+
+  walletAddress (state) {
+    let ethWallet = find('ethereum_wallet', state.accountInfo)
+    let btcWallet = find('bitcoin', state.accountInfo)
+
+    return ethWallet ? ethWallet.ethereum_wallet : btcWallet ? btcWallet.bitcoin : 'no deposit address'
   },
 
   withdrawWalletAddresses (state) {
