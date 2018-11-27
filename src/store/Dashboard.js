@@ -71,13 +71,15 @@ function initialState () {
       },
       assetsPercentage: [],
       assetsHistory: [],
+      isLoading: false,
       filter: '1W'
     },
     assetList: [],
     assetChart: {
       filter: '1M',
       crypto: null,
-      data: []
+      data: [],
+      isLoading: false
     },
     isLoading: false,
     connectionError: null
@@ -104,6 +106,9 @@ const getters = {
   },
   portfolioList (state) {
     return state.assetList
+  },
+  portfolioHistoryIsLoading (state) {
+    return state.portfolio.isLoading
   },
   connectionError (state) {
     return state.connectionError
@@ -176,23 +181,31 @@ const mutations = {
     state.assetList = currencies
   },
 
-  [types.GET_PRICE_BY_FILTER_REQUEST] (state) {},
+  [types.GET_PRICE_BY_FILTER_REQUEST] (state) {
+    Vue.set(state.assetChart, 'isLoading', true)
+  },
 
   [types.GET_PRICE_BY_FILTER_SUCCESS] (state, data) {
     Vue.set(state.assetChart, 'data', data)
+    Vue.set(state.assetChart, 'isLoading', false)
   },
 
   [types.GET_PRICE_BY_FILTER_FAILURE] (state, err) {
+    Vue.set(state.assetChart, 'isLoading', false)
     handleError(state, err)
   },
 
-  [types.GET_PORTFOLIO_HISTORY_REQUEST] (state) {},
+  [types.GET_PORTFOLIO_HISTORY_REQUEST] (state) {
+    Vue.set(state.portfolio, 'isLoading', true)
+  },
 
   [types.GET_PORTFOLIO_HISTORY_SUCCESS] (state, data) {
     Vue.set(state.portfolio, 'assetsHistory', data)
+    Vue.set(state.portfolio, 'isLoading', false)
   },
 
   [types.GET_PORTFOLIO_HISTORY_FAILURE] (state, err) {
+    Vue.set(state.portfolio, 'isLoading', false)
     handleError(state, err)
   },
 

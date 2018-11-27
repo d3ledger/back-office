@@ -13,7 +13,7 @@
               </div>
               <div class="top-left-card">
                 <div class="amount">
-                  <el-tooltip class="item" effect="dark" :content="`${wallet.amount} ${wallet.asset}`" placement="top">
+                  <el-tooltip class="item" effect="dark" :content="`${wallet.amount} ${wallet.asset}`" placement="top-start">
                     <h2>
                       {{ wallet.amount | fitAmount }} {{ wallet.asset }}
                     </h2>
