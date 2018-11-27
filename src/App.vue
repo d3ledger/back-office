@@ -70,7 +70,7 @@ a:hover {
 
 .column-fullheight {
   height: 100vh;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .el-message,
