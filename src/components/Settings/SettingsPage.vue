@@ -462,7 +462,7 @@ export default {
       if (key.length > 57) {
         return key.substr(0, 57) + '...'
       }
-      return key
+      return hexKey
     }
   }
 }
