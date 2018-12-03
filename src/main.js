@@ -81,6 +81,11 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/legendScroll'
 import 'echarts/lib/component/dataZoom'
 
+import VueClipboard from 'vue-clipboard2'
+
+VueClipboard.config.autoSetContainer = true
+Vue.use(VueClipboard)
+
 Vue.component('ECharts', ECharts)
 
 Vue.use(Dialog)

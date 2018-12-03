@@ -90,7 +90,7 @@
               <div class="settings-item" data-cy="accountSignatories">
                 <template v-for="(pubKey, index) in accountSignatories">
                   <div class="settings-item_row" :key="index">
-                    <span class="settings-item_row-key">{{ pubKey | substrKey}}</span>
+                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
                     <el-button
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
@@ -303,7 +303,7 @@ export default {
       'getAccountQuorum'
     ]),
     addPublicKey () {
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
           this.addingNewKey = true
@@ -325,7 +325,7 @@ export default {
         })
     },
     removePublicKey () {
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
           this.removingKey = true
@@ -348,7 +348,7 @@ export default {
         })
     },
     updateQuorum () {
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
 
@@ -386,14 +386,27 @@ export default {
 
       this.downloaded = true
       this.fileData = null
+    },
+    doCopy (key) {
+      const hexKey = Buffer.from(key, 'base64').toString('hex')
+      this.$copyText(hexKey)
+        .then((e) => this.onCopyKeySuccess(e))
+        .catch((e) => this.onCopyKeyError(e))
+    },
+    onCopyKeySuccess (e) {
+      this.$message(`You just copied: ${e.text}`)
+    },
+    onCopyKeyError (e) {
+      this.$message.error('Failed to copy texts')
     }
   },
   filters: {
     substrKey (key) {
-      if (key.length > 60) {
-        return key.substr(0, 57) + '...'
+      const hexKey = Buffer.from(key, 'base64').toString('hex')
+      if (hexKey.length > 57) {
+        return hexKey.substr(0, 57) + '...'
       }
-      return key
+      return hexKey
     }
   }
 }
@@ -504,6 +517,10 @@ export default {
 .settings-item_row-key {
   font-size: 0.8rem;
   line-height: 3rem;
+}
+
+.settings-item_row-key.pointed {
+  cursor: pointer;
 }
 
 .settings-item_row-delete {

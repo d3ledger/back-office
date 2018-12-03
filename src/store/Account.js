@@ -539,9 +539,9 @@ const actions = {
 
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.ACCEPT_SETTLEMENT_REQUEST)
-      .then(() => {
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
     return irohaUtil.acceptSettlement(privateKeys, batch)
-      const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+      .then(() => {
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
       .catch(err => {
@@ -552,9 +552,9 @@ const actions = {
 
   rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
-    .fill('1234567890123456789012345678901234567890123456789012345678901234')
-    const fake = new Array(state.accountQuorum)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    const fake = new Array(state.accountQuorum)
+      .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)
