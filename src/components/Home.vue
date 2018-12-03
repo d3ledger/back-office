@@ -101,7 +101,7 @@
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
               <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
-                You need to enter at least 1 key.
+                You need to enter at least {{ approvalDialogMinAmountKeys }} key.
               </span>
             </p>
             <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
@@ -200,6 +200,7 @@ export default {
       'wallets',
       'approvalDialogVisible',
       'approvalDialogSignatures',
+      'approvalDialogMinAmountKeys',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum'
@@ -304,7 +305,7 @@ export default {
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
 
-        this.openApprovalDialog()
+        this.openApprovalDialog({})
           .then(privateKeys => {
             if (!privateKeys) return
             this.isExchangeSending = true
@@ -371,7 +372,10 @@ export default {
       if (this.exchangeDialogVisible) {
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
       } else {
-        return this.approvalForm.numberOfValidKeys < 1
+        if (this.approvalDialogMinAmountKeys === 1) {
+          return this.approvalForm.numberOfValidKeys < 1
+        }
+        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
       }
     }
   }

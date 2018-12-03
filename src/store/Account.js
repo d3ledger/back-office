@@ -498,7 +498,8 @@ const actions = {
   rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = ['1234567890123456789012345678901234567890123456789012345678901234']
+    const fake = new Array(state.accountQuorum)
+      .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)

@@ -116,7 +116,8 @@ export default {
   computed: {
     ...mapGetters({
       settlements: 'incomingSettlements',
-      wallets: 'wallets'
+      wallets: 'wallets',
+      accountQuorum: 'accountQuorum'
     })
   },
 
@@ -127,48 +128,54 @@ export default {
   methods: {
     ...mapActions([
       'openApprovalDialog',
-      'getAllUnsignedTransactions'
+      'getAllUnsignedTransactions',
+      'acceptSettlement',
+      'rejectSettlement'
     ]),
 
     onAccept () {
-      this.openApprovalDialog()
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
 
-          return this.$store.dispatch('acceptSettlement', {
+          return this.acceptSettlement({
             privateKeys,
             settlementBatch: this.settlementForAcceptance.from.batch
           })
             .then(() => {
-              this.$message('Accepted')
-              this.getAllUnsignedTransactions()
+              this.$message.success('Accepted')
             })
             .catch(err => {
               console.error(err)
-              this.$message('Failed to accept')
+              this.$message.error('Failed to accept')
             })
-            .finally(() => { this.acceptanceDialogVisible = false })
+            .finally(() => {
+              this.acceptanceDialogVisible = false
+              this.getAllUnsignedTransactions()
+            })
         })
     },
 
     onReject () {
-      this.openApprovalDialog()
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
 
-          return this.$store.dispatch('rejectSettlement', {
+          return this.rejectSettlement({
             privateKeys,
             settlementBatch: this.settlementForRejection.from.batch
           })
             .then(() => {
-              this.$message('Rejected')
-              this.getAllUnsignedTransactions()
+              this.$message.success('Rejected')
             })
             .catch(err => {
               console.error(err)
-              this.$message('Failed to reject')
+              this.$message.error('Failed to reject')
             })
-            .finally(() => { this.rejectionDialogVisible = false })
+            .finally(() => {
+              this.rejectionDialogVisible = false
+              this.getAllUnsignedTransactions()
+            })
         })
     },
 

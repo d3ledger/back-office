@@ -268,10 +268,16 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'ENOUGH_SIGNATURES_COLLECTED',
+    'STATEFUL_VALIDATION_FAILED'
+  ])
 }
 
-function sendTransactions (txs, txClient, timeoutLimit) {
+function sendTransactions (txs, txClient, timeoutLimit, requiredStatuses = [
+  'MST_PENDING',
+  'COMMITTED'
+]) {
   const hashes = txs.map(x => txHelper.hash(x))
   const txList = txHelper.createTxListFromArray(txs)
 
@@ -330,8 +336,11 @@ function sendTransactions (txs, txClient, timeoutLimit) {
             'iroha.protocol.TxStatus',
             x
           ) : null)
-
-          statuses.every(x => x === 'MST_PENDING' || x === 'COMMITTED') ? resolve() : reject(new Error(`Your transaction wasn't commited: expected: MST_PENDING or COMMITED actual=${statuses}`))
+          statuses.some(x => requiredStatuses.includes(x))
+            ? resolve()
+            : reject(
+              new Error(`Your transaction wasn't commited: expected: ${requiredStatuses}, actual=${statuses}`)
+            )
         })
       })
     })

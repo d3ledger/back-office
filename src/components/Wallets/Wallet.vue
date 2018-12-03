@@ -455,7 +455,7 @@ export default {
     onSubmitWithdrawalForm () {
       if (!this.validateForm('withdrawForm')) return
 
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
 
@@ -489,7 +489,7 @@ export default {
 
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
