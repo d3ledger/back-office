@@ -73,7 +73,7 @@
             type="textarea"
             :rows="2"
             v-model="exchangeForm.description"
-            placeholder="Account id"
+            placeholder="Description"
             resize="none"
           />
         </el-form-item>
@@ -100,8 +100,8 @@
           <el-row class="approval_form-desc">
             <p>
               Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-              <span v-if="accountQuorum > 1">
-                You need to enter at least 1 key.
+              <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
+                You need to enter at least {{ approvalDialogMinAmountKeys }} key.
               </span>
             </p>
             <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
@@ -148,7 +148,7 @@
             id="confirm-approval-form"
             class="fullwidth black clickable"
             @click="submitApprovalDialog()"
-            :disabled="approvalForm.numberOfValidKeys < 1"
+            :disabled="disableConfig()"
             >
             Confirm
           </el-button>
@@ -200,6 +200,7 @@ export default {
       'wallets',
       'approvalDialogVisible',
       'approvalDialogSignatures',
+      'approvalDialogMinAmountKeys',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum'
@@ -228,7 +229,7 @@ export default {
     },
 
     numberOfSettlements () {
-      return this.$store.getters.waitingSettlements.length
+      return this.$store.getters.incomingSettlements.length
     }
   },
 
@@ -244,13 +245,22 @@ export default {
   },
 
   beforeUpdate () {
-    if (this.exchangeDialogOfferAsset) {
-      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
-      this._refreshRules({
-        offer_amount: { pattern: 'tokensAmount', amount: wallet.amount, precision: wallet.precision },
-        request_amount: { pattern: 'tokensAmount', amount: Number.MAX_SAFE_INTEGER, precision: wallet.precision }
-      })
-    }
+    const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+    const { amount, precision } = wallet || { amount: 0, precision: 0 }
+    this._refreshRules({
+      offer_amount: {
+        pattern: 'tokensAmount',
+        amount: amount,
+        precision: precision,
+        asset: this.exchangeDialogOfferAsset
+      },
+      request_amount: {
+        pattern: 'tokensAmount',
+        amount: Number.MAX_SAFE_INTEGER,
+        precision: precision,
+        asset: this.exchangeDialogRequestAsset
+      }
+    })
   },
 
   updated () {
@@ -286,13 +296,16 @@ export default {
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
       this.exchangeForm.description = ''
+      this.exchangeDialogOfferAsset = ''
+      this.exchangeDialogRequestAsset = ''
     },
 
     onSubmitExchangeDialog () {
       const s = this.exchangeForm
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
-        this.openApprovalDialog()
+
+        this.openApprovalDialog({})
           .then(privateKeys => {
             if (!privateKeys) return
             this.isExchangeSending = true
@@ -304,7 +317,8 @@ export default {
               offerAssetId: offerAsset,
               offerAmount: s.offer_amount,
               requestAssetId: requestAsset,
-              requestAmount: s.request_amount
+              requestAmount: s.request_amount,
+              description: s.description
             })
               .then(() => {
                 this.$message('New settlement has successfully been created')
@@ -352,6 +366,17 @@ export default {
       this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
         return x.validateState === 'success' && !!x.fieldValue
       }).length
+    },
+
+    disableConfig () {
+      if (this.exchangeDialogVisible) {
+        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
+      } else {
+        if (this.approvalDialogMinAmountKeys === 1) {
+          return this.approvalForm.numberOfValidKeys < 1
+        }
+        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
+      }
     }
   }
 }

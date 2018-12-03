@@ -9,21 +9,25 @@
       <template slot-scope="scope">
         <div class="transaction_details">
           <el-row>
-            <el-col :span="6">{{ formatDateLong(scope.row.date) }}</el-col>
+            <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
             <el-col :span="6" class="transaction_details-amount">
-              <p>- {{ scope.row.offer_amount }} {{ scope.row.offer_asset }}</p>
-              <p>+ {{ scope.row.request_amount }} {{ scope.row.request_asset }}</p>
+              <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
+              <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
             </el-col>
-            <el-col :span="6">{{ scope.row.message }}</el-col>
-            <el-col :span="6">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
+            <el-col :span="6">{{ scope.row.from.message }}</el-col>
+            <el-col :span="6">{{ scope.row.from.to }}</el-col>
           </el-row>
         </div>
       </template>
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
-      <template slot-scope="scope">
-        {{ Number(scope.row.offer_amount).toFixed(4) + ' ' + scope.row.offer_asset + ' → ' + Number(scope.row.request_amount).toFixed(4) + ' ' + scope.row.request_asset }}
-      </template>
+        <template slot-scope="scope">
+          {{
+            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
+            + ' → ' +
+            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
+          }}
+        </template>
     </el-table-column>
     <el-table-column label="Counterparty" width="150">
       <template slot-scope="scope">
@@ -34,22 +38,14 @@
     </el-table-column>
     <el-table-column label="Date" min-width="120">
       <template slot-scope="scope">
-        {{ formatDate(scope.row.date) }}
-      </template>
-    </el-table-column>
-     <el-table-column width="93">
-      <template slot-scope="scope">
-        <el-tag
-          class="status-tag"
-          :type="tagType(scope.row.status)"
-        >{{ scope.row.status }}</el-tag>
+        {{ formatDate(scope.row.from.date) }}
       </template>
     </el-table-column>
   </el-table>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
@@ -62,17 +58,26 @@ export default {
   },
   computed: {
     ...mapGetters({
-      settlements: 'resolvedSettlements'
+      settlements: 'resolvedSettlements',
+      wallets: 'wallets'
     })
   },
   created () {
-    this.$store.dispatch('getAccountTransactions')
+    Promise.all([
+      this.getAccountAssets(),
+      this.getAllAssetTransactions()
+    ])
   },
   methods: {
     ...mapActions([
       'getAccountAssets',
       'getAllAssetTransactions'
-    ])
+    ]),
+
+    assetName (assetId) {
+      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
+      return wallet.asset
+    }
   }
 }
 </script>
