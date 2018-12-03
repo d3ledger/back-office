@@ -40,7 +40,8 @@ const dateFormat = {
       const diff = differenceInMinutes(laterDate, earlierDate)
       const hours = ~~(diff / 60) // return the quotient from division
       const minutes = diff % 60
-      return `${hours}:${minutes}`
+      const formatMin = String(minutes).length < 2 ? `0${minutes}` : minutes
+      return `${hours}:${formatMin}`
     }
   },
   data () {

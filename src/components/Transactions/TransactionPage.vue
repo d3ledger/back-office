@@ -112,7 +112,7 @@ export default {
       'getPendingTransactions'
     ]),
     onSignPendingTransaction (txStoreId, signatures) {
-      this.openApprovalDialog(signatures)
+      this.openApprovalDialog({ signatures })
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true

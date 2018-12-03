@@ -33,7 +33,8 @@ function initialState () {
       isVisible: false,
       signatures: [],
       resolvePrompting: null,
-      rejectPrompting: null
+      rejectPrompting: null,
+      requiredMinAmount: 1
     },
     exchangeDialog: {
       isVisible: false,
@@ -54,12 +55,13 @@ function handleError (state, err) {
 const state = initialState()
 
 const mutations = {
-  [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting, signatures }) {
+  [types.APPROVAL_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting, signatures, requiredMinAmount }) {
     Vue.set(state, 'approvalDialog', {
       isVisible: true,
       resolvePrompting,
       rejectPrompting,
-      signatures
+      signatures,
+      requiredMinAmount
     })
   },
   [types.APPROVAL_DIALOG_CLOSE] (state, privateKeys) {
@@ -122,14 +124,19 @@ const actions = {
    * resolve the Promise at closeApprovalDialog.
    * c.f. https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope
    */
-  openApprovalDialog ({ commit }, signatures = []) {
+  openApprovalDialog ({ commit }, { signatures = [], requiredMinAmount = 1 }) {
     let resolvePrompting, rejectPrompting
     const prompting = new Promise((resolve, reject) => {
       resolvePrompting = resolve
       rejectPrompting = reject
     })
 
-    commit(types.APPROVAL_DIALOG_OPEN, { resolvePrompting, rejectPrompting, signatures })
+    commit(types.APPROVAL_DIALOG_OPEN, {
+      resolvePrompting,
+      rejectPrompting,
+      signatures,
+      requiredMinAmount
+    })
 
     return prompting
   },
@@ -187,6 +194,9 @@ const getters = {
   },
   approvalDialogSignatures () {
     return state.approvalDialog.signatures
+  },
+  approvalDialogMinAmountKeys () {
+    return state.approvalDialog.requiredMinAmount
   },
   exchangeDialogVisible () {
     return state.exchangeDialog.isVisible

@@ -14,7 +14,7 @@ Cypress.Commands.add('upload_file', (fileName, selector) => {
 })
 
 Cypress.Commands.add('goToPage', (url, expect) => {
-  cy.wait(1000)
+  cy.wait(2000)
   cy.get(`.el-side-menu .el-menu-item:contains("${expect}")`).click({ force: true })
   cy.url().should('contain', url)
 })

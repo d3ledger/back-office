@@ -8,7 +8,8 @@
     "build:more-memory": "node --max_old_space_size=4096 node_modules/.bin/vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
-    "test:e2e": "vue-cli-service test:e2e"
+    "test:e2e": "vue-cli-service test:e2e",
+    "init-fake-tokens" : "node scripts/setup"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.3",
@@ -23,7 +24,7 @@
     "element-ui": "^2.4.6",
     "file-saver": "^1.3.8",
     "grpc-web-client": "^0.6.3",
-    "iroha-helpers": "^0.2.0",
+    "iroha-helpers": "^0.3.0",
     "json2csv": "^4.2.1",
     "lodash": "^4.17.10",
     "numbro": "^2.1.0",
