@@ -303,7 +303,7 @@ export default {
       'getAccountQuorum'
     ]),
     addPublicKey () {
-      this.openApprovalDialog({})
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
           this.addingNewKey = true
@@ -325,7 +325,7 @@ export default {
         })
     },
     removePublicKey () {
-      this.openApprovalDialog({})
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
           this.removingKey = true
@@ -348,7 +348,7 @@ export default {
         })
     },
     updateQuorum () {
-      this.openApprovalDialog({})
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
 
