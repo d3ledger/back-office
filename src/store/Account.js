@@ -137,22 +137,28 @@ const getters = {
   },
 
   walletType (state) {
+    const walletType = []
     if (find('ethereum_wallet', state.accountInfo)) {
-      return WalletTypes.ETH
+      walletType.push(WalletTypes.ETH)
     }
 
     if (find('bitcoin', state.accountInfo)) {
-      return WalletTypes.BTC
+      walletType.push(WalletTypes.BTC)
     }
 
-    return WalletTypes.NONE
+    return walletType
   },
 
-  walletAddress (state) {
-    let ethWallet = find('ethereum_wallet', state.accountInfo)
-    let btcWallet = find('bitcoin', state.accountInfo)
+  ethWalletAddress (state) {
+    const ethWallet = find('ethereum_wallet', state.accountInfo)
 
-    return ethWallet ? ethWallet.ethereum_wallet : btcWallet ? btcWallet.bitcoin : 'no deposit address'
+    return ethWallet ? ethWallet.ethereum_wallet : 'no deposit address'
+  },
+
+  btcWalletAddress (state) {
+    const btcWallet = find('bitcoin', state.accountInfo)
+
+    return btcWallet ? btcWallet.bitcoin : 'no deposit address'
   },
 
   withdrawWalletAddresses (state) {
@@ -383,6 +389,21 @@ const actions = {
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
     return notaryUtil.signup(username, whitelist, publicKey)
+      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
+      .then(() => ({ username, privateKey }))
+      .catch(err => {
+        commit(types.SIGNUP_FAILURE, err)
+        throw err
+      })
+  },
+
+  addNetwork ({ commit, state }, { privateKeys }) {
+    commit(types.SIGNUP_REQUEST)
+    const username = state.accountId.split('@')[0]
+    const privateKey = privateKeys[0]
+    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+
+    return notaryUtil.signup(username, [], publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
