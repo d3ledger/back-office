@@ -2,7 +2,15 @@
   <el-main class="column-fullheight card-wrapper flex-direction-column">
     <el-card v-if="ethWalletAddress" class="card">You have no assets at the moment. Please transfer your ETH/ERC20 tokens  to <span class="monospace bold">{{ ethWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
       <qrcode-vue
-        :value="walletAddress"
+        :value="ethWalletAddress"
+        :size="270"
+        class="qr"
+      />
+    </el-card>
+    <br>
+    <el-card v-if="btcWalletAddress" class="card">You have no assets at the moment. Please transfer your bitcoins  to <span class="monospace bold">{{ btcWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
+      <qrcode-vue
+        :value="btcWalletAddress"
         :size="270"
         class="qr"
       />
