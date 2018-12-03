@@ -274,6 +274,13 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   ])
 }
 
+/**
+ * Send transaction: used for sending transactions to iroha
+ * @param {Array.<Objects>} txs
+ * @param {Object} txClient
+ * @param {Number} timeoutLimit - timeout limit of the transaction
+ * @param {Array.<String>} requiredStatuses - list of required statuses of the response
+ */
 function sendTransactions (txs, txClient, timeoutLimit, requiredStatuses = [
   'MST_PENDING',
   'COMMITTED'
