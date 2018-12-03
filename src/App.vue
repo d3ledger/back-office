@@ -73,6 +73,10 @@ a:hover {
   overflow: scroll;
 }
 
+.flex-direction-column {
+  flex-direction: column;
+}
+
 .el-message,
 .el-message-box,
 .el-popper,
@@ -109,6 +113,10 @@ a:hover {
 
 .monospace {
   font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 button.el-dialog__headerbtn {

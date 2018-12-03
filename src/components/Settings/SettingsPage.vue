@@ -27,7 +27,8 @@
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
-                          border>{{ value }}</el-radio>
+                          border
+                        >{{ value }}</el-radio>
                       </el-radio-group>
                     </el-col>
                   </el-row>
@@ -40,8 +41,33 @@
                           :key="index"
                           :label="value"
                           class="currencies_list-select"
-                          border>{{ value }}</el-radio>
+                          border
+                        >{{ value }}</el-radio>
                       </el-radio-group>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
+                  <span class="settings_item-header-title">Add network</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <el-button
+                        v-if="!walletType.includes(WalletTypes.BTC)"
+                        class="clickable"
+                        @click="addNetwork(WalletTypes.BTC)"
+                      >Register in BTC network</el-button>
+                      <el-button
+                        v-if="!walletType.includes(WalletTypes.ETH)"
+                        class="clickable"
+                        @click="addNetwork(WalletTypes.ETH)"
+                      >Register in ETH network</el-button>
+                      <span class="header_small" v-if="walletType.length === 2">
+                        You already added all networks
+                      </span>
                     </el-col>
                   </el-row>
                 </div>
@@ -58,13 +84,14 @@
                         class="full-width_select"
                         v-model="currentZone"
                         filterable
-                        placeholder="Select">
+                        placeholder="Select"
+                      >
                         <el-option
                           v-for="(zone, index) in timezones"
                           :key="index"
                           :label="zone"
-                          :value="zone">
-                        </el-option>
+                          :value="zone"
+                        ></el-option>
                       </el-select>
                     </el-col>
                   </el-row>
@@ -237,6 +264,8 @@
 import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
 import { mapGetters, mapActions } from 'vuex'
+import { WalletTypes } from '@/data/enums'
+import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
 export default {
   name: 'settings-page',
@@ -254,7 +283,8 @@ export default {
       addingNewKey: false,
       keyToRemove: null,
       removingKey: false,
-      quorumUpdating: false
+      quorumUpdating: false,
+      WalletTypes
     }
   },
   mixins: [
@@ -269,7 +299,8 @@ export default {
       'settingsCryptoCurrencies',
       'withdrawWalletAddresses',
       'accountQuorum',
-      'accountSignatories'
+      'accountSignatories',
+      'walletType'
     ]),
     currentFiat: {
       get () {
@@ -303,7 +334,8 @@ export default {
       'addSignatory',
       'removeSignatory',
       'editAccountQuorum',
-      'getAccountQuorum'
+      'getAccountQuorum',
+      'setNotaryIp'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -405,6 +437,25 @@ export default {
     },
     onCopyKeyError (e) {
       this.$message.error('Failed to copy texts')
+    },
+    addNetwork (network) {
+      this.openApprovalDialog().then(privateKeys => {
+        if (!privateKeys) return
+
+        this.isSending = true
+        this.setNotaryIp({ ip: network === WalletTypes.BTC ? BTC_NOTARY_URL : ETH_NOTARY_URL })
+
+        return this.$store.dispatch('addNetwork', {
+          privateKeys
+        })
+      }).then(() => {
+        this.$message({
+          message: `You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`,
+          type: 'success'
+        })
+      }).catch(() => {
+        this.$message.error(`Something was wrong. You didn't register in network`)
+      })
     }
   },
   filters: {

@@ -271,10 +271,10 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span data-cy="deposit-address" class="monospace">{{ walletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
         </div>
         <qrcode-vue
-          :value="walletAddress"
+          :value="ethWalletAddress"
           :size="270"
         />
       </div>
@@ -379,7 +379,7 @@ export default {
     ...mapGetters([
       'cryptoInfo',
       'settingsView',
-      'walletAddress',
+      'ethWalletAddress',
       'withdrawWalletAddresses',
       'getTransactionsByAssetId'
     ]),
@@ -432,7 +432,7 @@ export default {
       'openExchangeDialog'
     ]),
 
-    tagType: function (val) {
+    tagType (val) {
       val = val.toLowerCase()
       if (val === 'accepted') return 'success'
       if (val === 'rejected') return 'danger'
