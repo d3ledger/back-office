@@ -61,7 +61,7 @@
             @change="selectNotaryIp"
           >
             <el-option
-              v-for="node in notaryIPs"
+              v-for="node in registrationIPs"
               :key="node.value"
               :label="node.label"
               :value="node.value">
@@ -127,10 +127,10 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
-import notaryIPs from '@/data/notaryIPs.json'
+import { registrationIPs } from '@/data/urls'
 
 export default {
   name: 'signup',
@@ -143,14 +143,14 @@ export default {
   ],
   data () {
     return {
-      notaryIPs,
+      registrationIPs,
       isLoading: false,
       predefinedDomain: 'd3',
       form: {
         username: '',
         newAddress: '',
         whitelist: [],
-        nodeIp: notaryIPs[0].value
+        nodeIp: registrationIPs[0].value
       },
       dialogVisible: false,
       dialog: {
@@ -159,12 +159,6 @@ export default {
       },
       downloaded: false
     }
-  },
-
-  computed: {
-    ...mapState({
-      notaryIp: state => state.Account.notaryIp
-    })
   },
 
   beforeMount () {
