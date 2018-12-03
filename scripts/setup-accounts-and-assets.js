@@ -61,12 +61,20 @@ function initializeAssets () {
         return irohaUtil.addAssetQuantity([testPrivKeyHex], `${w.name.toLowerCase()}#${irohaDomain}`, amount)
       })
       .then(() => {
+        console.log(`transfer 1/3 initial amount of ${assetId} to ${testAccFull}`)
+        _.without(accounts, testAccFull).map(accountId => {
+          const splittedAmount = String(Math.round(amount * 0.3))
+          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', splittedAmount)
+            .catch(() => {})
+        })
+      })
+      .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)
 
-        const transferringInitialAssets = _.without(accounts, `${testAccFull}`).map(accountId => {
+        const transferringInitialAssets = _.without(accounts, testAccFull).map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
-          return irohaUtil.transferAsset([testPrivKeyHex], `${testAccFull}`, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', amount).catch(() => {})
+          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', amount).catch(() => {})
         })
 
         return Promise.all(transferringInitialAssets)

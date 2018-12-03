@@ -271,7 +271,7 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span class="monospace"> {{ ethWalletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
         </div>
         <qrcode-vue
           :value="ethWalletAddress"
@@ -417,7 +417,12 @@ export default {
 
   beforeUpdate () {
     this._refreshRules({
-      amount: { pattern: 'tokensAmount', amount: this.wallet.amount, precision: this.wallet.precision }
+      amount: {
+        pattern: 'tokensAmount',
+        amount: this.wallet.amount,
+        precision: this.wallet.precision,
+        asset: this.wallet.assetId
+      }
     })
   },
 
@@ -450,7 +455,7 @@ export default {
     onSubmitWithdrawalForm () {
       if (!this.validateForm('withdrawForm')) return
 
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
 
@@ -484,7 +489,7 @@ export default {
 
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
-      this.openApprovalDialog()
+      this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true

@@ -229,7 +229,62 @@ function createSettlement (senderPrivateKeys, senderAccountId = cache.username, 
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
 
-function sendTransactions (txs, txClient, timeoutLimit) {
+function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  debug('starting acceptSettlement')
+  if (!batchArray.length) return
+
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
+
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
+
+  batchArray[indexOfSigned].clearSignaturesList()
+
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
+
+function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  debug('starting acceptSettlement')
+  if (!batchArray.length) return
+
+  let txClient = new CommandServiceClient(
+    cache.nodeIp
+  )
+
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
+
+  batchArray[indexOfSigned].clearSignaturesList()
+
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'ENOUGH_SIGNATURES_COLLECTED',
+    'STATEFUL_VALIDATION_FAILED'
+  ])
+}
+
+/**
+ * Send transaction: used for sending transactions to iroha
+ * @param {Array.<Objects>} txs
+ * @param {Object} txClient
+ * @param {Number} timeoutLimit - timeout limit of the transaction
+ * @param {Array.<String>} requiredStatuses - list of required statuses of the response
+ */
+function sendTransactions (txs, txClient, timeoutLimit, requiredStatuses = [
+  'MST_PENDING',
+  'COMMITTED'
+]) {
   const hashes = txs.map(x => txHelper.hash(x))
   const txList = txHelper.createTxListFromArray(txs)
 
@@ -288,8 +343,11 @@ function sendTransactions (txs, txClient, timeoutLimit) {
             'iroha.protocol.TxStatus',
             x
           ) : null)
-
-          statuses.every(x => x === 'MST_PENDING' || x === 'COMMITTED') ? resolve() : reject(new Error(`Your transaction wasn't commited: expected: MST_PENDING or COMMITED actual=${statuses}`))
+          statuses.some(x => requiredStatuses.includes(x))
+            ? resolve()
+            : reject(
+              new Error(`Your transaction wasn't commited: expected: ${requiredStatuses}, actual=${statuses}`)
+            )
         })
       })
     })
@@ -309,6 +367,8 @@ export {
   addSignatory,
   addAssetQuantity,
   createSettlement,
+  acceptSettlement,
+  rejectSettlement,
   setAccountDetail,
   setAccountQuorum,
   signPendingTransaction

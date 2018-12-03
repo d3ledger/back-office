@@ -60,9 +60,12 @@ describe('Test wallets page without white list', () => {
       cy.get('div.el-dialog').eq(1).should('be.visible')
     })
 
-    it.skip('Wallet address expect to be valid', () => {})
-
-    it.skip('QR Code value and address are equal', () => {})
+    it('QR Code value and address are equal', () => {
+      cy.get('[data-cy=deposit-address]').then(($span) => {
+        cy.get('canvas').parent()
+          .should('have.attr', 'value', $span.text())
+      })
+    })
 
     it('Close modal', () => {
       cy.get('i.el-dialog__close').eq(1).click()
@@ -296,7 +299,7 @@ describe('Test wallets page without white list', () => {
         .should('have.value', tokenAmount)
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
-        .should('not.be.visible')
+        .should('be.visible').should('contain', 'Please select asset')
       cy.get('div.el-dialog').eq(3)
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
