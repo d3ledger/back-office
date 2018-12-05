@@ -61,13 +61,15 @@ describe('Dashboard store', () => {
           },
           assetsPercentage: [],
           assetsHistory: [],
-          filter: '1W'
+          filter: '1W',
+          isLoading: false
         },
         assetList: [],
         assetChart: {
           filter: '1M',
           crypto: null,
-          data: []
+          data: [],
+          isLoading: false
         },
         isLoading: false,
         connectionError: null
@@ -210,12 +212,18 @@ describe('Dashboard store', () => {
           volumefrom: randomAmountRng(),
           volumeto: randomAmountRng()
         }))
-      const state = { assetChart: {} }
+      const state = { assetChart: {
+        isLoading: true
+      } }
       mutations[types.GET_PRICE_BY_FILTER_SUCCESS](state, data)
 
       expect(state.assetChart)
         .to.have.property('data')
         .to.be.deep.equal(data)
+
+      expect(state.assetChart)
+        .to.have.property('isLoading')
+        .to.be.equal(false)
     })
 
     testErrorHandling('GET_PRICE_BY_FILTER_FAILURE')
@@ -229,12 +237,18 @@ describe('Dashboard store', () => {
           sum: randomAmountRng(),
           time: new Date().getTime()
         }))
-      const state = { portfolio: {} }
+      const state = { portfolio: {
+        isLoading: true
+      } }
       mutations[types.GET_PORTFOLIO_HISTORY_SUCCESS](state, history)
 
       expect(state.portfolio)
         .to.have.property('assetsHistory')
         .to.be.deep.equal(history)
+
+      expect(state.portfolio)
+        .to.have.property('isLoading')
+        .to.be.equal(false)
     })
 
     testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE')
