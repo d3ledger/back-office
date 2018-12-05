@@ -96,6 +96,30 @@ function getAccount (accountId) {
 }
 
 /**
+ * getSignatories
+ * {@link https://iroha.readthedocs.io/en/latest/api/queries.html#get-signatories getSignatories - Iroha docs}
+ * @param {String} accountId
+ */
+function getSignatories (accountId) {
+  debug('starting getSignatories...')
+
+  return sendQuery(
+    queryHelper.addQuery(queryHelper.emptyQuery(), 'getSignatories', { accountId }),
+    (resolve, reject, responseName, response) => {
+      if (responseName !== 'SIGNATORIES_RESPONSE') {
+        return reject(new Error(`Query response error: expected=ACCOUNT_RESPONSE, actual=${responseName}`))
+      }
+
+      const account = response.getSignatoriesResponse().toObject().keysList
+
+      debug('account', account)
+
+      resolve(account)
+    }
+  )
+}
+
+/**
  * getAccountTransactions
  * {@link https://iroha.readthedocs.io/en/latest/api/queries.html#get-account-transactions getAccountTransactions - Iroha docs}
  * @param {String} accountId
@@ -217,6 +241,7 @@ export {
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
+  getSignatories,
   getPendingTransactions,
   getAssetInfo
 }

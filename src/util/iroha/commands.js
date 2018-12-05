@@ -183,7 +183,7 @@ function transferAsset (privateKeys, srcAccountId, destAccountId, assetId, descr
  * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#add-signatory addSignatory - Iroha docs}
  * @param {Array.<String>} privateKeys
  * @param {String} accountId
- * @param {String} publicKey
+ * @param {Buffer} publicKey
  * @param {Number} accountQuorum
  */
 function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
@@ -192,6 +192,24 @@ function addSignatory (privateKeys, accountId, publicKey, accountQuorum) {
   return command(
     privateKeys,
     txHelper.addCommand(txHelper.emptyTransaction(), 'addSignatory', { accountId, publicKey }),
+    accountQuorum
+  )
+}
+
+/**
+ * removeSignatory
+ * {@link https://iroha.readthedocs.io/en/latest/api/commands.html#remove-signatory removeSignatory - Iroha docs}
+ * @param {Array.<String>} privateKeys
+ * @param {String} accountId
+ * @param {Buffer} publicKey
+ * @param {Number} accountQuorum
+ */
+function removeSignatory (privateKeys, accountId, publicKey, accountQuorum) {
+  debug('starting removeSignatory...')
+
+  return command(
+    privateKeys,
+    txHelper.addCommand(txHelper.emptyTransaction(), 'removeSignatory', { accountId, publicKey }),
     accountQuorum
   )
 }
@@ -365,6 +383,7 @@ export {
   createAsset,
   transferAsset,
   addSignatory,
+  removeSignatory,
   addAssetQuantity,
   createSettlement,
   acceptSettlement,
