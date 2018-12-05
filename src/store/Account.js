@@ -13,7 +13,6 @@ import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/enums'
-import { derivePublicKey } from 'ed25519.js'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
