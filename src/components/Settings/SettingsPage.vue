@@ -92,6 +92,7 @@
                   <div class="settings-item_row" :key="index">
                     <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
                     <el-button
+                      v-if="accountSignatories.length != accountQuorum"
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
                       @click="removeKeyFormVisible = true; keyToRemove = pubKey">
