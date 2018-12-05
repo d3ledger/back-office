@@ -12,7 +12,7 @@ import { derivePublicKey } from 'ed25519.js'
 const irohaDomain = 'd3'
 const testAccName = 'test'
 const aliceAccName = 'alice'
-const testAccFull = `${testAccName}@${irohaDomain}`
+const testAccFull = `${testAccName}@notary`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
@@ -35,6 +35,7 @@ irohaUtil.login(testAccFull, testPrivKeyHex, nodeIp)
   .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'ethereum_wallet', '0xAdmin-ethereum_wallet'))
   .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], testAccFull, 'eth_whitelist', '0x1234567890123456789012345678901234567890'))
   .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], aliceAccFull, 'ethereum_wallet', '0xAlice-ethereum_wallet'))
+  .then(() => irohaUtil.setAccountDetail([testPrivKeyHex], aliceAccFull, 'bitcoin', 'Alice-bitcoin-wallet'))
   .then(() => initializeAssets())
   .then(() => irohaUtil.logout())
   .then(() => setupAccountTransactions(testAccFull, testPrivKeyHex))
@@ -52,19 +53,20 @@ function initializeAssets () {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
     const assetName = w.name.toLowerCase()
-    const assetId = assetName + `#${irohaDomain}`
+    const assetId = assetName + `#${assetName === 'btc' ? 'bitcoin' : irohaDomain}`
 
-    return tryToCreateAsset(assetName, `${irohaDomain}`, precision)
+    return tryToCreateAsset(assetName, `${assetName === 'btc' ? 'bitcoin' : irohaDomain}`, precision)
       .then(() => {
         console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
-
-        return irohaUtil.addAssetQuantity([testPrivKeyHex], `${w.name.toLowerCase()}#${irohaDomain}`, amount)
+        return irohaUtil.addAssetQuantity([testPrivKeyHex], assetId, amount)
+      }).catch((error) => {
+        console.log(error)
       })
       .then(() => {
         console.log(`transfer 1/3 initial amount of ${assetId} to ${testAccFull}`)
         _.without(accounts, testAccFull).map(accountId => {
           const splittedAmount = String(Math.round(amount * 0.3))
-          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', splittedAmount)
+          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, assetId, 'initial tx', splittedAmount)
             .catch(() => {})
         })
       })
@@ -74,7 +76,7 @@ function initializeAssets () {
         const transferringInitialAssets = _.without(accounts, testAccFull).map(accountId => {
           const amount = String(Math.random() + 1).substr(0, precision + 2)
 
-          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, `${w.name.toLowerCase()}#${irohaDomain}`, 'initial tx', amount).catch(() => {})
+          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, assetId, 'initial tx', amount).catch(() => {})
         })
 
         return Promise.all(transferringInitialAssets)

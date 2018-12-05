@@ -1,9 +1,16 @@
 {
   "wallets": [
     {
+      "name": "btc",
+      "asset": "BTC",
+      "amount": "124.",
+      "color": "ffb055",
+      "address": "d8e18bb63161f6e4ee173d2408f2cccd75"
+    },
+    {
       "name": "OmiseGo",
       "asset": "OMG",
-      "amount": "124.58",
+      "amount": "0.00",
       "color": "ffb055",
       "address": "d8e18bb63161f6e4ee173d2408f2cccd75"
     },
