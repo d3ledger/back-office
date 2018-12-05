@@ -114,4 +114,8 @@ a:hover {
 button.el-dialog__headerbtn {
   font-size: 1.25rem;
 }
+
+.fullheight {
+  height: 100%;
+}
 </style>
