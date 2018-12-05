@@ -191,7 +191,10 @@ const mutations = {
   },
 
   [types.GET_PRICE_BY_FILTER_FAILURE] (state, err) {
-    Vue.set(state.assetChart, 'isLoading', false)
+    if (state.assetChart) {
+      state.assetChart.isLoading = false
+    }
+
     handleError(state, err)
   },
 
@@ -205,7 +208,9 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_HISTORY_FAILURE] (state, err) {
-    Vue.set(state.portfolio, 'isLoading', false)
+    if (state.portfolio) {
+      state.portfolio.isLoading = false
+    }
     handleError(state, err)
   },
 
