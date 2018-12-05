@@ -92,6 +92,7 @@
                   <div class="settings-item_row" :key="index">
                     <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
                     <el-button
+                      v-if="accountSignatories.length != accountQuorum"
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
                       @click="removeKeyFormVisible = true; keyToRemove = pubKey">
@@ -155,7 +156,8 @@
           <el-button
             @click="updateQuorum"
             class="fullwidth black clickable"
-            :disabled="quorumForm.amount > accountSignatories.length">
+            :disabled="quorumForm.amount > accountSignatories.length"
+            :loading="quorumUpdating">
             Update
           </el-button>
         </el-form-item>
@@ -175,7 +177,7 @@
           type="danger"
           @click="addPublicKey"
           class="fullwidth black clickable"
-          :disabled="addingNewKey">Add
+          :loading="addingNewKey">Add
         </el-button>
       </div>
     </el-dialog>
@@ -193,7 +195,7 @@
           @click="removePublicKey"
           class="fullwidth"
           type="danger"
-          :disabled="removingKey">Remove
+          :loading="removingKey">Remove
         </el-button>
       </div>
     </el-dialog>
@@ -251,7 +253,8 @@ export default {
       downloaded: false,
       addingNewKey: false,
       keyToRemove: null,
-      removingKey: false
+      removingKey: false,
+      quorumUpdating: false
     }
   },
   mixins: [
@@ -351,7 +354,7 @@ export default {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
-
+          this.quorumUpdating = true
           return this.editAccountQuorum({
             privateKeys,
             quorum: this.quorumForm.amount
@@ -367,6 +370,7 @@ export default {
         .finally(() => {
           this.getAccountQuorum()
           this.quorumFormVisible = false
+          this.quorumUpdating = false
         })
     },
     onClickDownload () {
