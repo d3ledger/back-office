@@ -92,7 +92,6 @@
                   <div class="settings-item_row" :key="index">
                     <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
                     <el-button
-                      v-if="accountSignatories.length != accountQuorum"
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
                       @click="removeKeyFormVisible = true; keyToRemove = pubKey">
@@ -328,6 +327,10 @@ export default {
         })
     },
     removePublicKey () {
+      if (this.accountSignatories.length <= this.accountQuorum) {
+        this.$message.error('Amount of public keys can\'t be smaller than quorum')
+        return
+      }
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
