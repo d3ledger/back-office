@@ -188,7 +188,7 @@
       width="500px"
       center>
       <div class="approval_form-desc">
-        Are you sure want to remove <b>{{ keyToRemove }}</b> public key?
+        Are you sure want to remove <b class="key_representation">{{ keyToRemove }}</b> public key?
       </div>
       <div slot="footer">
         <el-button
@@ -392,8 +392,7 @@ export default {
       this.fileData = null
     },
     doCopy (key) {
-      const hexKey = Buffer.from(key, 'base64').toString('hex')
-      this.$copyText(hexKey)
+      this.$copyText(key)
         .then((e) => this.onCopyKeySuccess(e))
         .catch((e) => this.onCopyKeyError(e))
     },
@@ -406,11 +405,10 @@ export default {
   },
   filters: {
     substrKey (key) {
-      const hexKey = Buffer.from(key, 'base64').toString('hex')
-      if (hexKey.length > 57) {
-        return hexKey.substr(0, 57) + '...'
+      if (key.length > 57) {
+        return key.substr(0, 57) + '...'
       }
-      return hexKey
+      return key
     }
   }
 }
@@ -495,6 +493,10 @@ export default {
   flex-wrap: wrap;
   padding: 5px 5px 0 5px;
   width: 100%;
+}
+
+.key_representation {
+  word-break: break-all;
 }
 
 .address_tag {
