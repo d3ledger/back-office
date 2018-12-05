@@ -11,6 +11,7 @@ import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
+import { derivePublicKey } from 'ed25519.js'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -31,13 +32,18 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_ASSET_TRANSACTIONS',
+  'GET_ACCOUNT_SIGNATORIES',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
   'GET_PENDING_TRANSACTIONS',
+  'ADD_ACCOUNT_SIGNATORY',
+  'REMOVE_ACCOUNT_SIGNATORY',
   'TRANSFER_ASSET',
   'CREATE_SETTLEMENT',
   'ACCEPT_SETTLEMENT',
   'REJECT_SETTLEMENT',
-  'SIGN_PENDING'
+  'SIGN_PENDING',
+  'EDIT_ACCOUNT_QUORUM',
+  'GET_ACCOUNT_QUORUM'
 ])
 
 function initialState () {
@@ -47,6 +53,7 @@ function initialState () {
     notaryIp: notaryUtil.baseURL,
     accountInfo: {},
     accountQuorum: 0,
+    accountSignatories: [],
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
@@ -140,6 +147,10 @@ const getters = {
 
   accountQuorum (state) {
     return state.accountQuorum
+  },
+
+  accountSignatories (state) {
+    return state.accountSignatories.map((s) => Buffer.from(s, 'base64').toString('hex'))
   }
 }
 
@@ -233,6 +244,16 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.GET_ACCOUNT_SIGNATORIES_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_SIGNATORIES_SUCCESS] (state, signatories) {
+    state.accountSignatories = signatories
+  },
+
+  [types.GET_ACCOUNT_SIGNATORIES_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS] (state, transactions) {
@@ -298,6 +319,40 @@ const mutations = {
   [types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS] (state) {},
 
   [types.GET_ALL_ASSET_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
+
+  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+
+  [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_REQUEST] (state) {},
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+
+  [types.REMOVE_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.EDIT_ACCOUNT_QUORUM_REQUEST] (state) {},
+
+  [types.EDIT_ACCOUNT_QUORUM_SUCCESS] (state) {},
+
+  [types.EDIT_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
+    state.accountQuorum = quorum
+  },
+
+  [types.GET_ACCOUNT_QUORUM_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -506,6 +561,60 @@ const actions = {
       })
       .catch(err => {
         commit(types.REJECT_SETTLEMENT_FAILURE, err)
+        throw err
+      })
+  },
+
+  addSignatory ({ commit, state }, privateKeys) {
+    commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
+
+    const { privateKey } = irohaUtil.generateKeypair()
+    const publicKeyBuffer = derivePublicKey(Buffer.from(privateKey, 'hex'))
+    return irohaUtil.addSignatory(privateKeys, state.accountId, publicKeyBuffer, state.accountQuorum)
+      .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(() => ({ username: state.accountId, privateKey }))
+      .catch(err => {
+        commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
+        throw err
+      })
+  },
+
+  removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
+    commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
+    return irohaUtil.removeSignatory(privateKeys, state.accountId, publicKey, state.accountQuorum)
+      .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
+      .catch(err => {
+        commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
+        throw err
+      })
+  },
+
+  getSignatories ({ commit, state }) {
+    commit(types.GET_ACCOUNT_SIGNATORIES_REQUEST)
+    return irohaUtil.getSignatories(state.accountId)
+      .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
+        throw err
+      })
+  },
+
+  editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
+    commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
+    return irohaUtil.setAccountQuorum(privateKeys, state.accountId, quorum, state.accountQuorum)
+      .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
+      .catch(err => {
+        commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountQuorum ({ commit, state }) {
+    commit(types.GET_ACCOUNT_QUORUM_REQUEST)
+    return irohaUtil.getAccount(state.accountId)
+      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
       })
   }

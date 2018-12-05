@@ -29,6 +29,9 @@ import { faSortAmountDown } from '@fortawesome/free-solid-svg-icons/faSortAmount
 import { faFile } from '@fortawesome/free-solid-svg-icons/faFile'
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons/faFilePdf'
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons/faFileExcel'
+import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -37,6 +40,7 @@ import {
   Menu,
   MenuItem,
   Input,
+  InputNumber,
   Radio,
   RadioGroup,
   Select,
@@ -77,12 +81,18 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/legendScroll'
 import 'echarts/lib/component/dataZoom'
 
+import VueClipboard from 'vue-clipboard2'
+
+VueClipboard.config.autoSetContainer = true
+Vue.use(VueClipboard)
+
 Vue.component('ECharts', ECharts)
 
 Vue.use(Dialog)
 Vue.use(Menu)
 Vue.use(MenuItem)
 Vue.use(Input)
+Vue.use(InputNumber)
 Vue.use(Radio)
 Vue.use(RadioGroup)
 Vue.use(Select)
@@ -136,7 +146,10 @@ library.add(
   faSortAmountDown,
   faFile,
   faFileExcel,
-  faFilePdf
+  faFilePdf,
+  faPlus,
+  faPencilAlt,
+  faTrashAlt
 )
 Vue.component('fa-icon', FontAwesomeIcon)
 
