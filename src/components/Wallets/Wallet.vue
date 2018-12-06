@@ -271,10 +271,10 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ walletAddress }}</span></p>
         </div>
         <qrcode-vue
-          :value="ethWalletAddress"
+          :value="walletAddress"
           :size="270"
         />
       </div>
@@ -338,7 +338,8 @@ import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
 
 // Notary account for withdrawal.
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
+const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
+// const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
 export default {
   name: 'wallet',
@@ -382,6 +383,7 @@ export default {
       'cryptoInfo',
       'settingsView',
       'ethWalletAddress',
+      'btcWalletAddress',
       'withdrawWalletAddresses',
       'getTransactionsByAssetId',
       'accountQuorum'
@@ -405,6 +407,10 @@ export default {
 
     amountWithPrecision () {
       return numberFormat.filters.formatPrecision(this.wallet.amount)
+    },
+
+    walletAddress () {
+      return this.wallet.assetId === 'btc#bitcoin' ? this.btcWalletAddress : this.ethWalletAddress
     }
   },
 

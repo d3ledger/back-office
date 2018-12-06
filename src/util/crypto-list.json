@@ -10,6 +10,11 @@
     "color": "ffb055"
   },
   {
+    "name": "BTC",
+    "asset": "BTC",
+    "color": "ffb055"
+  },
+  {
     "name": "BasicAttentionToken",
     "asset": "BAT",
     "color": "0055fe"

@@ -148,6 +148,7 @@ const mutations = {
   [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, wallets) {
     const today = last(state.portfolio.assetsHistory)
     const currencies = []
+    console.log(today)
     today.data.map(crypto => {
       const walletAsset = wallets.find(w => w.asset === crypto.asset)
       currencies.push({
