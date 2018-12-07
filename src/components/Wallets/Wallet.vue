@@ -338,8 +338,9 @@ import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
 
 // Notary account for withdrawal.
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
-// const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
+const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
+const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
+const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
   name: 'wallet',
@@ -410,7 +411,7 @@ export default {
     },
 
     walletAddress () {
-      return this.wallet.assetId === 'btc#bitcoin' ? this.btcWalletAddress : this.ethWalletAddress
+      return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWalletAddress : this.ethWalletAddress
     }
   },
 
@@ -472,6 +473,7 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
+          const notaryAccount = (this.wallet.assetId === BITCOIN_ASSET_NAME) ? btcNotaryAccount : ethNotaryAccount
 
           return this.$store.dispatch('transferAsset', {
             privateKeys,
