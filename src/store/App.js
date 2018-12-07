@@ -124,7 +124,7 @@ const actions = {
    * resolve the Promise at closeApprovalDialog.
    * c.f. https://stackoverflow.com/questions/26150232/resolve-javascript-promise-outside-function-scope
    */
-  openApprovalDialog ({ commit }, { signatures = [], requiredMinAmount = 1 }) {
+  openApprovalDialog ({ commit }, { signatures = [], requiredMinAmount = 1 } = {}) {
     let resolvePrompting, rejectPrompting
     const prompting = new Promise((resolve, reject) => {
       resolvePrompting = resolve

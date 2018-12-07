@@ -152,13 +152,13 @@ const getters = {
   ethWalletAddress (state) {
     const ethWallet = find('ethereum_wallet', state.accountInfo)
 
-    return ethWallet ? ethWallet.ethereum_wallet : 'no deposit address'
+    return ethWallet ? ethWallet.ethereum_wallet : null
   },
 
   btcWalletAddress (state) {
     const btcWallet = find('bitcoin', state.accountInfo)
 
-    return btcWallet ? btcWallet.bitcoin : 'no deposit address'
+    return btcWallet ? btcWallet.bitcoin : null
   },
 
   withdrawWalletAddresses (state) {

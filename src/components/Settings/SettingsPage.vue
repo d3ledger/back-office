@@ -58,12 +58,12 @@
                       <el-button
                         v-if="!walletType.includes(WalletTypes.BTC)"
                         class="clickable"
-                        @click="addNetwork(WalletTypes.BTC)"
+                        @click="onAddNetwork(WalletTypes.BTC)"
                       >Register in BTC network</el-button>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.ETH)"
                         class="clickable"
-                        @click="addNetwork(WalletTypes.ETH)"
+                        @click="onAddNetwork(WalletTypes.ETH)"
                       >Register in ETH network</el-button>
                       <span class="header_small" v-if="walletType.length === 2">
                         You already added all networks
@@ -334,7 +334,8 @@ export default {
       'removeSignatory',
       'editAccountQuorum',
       'getAccountQuorum',
-      'setNotaryIp'
+      'setNotaryIp',
+      'addNetwork'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -437,21 +438,16 @@ export default {
     onCopyKeyError (e) {
       this.$message.error('Failed to copy texts')
     },
-    addNetwork (network) {
+    onAddNetwork (network) {
       this.openApprovalDialog().then(privateKeys => {
         if (!privateKeys) return
 
         this.isSending = true
         this.setNotaryIp({ ip: network === WalletTypes.BTC ? BTC_NOTARY_URL : ETH_NOTARY_URL })
 
-        return this.$store.dispatch('addNetwork', {
-          privateKeys
-        })
+        return this.addNetwork({ privateKeys })
       }).then(() => {
-        this.$message({
-          message: `You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`,
-          type: 'success'
-        })
+        this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
       }).catch(() => {
         this.$message.error(`Something was wrong. You didn't register in network`)
       })
