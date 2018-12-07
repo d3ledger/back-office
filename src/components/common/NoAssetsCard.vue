@@ -1,21 +1,12 @@
 <template>
   <el-main class="column-fullheight card-wrapper flex-direction-column">
-    <el-card v-if="ethWalletAddress" class="card">You have no assets at the moment. Please transfer your ETH/ERC20 tokens  to <span class="monospace bold">{{ ethWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
+    <el-card v-if="ethWalletAddress" class="card">You have no assets at the moment. Please transfer your ETH/ERC20 tokens to <span class="monospace bold">{{ ethWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
       <qrcode-vue
         :value="ethWalletAddress"
         :size="270"
         class="qr"
       />
     </el-card>
-    <br>
-    <el-card v-if="btcWalletAddress" class="card">You have no assets at the moment. Please transfer your bitcoins  to <span class="monospace bold">{{ btcWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
-      <qrcode-vue
-        :value="btcWalletAddress"
-        :size="270"
-        class="qr"
-      />
-    </el-card>
-    <br>
     <el-card v-if="btcWalletAddress" class="card">You have no assets at the moment. Please transfer your bitcoins  to <span class="monospace bold">{{ btcWalletAddress }}</span> or wait untill someone transfers assets to your account <span class="monospace">{{ accountId }}</span>
       <qrcode-vue
         :value="btcWalletAddress"
@@ -29,7 +20,6 @@
 <script>
 import QrcodeVue from 'qrcode.vue'
 import { mapState, mapGetters } from 'vuex'
-import { WalletTypes } from '@/data/enums'
 
 export default {
   name: 'no-assets-card',
@@ -38,7 +28,6 @@ export default {
   },
   data () {
     return {
-      walletTypes: WalletTypes
     }
   },
 
@@ -48,8 +37,7 @@ export default {
     }),
     ...mapGetters([
       'ethWalletAddress',
-      'btcWalletAddress',
-      'walletType'
+      'btcWalletAddress'
     ])
   }
 }
@@ -63,6 +51,7 @@ export default {
 }
 .card {
   max-width: 600px;
+  margin-bottom: 20px;
 }
 .qr {
   width: 270px;
