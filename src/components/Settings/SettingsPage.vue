@@ -57,14 +57,20 @@
                     <el-col>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.BTC)"
-                        class="clickable"
+                        class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
-                      >Register in BTC network</el-button>
+                      >
+                        <fa-icon class="action_button-icon" icon="plus" />
+                        Register in BTC network
+                        </el-button>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.ETH)"
-                        class="clickable"
+                        class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
-                      >Register in ETH network</el-button>
+                      >
+                        <fa-icon class="action_button-icon" icon="plus" />
+                        Register in ETH network
+                      </el-button>
                       <span class="header_small" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
@@ -612,6 +618,10 @@ export default {
   height: 0.8rem;
   margin-left: -0.2rem;
   margin-right: 0.3rem;
+}
+
+.action_button.content_width {
+  width: fit-content
 }
 
 .approval_form-desc {
