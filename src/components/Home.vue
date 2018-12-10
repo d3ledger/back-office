@@ -305,7 +305,7 @@ export default {
       this.$refs.exchangeForm.validate(valid => {
         if (!valid) return
 
-        this.openApprovalDialog({})
+        this.openApprovalDialog()
           .then(privateKeys => {
             if (!privateKeys) return
             this.isExchangeSending = true
