@@ -21,9 +21,9 @@ describe('Dashboard store', () => {
   })
 
   describe('Mutations', () => {
-    function testErrorHandling (type) {
+    function testErrorHandling (type, state = {}) {
       it(`${type} should set connectionError`, () => {
-        const state = { connectionError: null }
+        state = { ...state, connectionError: null }
         const error = new Error()
         expect(state.connectionError).to.be.a('null')
         mutations[types[type]](state, error)
@@ -226,7 +226,7 @@ describe('Dashboard store', () => {
         .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PRICE_BY_FILTER_FAILURE')
+    testErrorHandling('GET_PRICE_BY_FILTER_FAILURE', { assetChart: { isLoading: true } })
 
     it('GET_PORTFOLIO_HISTORY_SUCCESS should set data', () => {
       const size = randomAmountRng({ max: 50 })
@@ -251,7 +251,7 @@ describe('Dashboard store', () => {
         .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE')
+    testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE', { portfolio: { isLoading: true } })
 
     it('LOAD_DASHBOARD_SUCCESS should change lodaing state to TRUE', () => {
       const state = {

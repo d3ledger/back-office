@@ -13,7 +13,7 @@
               </div>
               <div class="top-left-card">
                 <div class="amount">
-                  <el-tooltip class="item" effect="dark" :content="`${wallet.amount} ${wallet.asset}`" placement="top-start">
+                  <el-tooltip class="item" effect="dark" :content="`${ amountWithPrecision } ${ wallet.asset }`" placement="top-start">
                     <h2>
                       {{ wallet.amount | fitAmount }} {{ wallet.asset }}
                     </h2>
@@ -401,6 +401,10 @@ export default {
 
     displayPrecision () {
       return this.wallet.precision < 4 ? this.wallet.precision : 4
+    },
+
+    amountWithPrecision () {
+      return Number(this.wallet.amount).toFixed(this.wallet.precision)
     }
   },
 
