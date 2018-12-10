@@ -335,6 +335,7 @@ import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
+import messageMixin from '@/components/mixins/message'
 
 // Notary account for withdrawal.
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
@@ -349,7 +350,8 @@ export default {
       to: 'nameDomain',
       amount: 'tokensAmount',
       wallet: 'walletAddress'
-    })
+    }),
+    messageMixin
   ],
   components: {
     AssetIcon,
@@ -470,18 +472,12 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              let message = completed
-                ? 'Withdrawal request is submitted to notary!'
-                : 'Operation not completed. You should complete it on transactions page'
+              this.showMessageFromStatus(
+                completed,
+                'Withdrawal request is submitted to notary!',
+                'Operation not completed. You should complete it on transactions page'
+              )
 
-              let type = completed
-                ? 'success'
-                : 'warning'
-
-              this.$message({
-                message,
-                type
-              })
               this.resetWithdrawForm()
               this.fetchWallet()
               this.withdrawFormVisible = false
@@ -512,18 +508,11 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              let message = completed
-                ? 'Transfer successful!'
-                : 'Operation not completed. You should complete it on transactions page'
-
-              let type = completed
-                ? 'success'
-                : 'warning'
-
-              this.$message({
-                message,
-                type
-              })
+              this.showMessageFromStatus(
+                completed,
+                'Transfer successful!',
+                'Operation not completed. You should complete it on transactions page'
+              )
 
               this.fetchWallet()
               this.resetTransferForm()
