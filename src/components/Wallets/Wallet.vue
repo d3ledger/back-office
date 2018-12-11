@@ -404,7 +404,7 @@ export default {
     },
 
     amountWithPrecision () {
-      return Number(this.wallet.amount).toFixed(this.wallet.precision)
+      return numberFormat.filters.formatPrecision(this.wallet.amount)
     }
   },
 
