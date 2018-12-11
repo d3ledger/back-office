@@ -21,9 +21,9 @@ describe('Dashboard store', () => {
   })
 
   describe('Mutations', () => {
-    function testErrorHandling (type) {
+    function testErrorHandling (type, state = {}) {
       it(`${type} should set connectionError`, () => {
-        const state = { connectionError: null }
+        state = { ...state, connectionError: null }
         const error = new Error()
         expect(state.connectionError).to.be.a('null')
         mutations[types[type]](state, error)
@@ -61,13 +61,15 @@ describe('Dashboard store', () => {
           },
           assetsPercentage: [],
           assetsHistory: [],
-          filter: '1W'
+          filter: '1W',
+          isLoading: false
         },
         assetList: [],
         assetChart: {
           filter: '1M',
           crypto: null,
-          data: []
+          data: [],
+          isLoading: false
         },
         isLoading: false,
         connectionError: null
@@ -210,15 +212,21 @@ describe('Dashboard store', () => {
           volumefrom: randomAmountRng(),
           volumeto: randomAmountRng()
         }))
-      const state = { assetChart: {} }
+      const state = { assetChart: {
+        isLoading: true
+      } }
       mutations[types.GET_PRICE_BY_FILTER_SUCCESS](state, data)
 
       expect(state.assetChart)
         .to.have.property('data')
         .to.be.deep.equal(data)
+
+      expect(state.assetChart)
+        .to.have.property('isLoading')
+        .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PRICE_BY_FILTER_FAILURE')
+    testErrorHandling('GET_PRICE_BY_FILTER_FAILURE', { assetChart: { isLoading: true } })
 
     it('GET_PORTFOLIO_HISTORY_SUCCESS should set data', () => {
       const size = randomAmountRng({ max: 50 })
@@ -229,15 +237,21 @@ describe('Dashboard store', () => {
           sum: randomAmountRng(),
           time: new Date().getTime()
         }))
-      const state = { portfolio: {} }
+      const state = { portfolio: {
+        isLoading: true
+      } }
       mutations[types.GET_PORTFOLIO_HISTORY_SUCCESS](state, history)
 
       expect(state.portfolio)
         .to.have.property('assetsHistory')
         .to.be.deep.equal(history)
+
+      expect(state.portfolio)
+        .to.have.property('isLoading')
+        .to.be.equal(false)
     })
 
-    testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE')
+    testErrorHandling('GET_PORTFOLIO_HISTORY_FAILURE', { portfolio: { isLoading: true } })
 
     it('LOAD_DASHBOARD_SUCCESS should change lodaing state to TRUE', () => {
       const state = {

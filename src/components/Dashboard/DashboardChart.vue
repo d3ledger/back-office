@@ -18,7 +18,7 @@
         </el-col>
       </el-row>
     </div>
-    <div class="card-content_body" :style="{ height: `${dashboardChartHeight + 30}px` }">
+    <div class="card-content_body" v-loading="portfolioChart.isLoading" :style="{ height: `${dashboardChartHeight + 30}px` }">
       <line-chart-table :data="portfolioChart.data" :filter="portfolioChart.filter"/>
     </div>
   </div>
