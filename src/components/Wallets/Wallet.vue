@@ -335,6 +335,7 @@ import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
+import messageMixin from '@/components/mixins/message'
 
 // Notary account for withdrawal.
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
@@ -349,7 +350,8 @@ export default {
       to: 'nameDomain',
       amount: 'tokensAmount',
       wallet: 'walletAddress'
-    })
+    }),
+    messageMixin
   ],
   components: {
     AssetIcon,
@@ -381,7 +383,8 @@ export default {
       'settingsView',
       'ethWalletAddress',
       'withdrawWalletAddresses',
-      'getTransactionsByAssetId'
+      'getTransactionsByAssetId',
+      'accountQuorum'
     ]),
 
     wallet () {
@@ -458,7 +461,6 @@ export default {
       this.openApprovalDialog({})
         .then(privateKeys => {
           if (!privateKeys) return
-
           this.isSending = true
 
           return this.$store.dispatch('transferAsset', {
@@ -469,10 +471,13 @@ export default {
             amount: this.withdrawForm.amount.toString()
           })
             .then(() => {
-              this.$message({
-                message: 'Withdrawal request is submitted to notary!',
-                type: 'success'
-              })
+              let completed = privateKeys.length === this.accountQuorum
+              this.showMessageFromStatus(
+                completed,
+                'Withdrawal request is submitted to notary!',
+                'Operation not completed. You should complete it on transactions page'
+              )
+
               this.resetWithdrawForm()
               this.fetchWallet()
               this.withdrawFormVisible = false
@@ -502,10 +507,13 @@ export default {
             amount: this.transferForm.amount.toString()
           })
             .then(() => {
-              this.$message({
-                message: 'Transfer successful!',
-                type: 'success'
-              })
+              let completed = privateKeys.length === this.accountQuorum
+              this.showMessageFromStatus(
+                completed,
+                'Transfer successful!',
+                'Operation not completed. You should complete it on transactions page'
+              )
+
               this.fetchWallet()
               this.resetTransferForm()
               this.transferFormVisible = false

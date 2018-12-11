@@ -81,13 +81,15 @@
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
+import messageMixin from '@/components/mixins/message'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'transaction-page',
   mixins: [
     dateFormat,
-    numberFormat
+    numberFormat,
+    messageMixin
   ],
   data () {
     return {
@@ -122,10 +124,12 @@ export default {
             txStoreId
           })
             .then(() => {
-              this.$message({
-                message: 'Transaction succesfuly finalised and sent!',
-                type: 'success'
-              })
+              let completed = privateKeys.length + signatures.length === this.accountQuorum
+              this.showMessageFromStatus(
+                completed,
+                'Transaction succesfuly finalised and sent!',
+                'Operation not completed. You should complete it on transactions page'
+              )
               this.getPendingTransactions()
             })
             .catch(err => {
