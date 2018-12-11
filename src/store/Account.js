@@ -13,6 +13,7 @@ import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/enums'
+import numberFormat from '@/components/mixins/numberFormat'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -74,6 +75,7 @@ const getters = {
       const ASSET = ASSETS.find(d => {
         return (d.name.toLowerCase() === a.assetId.split('#')[0].toLowerCase() || d.asset.toLowerCase() === a.assetId.split('#')[0].toLowerCase())
       })
+      const balance = numberFormat.filters.satoshiToBtc(a.balance, a.assetId)
 
       return {
         id: a.assetId.replace(/#/g, '$'),
@@ -84,8 +86,8 @@ const getters = {
         asset: ASSET.asset,
         color: ASSET.color,
 
-        amount: a.balance,
-        precision: a.balance.split('.')[1] ? a.balance.split('.')[1].length : 0
+        amount: balance,
+        precision: balance.split('.')[1] ? balance.split('.')[1].length : 0
       }
     })
   },

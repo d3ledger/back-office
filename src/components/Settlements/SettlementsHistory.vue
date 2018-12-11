@@ -11,8 +11,8 @@
           <el-row>
             <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
             <el-col :span="6" class="transaction_details-amount">
-              <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
-              <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
+              <p>- {{ scope.row.from.amount | satoshiToBtc(scope.row.from.assetId) }} {{ assetName(scope.row.from.assetId) }}</p>
+              <p>+ {{ scope.row.to.amount | satoshiToBtc(scope.row.to.assetId) }} {{ assetName(scope.row.to.assetId) }}</p>
             </el-col>
             <el-col :span="6">{{ scope.row.from.message }}</el-col>
             <el-col :span="6">{{ scope.row.from.to }}</el-col>
@@ -22,11 +22,11 @@
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
         <template slot-scope="scope">
-          {{
-            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
-            + ' → ' +
-            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
-          }}
+          {{ scope.row.from.amount | satoshiToBtc(scope.row.from.assetId) }}
+          {{ assetName(scope.row.from.assetId) }}
+          {{ '→' }}
+          {{ scope.row.to.amount | satoshiToBtc(scope.row.to.assetId) }}
+          {{ assetName(scope.row.to.assetId) }}
         </template>
     </el-table-column>
     <el-table-column label="Counterparty" width="150">
@@ -47,9 +47,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat,
+    numberFormat
+  ],
   data () {
     return {}
   },

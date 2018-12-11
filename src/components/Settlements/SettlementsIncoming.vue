@@ -12,8 +12,8 @@
             <el-row>
               <el-col :span="6">{{ formatDateLong(scope.row.to.date) }}</el-col>
               <el-col :span="6" class="transaction_details-amount">
-                <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
-                <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
+                <p>- {{ scope.row.from.amount | satoshiToBtc(scope.row.from.assetId) }} {{ assetName(scope.row.from.assetId) }}</p>
+                <p>+ {{ scope.row.to.amount | satoshiToBtc(scope.row.to.assetId) }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
               <el-col :span="6">{{ scope.row.from.message }}</el-col>
               <el-col :span="6">{{ scope.row.from.to }}</el-col>
@@ -23,11 +23,11 @@
       </el-table-column>
       <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
-          {{
-            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
-            + ' → ' +
-            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
-          }}
+          {{ scope.row.from.amount | satoshiToBtc(scope.row.from.assetId) }}
+          {{ assetName(scope.row.from.assetId) }}
+          {{ '→' }}
+          {{ scope.row.to.amount | satoshiToBtc(scope.row.to.assetId) }}
+          {{ assetName(scope.row.to.assetId) }}
         </template>
       </el-table-column>
       <el-table-column label="Counterparty" min-width="120">
@@ -72,8 +72,11 @@
       center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
-        for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }} with {{ settlementForAcceptance.to.from }}?
+        Are you sure want to exchange
+        {{ settlementForAcceptance.from.amount | satoshiToBtc(settlementForAcceptance.from.assetId) }}
+        {{ assetName(settlementForAcceptance.from.assetId) }}
+        for {{ settlementForAcceptance.to.amount | satoshiToBtc(settlementForAcceptance.to.assetId) }}
+        {{ assetName(settlementForAcceptance.to.assetId) }} with {{ settlementForAcceptance.to.from }}?
       </div>
       <div slot="footer">
         <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
@@ -86,9 +89,12 @@
       center
     >
       <div v-if="settlementForRejection">
-        Are you sure want to reject {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
-        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }} with {{ settlementForRejection.to.from }}?
-      </div>
+        Are you sure want to reject
+        {{ settlementForRejection.from.amount | satoshiToBtc(settlementForRejection.from.assetId) }}
+        {{ assetName(settlementForRejection.from.assetId) }}
+        for {{ settlementForRejection.to.amount | satoshiToBtc(settlementForRejection.to.assetId) }}
+        {{ assetName(settlementForRejection.to.assetId) }} with {{ settlementForRejection.to.from }}?
+      </div>to
       <div slot="footer">
         <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
       </div>
@@ -99,9 +105,13 @@
 // TODO: Add approval here as well
 import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat,
+    numberFormat
+  ],
 
   data () {
     return {

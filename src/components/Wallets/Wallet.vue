@@ -156,8 +156,8 @@
                     <el-row>
                       <el-col :span="4">{{ formatDateLong(scope.row.settlement.date) }}</el-col>
                       <el-col :span="2" class="transaction_details-amount">
-                        <p>- {{ scope.row.settlement.offer_amount }} {{ scope.row.settlement.offer_asset }}</p>
-                        <p>+ {{ scope.row.settlement.request_amount }} {{ scope.row.settlement.request_asset }}</p>
+                        <p>- {{ scope.row.settlement.offer_amount | satoshiToBtc(wallet.assetId) }} {{ scope.row.settlement.offer_asset }}</p>
+                        <p>+ {{ scope.row.settlement.request_amount | satoshiToBtc(wallet.assetId) }} {{ scope.row.settlement.request_asset }}</p>
                       </el-col>
                       <el-col>{{ scope.row.settlement.message }}</el-col>
                       <el-col :span="2">{{ scope.row.settlement.to }}</el-col>
@@ -167,7 +167,7 @@
                     <el-row>
                       <el-col :span="4">{{ formatDateLong(scope.row.date) }}</el-col>
                       <el-col :span="2" class="transaction_details-amount">
-                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount | formatPrecision }}
+                        {{scope.row.from === 'you' ? '−' : '+'}}{{ scope.row.amount | formatPrecision | satoshiToBtc(wallet.assetId) }}
                       </el-col>
                       <el-col>{{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}</el-col>
                       <el-col :span="2">{{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}</el-col>
@@ -184,7 +184,7 @@
             <el-table-column label="Amount" width="120">
               <template slot-scope="scope">
                 <span class="table_amount">
-                  {{ (scope.row.from === 'you' ? '−' : '+')  }}{{ scope.row.amount | formatPrecision }}
+                  {{ (scope.row.from === 'you' ? '−' : '+')  }}{{ scope.row.amount | formatPrecision | satoshiToBtc(wallet.assetId) }}
                 </span>
               </template>
             </el-table-column>
@@ -480,7 +480,7 @@ export default {
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.withdrawForm.wallet,
-            amount: this.withdrawForm.amount.toString()
+            amount: numberFormat.filters.btcToSatoshi(this.withdrawForm.amount, this.wallet.assetId).toString()
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -516,7 +516,7 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: this.transferForm.amount.toString()
+            amount: numberFormat.filters.btcToSatoshi(this.transferForm.amount, this.wallet.assetId).toString()
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
