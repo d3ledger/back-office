@@ -451,11 +451,11 @@ export default {
         this.isSending = true
         this.setNotaryIp({ ip: network === WalletTypes.BTC ? BTC_NOTARY_URL : ETH_NOTARY_URL })
 
-        return this.addNetwork({ privateKeys })
-      }).then(() => {
-        this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
-      }).catch(() => {
-        this.$message.error(`Something was wrong. You didn't register in network`)
+        return this.addNetwork({ privateKeys }).then(() => {
+          this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
+        }).catch(() => {
+          this.$message.error(`Something was wrong. You didn't register in network`)
+        })
       })
     }
   },
