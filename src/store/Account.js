@@ -29,6 +29,7 @@ const types = flow(
   'SIGNUP',
   'LOGIN',
   'LOGOUT',
+  'UPDATE_ACCOUNT',
   'GET_ACCOUNT_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
@@ -235,6 +236,18 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.UPDATE_ACCOUNT_REQUEST] (state) {},
+
+  [types.UPDATE_ACCOUNT_SUCCESS] (state, { account }) {
+    state.accountId = account.accountId
+    state.accountInfo = JSON.parse(account.jsonData)
+    state.accountQuorum = account.quorum
+  },
+
+  [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
@@ -433,6 +446,19 @@ const actions = {
       })
       .catch(err => {
         commit(types.LOGOUT_FAILURE, err)
+        throw err
+      })
+  },
+
+  updateAccount ({ commit, state }) {
+    commit(types.UPDATE_ACCOUNT_REQUEST)
+
+    return irohaUtil.getAccount(state.accountId)
+      .then((account) => {
+        commit(types.UPDATE_ACCOUNT_SUCCESS, { account })
+      })
+      .catch(err => {
+        commit(types.UPDATE_ACCOUNT_FAILURE, err)
         throw err
       })
   },
