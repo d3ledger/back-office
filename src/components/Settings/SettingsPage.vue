@@ -71,7 +71,7 @@
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
-                      <span class="header_small" v-if="walletType.length === 2">
+                      <span class="list-title" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
                     </el-col>
@@ -341,7 +341,8 @@ export default {
       'editAccountQuorum',
       'getAccountQuorum',
       'setNotaryIp',
-      'addNetwork'
+      'addNetwork',
+      'updateAccount'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -453,6 +454,7 @@ export default {
 
         return this.addNetwork({ privateKeys }).then(() => {
           this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
+          this.updateAccount()
         }).catch(() => {
           this.$message.error(`Something was wrong. You didn't register in network`)
         })
