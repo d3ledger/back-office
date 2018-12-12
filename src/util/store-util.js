@@ -86,6 +86,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
 // TODO: think about to use hashMap
 export function getSettlementsFrom (transactions, accountId) {
   if (isEmpty(transactions)) return []
+  console.log(transactions)
   const settlements = flow([
     filter(tr => tr.payload.batch),
     map(tr => {
@@ -128,7 +129,8 @@ export function getSettlementsFrom (transactions, accountId) {
     }),
     sortBy(tr => tr.from.date)
   ])(transactions)
-  return settlements
+  const nonEmptySettlements = settlements.filter(tr => tr.from.from)
+  return nonEmptySettlements
 }
 
 export function getSettlementsRawPair (transactions) {
