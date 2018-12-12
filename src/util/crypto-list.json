@@ -1,5 +1,10 @@
 [
   {
+    "name": "Bitcoin",
+    "asset": "BTC",
+    "color": "f7931a"
+  },
+  {
     "name": "OmiseGo",
     "asset": "OMG",
     "color": "ffb055"
