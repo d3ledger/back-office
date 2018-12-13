@@ -111,7 +111,7 @@ export default {
 
   created () {
     this.loadWalletsSortCriterion()
-    this.updateWalletsSortCriterion()
+    this.getAccountAssets()
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
   },
