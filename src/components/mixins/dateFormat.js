@@ -24,12 +24,12 @@ const dateFormat = {
     formatDate (date) {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)
-      return format(time, 'MMM. D, HH:mm')
+      return format(time, 'MMM D, HH:mm').toUpperCase()
     },
     formatDateLong (date) {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)
-      return format(time, 'MMM. D, YYYY HH:mm:ss')
+      return format(time, 'MMM D, YYYY HH:mm:ss').toUpperCase()
     },
     formatDateWith (date, formatString) {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
