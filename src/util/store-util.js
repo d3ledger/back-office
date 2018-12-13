@@ -126,6 +126,7 @@ export function getSettlementsFrom (transactions, accountId) {
       tr.forEach(obj => { obj.to === accountId ? to = obj : from = obj })
       return { from, to }
     }),
+    filter(tr => tr.from.from),
     sortBy(tr => tr.from.date)
   ])(transactions)
   return settlements
