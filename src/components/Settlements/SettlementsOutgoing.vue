@@ -12,8 +12,8 @@
             <el-row>
               <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
               <el-col :span="6" class="transaction_details-amount">
-                <p>- {{ scope.row.from.amount | satoshiToBtc(scope.row.from.assetId) }} {{ assetName(scope.row.from.assetId) }}</p>
-                <p>+ {{ scope.row.to.amount | satoshiToBtc(scope.row.to.assetId) }} {{ assetName(scope.row.to.assetId) }}</p>
+                <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
+                <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
               <el-col :span="6">{{ scope.row.from.message }}</el-col>
               <el-col :span="6">{{ scope.row.from.to }}</el-col>
