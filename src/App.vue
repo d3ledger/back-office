@@ -77,6 +77,10 @@ a:hover {
   flex-direction: column;
 }
 
+.flex-direction-row {
+  flex-direction: row;
+}
+
 .el-message,
 .el-message-box,
 .el-popper,
