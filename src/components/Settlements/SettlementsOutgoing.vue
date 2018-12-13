@@ -38,7 +38,40 @@
           {{ formatDate(scope.row.from.date) }}
         </template>
       </el-table-column>
+      <el-table-column width="100">
+        <template slot-scope="scope">
+          <div class="list_actions">
+            <el-button
+              plain
+              size="medium"
+              type="danger"
+              @click="rejectionDialogVisible = true; settlementForRejection = scope.row"
+            >
+              Decline
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
+    <el-dialog
+      title="Reject settlement?"
+      :visible.sync="rejectionDialogVisible"
+      width="500px"
+      center
+    >
+      <div v-if="settlementForRejection">
+        Are you sure want to reject {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
+        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }} with {{ settlementForRejection.to.from }}?
+      </div>
+      <div slot="footer">
+        <el-button
+          :loading="isLoading"
+          type="danger"
+          @click="onReject"
+          class="fullwidth"
+        >Reject</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 <script>
@@ -54,13 +87,17 @@ export default {
 
   data () {
     return {
+      rejectionDialogVisible: false,
+      settlementForRejection: null
     }
   },
 
   computed: {
     ...mapGetters({
       settlements: 'outgoingSettlements',
-      wallets: 'wallets'
+      wallets: 'wallets',
+      accountQuorum: 'accountQuorum',
+      isLoading: 'rejectSettlementLoading'
     })
   },
 
@@ -70,13 +107,47 @@ export default {
 
   methods: {
     ...mapActions([
-      'getAllUnsignedTransactions'
-    ])
+      'getAllUnsignedTransactions',
+      'openApprovalDialog',
+      'rejectSettlement'
+    ]),
+
+    onReject () {
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+        .then(privateKeys => {
+          if (!privateKeys) return
+
+          return this.rejectSettlement({
+            privateKeys,
+            settlementBatch: this.settlementForRejection.from.batch
+          })
+            .then(() => {
+              this.$message.success('Rejected')
+            })
+            .catch(err => {
+              console.error(err)
+              this.$message.error('Failed to reject')
+            })
+            .finally(() => {
+              this.rejectionDialogVisible = false
+              this.getAllUnsignedTransactions()
+            })
+        })
+    }
   }
 }
 </script>
 
 <style scoped>
+.list_actions {
+  display: flex;
+  justify-content: space-between;
+}
+.list_actions >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
+}
 .settlements_table >>> .el-table__header th {
   font-weight: 500;
 }

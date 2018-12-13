@@ -61,7 +61,9 @@ function initialState () {
     rawTransactions: [],
     rawPendingTransactions: null,
     assets: [],
-    connectionError: null
+    connectionError: null,
+    acceptSettlementLoading: false,
+    rejectSettlementLoading: false
   }
 }
 
@@ -175,6 +177,14 @@ const getters = {
 
   accountSignatories (state) {
     return state.accountSignatories.map((s) => Buffer.from(s, 'base64').toString('hex'))
+  },
+
+  rejectSettlementLoading (state) {
+    return state.rejectSettlementLoading
+  },
+
+  acceptSettlementLoading (state) {
+    return state.acceptSettlementLoading
   }
 }
 
@@ -334,19 +344,29 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {},
+  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {
+    state.acceptSettlementLoading = true
+  },
 
-  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {},
+  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {
+    state.acceptSettlementLoading = false
+  },
 
   [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
+    state.acceptSettlementLoading = true
     handleError(state, err)
   },
 
-  [types.REJECT_SETTLEMENT_REQUEST] (state) {},
+  [types.REJECT_SETTLEMENT_REQUEST] (state) {
+    state.settlementRejectLoading = true
+  },
 
-  [types.REJECT_SETTLEMENT_SUCCESS] (state) {},
+  [types.REJECT_SETTLEMENT_SUCCESS] (state) {
+    state.settlementRejectLoading = false
+  },
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
+    state.settlementRejectLoading = false
     handleError(state, err)
   },
 

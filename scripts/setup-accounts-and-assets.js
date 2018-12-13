@@ -12,7 +12,7 @@ import { derivePublicKey } from 'ed25519.js'
 const irohaDomain = 'd3'
 const testAccName = 'test'
 const aliceAccName = 'alice'
-const testAccFull = `${testAccName}@${irohaDomain}`
+const testAccFull = `${testAccName}@notary`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
