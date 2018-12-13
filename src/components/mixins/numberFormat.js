@@ -39,20 +39,6 @@ const dateFormat = {
       const afterDecimal = removeZeros(arrRepOfValue[1] || '')
       const format = afterDecimal.length ? `.${afterDecimal}` : ''
       return `${beforeDecimal}${format}`
-    },
-    satoshiToBtc: (value, assetId) => {
-      console.log(value)
-      if (assetId === 'btc#bitcoin') {
-        return (value * 0.00000001).toFixed(8)
-      }
-
-      return value
-    },
-    btcToSatoshi: (value, assetId) => {
-      if (assetId === 'btc#bitcoin') {
-        return (value * 100000000).toFixed(0)
-      }
-      return value
     }
   }
 }

@@ -315,9 +315,9 @@ export default {
               privateKeys,
               to: s.to,
               offerAssetId: offerAsset,
-              offerAmount: numberFormat.filters.btcToSatoshi(s.offer_amount, offerAsset),
+              offerAmount: s.offer_amount,
               requestAssetId: requestAsset,
-              requestAmount: numberFormat.filters.btcToSatoshi(s.request_amount, requestAsset),
+              requestAmount: s.request_amount,
               description: s.description
             })
               .then(() => {

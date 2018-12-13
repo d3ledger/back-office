@@ -480,7 +480,7 @@ export default {
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.withdrawForm.wallet,
-            amount: numberFormat.filters.btcToSatoshi(this.withdrawForm.amount, this.wallet.assetId).toString()
+            amount: this.withdrawForm.amount.toString()
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -516,7 +516,7 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: numberFormat.filters.btcToSatoshi(this.transferForm.amount, this.wallet.assetId).toString()
+            amount: this.transferForm.amount.toString()
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
