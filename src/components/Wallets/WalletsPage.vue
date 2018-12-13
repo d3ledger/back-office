@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import sortBy from 'lodash/fp/sortBy'
 
@@ -110,8 +110,8 @@ export default {
   },
 
   created () {
-    this.$store.dispatch('loadWalletsSortCriterion')
-    this.$store.dispatch('getAccountAssets')
+    this.loadWalletsSortCriterion()
+    this.updateWalletsSortCriterion()
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
   },
@@ -123,8 +123,13 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'getAccountAssets',
+      'loadWalletsSortCriterion',
+      'updateWalletsSortCriterion'
+    ]),
     sort (criterion) {
-      this.$store.dispatch('updateWalletsSortCriterion', criterion)
+      this.updateWalletsSortCriterion(criterion)
     }
   }
 }
