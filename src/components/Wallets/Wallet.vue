@@ -446,7 +446,8 @@ export default {
       'openExchangeDialog',
       'getAccountAssets',
       'getAccountAssetTransactions',
-      'getCryptoFullData'
+      'getCryptoFullData',
+      'transferAsset'
     ]),
 
     fetchWallet () {
@@ -473,7 +474,7 @@ export default {
           this.isSending = true
           const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
-          return this.$store.dispatch('transferAsset', {
+          return this.transferAsset({
             privateKeys,
             assetId: this.wallet.assetId,
             to: notaryAccount,
@@ -509,7 +510,7 @@ export default {
           if (!privateKeys) return
           this.isSending = true
 
-          return this.$store.dispatch('transferAsset', {
+          return this.transferAsset({
             privateKeys,
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
