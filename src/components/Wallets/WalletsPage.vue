@@ -83,18 +83,18 @@ export default {
       portfolioPercent: 'portfolioPercent',
       currentCriterion: 'walletsSortCriterion'
     }),
-    walletsWithFiatPrice: function () {
+    walletsWithFiatPrice () {
       return this.wallets.map((x, i) => {
         x.fiat = this.portfolioPercent[i].price
         return x
       })
     },
-    filteredWallets: function () {
+    filteredWallets () {
       return this.search
         ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
         : this.walletsWithFiatPrice
     },
-    sortedWallets: function () {
+    sortedWallets () {
       const { numeric, key, desc } = this.currentCriterion
       const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredWallets)
       return desc ? sorted.reverse() : sorted

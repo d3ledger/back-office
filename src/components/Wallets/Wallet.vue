@@ -443,27 +443,25 @@ export default {
   methods: {
     ...mapActions([
       'openApprovalDialog',
-      'openExchangeDialog'
+      'openExchangeDialog',
+      'getAccountAssets',
+      'getAccountAssetTransactions',
+      'getCryptoFullData'
     ]),
 
-    tagType (val) {
-      val = val.toLowerCase()
-      if (val === 'accepted') return 'success'
-      if (val === 'rejected') return 'danger'
-      if (val === 'canceled') return 'info'
-      return ''
-    },
-
     fetchWallet () {
-      this.$store.dispatch('getAccountAssets')
+      this.getAccountAssets()
         .then(() => {
-          this.$store.dispatch('getAccountAssetTransactions', { assetId: this.wallet.assetId })
+          this.getAccountAssetTransactions({ assetId: this.wallet.assetId })
           this.updateMarketCard()
         })
     },
 
     updateMarketCard () {
-      return this.$store.dispatch('getCryptoFullData', { filter: this.selectedMarketPeriod, asset: this.wallet.asset })
+      return this.getCryptoFullData({
+        filter: this.selectedMarketPeriod,
+        asset: this.wallet.asset
+      })
     },
 
     onSubmitWithdrawalForm () {
