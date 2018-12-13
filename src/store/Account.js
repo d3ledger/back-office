@@ -12,6 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
+import { WalletTypes } from '@/data/enums'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -28,6 +29,7 @@ const types = flow(
   'SIGNUP',
   'LOGIN',
   'LOGOUT',
+  'UPDATE_ACCOUNT',
   'GET_ACCOUNT_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSETS',
@@ -135,9 +137,29 @@ const getters = {
     )
   },
 
+  walletType (state) {
+    const walletType = []
+    if (find('ethereum_wallet', state.accountInfo)) {
+      walletType.push(WalletTypes.ETH)
+    }
+
+    if (find('bitcoin', state.accountInfo)) {
+      walletType.push(WalletTypes.BTC)
+    }
+
+    return walletType
+  },
+
   ethWalletAddress (state) {
-    let wallet = find('ethereum_wallet', state.accountInfo)
-    return wallet ? wallet.ethereum_wallet : 'no eth deposit address'
+    const ethWallet = find('ethereum_wallet', state.accountInfo)
+
+    return ethWallet ? ethWallet.ethereum_wallet : null
+  },
+
+  btcWalletAddress (state) {
+    const btcWallet = find('bitcoin', state.accountInfo)
+
+    return btcWallet ? btcWallet.bitcoin : null
   },
 
   withdrawWalletAddresses (state) {
@@ -211,6 +233,18 @@ const mutations = {
   [types.LOGOUT_SUCCESS] (state) {},
 
   [types.LOGOUT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.UPDATE_ACCOUNT_REQUEST] (state) {},
+
+  [types.UPDATE_ACCOUNT_SUCCESS] (state, { account }) {
+    state.accountId = account.accountId
+    state.accountInfo = JSON.parse(account.jsonData)
+    state.accountQuorum = account.quorum
+  },
+
+  [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -376,6 +410,21 @@ const actions = {
       })
   },
 
+  addNetwork ({ commit, state }, { privateKeys }) {
+    commit(types.SIGNUP_REQUEST)
+    const username = state.accountId.split('@')[0]
+    const privateKey = privateKeys[0]
+    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+
+    return notaryUtil.signup(username, [], publicKey)
+      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
+      .then(() => ({ username, privateKey }))
+      .catch(err => {
+        commit(types.SIGNUP_FAILURE, err)
+        throw err
+      })
+  },
+
   login ({ commit }, { username, privateKey, nodeIp }) {
     commit(types.LOGIN_REQUEST)
 
@@ -397,6 +446,19 @@ const actions = {
       })
       .catch(err => {
         commit(types.LOGOUT_FAILURE, err)
+        throw err
+      })
+  },
+
+  updateAccount ({ commit, state }) {
+    commit(types.UPDATE_ACCOUNT_REQUEST)
+
+    return irohaUtil.getAccount(state.accountId)
+      .then((account) => {
+        commit(types.UPDATE_ACCOUNT_SUCCESS, { account })
+      })
+      .catch(err => {
+        commit(types.UPDATE_ACCOUNT_FAILURE, err)
         throw err
       })
   },

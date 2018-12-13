@@ -20,7 +20,8 @@ $ yarn
 **IMPORTANT** in our application we use `yarn` for dependency management if you do not have it, you should install it - [Installation | Yarn](https://yarnpkg.com/en/docs/install)
 
 #### ENV
-1. `VUE_APP_NOTARY_URL=http://127.0.0.1:8083` - Used to connect to notary registration service, provide IP of notary. Use this ENV when going to run or build application
+1. `VUE_APP_ETH_NOTARY_URL=http://127.0.0.1:8083` - Used to connect to notary etherium registration service, provide IP of notary. Use this ENV when going to run or build application
+1. `VUE_APP_BTC_NOTARY_URL=http://127.0.0.1:8084` - Used to connect to notary bitcoin registration service, provide IP of notary. Use this ENV when going to run or build application
 2. `CYPRESS_IROHA=http://127.0.0.1:8081` - Used to run e2e tests, provide IP of gRPC IROHA.
 3. `CYPRESS_baseUrl=http://127.0.0.1:8080` - Can be used in e2e tests, provide IP of D3 application
 

@@ -439,7 +439,7 @@ export default {
       'openExchangeDialog'
     ]),
 
-    tagType: function (val) {
+    tagType (val) {
       val = val.toLowerCase()
       if (val === 'accepted') return 'success'
       if (val === 'rejected') return 'danger'
@@ -462,7 +462,7 @@ export default {
     onSubmitWithdrawalForm () {
       if (!this.validateForm('withdrawForm')) return
 
-      this.openApprovalDialog({})
+      this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
@@ -498,7 +498,7 @@ export default {
 
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
-      this.openApprovalDialog({})
+      this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
