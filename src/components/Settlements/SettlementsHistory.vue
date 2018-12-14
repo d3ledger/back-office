@@ -22,11 +22,9 @@
     </el-table-column>
     <el-table-column label="Amount" min-width="220">
         <template slot-scope="scope">
-          {{
-            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
-            + ' → ' +
-            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
-          }}
+          {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
+          {{ '→' }}
+          {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
         </template>
     </el-table-column>
     <el-table-column label="Counterparty" width="150">
@@ -49,7 +47,9 @@ import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat
+  ],
   data () {
     return {}
   },

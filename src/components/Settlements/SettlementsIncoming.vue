@@ -23,11 +23,9 @@
       </el-table-column>
       <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
-          {{
-            scope.row.from.amount + ' ' + assetName(scope.row.from.assetId)
-            + ' → ' +
-            scope.row.to.amount + ' ' + assetName(scope.row.to.assetId)
-          }}
+          {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
+          {{ '→' }}
+          {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
         </template>
       </el-table-column>
       <el-table-column label="Counterparty" min-width="120">
@@ -72,8 +70,10 @@
       center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
-        for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }} with {{ settlementForAcceptance.to.from }}?
+        Are you sure want to exchange
+        {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
+        for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }}
+        with {{ settlementForAcceptance.to.from }}?
       </div>
       <div slot="footer">
         <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
@@ -86,8 +86,10 @@
       center
     >
       <div v-if="settlementForRejection">
-        Are you sure want to reject {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
-        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }} with {{ settlementForRejection.to.from }}?
+        Are you sure want to reject
+        {{ settlementForRejection.from.amount }} {{ assetName(settlementForRejection.from.assetId) }}
+        for {{ settlementForRejection.to.amount }} {{ assetName(settlementForRejection.to.assetId) }}
+        with {{ settlementForRejection.to.from }}?
       </div>
       <div slot="footer">
         <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
@@ -101,7 +103,9 @@ import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
-  mixins: [dateFormat],
+  mixins: [
+    dateFormat
+  ],
 
   data () {
     return {
