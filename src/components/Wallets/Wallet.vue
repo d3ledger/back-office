@@ -593,11 +593,6 @@ export default {
         if (!valid) isValid = false
       })
       return isValid
-    },
-
-    assetName (assetId) {
-      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
-      return wallet.asset
     }
   },
 
