@@ -45,6 +45,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
+import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
@@ -53,6 +54,7 @@ export default {
     LineChartPortfolio: lazyComponent('Dashboard/Charts/LineChartPortfolio')
   },
   mixins: [
+    numberFormat,
     currencySymbol
   ],
   props: {

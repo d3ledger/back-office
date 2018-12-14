@@ -162,11 +162,13 @@
 import { mapState, mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import inputValidation from '@/components/mixins/inputValidation'
+import numberFormat from '@/components/mixins/numberFormat'
 
 // TODO: Validate lack of selected asset
 export default {
   name: 'Home',
   mixins: [
+    numberFormat,
     inputValidation({
       privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
