@@ -173,7 +173,7 @@
                         {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
                       </el-col>
                       <el-col :span="16" class="transaction_details-message">
-                        {{ scope.row.message.length ? 'scope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.message' : 'Message not provided...' }}
+                        {{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}
                       </el-col>
                     </el-row>
                   </div>
