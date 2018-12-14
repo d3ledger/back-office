@@ -101,10 +101,12 @@
 // TODO: Add approval here as well
 import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   mixins: [
-    dateFormat
+    dateFormat,
+    currencySymbol
   ],
 
   data () {
@@ -181,11 +183,6 @@ export default {
               this.getAllUnsignedTransactions()
             })
         })
-    },
-
-    assetName (assetId) {
-      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
-      return wallet.asset
     }
   }
 }
