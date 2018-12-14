@@ -235,7 +235,7 @@
           <el-input
             v-if="withdrawWalletAddresses.length === 0"
             v-model="withdrawForm.wallet"
-            placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
+            placeholder="withdrawal address" />
           <el-select
             v-else
             class="withdraw-wallet_select"
@@ -271,10 +271,10 @@
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span data-cy="deposit-address" class="monospace">{{ ethWalletAddress }}</span></p>
+          <p><span data-cy="deposit-address" class="monospace">{{ walletAddress }}</span></p>
         </div>
         <qrcode-vue
-          :value="ethWalletAddress"
+          :value="walletAddress"
           :size="270"
         />
       </div>
@@ -338,7 +338,9 @@ import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
 
 // Notary account for withdrawal.
-const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
+const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
+const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
+const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
   name: 'wallet',
@@ -382,6 +384,7 @@ export default {
       'cryptoInfo',
       'settingsView',
       'ethWalletAddress',
+      'btcWalletAddress',
       'withdrawWalletAddresses',
       'getTransactionsByAssetId',
       'accountQuorum'
@@ -405,6 +408,10 @@ export default {
 
     amountWithPrecision () {
       return numberFormat.filters.formatPrecision(this.wallet.amount)
+    },
+
+    walletAddress () {
+      return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWalletAddress : this.ethWalletAddress
     }
   },
 
@@ -466,6 +473,7 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
+          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
           return this.$store.dispatch('transferAsset', {
             privateKeys,

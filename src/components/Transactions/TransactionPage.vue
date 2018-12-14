@@ -14,7 +14,8 @@
                 <template slot-scope="scope">
                   <div class="transaction_details">
                     <p>
-                      {{ scope.row.from }} transfered  {{ scope.row.amount + ' ' + wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
+                      {{ scope.row.from }} transfered {{ scope.row.amount }}
+                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
                     </p>
                     <div>
                       <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
@@ -30,7 +31,8 @@
               </el-table-column>
               <el-table-column label="Amount" min-width="60">
                 <template slot-scope="scope">
-                  {{ (scope.row.from === 'you' ? '−' : '+') + Number(scope.row.amount) + ' ' + wallets.find(w => w.assetId === scope.row.assetId).asset}}
+                  {{ scope.row.from === 'you' ? '−' : '+' }}{{Number(scope.row.amount) }}
+                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset}}
                 </template>
               </el-table-column>
               <el-table-column label="Address" min-width="90" show-overflow-tooltip>
@@ -80,7 +82,6 @@
 
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
-import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -88,7 +89,6 @@ export default {
   name: 'transaction-page',
   mixins: [
     dateFormat,
-    numberFormat,
     messageMixin
   ],
   data () {
