@@ -45,10 +45,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
   mixins: [
-    dateFormat
+    dateFormat,
+    currencySymbol
   ],
   data () {
     return {}
@@ -69,12 +71,7 @@ export default {
     ...mapActions([
       'getAccountAssets',
       'getAllAssetTransactions'
-    ]),
-
-    assetName (assetId) {
-      const wallet = this.wallets.find(w => w.assetId === assetId) || {}
-      return wallet.asset
-    }
+    ])
   }
 }
 </script>
