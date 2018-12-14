@@ -91,9 +91,11 @@ const getters = {
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
+    const resolvedSettlements = getters.resolvedSettlements(state)
     return getTransferAssetsFrom(
       state.rawAssetTransactions[assetId],
-      state.accountId
+      state.accountId,
+      resolvedSettlements
     )
   },
 

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import sortBy from 'lodash/fp/sortBy'
 
@@ -83,18 +83,18 @@ export default {
       portfolioPercent: 'portfolioPercent',
       currentCriterion: 'walletsSortCriterion'
     }),
-    walletsWithFiatPrice: function () {
+    walletsWithFiatPrice () {
       return this.wallets.map((x, i) => {
         x.fiat = this.portfolioPercent[i].price
         return x
       })
     },
-    filteredWallets: function () {
+    filteredWallets () {
       return this.search
         ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
         : this.walletsWithFiatPrice
     },
-    sortedWallets: function () {
+    sortedWallets () {
       const { numeric, key, desc } = this.currentCriterion
       const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredWallets)
       return desc ? sorted.reverse() : sorted
@@ -110,8 +110,11 @@ export default {
   },
 
   created () {
-    this.$store.dispatch('loadWalletsSortCriterion')
-    this.$store.dispatch('getAccountAssets')
+    Promise.all([
+      this.loadWalletsSortCriterion(),
+      this.getAccountAssets(),
+      this.getAllAssetTransactions()
+    ])
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
   },
@@ -123,8 +126,14 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'getAccountAssets',
+      'getAllAssetTransactions',
+      'loadWalletsSortCriterion',
+      'updateWalletsSortCriterion'
+    ]),
     sort (criterion) {
-      this.$store.dispatch('updateWalletsSortCriterion', criterion)
+      this.updateWalletsSortCriterion(criterion)
     }
   }
 }

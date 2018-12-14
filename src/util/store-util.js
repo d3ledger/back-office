@@ -18,6 +18,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
   const transformed = []
 
   transactions.forEach((t, idx) => {
+    const batch = t.payload.batch
     const { commandsList, createdTime } = t.payload.reducedPayload
     const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
 
@@ -44,13 +45,17 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         amount: amount,
         date: createdTime,
         message: description,
-
+        batch,
         signatures,
         id: idx,
         assetId
       }
-
-      transformed.push(tx)
+      const settlement = findSettlementByBatch(tx, settlements)
+      if (settlement) {
+        transformed.push(settlement)
+      } else {
+        transformed.push(tx)
+      }
     })
   })
 
@@ -146,6 +151,13 @@ export function findBatchFromRaw (rawUnsignedTransactions, settlement) {
     return isEqual(tr[0].toObject().payload.batch, settlement) || isEqual(tr[1].toObject().payload.batch, settlement)
   }) || []
   return batch
+}
+
+function findSettlementByBatch (tx, settlements) {
+  const s = filter(
+    s => isEqual(s.from.batch)(tx.batch)
+  )(settlements)
+  return s[0]
 }
 
 // Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c

@@ -63,12 +63,16 @@ function initializeAssets () {
         console.log(error)
       })
       .then(() => {
-        console.log(`transfer 1/3 initial amount of ${assetId} to ${testAccFull}`)
-        _.without(accounts, testAccFull).map(accountId => {
-          const splittedAmount = String(Math.round(amount * 0.3))
-          return irohaUtil.transferAsset([testPrivKeyHex], testAccFull, accountId, assetId, 'initial tx', splittedAmount)
-            .catch(() => {})
-        })
+        const splittedAmount = String(Math.round(amount * 0.3))
+        console.log(`transfer 1/3 ${splittedAmount} initial amount of ${assetId} to ${aliceAccFull}`)
+        return irohaUtil.transferAsset(
+          [testPrivKeyHex],
+          testAccFull,
+          aliceAccFull,
+          `${w.name.toLowerCase()}#${irohaDomain}`,
+          'transfer 1/3',
+          splittedAmount
+        )
       })
       .then(() => {
         console.log(`distributing initial amount of ${assetId} to every account`)

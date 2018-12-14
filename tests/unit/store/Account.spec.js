@@ -406,7 +406,17 @@ describe('Account store', () => {
       it('should return transformed transactions', () => {
         const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
-        const expectedKeys = ['amount', 'date', 'from', 'to', 'message', 'id', 'assetId', 'signatures']
+        const expectedKeys = [
+          'amount',
+          'date',
+          'from',
+          'to',
+          'message',
+          'id',
+          'assetId',
+          'signatures',
+          'batch'
+        ]
 
         expect(result)
           .to.be.an('array')
