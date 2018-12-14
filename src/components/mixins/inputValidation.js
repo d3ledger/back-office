@@ -57,7 +57,6 @@ function checkWallet (wallets) {
     const errors = []
     const validateBTC = /^[123][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value)
     const validateETH = /^0x[a-fA-F0-9]{40}$/.test(value)
-    console.log(validateBTC, validateETH)
     if (!validateBTC && !validateETH) errors.push('Invalid wallet address')
     else if (wallets && wallets.includes(value)) errors.push('This wallet is already in the whitelist')
     callback(errors)

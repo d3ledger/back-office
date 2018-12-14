@@ -82,7 +82,6 @@
 
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
-import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -90,7 +89,6 @@ export default {
   name: 'transaction-page',
   mixins: [
     dateFormat,
-    numberFormat,
     messageMixin
   ],
   data () {

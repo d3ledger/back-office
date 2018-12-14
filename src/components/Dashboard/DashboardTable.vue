@@ -73,7 +73,6 @@
 import { mapGetters } from 'vuex'
 import includes from 'lodash/includes'
 import sortBy from 'lodash/fp/sortBy'
-import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
@@ -93,7 +92,6 @@ export default {
     }
   },
   mixins: [
-    numberFormat,
     currencySymbol
   ],
   props: {

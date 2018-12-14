@@ -473,7 +473,7 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
-          const notaryAccount = (this.wallet.assetId === BITCOIN_ASSET_NAME) ? btcNotaryAccount : ethNotaryAccount
+          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
           return this.$store.dispatch('transferAsset', {
             privateKeys,

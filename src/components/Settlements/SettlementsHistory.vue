@@ -45,12 +45,10 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   mixins: [
-    dateFormat,
-    numberFormat
+    dateFormat
   ],
   data () {
     return {}

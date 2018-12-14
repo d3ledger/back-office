@@ -53,9 +53,9 @@ function initializeAssets () {
     const precision = String(w.amount).split('.')[1].length
     const amount = String(w.amount)
     const assetName = w.name.toLowerCase()
-    const assetId = assetName + `#${assetName === 'btc' ? 'bitcoin' : irohaDomain}`
+    const assetId = assetName + `#${irohaDomain}`
 
-    return tryToCreateAsset(assetName, `${assetName === 'btc' ? 'bitcoin' : irohaDomain}`, precision)
+    return tryToCreateAsset(assetName, irohaDomain, precision)
       .then(() => {
         console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
         return irohaUtil.addAssetQuantity([testPrivKeyHex], assetId, amount)
