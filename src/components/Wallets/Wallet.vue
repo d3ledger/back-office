@@ -156,11 +156,12 @@
                     <el-row>
                       <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
                       <el-col :span="4" class="transaction_details-amount">
-                        <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
-                        <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
+                        <p>- {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }}</p>
+                        <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
                       </el-col>
-                      <el-col :span="4">{{ scope.row.from.message }}</el-col>
-                      <el-col :span="4">{{ scope.row.from.to }}</el-col>
+                      <el-col :span="16" class="transaction_details-message">
+                        {{ scope.row.from.message }}
+                      </el-col>
                     </el-row>
                   </div>
                   <div v-else>
@@ -169,13 +170,10 @@
                         {{ formatDateLong(scope.row.date) }}
                       </el-col>
                       <el-col :span="4" class="transaction_details-amount">
-                        {{scope.row.from === 'you' ? '−' : '+'}} {{ scope.row.amount | formatPrecision }}
+                        {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
                       </el-col>
-                      <el-col :span="4">
-                        {{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}
-                      </el-col>
-                      <el-col :span="4">
-                        {{ scope.row.to === 'you' ? scope.row.from : scope.row.to }}
+                      <el-col :span="16" class="transaction_details-message">
+                        {{ scope.row.message.length ? 'scope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.messagescope.row.message' : 'Message not provided...' }}
                       </el-col>
                     </el-row>
                   </div>
@@ -207,7 +205,7 @@
                   <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
                 </span>
                 <span class="table_amount" v-else>
-                  {{ (scope.row.from === 'you' ? '−' : '+')  }} {{ scope.row.amount | formatPrecision }} {{ wallet.asset }}
+                  {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }} {{ wallet.asset }}
                 </span>
               </template>
             </el-table-column>
@@ -230,7 +228,9 @@
                   <p v-if="scope.row.from.to">
                     {{ scope.row.from.message }}
                   </p>
-                  <p v-else-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></p>
+                  <p v-else-if="scope.row.from === 'notary' || scope.row.to === 'notary'">
+                    {{ scope.row.message }}
+                  </p>
                   <p v-else>{{ scope.row.message }}</p>
                 </span>
               </template>
@@ -813,6 +813,9 @@ export default {
 .transaction_details-amount {
   flex-wrap: wrap;
   font-weight: 600;
+}
+.transaction_details-message {
+  word-break: break-all;
 }
 .withdraw_form >>> .el-form-item__label::before,
 .transfer_form >>> .el-form-item__label::before {
