@@ -180,7 +180,8 @@ export default {
 
   methods: {
     ...mapActions([
-      'setNotaryIp'
+      'setNotaryIp',
+      'signup'
     ]),
 
     onSubmit () {
@@ -190,7 +191,7 @@ export default {
 
         this.isLoading = true
 
-        this.$store.dispatch('signup', {
+        this.signup({
           username: this.form.username,
           whitelist: this.form.whitelist
         })
@@ -201,7 +202,14 @@ export default {
           })
           .catch(err => {
             console.error(err)
-            this.$_showErrorAlertMessage(err.message, 'Sign up error')
+            let message = err.message
+            if (err.response.data.search('no free btc address to register') !== -1) {
+              message = 'No free BTC address to register'
+            }
+            if (err.response.data.search('no free relay wallets') !== -1) {
+              message = 'No free etherium address to register'
+            }
+            this.$_showErrorAlertMessage(message, 'Sign up error')
           })
           .finally(() => {
             this.isLoading = false
