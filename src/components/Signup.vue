@@ -19,7 +19,7 @@
           <el-input
             name="newAddress"
             v-model="form.newAddress"
-            placeholder="e.g. 0x00000000..."
+            placeholder="Wallet address"
             style="width: 355px"
           >
           </el-input>

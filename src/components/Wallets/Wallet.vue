@@ -235,7 +235,7 @@
           <el-input
             v-if="withdrawWalletAddresses.length === 0"
             v-model="withdrawForm.wallet"
-            placeholder="withdrawal address, e.g. 0x0000000000000000000000000000000000000000" />
+            placeholder="withdrawal address" />
           <el-select
             v-else
             class="withdraw-wallet_select"
