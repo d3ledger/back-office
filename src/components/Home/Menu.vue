@@ -21,12 +21,14 @@
       </el-menu-item>
       <el-menu-item index="/settlements/history">
         <el-badge
-          :value="10"
+          v-if="incomingSettlements.length"
+          :value="incomingSettlements.length"
           :max="9"
           :class="[isMenuActive('settlements') ? 'badge active' : 'badge']"
         >
           <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
         </el-badge>
+        <SvgIcon v-else iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
         <span class="title-left" slot="title">Exchange</span>
       </el-menu-item>
       <el-menu-item index="/reports">
@@ -35,19 +37,21 @@
       </el-menu-item>
       <el-menu-item v-if="quorum > 1" index="/transactions">
         <el-badge
-          :value="10"
+          v-if="allPendingTransactions.length"
+          :value="allPendingTransactions.length"
           :max="9"
           :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
         >
           <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         </el-badge>
+        <SvgIcon v-else iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Transactions</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
         <span class="title-left" slot="title">Settings</span>
       </el-menu-item>
-      <el-menu-item class="bottom-icon" index="/logout" @click="logout">
+      <el-menu-item class="bottom-icon" index="/logout" @click="onLogout">
         <SvgIcon iconName="Logout" iconClass="menu-icon"><LogoutIcon/></SvgIcon>
         <span class="title-left" slot="title">Logout</span>
       </el-menu-item>
@@ -64,6 +68,7 @@ import TransactionsIcon from '@/assets/menu/transactions'
 import WalletIcon from '@/assets/menu/wallet'
 import LogoutIcon from '@/assets/menu/logout'
 import SvgIcon from '@/components/common/SvgIcon'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Menu',
@@ -89,8 +94,11 @@ export default {
     SvgIcon
   },
   methods: {
-    logout () {
-      this.$store.dispatch('logout')
+    ...mapActions([
+      'logout'
+    ]),
+    onLogout () {
+      this.logout()
         .then(() => this.$router.push('/login'))
     },
     isMenuActive (path) {
@@ -98,6 +106,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'incomingSettlements',
+      'allPendingTransactions'
+    ]),
     currentActiveMenu () {
       if (this.$route.path.includes('wallets')) return '/wallets'
       if (this.$route.path.includes('settlements')) return '/settlements/history'
@@ -161,7 +173,7 @@ export default {
   font-weight: bold;
 }
 .badge >>> .el-badge__content {
-    margin-right: 0.2rem;
+    margin-right: 0.5rem;
     background-color: #ffffff;
     border-radius: 0.2rem;
     color: #000000;
@@ -172,7 +184,7 @@ export default {
     border: none;
 }
 .badge.active >>> .el-badge__content {
-    margin-right: 0.2rem;
+    margin-right: 0.5rem;
     background-color: #000000;
     border-radius: 0.2rem;
     color: #ffffff;
