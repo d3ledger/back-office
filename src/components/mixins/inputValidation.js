@@ -39,11 +39,21 @@ set['privateKeyRequired'] = [
 
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
+const checkFirstZero = (v) => {
+  if (!v.length) return true
+
+  if (v[0] !== '0') return true
+  else {
+    return v[0] === '0' && v[1] === '.'
+  }
+}
+
 function checkBalance (maxValue, maxPrecision, asset) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     if (!asset) errors.push('Please select asset')
     else if (isNaN(Number(value))) errors.push('Invalid amount')
+    else if (!checkFirstZero(value)) errors.push('Please remove zeros')
     else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
     else if (gt(Number(value))(Number(maxValue))) errors.push('Current amount is bigger than your available balance')
