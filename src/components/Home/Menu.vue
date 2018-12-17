@@ -93,9 +93,13 @@ export default {
     LogoutIcon,
     SvgIcon
   },
+  updated () {
+    this.getPendingTransactions()
+  },
   methods: {
     ...mapActions([
-      'logout'
+      'logout',
+      'getPendingTransactions'
     ]),
     onLogout () {
       this.logout()
