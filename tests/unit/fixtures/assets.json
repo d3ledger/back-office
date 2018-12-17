@@ -1,0 +1,32 @@
+[
+  {
+    "assetId": "omisego#test",
+    "accountId": "admin@test",
+    "balance": "10.80368522"
+  },
+  {
+    "assetId": "augur#test",
+    "accountId": "admin@test",
+    "balance": "1000.02"
+  },
+  {
+    "assetId": "bytom#test",
+    "accountId": "admin@test",
+    "balance": "10.25"
+  },
+  {
+    "assetId": "eos#test",
+    "accountId": "admin@test",
+    "balance":  "10.80368522"
+  },
+  {
+    "assetId": "golem#test",
+    "accountId": "admin@test",
+    "balance": "200.04"
+  },
+  {
+    "assetId": "dgd#test",
+    "accountId": "admin@test",
+    "balance": "30.03"
+  }
+]

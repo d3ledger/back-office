@@ -1,62 +1,82 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import irohaUtil from 'util/iroha-util'
-
-import Home from '@/components/Home'
-import WalletsPage from '@/components/Wallets/WalletsPage'
-import WalletPage from '@/components/WalletPage'
-import SettlementsPage from '@/components/Settlements/SettlementsPage'
-import SettlementsWaiting from '@/components/Settlements/SettlementsWaiting'
-import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
-import SettingsPage from '@/components/Settings/SettingsPage'
-import Login from '@/components/Login'
+import irohaUtil from '@util/iroha'
 
 Vue.use(Router)
+
+export const lazyComponent = (name) => () => import(`@/components/${name}.vue`)
 
 const defaultRouter = new Router({
   mode: 'hash',
   routes: [
     {
       path: '/',
-      component: Home,
+      component: lazyComponent('Home'),
       children: [
         {
           path: '',
-          name: 'wallets',
-          component: WalletsPage
+          name: 'dashboard',
+          component: lazyComponent('Dashboard/DashboardPage')
         },
         {
-          path: 'settlements',
-          name: 'settlements-page',
-          component: SettlementsPage,
+          path: 'wallets',
+          name: 'wallets',
+          component: lazyComponent('Wallets/WalletsPage'),
           children: [
             {
-              path: '',
-              name: 'settlements-waiting',
-              component: SettlementsWaiting
-            },
-            {
-              path: 'history',
-              name: 'settlements-history',
-              component: SettlementsHistory
+              path: ':walletId',
+              component: lazyComponent('Wallets/Wallet')
             }
           ]
         },
         {
+          path: 'settlements',
+          name: 'settlements-page',
+          component: lazyComponent('Settlements/SettlementsPage'),
+          children: [
+            {
+              path: 'history',
+              name: 'settlements-history',
+              component: lazyComponent('Settlements/SettlementsHistory')
+            },
+            {
+              path: 'incoming',
+              name: 'settlements-incoming',
+              component: lazyComponent('Settlements/SettlementsIncoming')
+            },
+            {
+              path: 'outgoing',
+              name: 'settlements-outgoing',
+              component: lazyComponent('Settlements/SettlementsOutgoing')
+            }
+          ]
+        },
+        {
+          path: 'reports',
+          name: 'reports',
+          component: lazyComponent('Reports/ReportsPage')
+        },
+        {
+          path: 'transactions',
+          name: 'transactions',
+          component: lazyComponent('Transactions/TransactionPage')
+        },
+        {
           path: 'settings',
-          name: 'settings-page',
-          component: SettingsPage
+          name: 'settings',
+          component: lazyComponent('Settings/SettingsPage')
         }
       ]
     },
     {
-      path: '/wallet/:walletId',
-      component: WalletPage
-    },
-    {
       path: '/login',
       name: 'login',
-      component: Login
+      component: lazyComponent('Login')
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: lazyComponent('Signup')
     },
     {
       path: '*',
@@ -66,7 +86,7 @@ const defaultRouter = new Router({
 })
 
 defaultRouter.beforeEach((to, from, next) => {
-  if (to.name === 'login') return next()
+  if (to.name === 'login' || to.name === 'signup') return next()
 
   if (irohaUtil.isLoggedIn()) {
     next()

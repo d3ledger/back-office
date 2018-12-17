@@ -1,0 +1,443 @@
+{
+  "payload": {
+    "transactions": [
+      {
+        "payload": {
+          "reducedPayload": {
+            "commands": [
+              {
+                "addPeer": {
+                  "peer": {
+                    "address": "localhost:10001",
+                    "peerKey": "0E2icbV/5jQmrh3Jf2lSEEA3QR/PTztzncIX9F5fyZs="
+                  }
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "notary",
+                  "permissions": [
+                    "can_get_all_acc_ast",
+                    "can_get_all_accounts",
+                    "can_create_asset",
+                    "can_add_asset_qty",
+                    "can_transfer",
+                    "can_set_detail",
+                    "can_get_all_txs",
+                    "can_receive",
+                    "can_get_blocks",
+                    "can_read_assets",
+                    "can_add_signatory",
+                    "can_set_quorum",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_transfer_my_assets"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "relay_deployer",
+                  "permissions": [
+                    "can_set_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "eth_token_list_storage",
+                  "permissions": [
+                    "can_set_detail",
+                    "can_create_asset"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "registration_service",
+                  "permissions": [
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_get_all_accounts",
+                    "can_get_domain_accounts",
+                    "can_get_all_txs",
+                    "can_get_blocks",
+                    "can_set_quorum"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "client",
+                  "permissions": [
+                    "can_get_my_account",
+                    "can_get_my_acc_ast",
+                    "can_get_my_acc_ast_txs",
+                    "can_get_my_acc_txs",
+                    "can_get_my_txs",
+                    "can_transfer",
+                    "can_receive",
+                    "can_set_quorum",
+                    "can_add_signatory",
+                    "can_get_my_signatories",
+                    "can_remove_signatory"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "admin",
+                  "permissions": [
+                    "can_get_all_accounts"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "withdrawal",
+                  "permissions": [
+                    "can_get_all_accounts",
+                    "can_get_blocks",
+                    "can_read_assets",
+                    "can_receive",
+                    "can_get_all_txs"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "signature_collector",
+                  "permissions": [
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_get_all_accounts"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "vacuumer",
+                  "permissions": [
+                    "can_get_domain_accounts",
+                    "can_read_assets"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "none",
+                  "permissions": [
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "tester",
+                  "permissions": [
+                    "can_get_all_accounts",
+                    "can_get_all_acc_ast",
+                    "can_add_asset_qty",
+                    "can_transfer",
+                    "can_create_asset",
+                    "can_create_account",
+                    "can_receive",
+                    "can_read_assets",
+                    "can_append_role",
+                    "can_add_peer",
+                    "can_set_detail",
+                    "can_get_blocks",
+                    "can_get_domain_accounts",
+                    "can_set_quorum",
+                    "can_add_signatory",
+                    "can_create_account",
+                    "can_get_all_txs",
+                    "can_get_domain_acc_detail",
+                    "can_read_assets",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_transfer_my_assets",
+                    "can_get_my_signatories",
+                    "can_remove_signatory"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "whitelist_setter",
+                  "permissions": [
+                    "can_set_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "notary_list_holder",
+                  "permissions": [
+                    "can_set_detail"
+                  ]
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "notary",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "d3",
+                  "defaultRole": "client"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "btcSession",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "ethereum",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createAsset": {
+                  "assetName": "ether",
+                  "domainId": "ethereum",
+                  "precision": 18
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "bitcoin",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "btcSignCollect",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createAsset": {
+                  "assetName": "btc",
+                  "domainId": "bitcoin",
+                  "precision": 8
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "notary",
+                  "domainId": "notary",
+                  "publicKey": "gl/XANujspTdZQKbLsHyG1v0ZOb3lcSHliy1mHgKsNE="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "notary@notary",
+                  "roleName": "notary"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "eth_registration_service",
+                  "domainId": "notary",
+                  "publicKey": "/iaL2sezwMrJRx6RUpm0gZkcmwsUVD9lhoxWHa/Wtok="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "eth_registration_service@notary",
+                  "roleName": "registration_service"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "eth_registration_service@notary",
+                  "roleName": "relay_deployer"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "eth_registration_service@notary",
+                  "roleName": "whitelist_setter"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_registration_service",
+                  "domainId": "notary",
+                  "publicKey": "5I4AOZEUK5CjVp1oBHOMaSlvM5IWFmo+bSDWOAr7JbE="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_registration_service@notary",
+                  "roleName": "registration_service"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "mst_btc_registration_service",
+                  "domainId": "notary",
+                  "publicKey": "qJWq9AOcKadQ5+mZC33Y8Fsdx4LEipp8X3DQCmZdfQI="
+
+                }
+              },
+              {
+                "setAccountQuorum":{
+                  "accountId":"mst_btc_registration_service@notary",
+                  "quorum":1
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "mst_btc_registration_service@notary",
+                  "roleName": "registration_service"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "eth_token_storage_service",
+                  "domainId": "notary",
+                  "publicKey": "jw9s6xR2efuBVJxI5yA0XxTtA0CHnkrTcKIbbdwygck="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "eth_token_storage_service@notary",
+                  "roleName": "eth_token_list_storage"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "withdrawal",
+                  "domainId": "notary",
+                  "publicKey": "CSdCcCMvQ/15TFyBdirByGh/cINoJlRlbqltH5sU9NM="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "withdrawal@notary",
+                  "roleName": "withdrawal"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_withdrawal_service",
+                  "domainId": "notary",
+                  "publicKey": "CSdCcCMvQ/15TFyBdirByGh/cINoJlRlbqltH5sU9NM="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_withdrawal_service@notary",
+                  "roleName": "withdrawal"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_withdrawal_service@notary",
+                  "roleName": "signature_collector"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "test",
+                  "domainId": "notary",
+                  "publicKey": "CS5xsDGlGtrpJPfNlE8Dca6LhQJGnjJpOIUzTe3MYAE="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "test@notary",
+                  "roleName": "tester"
+                }
+              },
+                            {
+                "createAccount": {
+                  "accountName": "test",
+                  "domainId": "d3",
+                  "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "test@d3",
+                  "roleName": "tester"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "vacuumer",
+                  "domainId": "notary",
+                  "publicKey": "YU+qjFi+kKa8BtEEFk0JknDiQ9GLzgKlX23SVzKIeHY="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "vacuumer@notary",
+                  "roleName": "vacuumer"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "notaries",
+                  "domainId": "notary",
+                  "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_change_addresses",
+                  "domainId": "notary",
+                  "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "notaries@notary",
+                  "roleName": "notary_list_holder"
+                }
+              },
+              {
+                "setAccountDetail": {
+                  "accountId": "notaries@notary",
+                  "key": "some_notary",
+                  "value": "http://localhost:20000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "gen_btc_pk_trigger",
+                  "domainId": "notary",
+                  "publicKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "admin",
+                  "domainId": "notary",
+                  "publicKey": "CS5xsDGlGtrpJPfNlE8Dca6LhQJGnjJpOIUzTe3MYAE="
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "admin@notary",
+                  "roleName": "admin"
+                }
+              }
+            ],
+            "creatorAccountId": "notary@notary",
+            "quorum": 1
+          }
+        }
+      }
+    ],
+    "txNumber": 1,
+    "height": "1",
+    "prevBlockHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+  }
+}

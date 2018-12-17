@@ -1,35 +1,189 @@
 <template>
-  <el-row :gutter="40">
-    <el-col v-for="wallet in wallets" :xs="24" :md="8" :lg="6" :xl="4" :key="wallet.name">
-      <wallet-card
+  <el-container v-if="wallets.length">
+    <el-aside class="column-fullheight wallets-menu" width="280px">
+      <div class="searchbar">
+        <div class="searchbar__prefix">
+          <fa-icon icon="search" class="searchbar__icon" />
+        </div>
+
+        <div class="searchbar__input">
+          <el-input placeholder="Search" v-model="search" />
+        </div>
+
+        <div class="searchbar__sort">
+          <el-dropdown trigger="click" @command="sort">
+            <div id="wallets-sort-button" class="searchbar__sort-button">
+              <fa-icon
+                :icon="currentCriterion.icon"
+                class="searchbar__icon"
+              />
+            </div>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                v-for="criterion in criterions"
+                :key="criterion.name"
+                :command="criterion"
+                :disabled="currentCriterion.name === criterion.name"
+              >
+                <fa-icon :icon="criterion.icon" />
+                {{ criterion.name }}
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+      </div>
+
+      <wallet-menu-item
+        v-for="wallet in sortedWallets"
+        :key="wallet.id"
         :walletId="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
-        :amount="wallet.amount"
-        :color="wallet.color"
       />
-    </el-col>
-  </el-row>
+    </el-aside>
+    <el-main class="column-fullheight wallet">
+      <router-view :key="$route.params.walletId"></router-view>
+    </el-main>
+  </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import WalletCard from '@/components/Wallets/WalletCard'
+import { mapGetters, mapActions } from 'vuex'
+import { lazyComponent } from '@router'
+import sortBy from 'lodash/fp/sortBy'
 
 export default {
-  name: 'wallets-card',
+  name: 'wallets-page',
   components: {
-    WalletCard
+    WalletMenuItem: lazyComponent('Wallets/WalletMenuItem'),
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
+
+  data () {
+    return {
+      search: '',
+      criterions: [
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-up', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-down', key: 'name', desc: true },
+        { name: 'token amount (asc)', icon: 'sort-amount-up', key: 'amount', desc: false, numeric: true },
+        { name: 'token amount (desc)', icon: 'sort-amount-down', key: 'amount', desc: true, numeric: true },
+        { name: 'fiat price (asc)', icon: 'sort-numeric-up', key: 'fiat', desc: false, numeric: true },
+        { name: 'fiat price (desc)', icon: 'sort-numeric-down', key: 'fiat', desc: true, numeric: true }
+      ]
+    }
   },
 
   computed: {
     ...mapGetters({
-      wallets: 'wallets'
-    })
+      wallets: 'wallets',
+      portfolioPercent: 'portfolioPercent',
+      currentCriterion: 'walletsSortCriterion'
+    }),
+    walletsWithFiatPrice () {
+      return this.wallets.map((x, i) => {
+        x.fiat = this.portfolioPercent[i].price
+        return x
+      })
+    },
+    filteredWallets () {
+      return this.search
+        ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+        : this.walletsWithFiatPrice
+    },
+    sortedWallets () {
+      const { numeric, key, desc } = this.currentCriterion
+      const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredWallets)
+      return desc ? sorted.reverse() : sorted
+    }
+  },
+
+  watch: {
+    '$route' (to, from) {
+      if (to.name === 'wallets' && this.wallets.length) {
+        this.$router.push(`/wallets/${this.wallets[0].id}`)
+      }
+    }
   },
 
   created () {
-    this.$store.dispatch('getAccountAssets')
+    Promise.all([
+      this.loadWalletsSortCriterion(),
+      this.getAccountAssets(),
+      this.getAllAssetTransactions()
+    ])
+
+    if (!this.currentCriterion) this.sort(this.criterions[0])
+  },
+
+  mounted () {
+    if (this.wallets.length) {
+      this.$router.push(`/wallets/${this.sortedWallets[0].id}`)
+    }
+  },
+
+  methods: {
+    ...mapActions([
+      'getAccountAssets',
+      'getAllAssetTransactions',
+      'loadWalletsSortCriterion',
+      'updateWalletsSortCriterion'
+    ]),
+    sort (criterion) {
+      this.updateWalletsSortCriterion(criterion)
+    }
   }
 }
 </script>
+
+<style scoped>
+.wallets-menu {
+  background: white;
+  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.08);
+}
+
+.searchbar {
+  display: flex;
+  align-items: center;
+}
+
+.searchbar__prefix {
+  flex: 0 1 auto;
+  padding: 20px 15px 15px 20px;
+}
+
+.searchbar__input {
+  flex: 1 1 auto;
+}
+
+.searchbar__sort {
+  flex: 0 1 auto;
+  padding: 20px 20px 15px 15px;
+}
+
+.searchbar__sort-button {
+  display: inline-block;
+  border: 1px solid #c0c4cc;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.searchbar__icon {
+  color: #c0c4cc;
+}
+
+.searchbar .el-input {
+  height: 100%;
+}
+
+.searchbar .el-input >>> input {
+  height: 100%;
+  border: none;
+  padding: 0;
+}
+</style>

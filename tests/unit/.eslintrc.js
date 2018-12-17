@@ -1,8 +1,10 @@
 module.exports = {
   env: {
-    jest: true
+    mocha: true
   },
   rules: {
-    'import/no-extraneous-dependencies': 'off'
+    'import/no-extraneous-dependencies': 'off',
+    'import/no-webpack-loader-syntax': 'off',
+    'no-unused-expressions': 'off'
   }
 }

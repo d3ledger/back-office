@@ -1,0 +1,9 @@
+[{
+  "value": "http://localhost:8083",
+  "label": "Local registration Etherium"
+}, 
+{
+  "value": "http://localhost:8084",
+  "label": "Local registration Bitcoin"
+}
+]
