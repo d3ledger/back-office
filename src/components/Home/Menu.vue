@@ -1,4 +1,4 @@
-<template>
+<template class="menu">
   <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
     <el-menu
       :router="true"
@@ -13,31 +13,43 @@
       </h1>
       <el-menu-item index="/">
         <SvgIcon iconName="Chart" iconClass="menu-icon"><ChartIcon/></SvgIcon>
-        <span slot="title">Dashboard</span>
+        <span class="title-left" slot="title">Dashboard</span>
       </el-menu-item>
       <el-menu-item index="/wallets">
         <SvgIcon iconName="Wallet" iconClass="menu-icon"><WalletIcon/></SvgIcon>
-        <span slot="title">Wallets</span>
+        <span class="title-left" slot="title">Wallets</span>
       </el-menu-item>
       <el-menu-item index="/settlements/history">
-        <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
-        <span slot="title">Exchange</span>
+        <el-badge
+          :value="10"
+          :max="9"
+          :class="[isMenuActive('settlements') ? 'badge active' : 'badge']"
+        >
+          <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
+        </el-badge>
+        <span class="title-left" slot="title">Exchange</span>
       </el-menu-item>
       <el-menu-item index="/reports">
         <SvgIcon iconName="Report" iconClass="menu-icon"><ReportIcon/></SvgIcon>
-        <span slot="title">Reports</span>
+        <span class="title-left" slot="title">Reports</span>
       </el-menu-item>
       <el-menu-item v-if="quorum > 1" index="/transactions">
-        <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
-        <span slot="title">Transactions</span>
+        <el-badge
+          :value="10"
+          :max="9"
+          :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
+        >
+          <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
+        </el-badge>
+        <span class="title-left" slot="title">Transactions</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
-        <span slot="title">Settings</span>
+        <span class="title-left" slot="title">Settings</span>
       </el-menu-item>
       <el-menu-item class="bottom-icon" index="/logout" @click="logout">
         <SvgIcon iconName="Logout" iconClass="menu-icon"><LogoutIcon/></SvgIcon>
-        <span slot="title">Logout</span>
+        <span class="title-left" slot="title">Logout</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -80,6 +92,9 @@ export default {
     logout () {
       this.$store.dispatch('logout')
         .then(() => this.$router.push('/login'))
+    },
+    isMenuActive (path) {
+      return this.$route.path.includes(path)
     }
   },
   computed: {
@@ -137,5 +152,34 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%
+}
+.title-left {
+  margin-left: 1rem;
+}
+.badge {
+  display: inline-flex;
+  font-weight: bold;
+}
+.badge >>> .el-badge__content {
+    margin-right: 0.2rem;
+    background-color: #ffffff;
+    border-radius: 0.2rem;
+    color: #000000;
+    height: 1.2rem;
+    width: 1.2rem;
+    line-height: 1.2rem;
+    padding: 0;
+    border: none;
+}
+.badge.active >>> .el-badge__content {
+    margin-right: 0.2rem;
+    background-color: #000000;
+    border-radius: 0.2rem;
+    color: #ffffff;
+    height: 1.2rem;
+    width: 1.2rem;
+    line-height: 1.2rem;
+    padding: 0;
+    border: none;
 }
 </style>
