@@ -1,11 +1,10 @@
 import NOTIFICATIONS from '@/data/notifications'
 
 const getErrorMessage = (error) => {
-  // const irohaErrors = NOTIFICATIONS.IROHA
   const irohaErrors = Object.keys(NOTIFICATIONS.IROHA)
-  const r = irohaErrors.map((e) => error.includes(e))
-  const b = r.findIndex((o) => o)
-  return NOTIFICATIONS.IROHA[irohaErrors[b]]
+  const isIncludesList = irohaErrors.map(e => error.includes(e))
+  const index = isIncludesList.findIndex(bool => bool)
+  return index === -1 ? '🐛 🐜 🕷' : NOTIFICATIONS.IROHA[irohaErrors[index]]
 }
 
 const message = {
