@@ -95,11 +95,13 @@ export default {
   },
   updated () {
     this.getPendingTransactions()
+    this.getAllUnsignedTransactions()
   },
   methods: {
     ...mapActions([
       'logout',
-      'getPendingTransactions'
+      'getPendingTransactions',
+      'getAllUnsignedTransactions'
     ]),
     onLogout () {
       this.logout()
