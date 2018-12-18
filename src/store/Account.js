@@ -358,15 +358,15 @@ const mutations = {
   },
 
   [types.REJECT_SETTLEMENT_REQUEST] (state) {
-    state.settlementRejectLoading = true
+    state.rejectSettlementLoading = true
   },
 
   [types.REJECT_SETTLEMENT_SUCCESS] (state) {
-    state.settlementRejectLoading = false
+    state.rejectSettlementLoading = false
   },
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
-    state.settlementRejectLoading = false
+    state.rejectSettlementLoading = false
     handleError(state, err)
   },
 

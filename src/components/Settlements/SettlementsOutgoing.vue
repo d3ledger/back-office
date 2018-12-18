@@ -38,7 +38,7 @@
           {{ formatDate(scope.row.from.date) }}
         </template>
       </el-table-column>
-      <el-table-column width="100">
+      <el-table-column width="200">
         <template slot-scope="scope">
           <div class="list_actions">
             <el-button
@@ -141,7 +141,7 @@ export default {
 <style scoped>
 .list_actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 .list_actions >>> button {
   background: #ffffff;

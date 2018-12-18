@@ -193,7 +193,7 @@ export default {
 <style scoped>
 .list_actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 .list_actions >>> button {
   background: #ffffff;
