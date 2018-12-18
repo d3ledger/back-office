@@ -188,14 +188,7 @@ export default {
     border: none;
 }
 .badge.active >>> .el-badge__content {
-    margin-right: 0.5rem;
     background-color: #000000;
-    border-radius: 0.2rem;
     color: #ffffff;
-    height: 1.2rem;
-    width: 1.2rem;
-    line-height: 1.2rem;
-    padding: 0;
-    border: none;
 }
 </style>
