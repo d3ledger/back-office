@@ -1,7 +1,6 @@
 import NOTIFICATIONS from '@/data/notifications'
 
 const getErrorMessage = (error) => {
-  console.log(error)
   const irohaErrors = Object.keys(NOTIFICATIONS.IROHA)
   const isIncludesList = irohaErrors.map(e => error.includes(e))
   const index = isIncludesList.findIndex(bool => bool)

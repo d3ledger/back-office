@@ -7,6 +7,7 @@ export default {
 
   IROHA: {
     ACCOUNT_RESPONSE: 'Please check private key or username.',
-    STATELESS_VALIDATION_FAILED: 'Validation error! Please check all entered data.'
+    STATELESS_VALIDATION_FAILED: 'Validation error! Please check all entered data.',
+    STATEFUL_VALIDATION_FAILED: 'Validation error! Please check all entered data.'
   }
 }
