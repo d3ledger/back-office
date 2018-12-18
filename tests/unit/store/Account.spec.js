@@ -125,7 +125,9 @@ describe('Account store', () => {
         rawTransactions: [],
         rawPendingTransactions: null,
         assets: [],
-        connectionError: null
+        connectionError: null,
+        acceptSettlementLoading: false,
+        rejectSettlementLoading: false
       }
 
       mutations[types.RESET](state)
