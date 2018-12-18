@@ -366,6 +366,7 @@ import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
+import NOTIFICATIONS from '@/data/notifications'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -516,8 +517,8 @@ export default {
               let completed = privateKeys.length === this.accountQuorum
               this.showMessageFromStatus(
                 completed,
-                'Withdrawal request is submitted to notary!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.WITHDRAWAL,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.resetWithdrawForm()
@@ -552,8 +553,8 @@ export default {
               let completed = privateKeys.length === this.accountQuorum
               this.showMessageFromStatus(
                 completed,
-                'Transfer successful!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.TRANSFER,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.fetchWallet()
