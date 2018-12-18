@@ -325,7 +325,7 @@ export default {
             })
               .then(() => {
                 let completed = privateKeys.length === this.accountQuorum
-                this.showMessageFromStatus(
+                this.$_showMessageFromStatus(
                   completed,
                   NOTIFICATIONS.SETTLEMENT,
                   NOTIFICATIONS.NOT_COMPLETED
@@ -340,9 +340,7 @@ export default {
               })
               .catch(err => {
                 console.error(err)
-                this.$alert(err.message, 'Withdrawal error', {
-                  type: 'error'
-                })
+                this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
               })
               .finally(() => {
                 this.isExchangeSending = false

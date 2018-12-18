@@ -515,7 +515,7 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
                 NOTIFICATIONS.WITHDRAWAL,
                 NOTIFICATIONS.NOT_COMPLETED
@@ -527,9 +527,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Withdrawal error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
             })
         })
         .finally(() => { this.isSending = false })
@@ -551,7 +549,7 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
                 NOTIFICATIONS.TRANSFER,
                 NOTIFICATIONS.NOT_COMPLETED
@@ -563,9 +561,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Transfer error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Transfer error')
             })
         })
         .finally(() => { this.isSending = false })

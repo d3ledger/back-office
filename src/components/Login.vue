@@ -81,10 +81,12 @@
 <script>
 import inputValidation from '@/components/mixins/inputValidation'
 import listOfNodes from '@/data/nodes'
+import messageMixin from '@/components/mixins/message'
 
 export default {
   name: 'login',
   mixins: [
+    messageMixin,
     inputValidation({
       username: 'nameDomain',
       privateKey: 'privateKeyRequired',
@@ -132,9 +134,7 @@ export default {
           })
           .catch(err => {
             console.error(err)
-            this.$alert(err.message, 'Login error', {
-              type: 'error'
-            })
+            this.$_showErrorAlertMessage(err.message, 'Login error')
           })
           .finally(() => {
             this.isLoading = false

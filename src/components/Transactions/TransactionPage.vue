@@ -126,7 +126,7 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length + signatures.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
                 NOTIFICATIONS.TRANSACTION,
                 NOTIFICATIONS.NOT_COMPLETED
@@ -135,9 +135,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Transaction signing error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
             })
         })
         .finally(() => { this.isSending = false })
