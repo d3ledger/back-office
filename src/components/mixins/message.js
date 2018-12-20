@@ -28,6 +28,17 @@ const message = {
       this.$alert(errorMsg, windowName, {
         type: 'error'
       })
+    },
+    $_showRegistrationError (message, responseText) {
+      if (responseText.includes('no free btc address to register') !== -1) {
+        message = 'No free Bitcoin address to register'
+      }
+      if (responseText.search('no free relay wallets') !== -1) {
+        message = 'No free Ethereum address to register'
+      }
+      this.$alert(message, 'Sign up error', {
+        type: 'error'
+      })
     }
   }
 }

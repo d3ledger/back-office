@@ -141,6 +141,7 @@
 import { mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
+import messageMixin from '@/components/mixins/message'
 import { registrationIPs } from '@/data/urls'
 import messageMixin from '@/components/mixins/message'
 
@@ -152,7 +153,8 @@ export default {
       username: 'name',
       newAddress: 'walletAddress',
       nodeIp: 'nodeIp'
-    })
+    }),
+    messageMixin
   ],
   data () {
     return {
@@ -202,14 +204,7 @@ export default {
           })
           .catch(err => {
             console.error(err)
-            let message = err.message
-            if (err.response.data.search('no free btc address to register') !== -1) {
-              message = 'No free BTC address to register'
-            }
-            if (err.response.data.search('no free relay wallets') !== -1) {
-              message = 'No free etherium address to register'
-            }
-            this.$_showErrorAlertMessage(message, 'Sign up error')
+            this.$_showRegistrationError(err.message, err.response.data)
           })
           .finally(() => {
             this.isLoading = false

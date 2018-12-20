@@ -307,6 +307,7 @@
 <script>
 import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
+import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
@@ -338,7 +339,8 @@ export default {
     }
   },
   mixins: [
-    dateFormat
+    dateFormat,
+    messageMixin
   ],
   created () {
     this.getSignatories()
@@ -503,8 +505,8 @@ export default {
         return this.addNetwork({ privateKeys }).then(() => {
           this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
           this.updateAccount()
-        }).catch(() => {
-          this.$message.error(`Something was wrong. You didn't register in network`)
+        }).catch((err) => {
+          this.$_showRegistrationError(err.message, err.response.data)
         })
       })
     },
