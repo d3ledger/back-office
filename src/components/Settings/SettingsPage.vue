@@ -506,7 +506,7 @@ export default {
           this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
           this.updateAccount()
         }).catch((err) => {
-          this.$_showRegistrationError(err.message, err.response.data)
+          this.$_showRegistrationError(err.message, err.response)
         })
       })
     },

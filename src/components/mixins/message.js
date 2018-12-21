@@ -29,8 +29,9 @@ const message = {
         type: 'error'
       })
     },
-    $_showRegistrationError (message, responseText) {
-      if (responseText.includes('no free btc address to register') !== -1) {
+    $_showRegistrationError (message, response) {
+      let responseText = response ? response.data : ''
+      if (responseText.search('no free btc address to register') !== -1) {
         message = 'No free Bitcoin address to register'
       }
       if (responseText.search('no free relay wallets') !== -1) {

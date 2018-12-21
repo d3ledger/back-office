@@ -204,7 +204,7 @@ export default {
           })
           .catch(err => {
             console.error(err)
-            this.$_showRegistrationError(err.message, err.response.data)
+            this.$_showRegistrationError(err.message, err.response)
           })
           .finally(() => {
             this.isLoading = false
