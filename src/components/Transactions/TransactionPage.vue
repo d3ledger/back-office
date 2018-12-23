@@ -128,7 +128,7 @@ export default {
               let completed = privateKeys.length + signatures.length === this.accountQuorum
               this.$_showMessageFromStatus(
                 completed,
-                NOTIFICATIONS.TRANSACTION,
+                NOTIFICATIONS.TRANSACTION_SUCCESS,
                 NOTIFICATIONS.NOT_COMPLETED
               )
               this.getPendingTransactions()

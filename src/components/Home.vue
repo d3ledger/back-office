@@ -327,7 +327,7 @@ export default {
                 let completed = privateKeys.length === this.accountQuorum
                 this.$_showMessageFromStatus(
                   completed,
-                  NOTIFICATIONS.SETTLEMENT,
+                  NOTIFICATIONS.SETTLEMENT_SUCCESS,
                   NOTIFICATIONS.NOT_COMPLETED
                 )
 

@@ -1,9 +1,9 @@
 export default {
-  SETTLEMENT: 'New settlement has successfully been created!',
+  SETTLEMENT_SUCCESS: 'New settlement has successfully been created!',
+  TRANSACTION_SUCCESS: 'Transaction succesfuly finalised and sent!',
+  WITHDRAWAL_SUCCESS: 'Withdrawal request is submitted to notary!',
+  TRANSFER_SUCCESS: 'Transfer has successfully sent!',
   NOT_COMPLETED: 'Operation not completed. You should complete it on transactions page',
-  TRANSACTION: 'Transaction succesfuly finalised and sent!',
-  WITHDRAWAL: 'Withdrawal request is submitted to notary!',
-  TRANSFER: 'Transfer has successfully sent!',
 
   IROHA: {
     ACCOUNT_RESPONSE: 'Please check private key or username.',

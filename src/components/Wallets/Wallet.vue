@@ -517,7 +517,7 @@ export default {
               let completed = privateKeys.length === this.accountQuorum
               this.$_showMessageFromStatus(
                 completed,
-                NOTIFICATIONS.WITHDRAWAL,
+                NOTIFICATIONS.WITHDRAWAL_SUCCESS,
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
@@ -551,7 +551,7 @@ export default {
               let completed = privateKeys.length === this.accountQuorum
               this.$_showMessageFromStatus(
                 completed,
-                NOTIFICATIONS.TRANSFER,
+                NOTIFICATIONS.TRANSFER_SUCCESS,
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
