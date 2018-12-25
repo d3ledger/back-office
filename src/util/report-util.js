@@ -224,9 +224,9 @@ export function generateReportData ({
   const transfersOut = sumAmount(txsWithinRange.filter(isFromYou))
   const netChange = transfersIn - transfersOut
   const endingBalance = currentAmount - netChangeAfterRange
-  const endingBalanceFiat = endingBalance / getDailyPriceFiat(dateTo)
+  const endingBalanceFiat = endingBalance * getDailyPriceFiat(dateTo)
   const startingBalance = endingBalance - netChange
-  const startingBalanceFiat = startingBalance / getDailyPriceFiat(dateTo)
+  const startingBalanceFiat = startingBalance * getDailyPriceFiat(dateTo)
 
   /*
    * prepare transactionsByDay
@@ -236,9 +236,9 @@ export function generateReportData ({
     entries,
     map(([date, txs]) => {
       const dailyIn = sumAmount(txs.filter(isToYou))
-      const dailyInFiat = dailyIn / getDailyPriceFiat(date)
+      const dailyInFiat = dailyIn * getDailyPriceFiat(date)
       const dailyOut = sumAmount(txs.filter(isFromYou))
-      const dailyOutFiat = dailyOut / getDailyPriceFiat(date)
+      const dailyOutFiat = dailyOut * getDailyPriceFiat(date)
       const dailyNet = dailyIn - dailyOut
 
       return {
@@ -275,9 +275,9 @@ export function generateReportData ({
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
-        amountFiat: (amount / getDailyPriceFiat(tx.date)).toFixed(precision),
+        amountFiat: (amount * getDailyPriceFiat(tx.date)).toFixed(precision),
         balance: balance.toFixed(precision),
-        balanceFiat: (balance / getDailyPriceFiat(tx.date)).toFixed(precision)
+        balanceFiat: (balance * getDailyPriceFiat(tx.date)).toFixed(precision)
       }
     })
   )(txsWithinRange)
@@ -289,7 +289,7 @@ export function generateReportData ({
     amount: '',
     amountFiat: '',
     balance: startingBalance.toFixed(precision),
-    balanceFiat: (startingBalance / getDailyPriceFiat(dateFrom)).toFixed(precision)
+    balanceFiat: (startingBalance * getDailyPriceFiat(dateFrom)).toFixed(precision)
   })
 
   transactionDetails.push({
@@ -299,7 +299,7 @@ export function generateReportData ({
     amount: '',
     amountFiat: '',
     balance: endingBalance.toFixed(precision),
-    balanceFiat: (startingBalance / getDailyPriceFiat(dateTo)).toFixed(precision)
+    balanceFiat: (startingBalance * getDailyPriceFiat(dateTo)).toFixed(precision)
   })
 
   /*
