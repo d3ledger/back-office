@@ -80,7 +80,7 @@
 
 <script>
 import inputValidation from '@/components/mixins/inputValidation'
-import listOfNodes from '@/data/nodes'
+import { listOfNodes } from '@/data/urls'
 import messageMixin from '@/components/mixins/message'
 
 export default {
