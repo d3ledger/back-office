@@ -2,61 +2,61 @@
   {
     "name": "Bitcoin",
     "asset": "BTC",
-    "color": "f7931a"
+    "color": "F7931A"
   },
   {
     "name": "OmiseGo",
     "asset": "OMG",
-    "color": "ffb055"
+    "color": "1A53F0"
   },
   {
     "name": "BasicAttentionToken",
     "asset": "BAT",
-    "color": "0055fe"
+    "color": "FF5000"
   },
   {
     "name": "Augur",
     "asset": "REP",
-    "color": "494949"
+    "color": "602A52"
   },
   {
     "name": "EOS",
     "asset": "EOS",
-    "color": "ffb055"
+    "color": "000000"
   },
   {
     "name": "Bytom",
     "asset": "BTM",
-    "color": "0055fe"
+    "color": "504C4C"
   },
   {
     "name": "Golem",
     "asset": "GNT",
-    "color": "f4f4f8"
+    "color": "001D57"
   },
   {
     "name": "DGD",
     "asset": "DGD",
-    "color": "e6e6ea"
+    "color": "F4D029"
   },
   {
     "name": "Monaco",
     "asset": "MCO",
-    "color": "fed766"
+    "color": "103F68"
   },
   {
     "name": "Salt",
     "asset": "SALT",
-    "color": "2ab7ca"
+    "color": "1BEEF4"
   },
   {
     "name": "ICONOMI",
     "asset": "ICN",
-    "color": "fe4a49"
+    "color": "4C6F8C"
   },
   {
     "name": "Ether",
     "asset": "ETH",
-    "color": "141414"
+    "color": "627EEA"
   }
 ]
