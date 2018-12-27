@@ -236,7 +236,6 @@ export function generateReportData ({
     .filter(tr => tr.assetId === wallet.assetId)
   const txsWithinRange = transactionsWithSettlements.filter(tx => isWithinRange(tx.date, startOfDay(dateFrom), endOfDay(dateTo)))
   const txsAfterRange = transactionsWithSettlements.filter(tx => isAfter(tx.date, endOfDay(dateTo)))
-  console.log('txsWithinRange', txsWithinRange)
   /*
    * calculate figures
    */
