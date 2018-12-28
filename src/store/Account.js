@@ -166,6 +166,14 @@ const getters = {
     return btcWallet ? btcWallet.bitcoin : null
   },
 
+  hasEthWallet (state, getters) {
+    return getters.wallets.some(w => w.domain === 'ethereum')
+  },
+
+  hasBtcWallet (state, getters) {
+    return getters.wallets.some(w => w.domain === 'bitcoin')
+  },
+
   withdrawWalletAddresses (state) {
     const wallet = find('eth_whitelist', state.accountInfo)
     return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []

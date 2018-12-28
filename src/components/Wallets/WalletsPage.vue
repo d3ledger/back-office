@@ -41,6 +41,20 @@
         :name="wallet.name"
         :asset="wallet.asset"
       />
+      <wallet-menu-item
+        v-if="btcWalletAddress && !hasBtcWallet"
+        key="btc-empty"
+        walletId="btc-empty"
+        name="Bitcoin"
+        asset="BTC"
+      />
+      <wallet-menu-item
+        v-if="ethWalletAddress && !hasEthWallet"
+        key="eth-empty"
+        walletId="eth-empty"
+        name="Ether"
+        asset="ETH"
+      />
     </el-aside>
     <el-main class="column-fullheight wallet">
       <router-view :key="$route.params.walletId"></router-view>
@@ -81,7 +95,11 @@ export default {
     ...mapGetters({
       wallets: 'wallets',
       portfolioPercent: 'portfolioPercent',
-      currentCriterion: 'walletsSortCriterion'
+      currentCriterion: 'walletsSortCriterion',
+      btcWalletAddress: 'btcWalletAddress',
+      ethWalletAddress: 'ethWalletAddress',
+      hasEthWallet: 'hasEthWallet',
+      hasBtcWallet: 'hasBtcWallet'
     }),
     walletsWithFiatPrice () {
       return this.wallets.map((x, i) => {
