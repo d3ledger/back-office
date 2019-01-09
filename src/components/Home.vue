@@ -163,11 +163,14 @@ import { mapState, mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import inputValidation from '@/components/mixins/inputValidation'
 import numberFormat from '@/components/mixins/numberFormat'
+import messageMixin from '@/components/mixins/message'
+import NOTIFICATIONS from '@/data/notifications'
 
 // TODO: Validate lack of selected asset
 export default {
   name: 'Home',
   mixins: [
+    messageMixin,
     numberFormat,
     inputValidation({
       privateKey: 'repeatingPrivateKey',
@@ -322,18 +325,11 @@ export default {
             })
               .then(() => {
                 let completed = privateKeys.length === this.accountQuorum
-                let message = completed
-                  ? 'New settlement has successfully been created!'
-                  : 'Operation not completed. You should complete it on transactions page'
-
-                let type = completed
-                  ? 'success'
-                  : 'warning'
-
-                this.$message({
-                  message,
-                  type
-                })
+                this.$_showMessageFromStatus(
+                  completed,
+                  NOTIFICATIONS.SETTLEMENT_SUCCESS,
+                  NOTIFICATIONS.NOT_COMPLETED
+                )
 
                 this.closeExchangeDialogWith()
                 // TODO: think, maybe it is a bad idea to close form after success.
@@ -344,9 +340,7 @@ export default {
               })
               .catch(err => {
                 console.error(err)
-                this.$alert(err.message, 'Withdrawal error', {
-                  type: 'error'
-                })
+                this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
               })
               .finally(() => {
                 this.isExchangeSending = false
