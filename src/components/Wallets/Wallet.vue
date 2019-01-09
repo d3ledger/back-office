@@ -366,6 +366,7 @@ import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
+import NOTIFICATIONS from '@/data/notifications'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -514,10 +515,10 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
-                'Withdrawal request is submitted to notary!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.WITHDRAWAL_SUCCESS,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.resetWithdrawForm()
@@ -526,9 +527,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Withdrawal error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
             })
         })
         .finally(() => { this.isSending = false })
@@ -550,10 +549,10 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
-                'Transfer successful!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.TRANSFER_SUCCESS,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.fetchWallet()
@@ -562,9 +561,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Transfer error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Transfer error')
             })
         })
         .finally(() => { this.isSending = false })

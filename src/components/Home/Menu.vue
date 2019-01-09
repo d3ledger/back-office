@@ -139,10 +139,10 @@ export default {
 .el-side-menu {
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-right: none;
   z-index: 100;
-  width: 62px;
   /* Getting rid of element.ui styles */
   position: fixed !important;
   border-right: none !important;
