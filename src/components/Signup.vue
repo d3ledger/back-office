@@ -131,10 +131,12 @@ import { mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 import { registrationIPs } from '@/data/urls'
+import messageMixin from '@/components/mixins/message'
 
 export default {
   name: 'signup',
   mixins: [
+    messageMixin,
     inputValidation({
       username: 'name',
       newAddress: 'walletAddress',
@@ -188,9 +190,7 @@ export default {
           })
           .catch(err => {
             console.error(err)
-            this.$alert(err.message, 'Sign up error', {
-              type: 'error'
-            })
+            this.$_showErrorAlertMessage(err.message, 'Sign up error')
           })
           .finally(() => {
             this.isLoading = false
