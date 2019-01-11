@@ -41,20 +41,6 @@
         :name="wallet.name"
         :asset="wallet.asset"
       />
-      <wallet-menu-item
-        v-if="btcWalletAddress && !hasBtcWallet"
-        key="btc-empty"
-        walletId="btc-empty"
-        name="Bitcoin"
-        asset="BTC"
-      />
-      <wallet-menu-item
-        v-if="ethWalletAddress && !hasEthWallet"
-        key="eth-empty"
-        walletId="eth-empty"
-        name="Ether"
-        asset="ETH"
-      />
     </el-aside>
     <el-main class="column-fullheight wallet">
       <router-view :key="$route.params.walletId"></router-view>
@@ -108,9 +94,25 @@ export default {
       })
     },
     filteredWallets () {
+      const walletsWithEmpty = [...this.walletsWithFiatPrice]
+      if (this.btcWalletAddress && !this.hasBtcWallet) {
+        walletsWithEmpty.push({
+          id: 'btc-empty',
+          name: 'Bitcoin',
+          asset: 'BTC'
+        })
+      }
+      if (this.ethWalletAddress && !this.hasEthWallet) {
+        walletsWithEmpty.push({
+          id: 'eth-empty',
+          name: 'Ether',
+          asset: 'ETH'
+        })
+      }
+
       return this.search
-        ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
-        : this.walletsWithFiatPrice
+        ? walletsWithEmpty.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+        : walletsWithEmpty
     },
     sortedWallets () {
       const { numeric, key, desc } = this.currentCriterion
