@@ -143,7 +143,6 @@ import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
 import { registrationIPs } from '@/data/urls'
-import messageMixin from '@/components/mixins/message'
 
 export default {
   name: 'signup',
