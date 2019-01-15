@@ -81,7 +81,11 @@ export default {
     ...mapGetters({
       wallets: 'wallets',
       portfolioPercent: 'portfolioPercent',
-      currentCriterion: 'walletsSortCriterion'
+      currentCriterion: 'walletsSortCriterion',
+      btcWalletAddress: 'btcWalletAddress',
+      ethWalletAddress: 'ethWalletAddress',
+      hasEthWallet: 'hasEthWallet',
+      hasBtcWallet: 'hasBtcWallet'
     }),
     walletsWithFiatPrice () {
       return this.wallets.map((x, i) => {
@@ -90,9 +94,25 @@ export default {
       })
     },
     filteredWallets () {
+      const walletsWithEmpty = [...this.walletsWithFiatPrice]
+      if (this.btcWalletAddress && !this.hasBtcWallet) {
+        walletsWithEmpty.push({
+          id: 'btc-empty',
+          name: 'Bitcoin',
+          asset: 'BTC'
+        })
+      }
+      if (this.ethWalletAddress && !this.hasEthWallet) {
+        walletsWithEmpty.push({
+          id: 'eth-empty',
+          name: 'Ether',
+          asset: 'ETH'
+        })
+      }
+
       return this.search
-        ? this.walletsWithFiatPrice.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
-        : this.walletsWithFiatPrice
+        ? walletsWithEmpty.filter(x => x.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1 || x.asset.toLowerCase().indexOf(this.search.toLowerCase()) > -1)
+        : walletsWithEmpty
     },
     sortedWallets () {
       const { numeric, key, desc } = this.currentCriterion
