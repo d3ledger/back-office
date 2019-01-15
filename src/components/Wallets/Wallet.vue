@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="wallet.assetId">
     <el-row style="margin-bottom: 20px">
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
@@ -354,12 +354,16 @@
       </el-button>
     </el-dialog>
   </div>
+  <div v-else>
+    <no-assets-card />
+  </div>
 </template>
 
 <script>
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
 import { mapActions, mapGetters } from 'vuex'
+import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
@@ -388,7 +392,8 @@ export default {
   ],
   components: {
     AssetIcon,
-    QrcodeVue
+    QrcodeVue,
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   data () {
     return {
@@ -452,7 +457,9 @@ export default {
   },
 
   created () {
-    this.fetchWallet()
+    if (this.wallet.assetId) {
+      this.fetchWallet()
+    }
   },
 
   beforeMount () {
@@ -596,7 +603,7 @@ export default {
   filters: {
     fitAmount (amount) {
       const withoutZeros = numberFormat.filters.formatPrecision(amount)
-      return withoutZeros.length > 15 ? `${withoutZeros.substr(0, 15)}...` : withoutZeros
+      return withoutZeros.length > 10 ? `${withoutZeros.substr(0, 10)}...` : withoutZeros
     }
   }
 }
