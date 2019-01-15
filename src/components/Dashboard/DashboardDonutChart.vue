@@ -56,7 +56,7 @@ export default {
       const otherTokensPrice = otherTokens.reduce((t1, t2) => t1.price + t2.price, 0)
       const otherToken = {
         asset: 'Other',
-        color: '0055fe',
+        color: 'C8C8C8',
         percent: otherTokensPercent,
         price: otherTokensPrice
       }
