@@ -23,7 +23,7 @@
               style="width: 100px"
             >
               <el-option
-                v-for="wallet in wallets"
+                v-for="wallet in assetsWithoutRequest"
                 :key="wallet.id"
                 :label="wallet.asset"
                 :value="wallet.asset">
@@ -49,7 +49,7 @@
               style="width: 100px"
             >
               <el-option
-                v-for="wallet in wallets"
+                v-for="wallet in assetsWithoutOffer"
                 :key="wallet.id"
                 :label="wallet.asset"
                 :value="wallet.asset">
@@ -213,6 +213,14 @@ export default {
     ...mapState({
       accountId: (state) => state.Account.accountId
     }),
+
+    assetsWithoutOffer () {
+      return this.wallets.filter(a => a.asset !== this.exchangeDialogOfferAsset)
+    },
+
+    assetsWithoutRequest () {
+      return this.wallets.filter(a => a.asset !== this.exchangeDialogRequestAsset)
+    },
 
     exchangeDialogOfferAsset: {
       get () {
