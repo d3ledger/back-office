@@ -298,6 +298,7 @@ export default {
 
   .option.left {
     float: left;
+    margin-right: 10px;
   }
 
   .option.right {

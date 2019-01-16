@@ -10,11 +10,11 @@ const privateKey = {
 const set = {
   name: [
     { required: true, message: 'Please input username', trigger: 'change' },
-    { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-Z_0-9]{1,32}', trigger: 'change' }
+    { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-z_0-9]{1,32}', trigger: 'change' }
   ],
   nameDomain: [
     { required: true, message: 'Please input username', trigger: 'change' },
-    { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
+    { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-z_0-9]{1,32}@[a-z_0-9]{1,9}', trigger: 'change' }
   ],
   privateKey: [
     { pattern: privateKey.pattern, message: privateKey.message, trigger: 'change' }
@@ -29,6 +29,9 @@ const set = {
   tokensAmount: [
     { required: true, message: 'Please input amount', trigger: 'change' },
     { pattern: /^(?![0.]+$)\d+(\.\d+)?$/, message: 'Invalid amount', trigger: 'change' }
+  ],
+  additionalInformation: [
+    { pattern: /^.{0,64}$/, message: 'Additional information should not be longer than 64 symbols', trigger: 'change' }
   ]
 }
 
