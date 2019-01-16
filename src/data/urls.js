@@ -4,7 +4,7 @@ export const BTC_NOTARY_URL = process.env.VUE_APP_BTC_NOTARY_URL || 'http://loca
 export const registrationIPs = [
   {
     'value': ETH_NOTARY_URL,
-    'label': 'Etherium registration'
+    'label': 'Ethereum registration'
   },
   {
     'value': BTC_NOTARY_URL,

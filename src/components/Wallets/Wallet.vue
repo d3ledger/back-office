@@ -334,7 +334,7 @@
         <el-form-item label="Counterparty" prop="to">
           <el-input v-model="transferForm.to" placeholder="Account id" />
         </el-form-item>
-        <el-form-item label="Additional information">
+        <el-form-item label="Additional information" prop="description">
           <el-input
             type="textarea"
             :rows="2"
@@ -386,7 +386,8 @@ export default {
     inputValidation({
       to: 'nameDomain',
       amount: 'tokensAmount',
-      wallet: 'walletAddress'
+      wallet: 'walletAddress',
+      description: 'additionalInformation'
     }),
     messageMixin
   ],
