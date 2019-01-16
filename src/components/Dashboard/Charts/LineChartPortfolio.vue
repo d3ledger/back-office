@@ -145,7 +145,17 @@ export default {
       const maxValue = Math.max.apply(null, this.data.map(i => i.sum))
       const WIDTH_PER_DIGIT = 10
       const OFFSET = 10
-      const yAxisWidth = OFFSET + maxValue.toFixed(0).length * WIDTH_PER_DIGIT
+      let digits
+      if (maxValue > 10) {
+        digits = maxValue.toFixed(0).length
+      } else if (maxValue > 4) {
+        digits = maxValue.toFixed(1).length
+      } else if (maxValue > 0.1) {
+        digits = maxValue.toFixed(2).length
+      } else {
+        digits = maxValue.toFixed(3).length
+      }
+      const yAxisWidth = OFFSET + digits * WIDTH_PER_DIGIT
 
       chartInstance.setOption({
         grid: {
