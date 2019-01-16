@@ -68,7 +68,7 @@
         <el-form-item label="Counterparty" prop="to">
           <el-input v-model="exchangeForm.to" placeholder="Account id" />
         </el-form-item>
-        <el-form-item label="Additional information">
+        <el-form-item label="Additional information" prop="description">
           <el-input
             type="textarea"
             :rows="2"
@@ -176,7 +176,8 @@ export default {
       privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
       request_amount: 'tokensAmount',
-      offer_amount: 'tokensAmount'
+      offer_amount: 'tokensAmount',
+      description: 'additionalInformation'
     })
   ],
   components: {
