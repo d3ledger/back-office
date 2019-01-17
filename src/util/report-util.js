@@ -128,8 +128,9 @@ export function generateCSV (params) {
 
   return new Promise((resolve, reject) => {
     const data = generateReportData.call(this, { ext: 'csv', ...params })
+    const { formatDateWith } = params
     const dataForCSV = data.transactionDetails.map(tx => ({
-      'Time': tx.time.replace(',', ''),
+      'Time': formatDateWith(tx.time, 'MMM. D YYYY HH:mm'),
       'To': tx.to,
       'Amount': tx.amount,
       [`Amount in ${data.fiat}`]: tx.amountFiat,
@@ -198,7 +199,6 @@ export function generateReportData ({
   const getDailyPriceFiat = (dateExpected) => {
     return priceFiatList.find(({ date }) => isSameDay(date, dateExpected)).price
   }
-  const formatDateWithYear = (date) => formatDateWith(date, 'MMM. D, YYYY HH:mm')
 
   /*
    * prepare basic data
@@ -264,7 +264,7 @@ export function generateReportData ({
       const dailyNet = dailyIn - dailyOut
 
       return {
-        date: formatDateWithYear(date),
+        date,
         dailyIn: dailyIn.toFixed(precision),
         dailyInFiat: dailyInFiat.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),
@@ -293,7 +293,7 @@ export function generateReportData ({
         // a date omitting an year like `Sep 01 12:34` will be treated as
         // `Sep 01 2001 12:34`, which applies Moscow Summer Time which is not
         // used today and generates wrong results.
-        time: formatDateWithYear(tx.date),
+        time: tx.date,
         to: isToYou(tx) ? 'Received' : tx.to,
         description: tx.message,
         amount: amount.toFixed(precision),
@@ -303,9 +303,8 @@ export function generateReportData ({
       }
     })
   )(txsWithinRange)
-
   transactionDetails.unshift({
-    time: formatDateWithYear(dateFrom),
+    time: dateFrom,
     to: null,
     description: 'Starting Balance',
     amount: '',
@@ -315,7 +314,7 @@ export function generateReportData ({
   })
 
   transactionDetails.push({
-    time: formatDateWithYear(dateTo),
+    time: dateTo,
     to: null,
     description: 'Ending Balance',
     amount: '',
