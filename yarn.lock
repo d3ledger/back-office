@@ -3437,9 +3437,10 @@ crypto-browserify@^3.11.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
-cryptocoins-icons@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/cryptocoins-icons/-/cryptocoins-icons-2.8.0.tgz#b718c06f32794f6ea6f03deed843f685854eca67"
+cryptocoins-icons@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/cryptocoins-icons/-/cryptocoins-icons-2.9.0.tgz#2abd9db764ca5c5f87620acc4d75abfa6d8142f7"
+  integrity sha512-bfhtws/Hs4YOv7GXrCQfZ9yzgVLqkJsFzgsTFVFBY/D1qPIICQI0UjcoFxea8dlBlwerxNu3Shp0T0ucBLHwng==
 
 css-color-names@0.0.4, css-color-names@^0.0.4:
   version "0.0.4"

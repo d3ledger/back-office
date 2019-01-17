@@ -73,9 +73,9 @@ const getters = {
   wallets (state) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
-      const ASSET = ASSETS.find(d => {
-        return (d.name.toLowerCase() === a.assetId.split('#')[0].toLowerCase() || d.asset.toLowerCase() === a.assetId.split('#')[0].toLowerCase())
-      })
+      const assetName = a.assetId.split('#')[0].toLowerCase()
+      const ASSET = ASSETS.find(d =>
+        d.name.toLowerCase() === assetName || d.asset.toLowerCase() === assetName)
 
       return {
         id: a.assetId.replace(/#/g, '$'),
@@ -87,7 +87,7 @@ const getters = {
         color: ASSET.color,
 
         amount: a.balance,
-        precision: a.balance.split('.')[1] ? a.balance.split('.')[1].length : 0
+        precision: ASSET.precision
       }
     })
   },
