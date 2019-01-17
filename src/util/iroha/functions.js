@@ -24,11 +24,12 @@ function login (username, privateKey, nodeIp) {
 
   setItem('iroha-wallet:nodeIp', nodeIp)
 
-  return getAccount(username)
-    .then(account => {
-      debug('login succeeded!')
-      return account
-    })
+  return getAccount({
+    accountId: username
+  }).then(account => {
+    debug('login succeeded!')
+    return account
+  })
     .catch(err => {
       debug('login failed')
       throw err
