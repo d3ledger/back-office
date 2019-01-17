@@ -4,71 +4,61 @@
       "name": "OmiseGo",
       "asset": "OMG",
       "amount": "124.58",
-      "color": "ffb055",
-      "address": "d8e18bb63161f6e4ee173d2408f2cccd75"
+      "precision": 18
     },
     {
       "name": "BasicAttentionToken",
       "asset": "BAT",
       "amount": "2922.7",
-      "color": "0055fe",
-      "address": "8cddd8adc2b68bae49252fa890a782b8f4"
+      "precision": 18
     },
     {
       "name": "Augur",
       "asset": "REP",
       "amount": "31.998",
-      "color": "494949",
-      "address": "3a31544553484cc7702685c57327378dc6"
+      "precision": 18
     },
     {
       "name": "EOS",
       "asset": "EOS",
       "amount": "116.40",
-      "color": "ffb055",
-      "address": "2daf13ad98241dcc51324253fc7767ef4b"
+      "precision": 18
     },
     {
       "name": "Bytom",
       "asset": "BTM",
       "amount": "2658.9",
-      "color": "0055fe",
-      "address": "63a06e61df809b1c50b53d577dff64102b"
+      "precision": 8
     },
     {
       "name": "Golem",
       "asset": "GNT",
       "amount": "2913.5",
-      "color": "f4f4f8",
-      "address": "c32fd5538a577fc9033363bd6f137d977f"
+      "precision": 18
     },
     {
-      "name": "DGD",
+      "name": "Digix",
       "asset": "DGD",
       "amount": "9.800",
-      "color": "e6e6ea",
-      "address": "c32fd5538a577fc9033363bd6f137d977f"
+      "precision": 9
     },
     {
       "name": "Monaco",
       "asset": "MCO",
       "amount": "130.46",
-      "color": "fed766",
-      "address": "c32fd5538a577fc9033363bd6f137d976f"
+      "precision": 8
     },
     {
       "name": "Salt",
       "asset": "SALT",
       "amount": "712.25",
-      "color": "2ab7ca",
-      "address": "c32fd5538a577fc9033363bd6f137d975f"
+      "precision": 8
     },
     {
       "name": "ICONOMI",
       "asset": "ICN",
       "amount": "1501.4",
-      "color": "fe4a49",
-      "address": "c32fd5538a577fc9033363bd6f137d974f"
+      "precision": 18
     }
   ]
 }
