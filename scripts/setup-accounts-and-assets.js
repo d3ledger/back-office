@@ -50,8 +50,8 @@ function initializeAssets () {
   console.log('initializing assets')
 
   const initializingAssets = wallets.map(w => {
-    const precision = String(w.amount).split('.')[1].length
-    const amount = String(w.amount)
+    const precision = w.precision
+    const amount = w.amount
     const assetName = w.name.toLowerCase()
     const assetId = assetName + `#${irohaDomain}`
 
@@ -98,7 +98,7 @@ function setupAccountTransactions (accountId, accountPrivKeyHex) {
       const txs = []
 
       wallets.map(w => {
-        const precision = String(w.amount).split('.')[1].length
+        const precision = w.precision
 
         _.times(_.random(3, 5), () => {
           const from = accountId
