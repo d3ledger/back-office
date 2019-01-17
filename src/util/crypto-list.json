@@ -2,61 +2,73 @@
   {
     "name": "Bitcoin",
     "asset": "BTC",
-    "color": "F7931A"
+    "color": "F7931A",
+    "precision": 8
   },
   {
     "name": "OmiseGo",
     "asset": "OMG",
-    "color": "1A53F0"
+    "color": "1A53F0",
+    "precision": 18
   },
   {
     "name": "BasicAttentionToken",
     "asset": "BAT",
-    "color": "FF5000"
+    "color": "FF5000",
+    "precision": 18
   },
   {
     "name": "Augur",
     "asset": "REP",
-    "color": "602A52"
+    "color": "602A52",
+    "precision": 18
   },
   {
     "name": "EOS",
     "asset": "EOS",
-    "color": "000000"
+    "color": "000000",
+    "precision": 18
   },
   {
     "name": "Bytom",
     "asset": "BTM",
-    "color": "504C4C"
+    "color": "504C4C",
+    "precision": 8
   },
   {
     "name": "Golem",
     "asset": "GNT",
-    "color": "001D57"
+    "color": "001D57",
+    "precision": 18
   },
   {
-    "name": "DGD",
+    "name": "Digix",
     "asset": "DGD",
-    "color": "F4D029"
+    "color": "F4D029",
+    "precision": 9
   },
   {
     "name": "Monaco",
     "asset": "MCO",
-    "color": "103F68"
+    "color": "103F68",
+    "precision": 8
   },
   {
     "name": "Salt",
     "asset": "SALT",
-    "color": "1BEEF4"
+    "color": "1BEEF4",
+    "precision": 8
   },
   {
     "name": "ICONOMI",
     "asset": "ICN",
-    "color": "4C6F8C"
+    "color": "4C6F8C",
+    "precision": 18
   },
   {
     "name": "Ether",
     "asset": "ETH",
-    "color": "627EEA"
+    "color": "627EEA",
+    "precision": 18
   }
 ]
