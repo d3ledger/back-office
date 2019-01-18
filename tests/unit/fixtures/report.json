@@ -82,8 +82,8 @@
         "price": 454.545454545455
       }
     ],
-    "dateFrom": 153040320000,
-    "dateTo": 1531855740000,
+    "dateFrom": 1530403200000,
+    "dateTo": 1531853940000,
     "fiat": "USD",
     "ext": "pdf",
     "transactions": [
@@ -213,7 +213,7 @@
     "startingBalance": "14.28",
     "transactionsByDay": [
       {
-        "date": 153040320000,
+        "date": 1531422000000,
         "dailyIn": "1.73",
         "dailyInFiat": "720.83",
         "dailyOut": "2.61",
@@ -231,7 +231,7 @@
     ],
     "transactionDetails": [
       {
-        "time": 1531853940000,
+        "time": 1530403200000,
         "to": null,
         "description": "Starting Balance",
         "amount": "",
@@ -357,7 +357,7 @@
         "balanceFiat": "5172.73"
       },
       {
-        "time": 1531855740000,
+        "time": 1531853940000,
         "to": null,
         "description": "Ending Balance",
         "amount": "",
