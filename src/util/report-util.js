@@ -262,9 +262,8 @@ export function generateReportData ({
       const dailyOut = sumAmount(txs.filter(isFromYou))
       const dailyOutFiat = dailyOut * getDailyPriceFiat(date)
       const dailyNet = dailyIn - dailyOut
-
       return {
-        date,
+        date: (new Date(date)).getTime(),
         dailyIn: dailyIn.toFixed(precision),
         dailyInFiat: dailyInFiat.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),
@@ -304,7 +303,7 @@ export function generateReportData ({
     })
   )(txsWithinRange)
   transactionDetails.unshift({
-    time: dateFrom,
+    time: (new Date(dateFrom)).getTime(),
     to: null,
     description: 'Starting Balance',
     amount: '',
@@ -314,7 +313,7 @@ export function generateReportData ({
   })
 
   transactionDetails.push({
-    time: dateTo,
+    time: (new Date(dateTo)).getTime(),
     to: null,
     description: 'Ending Balance',
     amount: '',

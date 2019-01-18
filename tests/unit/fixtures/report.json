@@ -82,8 +82,8 @@
         "price": 454.545454545455
       }
     ],
-    "dateFrom": "Jul. 1, 2018 00:00",
-    "dateTo": "Jul. 17, 2018 23:59",
+    "dateFrom": 153040320000,
+    "dateTo": 1531855740000,
     "fiat": "USD",
     "ext": "pdf",
     "transactions": [
@@ -213,7 +213,7 @@
     "startingBalance": "14.28",
     "transactionsByDay": [
       {
-        "date": "Fri Jul 13 2018 00:00:00 GMT+0500 (+05)",
+        "date": 153040320000,
         "dailyIn": "1.73",
         "dailyInFiat": "720.83",
         "dailyOut": "2.61",
@@ -221,7 +221,7 @@
         "dailyNet": "-0.88"
       },
       {
-        "date": "Tue Jul 17 2018 00:00:00 GMT+0500 (+05)",
+        "date": 1531767600000,
         "dailyIn": "1.44",
         "dailyInFiat": "654.55",
         "dailyOut": "3.46",
@@ -231,7 +231,7 @@
     ],
     "transactionDetails": [
       {
-        "time": "Jul. 1, 2018 00:00",
+        "time": 1531853940000,
         "to": null,
         "description": "Starting Balance",
         "amount": "",
@@ -357,7 +357,7 @@
         "balanceFiat": "5172.73"
       },
       {
-        "time": "Jul. 17, 2018 23:59",
+        "time": 1531855740000,
         "to": null,
         "description": "Ending Balance",
         "amount": "",
