@@ -437,7 +437,11 @@ export default {
     transactions () {
       if (!this.wallet) return []
 
-      return this.getTransactionsByAssetId(this.wallet.assetId)
+      return this.getTransactionsByAssetId(this.wallet.assetId).sort((t1, t2) => {
+        const date1 = t1.date ? t1.date : t1.from ? t1.from.date : t1.from ? t1.from.date : 0
+        const date2 = t2.date ? t2.date : t2.from ? t2.from.date : t2.from ? t2.from.date : 0
+        return date2 - date1
+      })
     },
 
     displayPrecision () {
