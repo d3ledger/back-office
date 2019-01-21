@@ -70,7 +70,7 @@
       center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange
+        Are you sure you want to exchange
         {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
         for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }}
         with {{ settlementForAcceptance.to.from }}?
