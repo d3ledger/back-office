@@ -30,7 +30,7 @@ export function generatePDF (params) {
   debug('generating PDF output...')
 
   return fontLoader.load().then(() => new Promise((resolve, reject) => {
-    const { formatDate, formatDateWith, formatPrecision } = params
+    const { formatDate, formatPrecision } = params
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
       info: {
@@ -68,7 +68,7 @@ export function generatePDF (params) {
             body: [
               ['Date', 'In', `In (${data.fiat})`, 'Out', `Out (${data.fiat})`, 'Net'],
               ...data.transactionsByDay.map(tx => ([
-                formatDateWith(tx.date, 'MMM. D'),
+                tx.date,
                 formatPrecision(tx.dailyIn),
                 formatPrecision(tx.dailyInFiat),
                 formatPrecision(tx.dailyOut),
@@ -263,7 +263,7 @@ export function generateReportData ({
       const dailyOutFiat = dailyOut * getDailyPriceFiat(date)
       const dailyNet = dailyIn - dailyOut
       return {
-        date: (new Date(date)).getTime(),
+        date: formatDateWith(date, 'MMM. D'),
         dailyIn: dailyIn.toFixed(precision),
         dailyInFiat: dailyInFiat.toFixed(precision),
         dailyOut: dailyOut.toFixed(precision),

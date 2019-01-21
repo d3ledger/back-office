@@ -213,7 +213,7 @@
     "startingBalance": "14.28",
     "transactionsByDay": [
       {
-        "date": 1531440000000,
+        "date": "Jul. 13",
         "dailyIn": "1.73",
         "dailyInFiat": "720.83",
         "dailyOut": "2.61",
@@ -221,7 +221,7 @@
         "dailyNet": "-0.88"
       },
       {
-        "date": 1531785600000,
+        "date": "Jul. 17",
         "dailyIn": "1.44",
         "dailyInFiat": "654.55",
         "dailyOut": "3.46",
