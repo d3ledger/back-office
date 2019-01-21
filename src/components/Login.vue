@@ -82,6 +82,7 @@
 import inputValidation from '@/components/mixins/inputValidation'
 import listOfNodes from '@/data/nodes'
 import messageMixin from '@/components/mixins/message'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'login',
@@ -105,7 +106,16 @@ export default {
     }
   },
 
+  beforeMount () {
+    this._refreshRules({
+      nodeIp: { pattern: 'nodeIp' }
+    })
+  },
+
   methods: {
+    ...mapActions([
+      'login'
+    ]),
     onFileChosen (file, fileList) {
       const reader = new FileReader()
 
@@ -124,10 +134,11 @@ export default {
 
         this.isLoading = true
 
-        this.$store.dispatch('login', {
+        const nodeIp = this.form.nodeIp.includes('://') ? this.form.nodeIp : `http://${this.form.nodeIp}`
+        this.login({
           username: this.form.username,
           privateKey: this.form.privateKey,
-          nodeIp: (this.form.nodeIp.indexOf('://') === -1) ? 'http://' + this.form.nodeIp : this.form.nodeIp
+          nodeIp
         })
           .then(account => {
             this.$router.push('/')
