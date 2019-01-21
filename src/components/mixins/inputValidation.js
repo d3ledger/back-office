@@ -20,8 +20,7 @@ const set = {
     { pattern: privateKey.pattern, message: privateKey.message, trigger: 'change' }
   ],
   nodeIp: [
-    { required: true, message: 'Please input node ip', trigger: 'change' },
-    { pattern: /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/, message: 'Invalid IP', trigger: 'change' }
+    { required: true, message: 'Please input node ip', trigger: 'change' }
   ],
   walletAddress: [
     { required: true, message: 'Please input wallet address', trigger: 'change' }
@@ -85,6 +84,18 @@ function checkRepeatingPrivateKey (keys) {
   }
 }
 
+function checkNodeIp () {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    let tempAddress = value.slice()
+    if (value.includes('http://')) tempAddress = tempAddress.substr(7)
+    if (value.includes('https://')) tempAddress = tempAddress.substr(8)
+    const validateAddress = /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/.test(tempAddress)
+    if (!validateAddress) errors.push('Invalid IP address')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
@@ -102,6 +113,9 @@ function generateRules (form) {
     } else if (validationRule.pattern === 'repeatingPrivateKey') {
       const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
       rules[key] = privateKeyRule
+    } else if (validationRule.pattern === 'nodeIp') {
+      const nodeIpRule = [{ validator: checkNodeIp() }]
+      rules[key] = nodeIpRule
     } else {
       rules[key] = set[validationRule]
     }
