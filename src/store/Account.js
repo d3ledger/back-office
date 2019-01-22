@@ -723,6 +723,7 @@ const actions = {
   editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
     return irohaUtil.setAccountQuorum(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
       quorum
     })
       .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
