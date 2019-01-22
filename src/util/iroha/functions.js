@@ -26,10 +26,11 @@ function login (username, privateKey, nodeIp) {
 
   return getAccount({
     accountId: username
-  }).then(account => {
-    debug('login succeeded!')
-    return account
   })
+    .then(account => {
+      debug('login succeeded!')
+      return account
+    })
     .catch(err => {
       debug('login failed')
       throw err

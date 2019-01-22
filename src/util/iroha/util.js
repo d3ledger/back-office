@@ -1,5 +1,5 @@
 import {
-  // CommandService_v1Client as CommandService,
+  CommandService_v1Client as CommandService,
   QueryService_v1Client as QueryService
 } from 'iroha-helpers/lib/proto/endpoint_pb_service'
 
@@ -17,16 +17,21 @@ export const cache = {
   nodeIp: null // persisted by localStorage
 }
 
-export function newCommandServiceOptions () {
-  return {}
+export function newCommandServiceOptions (privateKeys, quorum) {
+  return {
+    privateKeys,
+    quorum,
+    creatorAccountId: cache.username,
+    commandService: new CommandService(cache.nodeIp),
+    timeoutLimit: DEFAULT_TIMEOUT_LIMIT
+  }
 }
 
 export function newQueryServiceOptions () {
-  const a = {
+  return {
     privateKey: cache.key,
     creatorAccountId: cache.username,
-    queryService: new QueryService(cache.nodeIp)
+    queryService: new QueryService(cache.nodeIp),
+    timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
-  console.log(a)
-  return a
 }

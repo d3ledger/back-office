@@ -108,7 +108,7 @@ const getters = {
   allPendingTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
     return pendingTransactionsCopy ? getTransferAssetsFrom(
-      pendingTransactionsCopy.toObject().transactionsList,
+      pendingTransactionsCopy,
       state.accountId
     ).filter(tx => tx.from === 'you') : []
   },
@@ -116,7 +116,7 @@ const getters = {
   waitingSettlements () {
     let rawUnsignedTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
     return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
-      rawUnsignedTransactionsCopy.toObject().transactionsList,
+      rawUnsignedTransactionsCopy,
       state.accountId
     ) : []
   },
@@ -483,7 +483,9 @@ const actions = {
   updateAccount ({ commit, state }) {
     commit(types.UPDATE_ACCOUNT_REQUEST)
 
-    return irohaUtil.getAccount(state.accountId)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
       .then((account) => {
         commit(types.UPDATE_ACCOUNT_SUCCESS, { account })
       })
@@ -496,7 +498,12 @@ const actions = {
   getAccountAssetTransactions ({ commit, state }, { assetId }) {
     commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getAccountAssetTransactions(state.accountId, assetId)
+    return irohaUtil.getAccountAssetTransactions({
+      accountId: state.accountId,
+      assetId,
+      pageSize: 10,
+      firstTxHash: undefined
+    })
       .then(responses => {
         commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS, {
           assetId: assetId,
@@ -512,7 +519,9 @@ const actions = {
   getAccountAssets ({ commit, state }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
-    return irohaUtil.getAccountAssets(state.accountId)
+    return irohaUtil.getAccountAssets({
+      accountId: state.accountId
+    })
       .then(assets => {
         commit(types.GET_ACCOUNT_ASSETS_SUCCESS, assets)
       })
@@ -525,7 +534,11 @@ const actions = {
   getAccountTransactions ({ commit, state }) {
     commit(types.GET_ACCOUNT_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getAccountTransactions(state.accountId)
+    return irohaUtil.getAccountTransactions({
+      accountId: state.accountId,
+      pageSize: 10,
+      firstTxHash: undefined
+    })
       .then(transactions => {
         commit(types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, transactions)
       })
@@ -535,8 +548,9 @@ const actions = {
       })
   },
 
-  getAllUnsignedTransactions ({ commit, state }) {
+  getAllUnsignedTransactions ({ commit }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
+
     return irohaUtil.getPendingTransactions()
       .then(transactions => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, transactions)
@@ -549,6 +563,7 @@ const actions = {
 
   getAllAssetTransactions ({ commit, dispatch, state }) {
     commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
+
     return new Promise((resolve, reject) => {
       state.assets.map(({ assetId }) => {
         dispatch('getAccountAssetTransactions', { assetId })
@@ -579,7 +594,13 @@ const actions = {
   transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
+    return irohaUtil.transferAsset(privateKeys, state.accountQuorum, {
+      fromAccountId: state.accountId,
+      toAccountId: to,
+      assetId,
+      description,
+      amount
+    })
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
@@ -661,8 +682,11 @@ const actions = {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
-    const publicKeyBuffer = derivePublicKey(Buffer.from(privateKey, 'hex'))
-    return irohaUtil.addSignatory(privateKeys, state.accountId, publicKeyBuffer, state.accountQuorum)
+    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+    return irohaUtil.addSignatory(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      publicKey
+    })
       .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
@@ -673,7 +697,10 @@ const actions = {
 
   removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, state.accountId, publicKey, state.accountQuorum)
+    return irohaUtil.removeSignatory(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      publicKey
+    })
       .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
       .catch(err => {
         commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
@@ -683,7 +710,9 @@ const actions = {
 
   getSignatories ({ commit, state }) {
     commit(types.GET_ACCOUNT_SIGNATORIES_REQUEST)
-    return irohaUtil.getSignatories(state.accountId)
+    return irohaUtil.getSignatories({
+      accountId: state.accountId
+    })
       .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
       .catch(err => {
         commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
@@ -693,7 +722,9 @@ const actions = {
 
   editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, state.accountId, quorum, state.accountQuorum)
+    return irohaUtil.setAccountQuorum(privateKeys, state.accountQuorum, {
+      quorum
+    })
       .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
       .catch(err => {
         commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
@@ -703,7 +734,9 @@ const actions = {
 
   getAccountQuorum ({ commit, state }) {
     commit(types.GET_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.getAccount(state.accountId)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
       .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
