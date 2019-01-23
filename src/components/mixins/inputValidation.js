@@ -26,8 +26,7 @@ const set = {
     { required: true, message: 'Please input wallet address', trigger: 'change' }
   ],
   tokensAmount: [
-    { required: true, message: 'Please input amount', trigger: 'change' },
-    { pattern: /^(?![0.]+$)\d+(\.\d+)?$/, message: 'Invalid amount', trigger: 'change' }
+    { required: true, message: 'Please input amount', trigger: 'change' }
   ],
   additionalInformation: [
     { pattern: /^.{0,64}$/, message: 'Additional information should not be longer than 64 symbols', trigger: 'change' }
@@ -55,6 +54,7 @@ function checkBalance (maxValue, maxPrecision, asset) {
     const errors = []
     if (!asset) errors.push('Please select asset')
     else if (isNaN(Number(value))) errors.push('Invalid amount')
+    else if (!/^(?![0.]+$)\d+(\.\d+)?$/.test(value)) errors.push('Invalid amount')
     else if (!checkFirstZero(value)) errors.push('Please remove zeros')
     else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
