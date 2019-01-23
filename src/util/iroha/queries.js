@@ -55,6 +55,10 @@ const getPendingTransactions = () => queries.getPendingTransactions(
   newQueryServiceOptions()
 )
 
+const getRawPendingTransactions = () => queries.getRawPendingTransactions(
+  newQueryServiceOptions()
+)
+
 const getAssetInfo = ({
   assetId
 }) => queries.getAssetInfo(
@@ -70,5 +74,6 @@ export {
   getAccountTransactions,
   getSignatories,
   getPendingTransactions,
+  getRawPendingTransactions,
   getAssetInfo
 }
