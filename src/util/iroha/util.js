@@ -17,6 +17,14 @@ export const cache = {
   nodeIp: null // persisted by localStorage
 }
 
+export function newCommandService () {
+  return new CommandService(cache.nodeIp)
+}
+
+export function newQueryService () {
+  return new QueryService(cache.nodeIp)
+}
+
 export function newCommandServiceOptions (privateKeys, quorum) {
   return {
     privateKeys,
