@@ -1,111 +1,106 @@
-import { commands } from 'iroha-helpers'
 import {
+  commands,
+  signWithArrayOfKeys,
+  sendTransactions,
+  txHelper
+} from 'iroha-helpers'
+import {
+  newCommandService,
   newCommandServiceOptions
 } from './util'
+import cloneDeep from 'lodash/fp/cloneDeep'
+
+const DEFAULT_TIMEOUT_LIMIT = 5000
 
 // /**
 //  * signPendingTransaction: sign transaction with more keys and send.
 //  * @param {Array.<String>} privateKeys
 //  * @param {Object} transaction
 //  */
-// function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-//   debug('starting signPendingTransaction...')
+function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  /*
+    * TODO: Remove clearSignaturesList() after
+    * https://soramitsu.atlassian.net/browse/IR-1680 is completed
+    * Now we should remove signatures because otherwise the transaction
+    * won't get to MST processor and will be immediately commited
+  */
+  let txToSend = cloneDeep(transaction)
+  txToSend.clearSignaturesList()
 
-//   /*
-//     * TODO: Remove clearSignaturesList() after
-//     * https://soramitsu.atlassian.net/browse/IR-1680 is completed
-//     * Now we should remove signatures because otherwise the transaction
-//     * won't get to MST processor and will be immediately commited
-//   */
-//   let txToSend = cloneDeep(transaction)
-//   txToSend.clearSignaturesList()
+  txToSend = signWithArrayOfKeys(txToSend, privateKeys)
 
-//   txToSend = signWithArrayOfKeys(txToSend, privateKeys)
+  let txClient = newCommandService()
 
-//   let txClient = new CommandServiceClient(
-//     cache.nodeIp
-//   )
+  return sendTransactions([txToSend], txClient, timeoutLimit)
+}
 
-//   return sendTransactions([txToSend], txClient, timeoutLimit)
-// }
+/**
+ * Create settlement: an exchange request
+ * @param {Array.<String>} senderPrivateKeys
+ * @param {String} senderAccountId
+ * @param {Number} senderQuorum
+ * @param {String} senderAssetId
+ * @param {String} senderAmount
+ * @param {String} description
+ * @param {String} receiverAccountId
+ * @param {Number} receiverQuorum
+ * @param {String} receiverAssetId
+ * @param {String} receiverAmount
+ * @param {Number} timeoutLimit
+ */
+function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  let txClient = newCommandService()
 
-// /**
-//  * Create settlement: an exchange request
-//  * @param {Array.<String>} senderPrivateKeys
-//  * @param {String} senderAccountId
-//  * @param {Number} senderQuorum
-//  * @param {String} senderAssetId
-//  * @param {String} senderAmount
-//  * @param {String} description
-//  * @param {String} receiverAccountId
-//  * @param {Number} receiverQuorum
-//  * @param {String} receiverAssetId
-//  * @param {String} receiverAmount
-//  * @param {Number} timeoutLimit
-//  */
-// function createSettlement (senderPrivateKeys, senderAccountId = cache.username, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-//   debug('starting createSettlement...')
+  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
+  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
 
-//   let txClient = new CommandServiceClient(
-//     cache.nodeIp
-//   )
+  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
+  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
 
-//   let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
-//   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
+  const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
+  batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
-//   let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
-//   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
 
-//   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
-//   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
+function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  if (!batchArray.length) return
 
-//   return sendTransactions(batchArray, txClient, timeoutLimit)
-// }
+  let txClient = newCommandService()
 
-// function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-//   debug('starting acceptSettlement')
-//   if (!batchArray.length) return
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
 
-//   let txClient = new CommandServiceClient(
-//     cache.nodeIp
-//   )
+  batchArray[indexOfSigned].clearSignaturesList()
 
-//   const indexOfUnsigned = cloneDeep(batchArray)
-//     .map(tx => tx.toObject())
-//     .findIndex(tx => !tx.signaturesList.length)
-//   const indexOfSigned = cloneDeep(batchArray)
-//     .map(tx => tx.toObject())
-//     .findIndex(tx => tx.signaturesList.length)
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  return sendTransactions(batchArray, txClient, timeoutLimit)
+}
 
-//   batchArray[indexOfSigned].clearSignaturesList()
+function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  if (!batchArray.length) return
 
-//   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-//   return sendTransactions(batchArray, txClient, timeoutLimit)
-// }
+  let txClient = newCommandService()
 
-// function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-//   debug('starting acceptSettlement')
-//   if (!batchArray.length) return
+  const indexOfUnsigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => !tx.signaturesList.length)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => tx.signaturesList.length)
 
-//   let txClient = new CommandServiceClient(
-//     cache.nodeIp
-//   )
+  batchArray[indexOfSigned].clearSignaturesList()
 
-//   const indexOfUnsigned = cloneDeep(batchArray)
-//     .map(tx => tx.toObject())
-//     .findIndex(tx => !tx.signaturesList.length)
-//   const indexOfSigned = cloneDeep(batchArray)
-//     .map(tx => tx.toObject())
-//     .findIndex(tx => tx.signaturesList.length)
-
-//   batchArray[indexOfSigned].clearSignaturesList()
-
-//   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-//   return sendTransactions(batchArray, txClient, timeoutLimit, [
-//     'ENOUGH_SIGNATURES_COLLECTED',
-//     'STATEFUL_VALIDATION_FAILED'
-//   ])
-// }
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'ENOUGH_SIGNATURES_COLLECTED',
+    'STATEFUL_VALIDATION_FAILED'
+  ])
+}
 
 const createAccount = (privateKeys, quorum, {
   accountName,
@@ -132,15 +127,15 @@ const createAsset = (privateKeys, quorum, {
 )
 
 const transferAsset = (privateKeys, quorum, {
-  fromAccountId,
-  toAccountId,
+  srcAccountId,
+  destAccountId,
   assetId,
   description,
   amount
 }) => commands.transferAsset(
   newCommandServiceOptions(privateKeys, quorum), {
-    fromAccountId,
-    toAccountId,
+    srcAccountId,
+    destAccountId,
     assetId,
     description,
     amount
@@ -206,10 +201,10 @@ export {
   addSignatory,
   removeSignatory,
   addAssetQuantity,
-  // createSettlement,
-  // acceptSettlement,
-  // rejectSettlement,
+  createSettlement,
+  acceptSettlement,
+  rejectSettlement,
   setAccountDetail,
-  setAccountQuorum
-  // signPendingTransaction
+  setAccountQuorum,
+  signPendingTransaction
 }
