@@ -108,7 +108,7 @@ const getters = {
   allPendingTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
     return pendingTransactionsCopy ? getTransferAssetsFrom(
-      pendingTransactionsCopy,
+      pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
     ).filter(tx => tx.from === 'you') : []
   },
@@ -116,7 +116,7 @@ const getters = {
   waitingSettlements () {
     let rawUnsignedTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
     return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
-      rawUnsignedTransactionsCopy,
+      rawUnsignedTransactionsCopy.toObject().transactionsList,
       state.accountId
     ) : []
   },
@@ -271,7 +271,7 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    Vue.set(state.rawAssetTransactions, assetId, transactions)
+    Vue.set(state.rawAssetTransactions, assetId, transactions.transactionsList)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
@@ -551,7 +551,7 @@ const actions = {
   getAllUnsignedTransactions ({ commit }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getPendingTransactions()
+    return irohaUtil.getRawPendingTransactions()
       .then(transactions => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, transactions)
       })
@@ -572,7 +572,7 @@ const actions = {
             resolve()
           })
           .catch((err) => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE)
+            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
             reject(err)
             throw err
           })
@@ -583,7 +583,7 @@ const actions = {
   getPendingTransactions ({ commit }) {
     commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getPendingTransactions()
+    return irohaUtil.getRawPendingTransactions()
       .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
       .catch(err => {
         commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
@@ -595,8 +595,8 @@ const actions = {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return irohaUtil.transferAsset(privateKeys, state.accountQuorum, {
-      fromAccountId: state.accountId,
-      toAccountId: to,
+      srcAccountId: state.accountId,
+      destAccountId: to,
       assetId,
       description,
       amount
