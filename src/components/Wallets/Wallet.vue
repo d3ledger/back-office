@@ -154,26 +154,65 @@
                 <div class="transaction_details">
                   <div v-if="scope.row.to.from">
                     <el-row>
-                      <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
-                      <el-col :span="4" class="transaction_details-amount">
-                        <p>- {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }}</p>
-                        <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
+                      <el-col :span="6">
+                        {{ formatDateLong(scope.row.from.date) }}
                       </el-col>
-                      <el-col :span="16" class="transaction_details-message">
-                        {{ scope.row.from.message }}
+                      <el-col :span="18" >
+                        <p>
+                          <span class="transaction_details-title">Type: </span>
+                          <span v-if="scope.row.from.to">EXCHANGE</span>
+                          <span v-else-if="scope.row.to === 'notary'">WITHDRAWAL</span>
+                          <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
+                          <span v-else>TRANSFER</span>
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount outgoing:</span>
+                          {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount incoming:</span>
+                          {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Address:</span>
+                          {{ scope.row.from.to }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Desciption:</span>
+                          {{ scope.row.from.message.length ? scope.row.message : 'Message not provided' }}
+                        </p>
                       </el-col>
                     </el-row>
                   </div>
                   <div v-else>
                     <el-row>
-                      <el-col :span="4">
+                      <el-col :span="6">
                         {{ formatDateLong(scope.row.date) }}
                       </el-col>
-                      <el-col :span="4" class="transaction_details-amount">
-                        {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
-                      </el-col>
-                      <el-col :span="16" class="transaction_details-message">
-                        {{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}
+                      <el-col :span="18">
+                        <p>
+                          <span class="transaction_details-title">Type: </span>
+                          <span v-if="scope.row.to === 'notary'">WITHDRAWAL</span>
+                          <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
+                          <span v-else>TRANSFER</span>
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount:</span>
+                          {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Address:</span>
+                          <span v-if="scope.row.from === 'you'">
+                            {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                          </span>
+                          <span v-else>
+                            {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                          </span>
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Desciption:</span>
+                          {{ scope.row.message.length ? scope.row.message : 'Message not provided' }}
+                        </p>
                       </el-col>
                     </el-row>
                   </div>
@@ -212,7 +251,7 @@
             <el-table-column label="Address" min-width="130" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
-                  to {{ scope.row.from.from }}
+                  {{ scope.row.from.to }}
                 </span>
                 <span v-else-if="scope.row.from === 'you'">
                   {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
@@ -820,6 +859,9 @@ export default {
 }
 .transaction_details-message {
   word-break: break-all;
+}
+.transaction_details-title {
+  font-weight: 600;
 }
 .withdraw_form >>> .el-form-item__label::before,
 .transfer_form >>> .el-form-item__label::before {
