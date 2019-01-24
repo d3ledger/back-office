@@ -447,7 +447,20 @@
                   "accountId": "admin@notary",
                   "roleName": "admin"
                 }
-              }
+              },
+              {
+                "createAccount": {
+                  "accountName": "test",
+                  "domainId": "d3",
+                  "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "test@d3",
+                  "roleName": "tester"
+                }
+              },
             ],
             "creatorAccountId": "notary@notary",
             "quorum": 1
