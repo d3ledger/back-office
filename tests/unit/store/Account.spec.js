@@ -176,10 +176,8 @@ describe('Account store', () => {
       const state = { rawAssetTransactions: {} }
       const assetId = randomAssetId()
       const transactions = MOCK_TRANSACTIONS
-      console.log(transactions)
 
       mutations[types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS](state, { assetId, transactions })
-      console.log(state.rawAssetTransactions)
       expect(state.rawAssetTransactions)
         .to.have.property(assetId)
         .that.is.deep.equal(transactions.transactionsList)
