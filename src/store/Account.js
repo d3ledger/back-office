@@ -501,7 +501,7 @@ const actions = {
     return irohaUtil.getAccountAssetTransactions({
       accountId: state.accountId,
       assetId,
-      pageSize: 10,
+      pageSize: 100,
       firstTxHash: undefined
     })
       .then(responses => {
@@ -536,7 +536,7 @@ const actions = {
 
     return irohaUtil.getAccountTransactions({
       accountId: state.accountId,
-      pageSize: 10,
+      pageSize: 100,
       firstTxHash: undefined
     })
       .then(transactions => {
