@@ -115,8 +115,8 @@ async function initializeAssets () {
   console.log('initializing assets')
   let promises = []
   wallets.map(async w => {
-    const precision = String(w.amount).split('.')[1].length
-    const amount = String(w.amount)
+    const precision = w.precision
+    const amount = w.amount
     const assetName = w.name.toLowerCase()
     const assetId = assetName + `#${irohaDomain}`
 
@@ -125,8 +125,8 @@ async function initializeAssets () {
         .then(() => tryToCreateAsset(assetName, irohaDomain, precision))
         .then(() => tryAddAssetQuantity(assetId, amount))
         .then(() => tryToSplitAmount(assetId, amount))
-        .then(() => tryToSendRandomAmount(assetId, testAccFull, amount, testPrivKeyHex))
-        .then(() => tryToSendRandomAmount(assetId, aliceAccFull, amount, alicePrivKeyHex))
+        .then(() => tryToSendRandomAmount(assetId, testAccFull, amount, precision, testPrivKeyHex))
+        .then(() => tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, alicePrivKeyHex))
         .catch((err) => console.log(err))
     )
   })
@@ -234,9 +234,8 @@ async function tryToSplitAmount (assetId, amount) {
   }
 }
 
-async function tryToSendRandomAmount (assetId, accountId, amount, privateKey) {
+async function tryToSendRandomAmount (assetId, accountId, amount, precision, privateKey) {
   console.log(`Sending random amount (${amount}) of ${assetId} to ${accountId}`)
-  const precision = String(amount).split('.')[1].length
   const from = accountId
   const to = _.sample(_.without(accounts, from))
   const txs = []
