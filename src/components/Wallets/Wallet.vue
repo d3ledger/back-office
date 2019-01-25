@@ -179,7 +179,7 @@
                         </p>
                         <p>
                           <span class="transaction_details-title">Desciption:</span>
-                          {{ scope.row.from.message.length ? scope.row.message : 'Message not provided' }}
+                          {{ scope.row.from.message.length ? scope.row.from.message : 'Message not provided' }}
                         </p>
                       </el-col>
                     </el-row>
