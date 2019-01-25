@@ -92,7 +92,6 @@ export default {
     },
 
     formatNumberLongMethod (value) {
-      console.log(numberFormat)
       return numberFormat.filters.formatNumberLong(value)
     }
   }
