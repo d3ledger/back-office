@@ -12,6 +12,7 @@
 <script>
 import currencySymbol from '@/components/mixins/currencySymbol'
 import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
 import debounce from 'lodash/fp/debounce'
 
 export default {
@@ -28,7 +29,8 @@ export default {
   },
   mixins: [
     currencySymbol,
-    dateFormat
+    dateFormat,
+    numberFormat
   ],
   data () {
     const fontFamily = "'IBM Plex Sans', sans-serif"
@@ -117,7 +119,7 @@ export default {
   methods: {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {
-        const value = parseFloat(data[0].value.toFixed(2)).toLocaleString()
+        const value = numberFormat.filters.formatNumberLong(data[0].value.toFixed(2))
         const time = this.formatDate(data[0].data.time * 1000)
         return `${time}<br/>${value} ${this.currencySymbol}`
       }
