@@ -290,13 +290,13 @@ export default {
     ]),
 
     insertPrivateKey (key, i) {
-      console.log('tran ins', i, key)
       this.$set(this.approvalForm.privateKeys, i, key)
     },
 
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
       this.$refs.approvalForm.resetFields()
+      this.$refs.approvalForm.clearValidate()
     },
 
     submitApprovalDialog () {
@@ -370,11 +370,8 @@ export default {
     },
 
     onFileChosen (file, fileList, key) {
-      console.log('trap file ', file)
-
       const reader = new FileReader()
       reader.onload = (ev) => {
-        console.log('trap ev ', ev)
         key.hex = (ev.target.result || '').trim()
       }
       reader.readAsText(file.raw)
