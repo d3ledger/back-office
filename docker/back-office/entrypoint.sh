@@ -10,6 +10,6 @@ while [[ "$(curl -s -o /dev/null -m 5 -w ''%{http_code}'' grpcwebproxy:8080)" !=
 done
 
 NODE_IP=d3-iroha:50051 DEBUG=iroha-util node scripts/setup.js
-http-server --cors ./dist
 # To verify that iroha commit all transactions
 sleep 5;
+http-server --cors ./dist
