@@ -11,3 +11,5 @@ done
 
 NODE_IP=d3-iroha:50051 DEBUG=iroha-util node scripts/setup.js
 http-server --cors ./dist
+# To verify that iroha commit all transactions
+sleep 5;
