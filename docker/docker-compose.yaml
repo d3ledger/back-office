@@ -22,8 +22,8 @@ services:
       - ./iroha:/opt/iroha_data
     logging:
       driver: none
-    ports:
-      - 50051:50051
+    # ports:
+    #   - 50051:50051
 
   d3-iroha-postgres:
     image: postgres:9.5
