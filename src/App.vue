@@ -41,8 +41,11 @@ html {
   margin: 0;
 }
 
-#app {
+*:not(i){
   font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+#app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -79,13 +82,6 @@ a:hover {
 
 .flex-direction-row {
   flex-direction: row;
-}
-
-.el-message,
-.el-message-box,
-.el-popper,
-.el-tooltip__popper, .el-select-dropdown__item {
-  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .form-item-text {
