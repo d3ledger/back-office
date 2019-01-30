@@ -47,6 +47,7 @@
         <el-form-item label="Node IP" prop="nodeIp">
           <el-select
             v-model="form.nodeIp"
+            class="auth-form_select"
             :disabled="isLoading"
             style="width: 100%;"
             filterable
@@ -65,6 +66,7 @@
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
+            data-cy="login"
             class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
@@ -79,7 +81,7 @@
         <router-link
           to="/signup"
         >
-          <el-button class="auth_goto-container-button fullwidth">
+          <el-button data-cy="signup" class="auth_goto-container-button fullwidth">
             Sign up
           </el-button>
         </router-link>

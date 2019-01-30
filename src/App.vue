@@ -204,6 +204,10 @@ button.el-dialog__headerbtn {
     color: #ffffff;
   }
 
+  .auth-form_select .el-input__inner {
+    height: 4.5rem !important;
+  }
+
   .auth-button {
     margin-top: 1.5rem;
     height: 3.8rem;

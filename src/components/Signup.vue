@@ -30,6 +30,7 @@
               <el-button
                 @click="onClickAddAddressToWhiteList"
                 :loading="isLoading"
+                data-cy="add-whitelist"
               >
                 <span v-if="!isLoading">
                   ADD
@@ -81,6 +82,7 @@
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
+            data-cy="signup"
             class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
@@ -95,7 +97,7 @@
         <router-link
           to="/login"
         >
-          <el-button class="auth_goto-container-button fullwidth">
+          <el-button data-cy="login" class="auth_goto-container-button fullwidth">
             Log in
           </el-button>
         </router-link>
@@ -271,10 +273,6 @@ export default {
     font-size: 1.2rem;
     border-radius: 0.3rem;
     line-height: 2
-  }
-
-  .auth-form_select >>> .el-input__inner {
-    height: 4.5rem !important;
   }
 
   .auth_whitelist {
