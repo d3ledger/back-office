@@ -1,64 +1,56 @@
 <template>
-  <el-container class="signup-container">
-    <div style="margin-top: 4rem">
-      <h1 class="signup-title">Sign Up</h1>
+  <el-container class="auth-container">
+    <div style="margin-top: 2.5rem">
+      <img src="@/assets/logo.svg" alt="D3"/>
     </div>
-    <el-card class="signup-form-container">
-      <el-form class="signup-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Username:" prop="username">
-          <el-input
-            name="username"
-            v-model="form.username"
-            placeholder="e.g. alice, bob"
-            :disabled="isLoading"
-          >
-            <template slot="append">@{{ predefinedDomain }}</template>
-          </el-input>
+    <span class="auth-welcome">Sign Up</span>
+    <div class="auth-form-container">
+      <el-form class="auth-form" ref="form" :model="form" :rules="rules" label-position="top">
+        <el-form-item label="Username" prop="username">
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                name="username"
+                v-model="form.username"
+                :disabled="isLoading"
+              />
+            </el-col>
+            <div class="auth-form_tag">d3</div>
+          </el-row>
         </el-form-item>
-        <el-form-item label="Whitelist address:" prop="newAddress" ref="newAddress">
-          <el-input
-            name="newAddress"
-            v-model="form.newAddress"
-            placeholder="Wallet address"
-            style="width: 355px"
-          >
-          </el-input>
-          <el-button
-            class="blue"
-            type="primary"
-            @click="onClickAddAddressToWhiteList"
-            :loading="isLoading"
-            style="margin-left: 10px; float: right;"
-          >
-            <span v-if="!isLoading">
-              ADD
-            </span>
-          </el-button>
-        </el-form-item>
-        <el-form-item v-if="form.whitelist.length">
-          <p>You will be allowed to withdraw to these addresses:</p>
-          <el-tag
-            v-for="(item, idx) in form.whitelist"
-            :key="item"
-            size="default"
-            type="success"
-            closable
-            @close="() => onClickRemoveItemFromWitelist(idx)"
-          >
-            {{ item }}
-          </el-tag>
+        <el-form-item label="Whitelist address" prop="newAddress" ref="newAddress">
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                name="newAddress"
+                v-model="form.newAddress"
+              />
+            </el-col>
+            <div class="auth-form_upload">
+              <el-button
+                @click="onClickAddAddressToWhiteList"
+                :loading="isLoading"
+              >
+                <span v-if="!isLoading">
+                  ADD
+                </span>
+              </el-button>
+            </div>
+          </el-row>
         </el-form-item>
         <el-form-item
-          label="Registration ip:"
+          label="Registration IP"
           prop="nodeIp"
         >
           <el-select
             v-model="form.nodeIp"
+            class="auth-form_select"
             :disabled="isLoading"
             style="width: 100%;"
             filterable
             allow-create
             @change="selectNotaryIp"
+            popper-class="black-form_select-dropdown"
           >
             <el-option
               v-for="node in registrationIPs"
@@ -70,9 +62,26 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item class="signup-button-container">
+        <el-form-item
+          class="auth_whitelist"
+          v-if="form.whitelist.length"
+        >
+          <el-tag
+            v-for="(item, idx) in form.whitelist"
+            :key="item"
+            size="small"
+            class="auth_whitelist-tag"
+            closable
+            @close="() => onClickRemoveItemFromWitelist(idx)"
+          >
+            <span>
+              {{ item }}
+            </span>
+          </el-tag>
+        </el-form-item>
+        <el-form-item class="auth-button-container">
           <el-button
-            class="fullwidth black"
+            class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
@@ -81,17 +90,17 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <div style="margin-top: 3rem">
-        <p style="margin-bottom: 1rem">Already have an account?</p>
+      <div class="auth_goto-container">
+        <p class="auth_goto-container-title">Already have an account?</p>
         <router-link
           to="/login"
-          class="el-button fullwidth primary"
         >
-          Login
+          <el-button class="auth_goto-container-button fullwidth">
+            Log in
+          </el-button>
         </router-link>
       </div>
-    </el-card>
-
+    </div>
     <el-dialog
       title="Private key"
       :visible.sync="dialogVisible"
@@ -238,7 +247,8 @@ export default {
 
     updateWhiteListValidationRules () {
       this._refreshRules({
-        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist }
+        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist },
+        nodeIp: { pattern: 'nodeIp' }
       })
     },
     selectNotaryIp () {
@@ -249,21 +259,49 @@ export default {
 </script>
 
 <style scoped>
-  .signup-title {
-    font-size: 2.5rem;
+  .auth-form_tag {
+    width: 3.8rem;
+    height: 4.5rem;
+    border: solid 1px rgba(255, 255, 255, 0.4);
+    background-color: #363636;
     color: #ffffff;
-  }
-  .signup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding-top: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    border-radius: 0.3rem;
+    line-height: 2
   }
 
-  .signup-form-container {
-    position: relative;
-    width: 30rem;
-    overflow: visible;
-    margin-top: 3rem;
+  .auth-form_select >>> .el-input__inner {
+    height: 4.5rem !important;
+  }
+
+  .auth_whitelist {
+    margin: 3rem 0 0 0;
+    height: 4rem;
+    overflow-y: scroll;
+  }
+
+  .auth_whitelist >>> .el-form-item__content {
+    display: flex;
+  }
+
+  .auth_whitelist-tag {
+    background-color: #363636;
+    border: solid 1px rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    opacity: 0.8;
+  }
+
+  .auth_whitelist-tag >>> i {
+    color: #ffffff;
+    opacity: 0.8;
+  }
+
+  .auth_whitelist-tag >>> .el-icon-close:hover {
+    opacity: 1;
+    background-color: #505050;
   }
 
   .dialog-content {
@@ -277,28 +315,19 @@ export default {
     so scoped styles doesn't work for it. The `>>>` combinator solves this problem.
     https://vue-loader.vuejs.org/en/features/scoped-css.html
   */
-  .signup-form >>> .el-form-item__label {
-    line-height: 1;
-  }
 
-  .signup-form >>> .el-form-item__label::before {
-    content: '';
+  .auth-form >>> .el-form-item__label::before {
+    display: none;
   }
 
   .el-tag {
-    margin-right: 10px;
-  }
-
-  .signup-settings {
-    float: right;
-    cursor: pointer;
-    line-height: 1;
-    margin-bottom: 10px;
+    margin-right: 1rem;
   }
 
   .option.left {
     float: left;
     margin-right: 10px;
+    color: #ffffff;
   }
 
   .option.right {
