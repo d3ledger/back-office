@@ -3,8 +3,8 @@ import lte from 'lodash/fp/lte'
 import { derivePublicKey } from 'ed25519.js'
 
 const privateKey = {
-  pattern: /^[A-Za-z0-9]{64}$/,
-  message: 'Private key should match [A-Za-z0-9]{64}'
+  pattern: /^[A-Fa-f0-9]{64}$/,
+  message: 'Private key should match [A-Fa-f0-9]{64}'
 }
 
 const set = {
