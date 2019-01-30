@@ -296,6 +296,7 @@ export default {
     closeApprovalDialogWith () {
       this.closeApprovalDialog()
       this.$refs.approvalForm.resetFields()
+      this.$refs.approvalForm.clearValidate()
     },
 
     submitApprovalDialog () {
