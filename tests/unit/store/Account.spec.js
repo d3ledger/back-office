@@ -178,10 +178,9 @@ describe('Account store', () => {
       const transactions = MOCK_TRANSACTIONS
 
       mutations[types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS](state, { assetId, transactions })
-
       expect(state.rawAssetTransactions)
         .to.have.property(assetId)
-        .that.is.deep.equal(transactions)
+        .that.is.deep.equal(transactions.transactionsList)
     })
 
     testErrorHandling('GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE')
@@ -406,7 +405,11 @@ describe('Account store', () => {
 
     describe('getTransactionsByAssetId', () => {
       it('should return transformed transactions', () => {
-        const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
+        const state = {
+          rawAssetTransactions: {
+            'omisego#test': MOCK_ASSET_TRANSACTIONS.transactionsList
+          }
+        }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
         const expectedKeys = [
           'amount',
