@@ -35,10 +35,11 @@ const DUMMY_FILE_PATH = path.join(__dirname, '../src/data/wallets.json')
 const accounts = [testAccFull, aliceAccFull]
 const wallets = require(DUMMY_FILE_PATH).wallets
 
+console.log('\x1b[33m%s\x1b[0m', '#### INFO ####')
 console.log(`setting up accounts and assets with using '${DUMMY_FILE_PATH}'`)
 console.log(`accounts: ${accounts.join(', ')}`)
 console.log(`assets: ${wallets.map(w => w.name).join(', ')}`)
-console.log('')
+console.log('\x1b[33m%s\x1b[0m', '#### INFO ####\n')
 
 function newCommandServiceOptions (privateKeys, quorum, accountId) {
   return {
@@ -113,24 +114,20 @@ async function setup () {
 
 async function initializeAssets () {
   console.log('initializing assets')
-  let promises = []
-  wallets.map(async w => {
+  for (let w of wallets) {
     const precision = w.precision
     const amount = w.amount
     const assetName = w.name.toLowerCase()
     const assetId = assetName + `#${irohaDomain}`
 
-    promises.push(
-      new Promise((resolve, reject) => resolve())
-        .then(() => tryToCreateAsset(assetName, irohaDomain, precision))
-        .then(() => tryAddAssetQuantity(assetId, amount))
-        .then(() => tryToSplitAmount(assetId, amount))
-        .then(() => tryToSendRandomAmount(assetId, testAccFull, amount, precision, testPrivKeyHex))
-        .then(() => tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, alicePrivKeyHex))
-        .catch((err) => console.log(err))
-    )
-  })
-  await Promise.all(promises)
+    console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} BEGIN ####`)
+    await tryToCreateAsset(assetName, irohaDomain, precision)
+    await tryAddAssetQuantity(assetId, amount)
+    await tryToSplitAmount(assetId, amount)
+    await tryToSendRandomAmount(assetId, testAccFull, amount, precision, testPrivKeyHex)
+    await tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, alicePrivKeyHex)
+    console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
+  }
 }
 
 async function tryToCreateAccount (accountName, domainId, publicKey) {
@@ -238,28 +235,21 @@ async function tryToSendRandomAmount (assetId, accountId, amount, precision, pri
   console.log(`Sending random amount (${amount}) of ${assetId} to ${accountId}`)
   const from = accountId
   const to = _.sample(_.without(accounts, from))
-  const txs = []
-  _.times(_.random(3, 5), () => {
+  const txAmount = _.random(3, 5)
+  for (let i = 0; i < txAmount; i++) {
     const message = _.sample(['Deal #1', 'Deal #2', 'Deal #3', 'PART_OF_DUMMY_SETTLEMENT'])
     const amount = String(Math.random()).substr(0, precision + 2)
-
-    txs.push(
-      commands.transferAsset(
-        newCommandServiceOptions([privateKey], 1, accountId),
-        {
-          srcAccountId: from,
-          destAccountId: to,
-          assetId,
-          description: message,
-          amount: amount
-        }
-      )
+    await commands.transferAsset(
+      newCommandServiceOptions([privateKey], 1, accountId),
+      {
+        srcAccountId: from,
+        destAccountId: to,
+        assetId,
+        description: message,
+        amount: amount
+      }
     )
-  })
-  await Promise.all(txs)
-    .catch(() => console.log(
-      `Error! Can't transfer ${assetId} from ${from} to ${to}`
-    ))
+  }
 }
 
 async function tryToAddSignatory (accountPrivKeyHex, accountId, publicKey) {
