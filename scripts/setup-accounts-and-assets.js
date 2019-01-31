@@ -107,9 +107,9 @@ new Promise((resolve, reject) => resolve())
   .catch((err) => console.log(err))
 
 async function setup () {
-  await initializeAssets()
   await tryToAddSignatory(testPrivKeyHex, testAccFull, alicePubKey)
   await tryToSetQuorum(testPrivKeyHex, testAccFull, 2)
+  await initializeAssets()
 }
 
 async function initializeAssets () {
@@ -124,8 +124,12 @@ async function initializeAssets () {
     await tryToCreateAsset(assetName, irohaDomain, precision)
     await tryAddAssetQuantity(assetId, amount)
     await tryToSplitAmount(assetId, amount)
-    await tryToSendRandomAmount(assetId, testAccFull, amount, precision, testPrivKeyHex)
-    await tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, alicePrivKeyHex)
+    const task1 = tryToSendRandomAmount(assetId, testAccFull, amount, precision, [testPrivKeyHex, alicePrivKeyHex], 2)
+    const task2 = tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, [alicePrivKeyHex], 1)
+    const tasks = {
+      t1: await task1,
+      t2: await task2
+    }
     console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
   }
 }
@@ -144,13 +148,17 @@ async function tryToCreateAccount (accountName, domainId, publicKey) {
     console.log(`${accountName}@${domainId} has successfully been created`)
   } catch (error) {
     const accountId = `${accountName}@${domainId}`
-    const account = await queries.getAccount(
-      newQueryServiceOptions(testPrivKeyHex, testAccFull),
-      {
-        accountId
-      }
-    )
-    console.log(`${account.accountId} already exist`)
+    try {
+      const account = await queries.getAccount(
+        newQueryServiceOptions(testPrivKeyHex, testAccFull),
+        {
+          accountId
+        }
+      )
+      console.log(`${account.accountId} already exist`)
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
@@ -173,7 +181,7 @@ async function tryToCreateAsset (assetName, domainId, precision) {
   console.log(`trying to create an asset: ${assetName}#${domainId} (precision=${precision})`)
   try {
     await commands.createAsset(
-      newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
+      newCommandServiceOptions([testPrivKeyHex, alicePrivKeyHex], 2, testAccFull),
       {
         assetName,
         domainId,
@@ -182,17 +190,21 @@ async function tryToCreateAsset (assetName, domainId, precision) {
     )
     console.log(`${assetName}#${domainId} (precision: ${precision}) has successfully been created`)
   } catch (error) {
-    const assetId = `${assetName}#${domainId}`
-    const info = await queries.getAssetInfo(
-      newQueryServiceOptions(testPrivKeyHex, testAccFull),
-      {
-        assetId
+    try {
+      const assetId = `${assetName}#${domainId}`
+      const info = await queries.getAssetInfo(
+        newQueryServiceOptions(testPrivKeyHex, testAccFull),
+        {
+          assetId
+        }
+      )
+      if (info.precision === precision) {
+        console.log(`${assetName}#${domainId} (precision=${precision}) already exist`)
+      } else {
+        console.log(`${assetName}#${domainId} is already used with different precision`)
       }
-    )
-    if (info.precision === precision) {
-      console.log(`${assetName}#${domainId} (precision=${precision}) already exist`)
-    } else {
-      console.log(`${assetName}#${domainId} is already used with different precision`)
+    } catch (error) {
+      console.log(error)
     }
   }
 }
@@ -201,7 +213,7 @@ async function tryAddAssetQuantity (assetId, amount) {
   console.log(`adding initial amount of ${assetId} to ${testAccFull}`)
   try {
     await commands.addAssetQuantity(
-      newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
+      newCommandServiceOptions([testPrivKeyHex, alicePrivKeyHex], 2, testAccFull),
       {
         assetId,
         amount
@@ -217,7 +229,7 @@ async function tryToSplitAmount (assetId, amount) {
   console.log(`transfer 1/3 ${splittedAmount} initial amount of ${assetId} to ${aliceAccFull}`)
   try {
     await commands.transferAsset(
-      newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
+      newCommandServiceOptions([testPrivKeyHex, alicePrivKeyHex], 2, testAccFull),
       {
         srcAccountId: testAccFull,
         destAccountId: aliceAccFull,
@@ -231,7 +243,7 @@ async function tryToSplitAmount (assetId, amount) {
   }
 }
 
-async function tryToSendRandomAmount (assetId, accountId, amount, precision, privateKey) {
+async function tryToSendRandomAmount (assetId, accountId, amount, precision, privateKeys, quorum) {
   console.log(`Sending random amount (${amount}) of ${assetId} to ${accountId}`)
   const from = accountId
   const to = _.sample(_.without(accounts, from))
@@ -239,16 +251,20 @@ async function tryToSendRandomAmount (assetId, accountId, amount, precision, pri
   for (let i = 0; i < txAmount; i++) {
     const message = _.sample(['Deal #1', 'Deal #2', 'Deal #3', 'PART_OF_DUMMY_SETTLEMENT'])
     const amount = String(Math.random()).substr(0, precision + 2)
-    await commands.transferAsset(
-      newCommandServiceOptions([privateKey], 1, accountId),
-      {
-        srcAccountId: from,
-        destAccountId: to,
-        assetId,
-        description: message,
-        amount: amount
-      }
-    )
+    try {
+      await commands.transferAsset(
+        newCommandServiceOptions(privateKeys, quorum, accountId),
+        {
+          srcAccountId: from,
+          destAccountId: to,
+          assetId,
+          description: message,
+          amount: amount
+        }
+      )
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
