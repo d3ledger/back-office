@@ -1,11 +1,19 @@
 <template>
-  <el-container class="login-container">
+  <el-container class="auth-container">
     <div style="margin-top: 2.5rem">
       <img src="@/assets/logo.svg" alt="D3"/>
     </div>
-    <el-card class="login-form-container">
-      <el-form @keyup.enter.native="onSubmit" class="login-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Private key:" prop="privateKey">
+    <span class="auth-welcome">Welcome to D3</span>
+    <div class="auth-form-container">
+      <el-form
+        @keyup.enter.native="onSubmit"
+        class="auth-form"
+        ref="form"
+        :model="form"
+        :rules="rules"
+        label-position="top"
+      >
+        <el-form-item label="Private key" prop="privateKey">
           <el-row type="flex" justify="space-between">
             <el-col :span="20">
               <el-input
@@ -16,6 +24,7 @@
             </el-col>
 
             <el-upload
+              class="auth-form_upload"
               action=""
               :auto-upload="false"
               :show-file-list="false"
@@ -28,20 +37,22 @@
             </el-upload>
           </el-row>
         </el-form-item>
-        <el-form-item label="Username:" prop="username">
+        <el-form-item label="Username" prop="username">
           <el-input
             name="username"
             v-model="form.username"
             :disabled="isLoading"
           />
         </el-form-item>
-        <el-form-item label="Node ip:" prop="nodeIp">
+        <el-form-item label="Node IP" prop="nodeIp">
           <el-select
             v-model="form.nodeIp"
+            class="auth-form_select"
             :disabled="isLoading"
             style="width: 100%;"
             filterable
             allow-create
+            popper-class="black-form_select-dropdown"
           >
             <el-option
               v-for="node in listOfNodes"
@@ -53,28 +64,29 @@
             </el-option>
           </el-select>
         </el-form-item>
-
-        <el-form-item class="login-button-container">
+        <el-form-item class="auth-button-container">
           <el-button
-            class="fullwidth black"
+            data-cy="login"
+            class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
             :loading="isLoading"
           >
-            Login
+            Log in
           </el-button>
         </el-form-item>
       </el-form>
-      <div style="margin-top: 3rem">
-        <p style="margin-bottom: 1rem">Don't have an account?</p>
+      <div class="auth_goto-container">
+        <p class="auth_goto-container-title">Don’t have an account?</p>
         <router-link
           to="/signup"
-          class="el-button fullwidth primary"
         >
-          Sign Up
+          <el-button data-cy="signup" class="auth_goto-container-button fullwidth">
+            Sign up
+          </el-button>
         </router-link>
       </div>
-    </el-card>
+    </div>
   </el-container>
 </template>
 
@@ -157,35 +169,20 @@ export default {
 </script>
 
 <style scoped>
-  .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .login-form-container {
-    position: relative;
-    width: 30rem;
-    overflow: visible;
-    margin-top: 3rem;
-  }
-
   /*
     ElementUI renders .el-form-item__label without a data attribute,
     so scoped styles doesn't work for it. The `>>>` combinator solves this problem.
     https://vue-loader.vuejs.org/en/features/scoped-css.html
   */
-  .login-form >>> .el-form-item__label {
-    line-height: 1;
-  }
 
-  .login-form >>> .el-form-item__label::before {
-    content: '';
+  .auth-form >>> .el-form-item__label::before {
+    display: none;
   }
 
   .option.left {
     float: left;
     margin-right: 10px;
+    color: #ffffff;
   }
 
   .option.right {
