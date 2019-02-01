@@ -18,10 +18,6 @@ module.exports = {
     config.resolve.alias
       .set('@util', path.resolve(__dirname, 'src/util'))
       .set('@router', path.resolve(__dirname, 'src/router.js'))
-    config.plugin('html').tap(args => {
-      args[0].chunksSortMode = 'none'
-      return args
-    })
   },
   configureWebpack: {
     module: {

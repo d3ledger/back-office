@@ -133,9 +133,6 @@ export default {
   height: 62px;
   width: 62px;
 }
-.el-menu-item {
-  font-family: 'IBM Plex Sans', sans-serif;
-}
 .el-side-menu {
   height: 100vh;
   overflow-y: auto;

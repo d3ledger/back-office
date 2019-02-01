@@ -41,8 +41,12 @@ html {
   margin: 0;
 }
 
-#app {
+[class^="el-"]:not(i),
+[class*="el-"]:not(i) {
   font-family: 'IBM Plex Sans', sans-serif !important;
+}
+
+#app {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -79,13 +83,6 @@ a:hover {
 
 .flex-direction-row {
   flex-direction: row;
-}
-
-.el-message,
-.el-message-box,
-.el-popper,
-.el-tooltip__popper, .el-select-dropdown__item {
-  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .form-item-text {
@@ -129,5 +126,127 @@ button.el-dialog__headerbtn {
 
 .fullheight {
   height: 100%;
+}
+
+/*
+ * Login and SignUp pages
+ */
+.black-form_select-dropdown {
+  background-color: #363636;
+}
+
+.black-form_select-dropdown .el-select-dropdown__item {
+  background-color: #363636;
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+.black-form_select-dropdown .el-select-dropdown__item:hover {
+  background-color: #424242;
+}
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-welcome {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.auth-form .el-input__inner {
+  background-color: #363636;
+  color: rgba(255, 255, 255, 0.8);
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  height: 4.5rem;
+  padding-left: 1.2rem;
+  padding-top: 1.2rem;
+  line-height: 0;
+  font-size: 1rem;
+}
+
+.auth-form .el-input__inner:focus {
+  border-color: #ffffff;
+  color: #ffffff;
+  opacity: 1;
+}
+
+.auth-form .el-form-item {
+  height: 4.4rem;
+}
+
+.auth-form .el-form-item__label {
+  line-height: 1;
+  position: relative;
+  top: 2rem;
+  z-index: 10;
+  margin-left: 1.2rem;
+  font-size: 0.8rem;
+  opacity: 0.56;
+  color: #ffffff;
+}
+
+.auth-form_upload .el-button,
+.auth-form_upload .el-button:focus {
+  width: 3.8rem;
+  height: 4.5rem;
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  background-color: #363636;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 0;
+  font-size: 1.2rem;
+  border-radius: 0.3rem;
+}
+
+.auth-form_upload .el-button:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+.auth-form_select .el-input__inner {
+  height: 4.5rem !important;
+}
+
+.auth-button {
+  margin-top: 1.5rem;
+  height: 3.8rem;
+  font-size: 0.8rem;
+  background-color: #000000;
+}
+
+.auth-form-container {
+  position: relative;
+  width: 28rem;
+  overflow: visible;
+  margin-top: 3rem;
+}
+
+.auth_goto-container {
+  margin-top: 4rem;
+}
+
+.auth_goto-container-title {
+  margin-bottom: 1.2rem;
+  font-size: 0.8rem;
+  color: #ffffff;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.auth_goto-container-button {
+  height: 3.8rem;
+  font-size: 0.8rem;
+  border: solid 1px rgba(255, 255, 255, 0.4);
+  background-color: #363636;
+  margin-bottom: 1rem;
+}
+
+.auth_goto-container-button:hover {
+  background-color: #363636;
+  border-color: #ffffff;
+  color: #ffffff;
 }
 </style>

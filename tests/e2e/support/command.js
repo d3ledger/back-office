@@ -24,7 +24,7 @@ Cypress.Commands.add('login', (keyPath) => {
   cy.get('form > div:nth-child(3) input')
     .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
   cy.get('.el-scrollbar__view > :nth-child(1)').click()
-  cy.get('.login-button-container > div > button').click()
+  cy.get('[data-cy=login').click()
   cy.url().should('be.not.eq', `${Cypress.config('baseUrl')}/#/login`)
 })
 
