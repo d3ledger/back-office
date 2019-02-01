@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400');
 
 html {
   box-sizing: border-box;
@@ -126,6 +126,14 @@ button.el-dialog__headerbtn {
 
 .fullheight {
   height: 100%;
+}
+
+.fullwidth {
+  width: 100%;
+}
+
+.pointed {
+  cursor: pointer;
 }
 
 /*
