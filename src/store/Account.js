@@ -184,7 +184,7 @@ const getters = {
   },
 
   accountSignatories (state) {
-    return state.accountSignatories.map((s) => Buffer.from(s, 'base64').toString('hex'))
+    return state.accountSignatories
   },
 
   rejectSettlementLoading (state) {
