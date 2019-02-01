@@ -330,7 +330,7 @@
     >
       <div class="approval_form-desc">
         <el-form class="dialog-form">
-          <el-form-item label="Wallet">
+          <el-form-item label="Wallets">
             <el-select class="fullwidth">
               <el-option
                 v-for="wallet in wallets"
