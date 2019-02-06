@@ -160,10 +160,7 @@
                       <el-col :span="18" >
                         <p>
                           <span class="transaction_details-title">Type: </span>
-                          <span v-if="scope.row.from.to">EXCHANGE</span>
-                          <span v-else-if="scope.row.to === 'notary'">WITHDRAWAL</span>
-                          <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
-                          <span v-else>TRANSFER</span>
+                          <span>EXCHANGE</span>
                         </p>
                         <p>
                           <span class="transaction_details-title">Amount outgoing:</span>
@@ -177,9 +174,9 @@
                           <span class="transaction_details-title">Address:</span>
                           {{ scope.row.from.to }}
                         </p>
-                        <p>
+                        <p v-if="scope.row.from.message.length">
                           <span class="transaction_details-title">Desciption:</span>
-                          {{ scope.row.from.message.length ? scope.row.from.message : 'Message not provided' }}
+                          {{ scope.row.from.message }}
                         </p>
                       </el-col>
                     </el-row>
@@ -209,9 +206,9 @@
                             {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                           </span>
                         </p>
-                        <p>
+                        <p v-if="scope.row.message.length && scope.row.to !== 'notary' && scope.row.from !== 'notary'">
                           <span class="transaction_details-title">Desciption:</span>
-                          {{ scope.row.message.length ? scope.row.message : 'Message not provided' }}
+                          {{ scope.row.message }}
                         </p>
                       </el-col>
                     </el-row>
@@ -267,10 +264,9 @@
                   <p v-if="scope.row.from.to">
                     {{ scope.row.from.message }}
                   </p>
-                  <p v-else-if="scope.row.from === 'notary' || scope.row.to === 'notary'">
+                  <p v-else-if="scope.row.from !== 'notary' && scope.row.to !== 'notary'">
                     {{ scope.row.message }}
                   </p>
-                  <p v-else>{{ scope.row.message }}</p>
                 </span>
               </template>
             </el-table-column>
