@@ -330,7 +330,7 @@
     >
       <div class="approval_form-desc">
         <el-form class="dialog-form">
-          <el-form-item label="Wallets">
+          <el-form-item label="Wallet">
             <el-select class="fullwidth">
               <el-option
                 v-for="wallet in wallets"
@@ -341,7 +341,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Limit">
-            <el-input placeholder="0"/>
+            <el-input placeholder="0" type="number"/>
           </el-form-item>
         </el-form>
       </div>
