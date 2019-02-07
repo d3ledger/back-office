@@ -4,16 +4,24 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import omit from 'lodash/fp/omit'
 import isEqual from 'lodash/fp/isEqual'
+import flatMap from 'lodash/fp/flatMap'
+import concat from 'lodash/fp/concat'
 import { getParsedItem, setParsedItem, setStringifyItem } from '@util/storage-util'
+import irohaUtil from '@util/iroha'
 
 const types = flow(
+  flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
+  concat([
+    'LOAD_SETTINGS',
+    'UPDATE_SETTINGS_VIEW_FIAT',
+    'UPDATE_SETTINGS_VIEW_CRYPTO',
+    'UPDATE_SETTINGS_VIEW_TIMEZONE'
+  ]),
   map(x => [x, x]),
   fromPairs
 )([
-  'LOAD_SETTINGS',
-  'UPDATE_SETTINGS_VIEW_FIAT',
-  'UPDATE_SETTINGS_VIEW_CRYPTO',
-  'UPDATE_SETTINGS_VIEW_TIMEZONE'
+  'ADD_ASSET_LIMIT',
+  'REMOVE_ASSET_LIMIT'
 ])
 
 function initialState () {
@@ -65,7 +73,19 @@ const mutations = {
 
   [types.UPDATE_SETTINGS_VIEW_TIMEZONE] (state, timezone) {
     Vue.set(state.view, 'timezone', timezone)
-  }
+  },
+
+  [types.ADD_ASSET_LIMIT_SUCCESS] () {},
+
+  [types.ADD_ASSET_LIMIT_REQUEST] () {},
+
+  [types.ADD_ASSET_LIMIT_FAILURE] () {},
+
+  [types.REMOVE_ASSET_LIMIT_SUCCESS] () {},
+
+  [types.REMOVE_ASSET_LIMIT_REQUEST] () {},
+
+  [types.REMOVE_ASSET_LIMIT_FAILURE] () {}
 }
 
 const actions = {
@@ -88,6 +108,44 @@ const actions = {
   updateSettingsViewTime ({ commit }, timezone) {
     setParsedItem('settings.view.timezone', timezone)
     commit(types.UPDATE_SETTINGS_VIEW_TIMEZONE, timezone)
+  },
+  addAssetLimit ({ commit, getters }, { privateKeys, limit }) {
+    commit(types.ADD_ASSET_LIMIT_REQUEST)
+    const _assetId = limit.assetId.replace('#', '_')
+    const value = {
+      assetId: limit.assetId,
+      amount: limit.amount,
+      interval_type: limit.interval_type,
+      interval_value: limit.interval_value,
+      lastTransactionDate: 0,
+      totalAmountInterval: 0
+    }
+    return irohaUtil.setAccountDetail(privateKeys, getters.accountQuorum, {
+      accountId: getters.accountId,
+      key: `limit_${_assetId}`,
+      // Iroha don't allow quotes in strings
+      // eslint-disable-next-line
+      value: JSON.stringify(value).replace(/"/g, '\\\"')
+    })
+      .then(() => commit(types.ADD_ASSET_LIMIT_SUCCESS))
+      .catch(err => {
+        commit(types.ADD_ASSET_LIMIT_FAILURE)
+        throw err
+      })
+  },
+  removeAssetLimit ({ commit, getters }, { privateKeys, limit }) {
+    commit(types.REMOVE_ASSET_LIMIT_REQUEST)
+    const _assetId = limit.assetId.replace('#', '_')
+    return irohaUtil.setAccountDetail(privateKeys, getters.accountQuorum, {
+      accountId: getters.accountId,
+      key: `limit_${_assetId}`,
+      value: ''
+    })
+      .then(() => commit(types.REMOVE_ASSET_LIMIT_SUCCESS))
+      .catch(err => {
+        commit(types.REMOVE_ASSET_LIMIT_FAILURE)
+        throw err
+      })
   }
 }
 

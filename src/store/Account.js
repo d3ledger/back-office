@@ -45,7 +45,8 @@ const types = flow(
   'REJECT_SETTLEMENT',
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_QUORUM'
+  'GET_ACCOUNT_QUORUM',
+  'GET_ACCOUNT_LIMITS'
 ])
 
 function initialState () {
@@ -56,6 +57,7 @@ function initialState () {
     accountInfo: {},
     accountQuorum: 0,
     accountSignatories: [],
+    accountLimits: [],
     rawAssetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
@@ -187,12 +189,20 @@ const getters = {
     return state.accountSignatories
   },
 
+  accountLimits (state) {
+    return state.accountLimits
+  },
+
   rejectSettlementLoading (state) {
     return state.rejectSettlementLoading
   },
 
   acceptSettlementLoading (state) {
     return state.acceptSettlementLoading
+  },
+
+  accountId (state) {
+    return state.accountId
   }
 }
 
@@ -417,6 +427,32 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_LIMITS_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_LIMITS_SUCCESS] (state, jsonData) {
+    const parsedJson = JSON.parse(jsonData)
+    const accountInfo = parsedJson[state.accountId]
+    const limits = Object.keys(accountInfo)
+      .filter(key => key.includes('limit_') && accountInfo[key])
+      .map(key => JSON.parse(accountInfo[key]))
+      .map(limit => {
+        const wallet = getters.wallets(state)
+          .find(w => w.assetId === limit.assetId)
+        return {
+          ...limit,
+          wallet: {
+            name: wallet.name,
+            asset: wallet.asset
+          }
+        }
+      })
+    state.accountLimits = limits
+  },
+
+  [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -741,6 +777,18 @@ const actions = {
       .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountLimits ({ commit, state }) {
+    commit(types.GET_ACCOUNT_LIMITS_REQUEST)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
+      .then(({ jsonData }) => commit(types.GET_ACCOUNT_LIMITS_SUCCESS, jsonData))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
         throw err
       })
   }
