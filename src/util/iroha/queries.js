@@ -67,6 +67,14 @@ const getAssetInfo = ({
   }
 )
 
+const getAccountDetail = ({
+  accountId
+}) => queries.getAccountDetail(
+  newQueryServiceOptions(), {
+    accountId
+  }
+)
+
 export {
   getAccount,
   getAccountAssets,
@@ -75,5 +83,6 @@ export {
   getSignatories,
   getPendingTransactions,
   getRawPendingTransactions,
-  getAssetInfo
+  getAssetInfo,
+  getAccountDetail
 }
