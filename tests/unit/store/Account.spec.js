@@ -129,7 +129,9 @@ describe('Account store', () => {
         assets: [],
         connectionError: null,
         acceptSettlementLoading: false,
-        rejectSettlementLoading: false
+        rejectSettlementLoading: false,
+        freeEthRelaysNumber: 0,
+        freeBtcRelaysNumber: 0
       }
 
       mutations[types.RESET](state)
