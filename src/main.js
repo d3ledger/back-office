@@ -15,6 +15,8 @@ import { faFileInvoice } from '@fortawesome/free-solid-svg-icons/faFileInvoice'
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt'
 import { faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons/faAngleDoubleDown'
 import { faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons/faAngleDoubleUp'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons/faAngleDown'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
@@ -135,6 +137,8 @@ library.add(
   faExchangeAlt,
   faAngleDoubleDown,
   faAngleDoubleUp,
+  faAngleRight,
+  faAngleDown,
   faArrowRight,
   faDownload,
   faUpload,
