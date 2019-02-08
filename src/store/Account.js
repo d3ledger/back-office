@@ -46,7 +46,8 @@ const types = flow(
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_LIMITS'
+  'GET_ACCOUNT_LIMITS',
+  'GET_FREE_RELAYS'
 ])
 
 function initialState () {
@@ -65,7 +66,8 @@ function initialState () {
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
-    rejectSettlementLoading: false
+    rejectSettlementLoading: false,
+    freeRelays: []
   }
 }
 
@@ -203,6 +205,10 @@ const getters = {
 
   accountId (state) {
     return state.accountId
+  },
+
+  freeRelays (state) {
+    return state.freeRelays
   }
 }
 
@@ -454,6 +460,16 @@ const mutations = {
 
   [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.GET_FREE_RELAYS_REQUEST] (state) {},
+
+  [types.GET_FREE_RELAYS_SUCCESS] (state, relays) {
+    state.freeRelays = relays.filter(relay => relay === 'free')
+  },
+
+  [types.GET_FREE_RELAYS_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -563,6 +579,23 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_ASSETS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getFreeRelays ({ commit }) {
+    commit(types.GET_FREE_RELAYS_REQUEST)
+
+    return irohaUtil.getAccountDetail({
+      accountId: 'notary@notary'
+    })
+      .then(accountDetail => {
+        console.log(accountDetail['eth_registration_service@notary'])
+        commit(types.GET_FREE_RELAYS_SUCCESS, Object.keys(accountDetail['eth_registration_service@notary'])
+        )
+      })
+      .catch(err => {
+        commit(types.GET_FREE_RELAYS_FAILURE, err)
         throw err
       })
   },

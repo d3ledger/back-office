@@ -62,15 +62,18 @@
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
-                        </el-button>
+                      </el-button>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.ETH)"
+                        v-if="!walletType.includes(WalletTypes.ETH) && freeRelays.length > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
+                      <span v-else-if="!walletType.includes(WalletTypes.ETH)">
+                        There is no free ETH relays now
+                      </span>
                       <span class="list-title" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
@@ -345,6 +348,7 @@ export default {
   created () {
     this.getSignatories()
     this.getAccountLimits()
+    this.getFreeRelays()
   },
   computed: {
     ...mapGetters([
@@ -353,7 +357,8 @@ export default {
       'withdrawWalletAddresses',
       'accountQuorum',
       'accountSignatories',
-      'walletType'
+      'walletType',
+      'freeRelays'
     ]),
     currentFiat: {
       get () {
@@ -390,7 +395,9 @@ export default {
       'getAccountQuorum',
       'setNotaryIp',
       'addNetwork',
-      'getAccountLimits'
+      'getAccountLimits',
+      'updateAccount',
+      'getFreeRelays'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
