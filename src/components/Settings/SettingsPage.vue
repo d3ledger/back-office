@@ -193,81 +193,58 @@
               </div>
             </div>
           </el-card>
-          <el-card
-            class="card"
-            :body-style="{ padding: '0' }"
-          >
-            <div class="header_btn">
-              <span class="header_btn-title pointed" @click="updateActiveTab(3)">
-                <span class="header_btn-icon_block">
-                  <fa-icon
-                    class="header_btn-icon"
-                    :icon="activeTab === 3 ? 'angle-down' : 'angle-right'"
-                  />
-                </span>
-                Wallet limits
-              </span>
-              <el-button class="action_button" data-cy="addWalletLimit" @click="addWalletLimitDialogVisible = true">
-                <fa-icon class="action_button-icon" icon="plus" /> Add
-              </el-button>
-            </div>
-            <div v-if="activeTab === 3">
-              <div class="settings-item">
-                <!-- <div class="settings-item_row pointed">
-                    <span class="settings-item_row-key">Ethereum (ETH)</span>
-                    <span class="settings-item_row-key">
-                      <span class="settings-item_row-key-item">20 ETH</span>
-                      <el-button class="settings-item_row-delete">
-                        <fa-icon icon="trash-alt"/>
-                      </el-button>
-                    </span>
-                </div> -->
-                <div
-                  class="settings-item_row"
-                >
-                  <span class="settings-item_row-key">You don't have any limits</span>
-                </div>
-              </div>
-            </div>
-          </el-card>
+          <WalletLimitsCard :activeTab="activeTab" :updateActiveTab="updateActiveTab" />
         </el-col>
       </el-row>
     </el-main>
     <el-dialog
       title="Edit Quorum"
       :visible.sync="quorumFormVisible"
-      width="500px"
+      width="450px"
       center>
       <el-form ref="editQuorumForm" class="quorum_form" :model="quorumForm">
         <el-form-item>
           <el-input-number v-model="quorumForm.amount" :min="1" :max="accountSignatories.length"></el-input-number>
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            @click="updateQuorum"
-            class="fullwidth black clickable"
-            :disabled="quorumForm.amount > accountSignatories.length"
-            :loading="quorumUpdating">
-            Update
-          </el-button>
-        </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-form_buttons-block">
+        <el-button
+          @click="updateQuorum"
+          class="dialog-form_buttons action"
+          :disabled="quorumForm.amount > accountSignatories.length"
+          :loading="quorumUpdating"
+        >
+          Update
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="quorumFormVisible = false"
+        >
+          Cancel
+        </el-button>
+      </div>
     </el-dialog>
     <el-dialog
       data-cy="addPublicKeyDialog"
       title="Public key"
       :visible.sync="addKeyFormVisible"
-      width="500px"
+      width="450px"
       center>
       <div class="approval_form-desc">
         Are you sure want to add new public key?
       </div>
-      <div slot="footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           type="danger"
           @click="addPublicKey"
-          class="fullwidth black clickable"
+          class="dialog-form_buttons action"
           :loading="addingNewKey">Add
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="addKeyFormVisible = false"
+        >
+          Cancel
         </el-button>
       </div>
     </el-dialog>
@@ -275,17 +252,23 @@
       data-cy="removePublicKeyDialog"
       title="Public key"
       :visible.sync="removeKeyFormVisible"
-      width="500px"
+      width="450px"
       center>
       <div class="approval_form-desc">
         Are you sure want to remove <b class="key_representation">{{ keyToRemove }}</b> public key?
       </div>
-      <div slot="footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           @click="removePublicKey"
-          class="fullwidth"
+          class="dialog-form_buttons action"
           type="danger"
           :loading="removingKey">Remove
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="removeKeyFormVisible = false"
+        >
+          Cancel
         </el-button>
       </div>
     </el-dialog>
@@ -295,65 +278,26 @@
       :visible.sync="downloadKeyVisible"
       :close-on-click-modal="false"
       :show-close="false"
-      width="500px"
+      width="450px"
       center>
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
-          type="primary"
-          class="black"
+          class="dialog-form_buttons action"
           data-cy="buttonDownload"
           @click="onClickDownload"
         >
           <fa-icon icon="download"/>
           Download
         </el-button>
-
         <el-button
-          type="default"
+          class="dialog-form_buttons close"
           :disabled="!downloaded"
           data-cy="buttonConfirm"
           @click="downloadKeyVisible = false">
           Confirm
-        </el-button>
-      </span>
-    </el-dialog>
-    <el-dialog
-      data-cy="addWalletLimit"
-      title="Add wallet limit"
-      :visible.sync="addWalletLimitDialogVisible"
-      :show-close="false"
-      width="450px"
-      center
-    >
-      <div class="approval_form-desc">
-        <el-form class="dialog-form">
-          <el-form-item label="Wallet">
-            <el-select class="fullwidth">
-              <el-option
-                v-for="wallet in wallets"
-                :key="wallet.name"
-                :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-                :value="wallet.assetId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Limit">
-            <el-input placeholder="0" type="number"/>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer" class="dialog-form_buttons-block">
-        <el-button class="dialog-form_buttons action">
-          Create
-        </el-button>
-        <el-button
-          class="dialog-form_buttons close"
-          @click="addWalletLimitDialogVisible = false"
-        >
-          Cancel
         </el-button>
       </div>
     </el-dialog>
@@ -367,8 +311,13 @@ import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
+import { lazyComponent } from '@router'
+
 export default {
   name: 'settings-page',
+  components: {
+    WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard')
+  },
   data () {
     return {
       activeTab: 1,
@@ -376,7 +325,6 @@ export default {
       addKeyFormVisible: false,
       removeKeyFormVisible: false,
       downloadKeyVisible: false,
-      addWalletLimitDialogVisible: false,
       quorumForm: {
         amount: 0
       },
@@ -394,6 +342,7 @@ export default {
   ],
   created () {
     this.getSignatories()
+    this.getAccountLimits()
   },
   computed: {
     ...mapGetters([
@@ -402,8 +351,7 @@ export default {
       'withdrawWalletAddresses',
       'accountQuorum',
       'accountSignatories',
-      'walletType',
-      'wallets'
+      'walletType'
     ]),
     currentFiat: {
       get () {
@@ -440,7 +388,7 @@ export default {
       'getAccountQuorum',
       'setNotaryIp',
       'addNetwork',
-      'updateAccount'
+      'getAccountLimits'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -459,6 +407,7 @@ export default {
             })
         })
         .finally(() => {
+          this.updateActiveTab(1)
           this.addingNewKey = false
           this.addKeyFormVisible = false
           this.getSignatories()
@@ -486,6 +435,7 @@ export default {
             })
         })
         .finally(() => {
+          this.updateActiveTab(1)
           this.removingKey = false
           this.removeKeyFormVisible = false
           this.getSignatories()
@@ -584,40 +534,6 @@ export default {
   padding: 1.5rem 1.5rem;
 }
 
-.header_btn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-}
-
-.header_btn-title {
-  font-weight: 300;
-  height: 2rem;
-  line-height: 2rem;
-}
-
-.header_btn-icon_block {
-  cursor: pointer;
-}
-
-.header_btn-icon {
-  width: 1rem;
-  margin-right: 1rem;
-  color: #bbbbbb;
-}
-
-.header_only {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-}
-
-.card {
-  margin-top: 0.5rem;
-}
-
 .settings {
   padding: 0 1.5rem;
 }
@@ -680,71 +596,6 @@ export default {
   margin-bottom: 5px;
 }
 
-.settings-item {
-  max-height: 20rem;
-  overflow-y: scroll;
-}
-
-.settings-item_row {
-  padding: 0 1.5rem;
-  height: 3rem;
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #efefef;
-}
-.settings-item_row:hover {
-  background-color: #f7f7f7;
-}
-
-.settings-item_row-key {
-  font-size: 0.8rem;
-  line-height: 3rem;
-}
-
-.settings-item_row-key-item {
-  margin-right: 1rem;
-}
-
-.settings-item_row-delete {
-  border: none;
-  padding: 0;
-  height: 0;
-  line-height: 3rem;
-  font-size: 0.8rem;
-}
-
-.settings-item_row-delete:active,
-.settings-item_row-delete:focus,
-.settings-item_row-delete:hover {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.action_button {
-  border: 1px solid #000000;
-  text-transform: uppercase;
-  width: 5rem;
-  padding: 0.5rem;
-}
-
-.action_button:active,
-.action_button:focus,
-.action_button:hover {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.action_button-icon {
-  font-size: 0.7rem;
-  height: 0.8rem;
-  margin-left: -0.2rem;
-  margin-right: 0.3rem;
-}
-
-.action_button.content_width {
-  width: fit-content
-}
-
 .approval_form-desc {
   text-align: center;
 }
@@ -759,57 +610,93 @@ export default {
   white-space: nowrap;
   margin-right: 1rem;
 }
+</style>
 
-.dialog-form >>> .el-input__inner {
-  font-weight: 700;
-  height: 4.5rem;
-  padding-left: 1.2rem;
-  padding-top: 1.2rem;
-  line-height: 0;
-  font-size: 1rem;
-  border-radius: 0.1rem;
+<style>
+.card {
+  margin-top: 0.5rem;
 }
- .dialog-form >>> .el-input__inner:focus {
-  opacity: 1;
-}
- .dialog-form >>> .el-form-item {
-  height: 4.4rem;
-}
- .dialog-form >>> .el-form-item__label {
-  line-height: 1;
-  position: relative;
-  top: 1.5rem;
-  z-index: 10;
-  margin-left: 1.2rem;
-  font-size: 0.8rem;
-  color: #000000;
-}
-.dialog-form >>> .el-input__inner {
-  height: 4.5rem !important;
-}
-.dialog-form_buttons-block {
+.header_btn {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
 }
-.dialog-form_buttons {
-  height: 3.5rem;
-  width: 13.5rem;
+.header_btn-title {
+  font-weight: 300;
+  height: 2rem;
+  line-height: 2rem;
+}
+.header_btn-icon_block {
+  cursor: pointer;
+}
+.header_btn-icon {
+  width: 1rem !important;
+  margin-right: 1rem;
+  color: #bbbbbb;
+}
+.header_only {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.action_button {
+  border: 1px solid #000000;
   text-transform: uppercase;
+  width: 5rem;
+  padding: 0.5rem;
+}
+.action_button:active,
+.action_button:focus,
+.action_button:hover {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
+}
+.action_button-icon {
+  font-size: 0.7rem;
+  height: 0.8rem;
+  margin-left: -0.2rem;
+  margin-right: 0.3rem;
+}
+.action_button.content_width {
+  width: fit-content
+}
+
+.settings-item {
+  max-height: 20rem;
+  overflow-y: scroll;
+}
+.settings-item_row {
+  padding: 0 1.5rem;
+  height: 3rem;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #efefef;
+}
+.settings-item_row:hover {
+  background-color: #f7f7f7;
+}
+.settings-item_row-key {
+  font-size: 0.8rem;
+  line-height: 3rem;
+}
+.settings-item_row-key-item {
+  margin-right: 1rem;
+}
+.settings-item_row-delete {
+  border: none;
+  padding: 0;
+  height: 0;
+  line-height: 3rem;
   font-size: 0.8rem;
 }
-.dialog-form_buttons.action {
-  background-color: #041820;
-  color: #ffffff;
-  border: 1px solid #041820;
-}
-.dialog-form_buttons.action:hover {
-  background-color: #041820;
-}
-.dialog-form_buttons.close {
+.settings-item_row-delete:active,
+.settings-item_row-delete:focus,
+.settings-item_row-delete:hover {
+  background-color: #ffffff;
   color: #000000;
-  border: 1px solid #1d1f20;
-}
-.dialog-form_buttons.close:hover {
-  background-color: #f7f7f7;
 }
 </style>

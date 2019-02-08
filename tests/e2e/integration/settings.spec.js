@@ -38,7 +38,7 @@ describe('Test settings page', () => {
       cy.get('[data-cy="addPublicKey"]').click()
       cy.get('[data-cy="addPublicKeyDialog"]')
         .should('be.visible')
-      cy.get('[data-cy="addPublicKeyDialog').find('.el-button').click()
+      cy.get('[data-cy="addPublicKeyDialog').find('.dialog-form_buttons-block > .action').click()
       cy.get('#approval-dialog .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
