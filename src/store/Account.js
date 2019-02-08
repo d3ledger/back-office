@@ -209,8 +209,12 @@ const getters = {
     return state.accountId
   },
 
-  freeRelays (state) {
-    return state.freeRelays
+  freeEthRelaysNumber (state) {
+    return state.freeEthRelaysNumber
+  },
+
+  freeBtcRelaysNumber (state) {
+    return state.freeBtcRelaysNumber
   }
 }
 
@@ -610,6 +614,7 @@ const actions = {
 
   getFreeBtcRelaysNumber ({ commit }) {
     commit(types.GET_FREE_BTC_RELAYS_REQUEST)
+    console.log(notaryUtil)
 
     return notaryUtil.getFreeBtcRelaysNumber()
       .then(relays => {

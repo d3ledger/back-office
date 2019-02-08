@@ -17,16 +17,16 @@ const signup = axios => (name, whitelist, publicKey) => {
     .then(({ data }) => ({ response: data }))
 }
 
-const getFreeEthRelaysNumber = axios => () => {
+const getFreeEthRelaysNumber = () => {
   return axios
     .get(`${ETH_NOTARY_URL}/free-addresses/number`)
-    .then(({ data }) => ({ response: data }))
+    .then(({ data }) => data)
 }
 
-const getFreeBtcRelaysNumber = axios => () => {
+const getFreeBtcRelaysNumber = () => {
   return axios
     .get(`${BTC_NOTARY_URL}/free-addresses/number`)
-    .then(({ data }) => ({ response: data }))
+    .then(({ data }) => data)
 }
 
 export default {

@@ -63,9 +63,9 @@
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
                       </el-button>
-                      <span v-else-if="!walletType.includes(WalletTypes.BTC)">
+                      <div v-else-if="!walletType.includes(WalletTypes.BTC)" class="list-title">
                         There is no free BTC relays now
-                      </span>
+                      </div>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
                         class="action_button content_width"
@@ -74,9 +74,9 @@
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
-                      <span v-else-if="!walletType.includes(WalletTypes.ETH)">
+                      <div v-else-if="!walletType.includes(WalletTypes.ETH)" class="list-title">
                         There is no free ETH relays now
-                      </span>
+                      </div>
                       <span class="list-title" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
