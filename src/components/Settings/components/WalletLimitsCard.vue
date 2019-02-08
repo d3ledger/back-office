@@ -73,7 +73,11 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Time">
-            <el-select v-model="limitForm.label" class="fullwidth">
+            <el-select
+              placeholder="Select period"
+              v-model="limitForm.label"
+              class="fullwidth"
+            >
               <el-option
                 v-for="(timelimit, index) in timelimits"
                 :key="index"
@@ -97,7 +101,7 @@
         </el-button>
         <el-button
           class="dialog-form_buttons close"
-          @click="addWalletLimitDialogVisible = false"
+          @click="onCloseModal"
         >
           Cancel
         </el-button>
@@ -354,6 +358,14 @@ export default {
           this.editingLimit = false
           this.editLimitForm = {}
         })
+    },
+    onCloseModal () {
+      this.limitForm = {
+        assetId: null,
+        label: null,
+        amount: null
+      }
+      this.addWalletLimitDialogVisible = false
     },
     formatDate (value, type) {
       const t = this.timelimits.find(t => t.amount === value && t.type === type)
