@@ -56,7 +56,7 @@
     <el-dialog
       title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
-      width="500px"
+      width="450px"
       center
     >
       <div v-if="settlementForRejection">

@@ -279,7 +279,7 @@
       :title="'Withdraw ' + wallet.asset"
       :visible.sync="withdrawFormVisible"
       @close="closeWithdrawDialog()"
-      width="500px"
+      width="450px"
       center
     >
       <el-form ref="withdrawForm" :model="withdrawForm" class="withdraw_form" :rules="rules">
@@ -330,7 +330,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="500px"
+      width="450px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -349,7 +349,7 @@
       title="Transfer"
       :visible.sync="transferFormVisible"
       @close="closeTransferForm()"
-      width="500px"
+      width="450px"
       center
     >
       <el-form ref="transferForm" :model="transferForm" class="transfer_form" :rules="rules">
