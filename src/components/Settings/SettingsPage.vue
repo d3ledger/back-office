@@ -110,20 +110,45 @@
           :xs="12"
           :lg="{ span: 9 }"
           :xl="{ span: 8 }"
-          class="right_column fullheight">
+          class="right_column fullheight"
+        >
           <el-card
             :body-style="{ padding: '0' }">
+            <div class="header_only">
+              <span class="header_btn-title">
+                Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b>
+              </span>
+              <el-button
+                data-cy="editQuorum"
+                class="action_button"
+                @click="quorumFormVisible = true">
+                <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
+              </el-button>
+            </div>
+          </el-card>
+          <el-card
+            class="card"
+            :body-style="{ padding: '0' }"
+          >
             <div class="header_btn">
-              <span>Public keys</span>
+              <span class="header_btn-title pointed" @click="updateActiveTab(1)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 1 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                Public keys
+              </span>
               <el-button class="action_button" data-cy="addPublicKey" @click="addKeyFormVisible = true">
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
-            <div>
+            <div v-if="activeTab === 1">
               <div class="settings-item" data-cy="accountSignatories">
                 <template v-for="(pubKey, index) in accountSignatories">
                   <div class="settings-item_row" :key="index">
-                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
+                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key text-overflow pointed">{{ pubKey }}</span>
                     <el-button
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
@@ -137,37 +162,70 @@
           </el-card>
           <el-card
             class="card"
-            :body-style="{ padding: '0' }">
-            <div class="header_only">
-              <span>Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b></span>
-              <el-button
-                data-cy="editQuorum"
-                class="action_button"
-                @click="quorumFormVisible = true">
-                <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
-              </el-button>
-            </div>
-          </el-card>
-          <el-card
-            class="card"
-            :body-style="{ padding: '0' }">
+            :body-style="{ padding: '0' }"
+          >
             <div class="header_btn">
-              <span>White list</span>
+              <span class="header_btn-title pointed" @click="updateActiveTab(2)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 2 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                White list
+              </span>
             </div>
-            <div>
+            <div v-if="activeTab === 2">
               <div class="settings-item">
                 <template v-for="(address, index) in withdrawWalletAddresses">
                   <div
                     v-if="withdrawWalletAddresses.length"
                     class="settings-item_row"
                     :key="index">
-                    <span class="settings-item_row-key">{{ address }}</span>
+                    <span class="settings-item_row-key text-overflow">{{ address }}</span>
                   </div>
                 </template>
                 <div
                   v-if="!withdrawWalletAddresses.length"
                   class="settings-item_row">
                   <span class="settings-item_row-key">You can withdraw to any address</span>
+                </div>
+              </div>
+            </div>
+          </el-card>
+          <el-card
+            class="card"
+            :body-style="{ padding: '0' }"
+          >
+            <div class="header_btn">
+              <span class="header_btn-title pointed" @click="updateActiveTab(3)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 3 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                Wallet limits
+              </span>
+              <el-button class="action_button" data-cy="addWalletLimit" @click="addWalletLimitDialogVisible = true">
+                <fa-icon class="action_button-icon" icon="plus" /> Add
+              </el-button>
+            </div>
+            <div v-if="activeTab === 3">
+              <div class="settings-item">
+                <!-- <div class="settings-item_row pointed">
+                    <span class="settings-item_row-key">Ethereum (ETH)</span>
+                    <span class="settings-item_row-key">
+                      <span class="settings-item_row-key-item">20 ETH</span>
+                      <el-button class="settings-item_row-delete">
+                        <fa-icon icon="trash-alt"/>
+                      </el-button>
+                    </span>
+                </div> -->
+                <div
+                  class="settings-item_row"
+                >
+                  <span class="settings-item_row-key">You don't have any limits</span>
                 </div>
               </div>
             </div>
@@ -262,6 +320,43 @@
         </el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      data-cy="addWalletLimit"
+      title="Add wallet limit"
+      :visible.sync="addWalletLimitDialogVisible"
+      :show-close="false"
+      width="450px"
+      center
+    >
+      <div class="approval_form-desc">
+        <el-form class="dialog-form">
+          <el-form-item label="Wallet">
+            <el-select class="fullwidth">
+              <el-option
+                v-for="wallet in wallets"
+                :key="wallet.name"
+                :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
+                :value="wallet.assetId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Limit">
+            <el-input placeholder="0" type="number"/>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-form_buttons-block">
+        <el-button class="dialog-form_buttons action">
+          Create
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="addWalletLimitDialogVisible = false"
+        >
+          Cancel
+        </el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -276,10 +371,12 @@ export default {
   name: 'settings-page',
   data () {
     return {
+      activeTab: 1,
       quorumFormVisible: false,
       addKeyFormVisible: false,
       removeKeyFormVisible: false,
       downloadKeyVisible: false,
+      addWalletLimitDialogVisible: false,
       quorumForm: {
         amount: 0
       },
@@ -305,7 +402,8 @@ export default {
       'withdrawWalletAddresses',
       'accountQuorum',
       'accountSignatories',
-      'walletType'
+      'walletType',
+      'wallets'
     ]),
     currentFiat: {
       get () {
@@ -459,6 +557,9 @@ export default {
           this.$message.error(`Something was wrong. You didn't register in network`)
         })
       })
+    },
+    updateActiveTab (id) {
+      this.activeTab = id
     }
   },
   filters: {
@@ -488,6 +589,22 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
+}
+
+.header_btn-title {
+  font-weight: 300;
+  height: 2rem;
+  line-height: 2rem;
+}
+
+.header_btn-icon_block {
+  cursor: pointer;
+}
+
+.header_btn-icon {
+  width: 1rem;
+  margin-right: 1rem;
+  color: #bbbbbb;
 }
 
 .header_only {
@@ -523,6 +640,7 @@ export default {
 
 .settings_item-header-title {
   font-size: 1rem;
+  font-weight: 300;
 }
 
 .currencies_list {
@@ -583,8 +701,8 @@ export default {
   line-height: 3rem;
 }
 
-.settings-item_row-key.pointed {
-  cursor: pointer;
+.settings-item_row-key-item {
+  margin-right: 1rem;
 }
 
 .settings-item_row-delete {
@@ -592,6 +710,7 @@ export default {
   padding: 0;
   height: 0;
   line-height: 3rem;
+  font-size: 0.8rem;
 }
 
 .settings-item_row-delete:active,
@@ -632,5 +751,65 @@ export default {
 
 .quorum_form >>> .el-input-number {
   width: 100%;
+}
+
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-right: 1rem;
+}
+
+.dialog-form >>> .el-input__inner {
+  font-weight: 700;
+  height: 4.5rem;
+  padding-left: 1.2rem;
+  padding-top: 1.2rem;
+  line-height: 0;
+  font-size: 1rem;
+  border-radius: 0.1rem;
+}
+ .dialog-form >>> .el-input__inner:focus {
+  opacity: 1;
+}
+ .dialog-form >>> .el-form-item {
+  height: 4.4rem;
+}
+ .dialog-form >>> .el-form-item__label {
+  line-height: 1;
+  position: relative;
+  top: 1.5rem;
+  z-index: 10;
+  margin-left: 1.2rem;
+  font-size: 0.8rem;
+  color: #000000;
+}
+.dialog-form >>> .el-input__inner {
+  height: 4.5rem !important;
+}
+.dialog-form_buttons-block {
+  display: flex;
+  justify-content: space-between;
+}
+.dialog-form_buttons {
+  height: 3.5rem;
+  width: 13.5rem;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+.dialog-form_buttons.action {
+  background-color: #041820;
+  color: #ffffff;
+  border: 1px solid #041820;
+}
+.dialog-form_buttons.action:hover {
+  background-color: #041820;
+}
+.dialog-form_buttons.close {
+  color: #000000;
+  border: 1px solid #1d1f20;
+}
+.dialog-form_buttons.close:hover {
+  background-color: #f7f7f7;
 }
 </style>
