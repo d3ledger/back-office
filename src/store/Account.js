@@ -47,7 +47,8 @@ const types = flow(
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
   'GET_ACCOUNT_LIMITS',
-  'GET_FREE_RELAYS'
+  'GET_FREE_ETH_RELAYS',
+  'GET_FREE_BTC_RELAYS'
 ])
 
 function initialState () {
@@ -67,7 +68,8 @@ function initialState () {
     connectionError: null,
     acceptSettlementLoading: false,
     rejectSettlementLoading: false,
-    freeRelays: []
+    freeEthRelaysNumber: 0,
+    freeBtcRelaysNumber: 0
   }
 }
 
@@ -462,13 +464,23 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.GET_FREE_RELAYS_REQUEST] (state) {},
+  [types.GET_FREE_ETH_RELAYS_REQUEST] (state) {},
 
-  [types.GET_FREE_RELAYS_SUCCESS] (state, relays) {
-    state.freeRelays = relays.filter(relay => relay === 'free')
+  [types.GET_FREE_ETH_RELAYS_SUCCESS] (state, relays) {
+    state.freeEthRelaysNumber = relays
   },
 
-  [types.GET_FREE_RELAYS_FAILURE] (state, err) {
+  [types.GET_FREE_ETH_RELAYS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_FREE_BTC_RELAYS_REQUEST] (state) {},
+
+  [types.GET_FREE_BTC_RELAYS_SUCCESS] (state, relays) {
+    state.freeBtcRelaysNumber = relays
+  },
+
+  [types.GET_FREE_BTC_RELAYS_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -583,19 +595,28 @@ const actions = {
       })
   },
 
-  getFreeRelays ({ commit }) {
-    commit(types.GET_FREE_RELAYS_REQUEST)
+  getFreeEthRelaysNumber ({ commit }) {
+    commit(types.GET_FREE_ETH_RELAYS_REQUEST)
 
-    return irohaUtil.getAccountDetail({
-      accountId: 'notary@notary'
-    })
-      .then(accountDetail => {
-        console.log(accountDetail['eth_registration_service@notary'])
-        commit(types.GET_FREE_RELAYS_SUCCESS, Object.keys(accountDetail['eth_registration_service@notary'])
-        )
+    return notaryUtil.getFreeEthRelaysNumber()
+      .then(relays => {
+        commit(types.GET_FREE_ETH_RELAYS_SUCCESS, relays)
       })
       .catch(err => {
-        commit(types.GET_FREE_RELAYS_FAILURE, err)
+        commit(types.GET_FREE_ETH_RELAYS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getFreeBtcRelaysNumber ({ commit }) {
+    commit(types.GET_FREE_BTC_RELAYS_REQUEST)
+
+    return notaryUtil.getFreeBtcRelaysNumber()
+      .then(relays => {
+        commit(types.GET_FREE_BTC_RELAYS_SUCCESS, relays)
+      })
+      .catch(err => {
+        commit(types.GET_FREE_BTC_RELAYS_FAILURE, err)
         throw err
       })
   },

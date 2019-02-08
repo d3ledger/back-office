@@ -56,15 +56,18 @@
                   <el-row>
                     <el-col>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.BTC)"
+                        v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
                       </el-button>
+                      <span v-else-if="!walletType.includes(WalletTypes.BTC)">
+                        There is no free BTC relays now
+                      </span>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.ETH) && freeRelays.length > 0"
+                        v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
                       >
@@ -348,7 +351,8 @@ export default {
   created () {
     this.getSignatories()
     this.getAccountLimits()
-    this.getFreeRelays()
+    this.getFreeEthRelaysNumber()
+    this.getFreeBtcRelaysNumber()
   },
   computed: {
     ...mapGetters([
@@ -358,7 +362,8 @@ export default {
       'accountQuorum',
       'accountSignatories',
       'walletType',
-      'freeRelays'
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber'
     ]),
     currentFiat: {
       get () {
@@ -397,7 +402,8 @@ export default {
       'addNetwork',
       'getAccountLimits',
       'updateAccount',
-      'getFreeRelays'
+      'getFreeEthRelaysNumber',
+      'getFreeBtcRelaysNumber'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
