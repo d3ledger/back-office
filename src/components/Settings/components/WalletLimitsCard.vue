@@ -57,12 +57,13 @@
       title="Add wallet limit"
       :visible.sync="addWalletLimitDialogVisible"
       :show-close="false"
+      @closed="onCloseModal"
       width="450px"
       center
     >
       <div class="approval_form-desc">
-        <el-form class="dialog-form" :model="limitForm">
-          <el-form-item label="Wallets">
+        <el-form class="dialog-form" :model="limitForm" ref="limitForm" >
+          <el-form-item label="Wallets" prop="assetId">
             <el-select v-model="limitForm.assetId" class="fullwidth">
               <el-option
                 v-for="wallet in wallets"
@@ -72,7 +73,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Time">
+          <el-form-item label="Time" prop="label">
             <el-select
               placeholder="Select period"
               v-model="limitForm.label"
@@ -86,7 +87,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Limit">
+          <el-form-item label="Limit" prop="amount">
             <el-input type="number" v-model="limitForm.amount" placeholder="0"/>
           </el-form-item>
         </el-form>
@@ -101,7 +102,7 @@
         </el-button>
         <el-button
           class="dialog-form_buttons close"
-          @click="onCloseModal"
+          @click="addWalletLimitDialogVisible = false"
         >
           Cancel
         </el-button>
@@ -295,7 +296,6 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.removingLimit = true
-          console.log(this.limitToRemove)
           return this.removeAssetLimit({
             privateKeys,
             limit: {
@@ -360,12 +360,7 @@ export default {
         })
     },
     onCloseModal () {
-      this.limitForm = {
-        assetId: null,
-        label: null,
-        amount: null
-      }
-      this.addWalletLimitDialogVisible = false
+      this.$refs.limitForm.resetFields()
     },
     formatDate (value, type) {
       const t = this.timelimits.find(t => t.amount === value && t.type === type)
