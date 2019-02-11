@@ -66,13 +66,13 @@ export default {
   created () {
     Promise.all([
       this.getAccountAssets(),
-      this.getAllAssetTransactions()
+      this.getAllAssetsTransactions()
     ])
   },
   methods: {
     ...mapActions([
       'getAccountAssets',
-      'getAllAssetTransactions'
+      'getAllAssetsTransactions'
     ])
   }
 }
