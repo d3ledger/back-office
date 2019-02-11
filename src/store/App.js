@@ -6,6 +6,7 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { getParsedItem, setStringifyItem } from '@util/storage-util'
+import notaryUtil from '@util/notary-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -19,7 +20,9 @@ const types = flow(
     'LOAD_WALLETS_SORT_CRITERION',
     'UPDATE_WALLETS_SORT_CRITERION',
     'LOAD_DASHBOARD_SORT_CRITERION',
-    'UPDATE_DASHBOARD_SORT_CRITERION'
+    'UPDATE_DASHBOARD_SORT_CRITERION',
+    'GET_FREE_ETH_RELAYS',
+    'GET_FREE_BTC_RELAYS'
   ]),
   map(x => [x, x]),
   fromPairs
@@ -44,7 +47,9 @@ function initialState () {
     },
     connectionError: null,
     walletsSortCriterion: null,
-    dashboardSortCriterion: null
+    dashboardSortCriterion: null,
+    freeEthRelaysNumber: 0,
+    freeBtcRelaysNumber: 0
   }
 }
 
@@ -109,6 +114,26 @@ const mutations = {
   },
   [types.UPDATE_DASHBOARD_SORT_CRITERION] (state, criterion) {
     state.dashboardSortCriterion = criterion
+  },
+
+  [types.GET_FREE_ETH_RELAYS_REQUEST] (state) {},
+
+  [types.GET_FREE_ETH_RELAYS_SUCCESS] (state, relays) {
+    state.freeEthRelaysNumber = relays
+  },
+
+  [types.GET_FREE_ETH_RELAYS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_FREE_BTC_RELAYS_REQUEST] (state) {},
+
+  [types.GET_FREE_BTC_RELAYS_SUCCESS] (state, relays) {
+    state.freeBtcRelaysNumber = relays
+  },
+
+  [types.GET_FREE_BTC_RELAYS_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -185,6 +210,32 @@ const actions = {
   updateDashboardSortCriterion ({ commit }, criterion) {
     setStringifyItem('dashboardSortCriterion', criterion)
     commit(types.UPDATE_DASHBOARD_SORT_CRITERION, criterion)
+  },
+
+  getFreeEthRelaysNumber ({ commit }) {
+    commit(types.GET_FREE_ETH_RELAYS_REQUEST)
+
+    return notaryUtil.getFreeEthRelaysNumber()
+      .then(relays => {
+        commit(types.GET_FREE_ETH_RELAYS_SUCCESS, relays)
+      })
+      .catch(err => {
+        commit(types.GET_FREE_ETH_RELAYS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getFreeBtcRelaysNumber ({ commit }) {
+    commit(types.GET_FREE_BTC_RELAYS_REQUEST)
+
+    return notaryUtil.getFreeBtcRelaysNumber()
+      .then(relays => {
+        commit(types.GET_FREE_BTC_RELAYS_SUCCESS, relays)
+      })
+      .catch(err => {
+        commit(types.GET_FREE_BTC_RELAYS_FAILURE, err)
+        throw err
+      })
   }
 }
 
@@ -215,6 +266,12 @@ const getters = {
   },
   dashboardSortCriterion (state) {
     return state.dashboardSortCriterion
+  },
+  freeEthRelaysNumber (state) {
+    return state.freeEthRelaysNumber
+  },
+  freeBtcRelaysNumber (state) {
+    return state.freeBtcRelaysNumber
   }
 }
 

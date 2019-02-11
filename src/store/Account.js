@@ -46,9 +46,7 @@ const types = flow(
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_LIMITS',
-  'GET_FREE_ETH_RELAYS',
-  'GET_FREE_BTC_RELAYS'
+  'GET_ACCOUNT_LIMITS'
 ])
 
 function initialState () {
@@ -67,9 +65,7 @@ function initialState () {
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
-    rejectSettlementLoading: false,
-    freeEthRelaysNumber: 0,
-    freeBtcRelaysNumber: 0
+    rejectSettlementLoading: false
   }
 }
 
@@ -207,14 +203,6 @@ const getters = {
 
   accountId (state) {
     return state.accountId
-  },
-
-  freeEthRelaysNumber (state) {
-    return state.freeEthRelaysNumber
-  },
-
-  freeBtcRelaysNumber (state) {
-    return state.freeBtcRelaysNumber
   }
 }
 
@@ -466,26 +454,6 @@ const mutations = {
 
   [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
     handleError(state, err)
-  },
-
-  [types.GET_FREE_ETH_RELAYS_REQUEST] (state) {},
-
-  [types.GET_FREE_ETH_RELAYS_SUCCESS] (state, relays) {
-    state.freeEthRelaysNumber = relays
-  },
-
-  [types.GET_FREE_ETH_RELAYS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_FREE_BTC_RELAYS_REQUEST] (state) {},
-
-  [types.GET_FREE_BTC_RELAYS_SUCCESS] (state, relays) {
-    state.freeBtcRelaysNumber = relays
-  },
-
-  [types.GET_FREE_BTC_RELAYS_FAILURE] (state, err) {
-    handleError(state, err)
   }
 }
 
@@ -595,33 +563,6 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_ASSETS_FAILURE, err)
-        throw err
-      })
-  },
-
-  getFreeEthRelaysNumber ({ commit }) {
-    commit(types.GET_FREE_ETH_RELAYS_REQUEST)
-
-    return notaryUtil.getFreeEthRelaysNumber()
-      .then(relays => {
-        commit(types.GET_FREE_ETH_RELAYS_SUCCESS, relays)
-      })
-      .catch(err => {
-        commit(types.GET_FREE_ETH_RELAYS_FAILURE, err)
-        throw err
-      })
-  },
-
-  getFreeBtcRelaysNumber ({ commit }) {
-    commit(types.GET_FREE_BTC_RELAYS_REQUEST)
-    console.log(notaryUtil)
-
-    return notaryUtil.getFreeBtcRelaysNumber()
-      .then(relays => {
-        commit(types.GET_FREE_BTC_RELAYS_SUCCESS, relays)
-      })
-      .catch(err => {
-        commit(types.GET_FREE_BTC_RELAYS_FAILURE, err)
         throw err
       })
   },
