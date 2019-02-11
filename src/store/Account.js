@@ -97,14 +97,16 @@ const getters = {
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
     return getTransferAssetsFrom(
-      state.rawAssetTransactions[assetId],
+      state.rawAssetTransactions[assetId].transactionsList,
       state.accountId,
       resolvedSettlements
     )
   },
 
   allAssetTransactions () {
-    return flatten(Object.values(state.rawAssetTransactions))
+    const txs = Object.values(state.rawAssetTransactions)
+      .map(a => a.transactionsList)
+    return flatten(txs)
   },
 
   allPendingTransactions: (state) => {
@@ -281,7 +283,7 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    Vue.set(state.rawAssetTransactions, assetId, transactions.transactionsList)
+    Vue.set(state.rawAssetTransactions, assetId, transactions)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
@@ -435,20 +437,22 @@ const mutations = {
   [types.GET_ACCOUNT_LIMITS_SUCCESS] (state, jsonData) {
     const parsedJson = JSON.parse(jsonData)
     const accountInfo = parsedJson[state.accountId]
-    const limits = Object.keys(accountInfo)
-      .filter(key => key.includes('limit_') && accountInfo[key])
-      .map(key => JSON.parse(accountInfo[key]))
-      .map(limit => {
-        const wallet = getters.wallets(state)
-          .find(w => w.assetId === limit.assetId)
-        return {
-          ...limit,
-          wallet: {
-            name: wallet.name,
-            asset: wallet.asset
+    const limits = accountInfo
+      ? Object.keys(accountInfo)
+        .filter(key => key.includes('limit_') && accountInfo[key])
+        .map(key => JSON.parse(accountInfo[key]))
+        .map(limit => {
+          const wallet = getters.wallets(state)
+            .find(w => w.assetId === limit.assetId)
+          return {
+            ...limit,
+            wallet: {
+              name: wallet.name,
+              asset: wallet.asset
+            }
           }
-        }
-      })
+        })
+      : []
     state.accountLimits = limits
   },
 
@@ -599,21 +603,20 @@ const actions = {
 
   getAllAssetTransactions ({ commit, dispatch, state }) {
     commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
-
-    return new Promise((resolve, reject) => {
-      state.assets.map(({ assetId }) => {
-        dispatch('getAccountAssetTransactions', { assetId })
-          .then(() => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
-            resolve()
-          })
-          .catch((err) => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
-            reject(err)
-            throw err
-          })
-      })
+    return new Promise(async (resolve, reject) => {
+      for (let { assetId } of state.assets) {
+        await dispatch('getAccountAssetTransactions', { assetId })
+          .catch(err => reject(err))
+      }
+      resolve()
     })
+      .then(() => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
+      })
+      .catch((err) => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
   },
 
   getPendingTransactions ({ commit }) {
