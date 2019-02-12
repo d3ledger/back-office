@@ -29,10 +29,10 @@
             <div class="auth-form_upload">
               <el-button
                 @click="onClickAddAddressToWhiteList"
-                :loading="isLoading"
+                :disabled="isLoading"
                 data-cy="add-whitelist"
               >
-                <span v-if="!isLoading">
+                <span>
                   ADD
                 </span>
               </el-button>
@@ -138,11 +138,11 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
-import { registrationIPs } from '@/data/urls'
+import { registrationIPs, ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
 export default {
   name: 'signup',
@@ -152,8 +152,7 @@ export default {
       username: 'name',
       newAddress: 'walletAddress',
       nodeIp: 'nodeIp'
-    }),
-    messageMixin
+    })
   ],
   data () {
     return {
@@ -177,37 +176,55 @@ export default {
 
   beforeMount () {
     this.updateWhiteListValidationRules()
+    this.getFreeEthRelaysNumber()
+    this.getFreeBtcRelaysNumber()
+  },
+
+  created () {
+  },
+
+  computed: {
+    ...mapGetters([
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber'
+    ])
   },
 
   methods: {
     ...mapActions([
       'setNotaryIp',
-      'signup'
+      'signup',
+      'getFreeEthRelaysNumber',
+      'getFreeBtcRelaysNumber'
     ]),
 
     onSubmit () {
       this.$refs['newAddress'].clearValidate()
-      this.$refs['form'].validateField('username', (usernameErrorMessage) => {
-        if (usernameErrorMessage) return false
+      this.$refs['form'].validateField('nodeIp', (nodeIpErrorMessage) => {
+        if (nodeIpErrorMessage) return false
 
-        this.isLoading = true
+        this.$refs['form'].validateField('username', (usernameErrorMessage) => {
+          if (usernameErrorMessage) return false
 
-        this.signup({
-          username: this.form.username,
-          whitelist: this.form.whitelist
+          this.isLoading = true
+
+          this.signup({
+            username: this.form.username,
+            whitelist: this.form.whitelist
+          })
+            .then(({ username, privateKey }) => {
+              this.dialog.username = username
+              this.dialog.privateKey = privateKey
+              this.dialogVisible = true
+            })
+            .catch(err => {
+              console.error(err)
+              this.$_showRegistrationError(err.message, err.response)
+            })
+            .finally(() => {
+              this.isLoading = false
+            })
         })
-          .then(({ username, privateKey }) => {
-            this.dialog.username = username
-            this.dialog.privateKey = privateKey
-            this.dialogVisible = true
-          })
-          .catch(err => {
-            console.error(err)
-            this.$_showRegistrationError(err.message, err.response)
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
       })
     },
 
@@ -257,6 +274,13 @@ export default {
     },
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
+
+      const canRegister = ((this.form.nodeIp === ETH_NOTARY_URL) && this.freeEthRelaysNumber > 0) ||
+        ((this.form.nodeIp === BTC_NOTARY_URL) && this.freeBtcRelaysNumber > 0)
+
+      this._refreshRules({
+        nodeIp: { pattern: 'nodeIp', canRegister }
+      })
     }
   }
 }
