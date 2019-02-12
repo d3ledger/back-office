@@ -273,10 +273,12 @@ export default {
         nodeIp: { pattern: 'nodeIp' }
       })
     },
+
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
       this.updateFreeRelaysRule()
     },
+
     updateFreeRelaysRule () {
       const canRegister = ((this.form.nodeIp === ETH_NOTARY_URL) && this.freeEthRelaysNumber > 0) ||
         ((this.form.nodeIp === BTC_NOTARY_URL) && this.freeBtcRelaysNumber > 0)

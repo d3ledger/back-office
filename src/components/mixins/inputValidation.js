@@ -92,7 +92,7 @@ function checkNodeIp (canRegister) {
     if (value.includes('https://')) tempAddress = tempAddress.substr(8)
     const validateAddress = /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/.test(tempAddress)
     if (!validateAddress) errors.push('Invalid IP address')
-    if (!canRegister) errors.push('There is no free relays now')
+    if (canRegister !== undefined && canRegister === false) errors.push('There is no free relays now')
     callback(errors)
   }
 }
