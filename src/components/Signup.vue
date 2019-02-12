@@ -176,8 +176,8 @@ export default {
 
   beforeMount () {
     this.updateWhiteListValidationRules()
-    this.getFreeEthRelaysNumber()
     this.getFreeBtcRelaysNumber()
+    this.getFreeEthRelaysNumber()
   },
 
   created () {
@@ -199,6 +199,7 @@ export default {
     ]),
 
     onSubmit () {
+      this.updateFreeRelaysRule()
       this.$refs['newAddress'].clearValidate()
       this.$refs['form'].validateField('nodeIp', (nodeIpErrorMessage) => {
         if (nodeIpErrorMessage) return false
@@ -274,7 +275,9 @@ export default {
     },
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
-
+      this.updateFreeRelaysRule()
+    },
+    updateFreeRelaysRule () {
       const canRegister = ((this.form.nodeIp === ETH_NOTARY_URL) && this.freeEthRelaysNumber > 0) ||
         ((this.form.nodeIp === BTC_NOTARY_URL) && this.freeBtcRelaysNumber > 0)
 
