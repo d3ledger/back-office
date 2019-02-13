@@ -85,6 +85,8 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/legendScroll'
 import 'echarts/lib/component/dataZoom'
 
+import '@util/push-util'
+
 import VueClipboard from 'vue-clipboard2'
 
 VueClipboard.config.autoSetContainer = true

@@ -47,7 +47,8 @@ const types = flow(
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_LIMITS'
+  'GET_ACCOUNT_LIMITS',
+  'SUBSCRIBE_PUSH_NOTIFICATIONS'
 ])
 
 function initialState () {
@@ -847,7 +848,23 @@ const actions = {
         commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
         throw err
       })
+  },
+
+  subscribePushNotifications ({ commit, state }, { privateKeys }) {
+    commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      key: `push_subscription`,
+      value: ''
+    })
+      .then(() => commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS))
+      .catch(err => {
+        commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
   }
+
 }
 
 export default {
