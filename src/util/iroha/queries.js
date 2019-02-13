@@ -17,6 +17,18 @@ const getAccountAssets = ({
   }
 )
 
+const getAccountDetail = ({
+  accountId,
+  key,
+  writer
+}) => queries.getAccountDetail(
+  newQueryServiceOptions(), {
+    accountId,
+    key,
+    writer
+  }
+)
+
 const getAccountTransactions = ({
   accountId,
   pageSize,
@@ -67,22 +79,14 @@ const getAssetInfo = ({
   }
 )
 
-const getAccountDetail = ({
-  accountId
-}) => queries.getAccountDetail(
-  newQueryServiceOptions(), {
-    accountId
-  }
-)
-
 export {
   getAccount,
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
+  getAccountDetail,
   getSignatories,
   getPendingTransactions,
   getRawPendingTransactions,
-  getAssetInfo,
-  getAccountDetail
+  getAssetInfo
 }

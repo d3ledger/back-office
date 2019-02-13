@@ -28,6 +28,13 @@ const message = {
       this.$alert(errorMsg, windowName, {
         type: 'error'
       })
+    },
+    $_showRegistrationError (message, response) {
+      let responseText = response ? response.data : ''
+      if (responseText.includes('no free')) {
+        message = 'No free address to register'
+      }
+      this.$_showErrorAlertMessage(message, 'Sign up error')
     }
   }
 }

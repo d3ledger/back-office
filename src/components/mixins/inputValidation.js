@@ -84,7 +84,7 @@ function checkRepeatingPrivateKey (keys) {
   }
 }
 
-function checkNodeIp () {
+function checkNodeIp (canRegister) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     let tempAddress = value.slice()
@@ -92,6 +92,7 @@ function checkNodeIp () {
     if (value.includes('https://')) tempAddress = tempAddress.substr(8)
     const validateAddress = /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/.test(tempAddress)
     if (!validateAddress) errors.push('Invalid IP address')
+    if (canRegister !== undefined && canRegister === false) errors.push('There is no free relays now')
     callback(errors)
   }
 }
@@ -114,7 +115,7 @@ function generateRules (form) {
       const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
       rules[key] = privateKeyRule
     } else if (validationRule.pattern === 'nodeIp') {
-      const nodeIpRule = [{ validator: checkNodeIp() }]
+      const nodeIpRule = [{ validator: checkNodeIp(validationRule.canRegister) }]
       rules[key] = nodeIpRule
     } else {
       rules[key] = set[validationRule]
