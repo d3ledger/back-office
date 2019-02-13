@@ -288,8 +288,11 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    console.log(transactions)
-    Vue.set(state.assetTransactions, assetId, transactions)
+    const txs = {
+      ...transactions,
+      loadedAmount: 100
+    }
+    Vue.set(state.assetTransactions, assetId, txs)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
@@ -300,8 +303,9 @@ const mutations = {
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS] (state, { assetId, transactions }) {
     const txs = {
-      allTransactions: transactions.allTransactions,
+      allTransactionsSize: transactions.allTransactionsSize,
       nextTxHash: transactions.nextTxHash,
+      loadedAmount: state.assetTransactions[assetId].loadedAmount + 100,
       transactionsList: [
         ...state.assetTransactions[assetId].transactionsList,
         ...transactions.transactionsList
@@ -580,26 +584,29 @@ const actions = {
       })
   },
 
-  getAccountAssetTransactionsNextPage ({ commit, state }, { assetId }) {
-    commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST)
-
+  getAccountAssetTransactionsNextPage ({ commit, state }, { page, assetId }) {
+    const loadedAmount = state.assetTransactions[assetId].loadedAmount
     const hash = state.assetTransactions[assetId].nextTxHash
-    return irohaUtil.getAccountAssetTransactions({
-      accountId: state.accountId,
-      assetId,
-      pageSize: 100,
-      firstTxHash: hash.length ? hash : undefined
-    })
-      .then(responses => {
-        commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS, {
-          assetId: assetId,
-          transactions: responses
+
+    if (loadedAmount < page * 10) {
+      commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST)
+      return irohaUtil.getAccountAssetTransactions({
+        accountId: state.accountId,
+        assetId,
+        pageSize: 100,
+        firstTxHash: hash.length ? hash : undefined
+      })
+        .then(responses => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS, {
+            assetId: assetId,
+            transactions: responses
+          })
         })
-      })
-      .catch(err => {
-        commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE, err)
-        throw err
-      })
+        .catch(err => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE, err)
+          throw err
+        })
+    }
   },
 
   getAccountAssets ({ commit, state }) {
@@ -651,7 +658,7 @@ const actions = {
     commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
     return new Promise(async (resolve, reject) => {
       for (let { assetId } of state.assets) {
-        await dispatch('getAccountAssetTransactions', { assetId })
+        dispatch('getAccountAssetTransactions', { assetId })
           .catch(err => reject(err))
       }
       resolve()
