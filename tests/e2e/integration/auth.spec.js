@@ -26,7 +26,7 @@ describe('Test register page', () => {
       .should('have.value', '0x070f9d09370fd7ae3a583fc22a4e9f50ae1bdc78')
     cy.get('[data-cy=add-whitelist]').click()
     cy.get('.el-form-item__content > .el-button.fullwidth').click()
-    cy.get('.el-message-box__title:contains("Sign up error")').should('be.visible')
+    cy.get('.el-form-item__error:contains("There is no free relays now")').should('be.visible')
   })
 
   it.skip('Confirm should redirect to Log in', () => {

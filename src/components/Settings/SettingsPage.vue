@@ -56,21 +56,27 @@
                   <el-row>
                     <el-col>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.BTC)"
+                        v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
-                        </el-button>
+                      </el-button>
+                      <div v-else-if="!walletType.includes(WalletTypes.BTC)" class="list-title">
+                        There is no free BTC relays now
+                      </div>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.ETH)"
+                        v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
+                      <div v-else-if="!walletType.includes(WalletTypes.ETH)" class="list-title">
+                        There is no free ETH relays now
+                      </div>
                       <span class="list-title" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
@@ -307,6 +313,7 @@
 <script>
 import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
+import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
@@ -338,11 +345,14 @@ export default {
     }
   },
   mixins: [
-    dateFormat
+    dateFormat,
+    messageMixin
   ],
   created () {
     this.getSignatories()
     this.getAccountLimits()
+    this.getFreeEthRelaysNumber()
+    this.getFreeBtcRelaysNumber()
   },
   computed: {
     ...mapGetters([
@@ -351,7 +361,9 @@ export default {
       'withdrawWalletAddresses',
       'accountQuorum',
       'accountSignatories',
-      'walletType'
+      'walletType',
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber'
     ]),
     currentFiat: {
       get () {
@@ -388,7 +400,10 @@ export default {
       'getAccountQuorum',
       'setNotaryIp',
       'addNetwork',
-      'getAccountLimits'
+      'getAccountLimits',
+      'updateAccount',
+      'getFreeEthRelaysNumber',
+      'getFreeBtcRelaysNumber'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -503,8 +518,8 @@ export default {
         return this.addNetwork({ privateKeys }).then(() => {
           this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
           this.updateAccount()
-        }).catch(() => {
-          this.$message.error(`Something was wrong. You didn't register in network`)
+        }).catch((err) => {
+          this.$_showRegistrationError(err.message, err.response)
         })
       })
     },
