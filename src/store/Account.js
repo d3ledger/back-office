@@ -97,11 +97,11 @@ const getters = {
 
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
-    return getTransferAssetsFrom(
+    return state.assetTransactions[assetId] ? getTransferAssetsFrom(
       state.assetTransactions[assetId].transactionsList,
       state.accountId,
       resolvedSettlements
-    )
+    ) : []
   },
 
   getPaginationMetaByAssetId: (state) => (assetId) => {
