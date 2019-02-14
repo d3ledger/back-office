@@ -50,6 +50,19 @@
               </el-row>
               <el-row class="settings_item">
                 <div class="settings_item-header">
+                  <span class="settings_item-header-title">Notifications</span>
+                </div>
+                <div>
+                  <el-row>
+                    <el-col>
+                      <el-switch v-model="notifications" @change="switchNotifications">
+                      </el-switch>
+                    </el-col>
+                  </el-row>
+                </div>
+              </el-row>
+              <el-row class="settings_item">
+                <div class="settings_item-header">
                   <span class="settings_item-header-title">Add network</span>
                 </div>
                 <div>
@@ -317,8 +330,8 @@ import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
-
 import { lazyComponent } from '@router'
+import pushUtil from '@util/push-util'
 
 export default {
   name: 'settings-page',
@@ -341,7 +354,8 @@ export default {
       keyToRemove: null,
       removingKey: false,
       quorumUpdating: false,
-      WalletTypes
+      WalletTypes,
+      notifications: false
     }
   },
   mixins: [
@@ -353,6 +367,8 @@ export default {
     this.getAccountLimits()
     this.getFreeEthRelaysNumber()
     this.getFreeBtcRelaysNumber()
+
+    this.notifications = this.subscribed
   },
   computed: {
     ...mapGetters([
@@ -363,7 +379,8 @@ export default {
       'accountSignatories',
       'walletType',
       'freeEthRelaysNumber',
-      'freeBtcRelaysNumber'
+      'freeBtcRelaysNumber',
+      'subscribed'
     ]),
     currentFiat: {
       get () {
@@ -403,7 +420,9 @@ export default {
       'getAccountLimits',
       'updateAccount',
       'getFreeEthRelaysNumber',
-      'getFreeBtcRelaysNumber'
+      'getFreeBtcRelaysNumber',
+      'subscribePushNotifications',
+      'unsubscribePushNotifications'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -525,6 +544,29 @@ export default {
     },
     updateActiveTab (id) {
       this.activeTab = id
+    },
+    subscribe (settings) {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+
+          this.subscribePushNotifications({ privateKeys, settings })
+        })
+    },
+    unsubscribe () {
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
+
+          this.unsubscribePushNotifications({ privateKeys })
+        })
+    },
+    switchNotifications (value) {
+      if (value) {
+        pushUtil.initialiseState(this.subscribe.bind(this))
+      } else {
+        this.unsubscribe()
+      }
     }
   },
   filters: {

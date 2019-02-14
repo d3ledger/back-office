@@ -2,13 +2,13 @@ window.addEventListener('load', registerServiceWorker, false)
 
 function registerServiceWorker () {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(initialiseState)
+    navigator.serviceWorker.register('/sw.js')
   } else {
     console.warn('Service workers are not supported in this browser.')
   }
 }
 
-function initialiseState () {
+function initialiseState (sendToserver) {
   if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
     console.warn('Notifications aren\'t supported.')
     return
@@ -24,15 +24,15 @@ function initialiseState () {
     return
   }
 
-  navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+  return navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
     serviceWorkerRegistration.pushManager.getSubscription().then(function (subscription) {
       if (!subscription) {
-        subscribe()
+        subscribe(sendToserver)
 
         return
       }
 
-      sendSubscriptionToServer(subscription)
+      sendSubscriptionToServer(subscription, sendToserver)
     })
       .catch(function (err) {
         console.warn('Error during getSubscription()', err)
@@ -40,7 +40,7 @@ function initialiseState () {
   })
 }
 
-function subscribe () {
+function subscribe (sendToserver) {
   const publicKey = base64UrlToUint8Array('BK6AT_ybJtO3p-JfgIAA_NbeVszLIlIdQUO4PDXd_qum2g8cewUsdfp2mI_fX1FoQDTcQZ4pE9-ECAsoAzGTX6I=')
 
   navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
@@ -49,7 +49,7 @@ function subscribe () {
       applicationServerKey: publicKey
     })
       .then(function (subscription) {
-        return sendSubscriptionToServer(subscription)
+        return sendSubscriptionToServer(subscription, sendToserver)
       })
       .catch(function (e) {
         if (Notification.permission === 'denied') {
@@ -61,30 +61,25 @@ function subscribe () {
   })
 }
 
-function sendSubscriptionToServer (subscription) {
-  var key = subscription.getKey ? subscription.getKey('p256dh') : ''
-  var auth = subscription.getKey ? subscription.getKey('auth') : ''
-
-  document.getElementById('subscription').value = JSON.stringify(subscription)
-
-  return fetch('/profile/subscription', {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      endpoint: subscription.endpoint,
-      key: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : '',
+function sendSubscriptionToServer (subscription, sendToserver) {
+  const key = subscription.getKey ? subscription.getKey('p256dh') : ''
+  const auth = subscription.getKey ? subscription.getKey('auth') : ''
+  const pushSubscription = {
+    endpoint: subscription.endpoint,
+    keys: {
+      p256dh: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : '',
       auth: auth ? btoa(String.fromCharCode.apply(null, new Uint8Array(auth))) : ''
-    })
-  })
+    }
+  }
+
+  sendToserver(pushSubscription)
 }
 
 function base64UrlToUint8Array (base64UrlData) {
   const padding = '='.repeat((4 - base64UrlData.length % 4) % 4)
   const base64 = (base64UrlData + padding)
-    .replace(/-/g, '+')
+    // eslint-disable-next-line
+    .replace(/\-/g, '+')
     .replace(/_/g, '/')
 
   const rawData = atob(base64)
@@ -95,4 +90,8 @@ function base64UrlToUint8Array (base64UrlData) {
   }
 
   return buffer
+}
+
+export default {
+  initialiseState
 }
