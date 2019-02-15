@@ -24,8 +24,8 @@ function initialiseState (sendToserver) {
     return
   }
 
-  return navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
-    serviceWorkerRegistration.pushManager.getSubscription().then(function (subscription) {
+  return navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
+    serviceWorkerRegistration.pushManager.getSubscription().then(subscription => {
       if (!subscription) {
         subscribe(sendToserver)
 
@@ -34,24 +34,20 @@ function initialiseState (sendToserver) {
 
       sendSubscriptionToServer(subscription, sendToserver)
     })
-      .catch(function (err) {
-        console.warn('Error during getSubscription()', err)
-      })
+      .catch(err => console.warn('Error during getSubscription()', err))
   })
 }
 
 function subscribe (sendToserver) {
   const publicKey = base64UrlToUint8Array('BK6AT_ybJtO3p-JfgIAA_NbeVszLIlIdQUO4PDXd_qum2g8cewUsdfp2mI_fX1FoQDTcQZ4pE9-ECAsoAzGTX6I=')
 
-  navigator.serviceWorker.ready.then(function (serviceWorkerRegistration) {
+  navigator.serviceWorker.ready.then(serviceWorkerRegistration => {
     serviceWorkerRegistration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: publicKey
     })
-      .then(function (subscription) {
-        return sendSubscriptionToServer(subscription, sendToserver)
-      })
-      .catch(function (e) {
+      .then(subscription => sendSubscriptionToServer(subscription, sendToserver))
+      .catch(e => {
         if (Notification.permission === 'denied') {
           console.warn('Permission for Notifications was denied')
         } else {
