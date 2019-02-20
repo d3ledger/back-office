@@ -1,4 +1,4 @@
-<template>
+<template class="menu">
   <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
     <el-menu
       :router="true"
@@ -13,31 +13,47 @@
       </h1>
       <el-menu-item index="/">
         <SvgIcon iconName="Chart" iconClass="menu-icon"><ChartIcon/></SvgIcon>
-        <span slot="title">Dashboard</span>
+        <span class="title-left" slot="title">Dashboard</span>
       </el-menu-item>
       <el-menu-item index="/wallets">
         <SvgIcon iconName="Wallet" iconClass="menu-icon"><WalletIcon/></SvgIcon>
-        <span slot="title">Wallets</span>
+        <span class="title-left" slot="title">Wallets</span>
       </el-menu-item>
       <el-menu-item index="/settlements/history">
-        <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
-        <span slot="title">Exchange</span>
+        <el-badge
+          v-if="incomingSettlements.length"
+          :value="incomingSettlements.length"
+          :max="9"
+          :class="[isMenuActive('settlements') ? 'badge active' : 'badge']"
+        >
+          <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
+        </el-badge>
+        <SvgIcon v-else iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
+        <span class="title-left" slot="title">Exchange</span>
       </el-menu-item>
       <el-menu-item index="/reports">
         <SvgIcon iconName="Report" iconClass="menu-icon"><ReportIcon/></SvgIcon>
-        <span slot="title">Reports</span>
+        <span class="title-left" slot="title">Reports</span>
       </el-menu-item>
       <el-menu-item v-if="quorum > 1" index="/transactions">
-        <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
-        <span slot="title">Transactions</span>
+        <el-badge
+          v-if="allPendingTransactions.length"
+          :value="allPendingTransactions.length"
+          :max="9"
+          :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
+        >
+          <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
+        </el-badge>
+        <SvgIcon v-else iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
+        <span class="title-left" slot="title">Transactions</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
-        <span slot="title">Settings</span>
+        <span class="title-left" slot="title">Settings</span>
       </el-menu-item>
-      <el-menu-item class="bottom-icon" index="/logout" @click="logout">
+      <el-menu-item class="bottom-icon" index="/logout" @click="onLogout">
         <SvgIcon iconName="Logout" iconClass="menu-icon"><LogoutIcon/></SvgIcon>
-        <span slot="title">Logout</span>
+        <span class="title-left" slot="title">Logout</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -52,6 +68,7 @@ import TransactionsIcon from '@/assets/menu/transactions'
 import WalletIcon from '@/assets/menu/wallet'
 import LogoutIcon from '@/assets/menu/logout'
 import SvgIcon from '@/components/common/SvgIcon'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Menu',
@@ -76,13 +93,27 @@ export default {
     LogoutIcon,
     SvgIcon
   },
+  updated () {
+    this.getPendingTransactions()
+  },
   methods: {
-    logout () {
-      this.$store.dispatch('logout')
+    ...mapActions([
+      'logout',
+      'getPendingTransactions'
+    ]),
+    onLogout () {
+      this.logout()
         .then(() => this.$router.push('/login'))
+    },
+    isMenuActive (path) {
+      return this.$route.path.includes(path)
     }
   },
   computed: {
+    ...mapGetters([
+      'incomingSettlements',
+      'allPendingTransactions'
+    ]),
     currentActiveMenu () {
       if (this.$route.path.includes('wallets')) return '/wallets'
       if (this.$route.path.includes('settlements')) return '/settlements/history'
@@ -102,16 +133,13 @@ export default {
   height: 62px;
   width: 62px;
 }
-.el-menu-item {
-  font-family: 'IBM Plex Sans', sans-serif;
-}
 .el-side-menu {
   height: 100vh;
   overflow-y: auto;
+  overflow-x: hidden;
   transition: width .3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-right: none;
   z-index: 100;
-  width: 62px;
   /* Getting rid of element.ui styles */
   position: fixed !important;
   border-right: none !important;
@@ -137,5 +165,27 @@ export default {
   position: absolute;
   bottom: 0;
   width: 100%
+}
+.title-left {
+  margin-left: 1rem;
+}
+.badge {
+  display: inline-flex;
+  font-weight: bold;
+}
+.badge >>> .el-badge__content {
+    margin-right: 0.5rem;
+    background-color: #ffffff;
+    border-radius: 0.2rem;
+    color: #000000;
+    height: 1.2rem;
+    width: 1.2rem;
+    line-height: 1.2rem;
+    padding: 0;
+    border: none;
+}
+.badge.active >>> .el-badge__content {
+    background-color: #000000;
+    color: #ffffff;
 }
 </style>

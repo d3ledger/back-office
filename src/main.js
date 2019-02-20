@@ -15,6 +15,8 @@ import { faFileInvoice } from '@fortawesome/free-solid-svg-icons/faFileInvoice'
 import { faExchangeAlt } from '@fortawesome/free-solid-svg-icons/faExchangeAlt'
 import { faAngleDoubleDown } from '@fortawesome/free-solid-svg-icons/faAngleDoubleDown'
 import { faAngleDoubleUp } from '@fortawesome/free-solid-svg-icons/faAngleDoubleUp'
+import { faAngleRight } from '@fortawesome/free-solid-svg-icons/faAngleRight'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons/faAngleDown'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload'
 import { faUpload } from '@fortawesome/free-solid-svg-icons/faUpload'
@@ -67,7 +69,9 @@ import {
   DropdownMenu,
   DropdownItem,
   Tooltip,
-  Switch
+  Switch,
+  Badge,
+  Pagination
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -117,6 +121,8 @@ Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Tooltip)
 Vue.use(Switch)
+Vue.use(Badge)
+Vue.use(Pagination)
 Vue.use(Loading.directive)
 const MsgBox = MessageBox
 Vue.prototype.$prompt = MsgBox.prompt
@@ -133,6 +139,8 @@ library.add(
   faExchangeAlt,
   faAngleDoubleDown,
   faAngleDoubleUp,
+  faAngleRight,
+  faAngleDown,
   faArrowRight,
   faDownload,
   faUpload,

@@ -32,6 +32,7 @@ const types = flow(
   'UPDATE_ACCOUNT',
   'GET_ACCOUNT_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
+  'GET_ACCOUNT_ASSET_TRANSACTIONS_NP',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_SIGNATORIES',
@@ -45,7 +46,8 @@ const types = flow(
   'REJECT_SETTLEMENT',
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_QUORUM'
+  'GET_ACCOUNT_QUORUM',
+  'GET_ACCOUNT_LIMITS'
 ])
 
 function initialState () {
@@ -56,12 +58,15 @@ function initialState () {
     accountInfo: {},
     accountQuorum: 0,
     accountSignatories: [],
-    rawAssetTransactions: {},
+    accountLimits: [],
+    assetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
     rawPendingTransactions: null,
     assets: [],
-    connectionError: null
+    connectionError: null,
+    acceptSettlementLoading: false,
+    rejectSettlementLoading: false
   }
 }
 
@@ -71,9 +76,9 @@ const getters = {
   wallets (state) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
-      const ASSET = ASSETS.find(d => {
-        return (d.name.toLowerCase() === a.assetId.split('#')[0].toLowerCase() || d.asset.toLowerCase() === a.assetId.split('#')[0].toLowerCase())
-      })
+      const assetName = a.assetId.split('#')[0].toLowerCase()
+      const ASSET = ASSETS.find(d =>
+        d.name.toLowerCase() === assetName || d.asset.toLowerCase() === assetName)
 
       return {
         id: a.assetId.replace(/#/g, '$'),
@@ -85,22 +90,28 @@ const getters = {
         color: ASSET.color,
 
         amount: a.balance,
-        precision: a.balance.split('.')[1] ? a.balance.split('.')[1].length : 0
+        precision: ASSET.precision
       }
     })
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
-    return getTransferAssetsFrom(
-      state.rawAssetTransactions[assetId],
+    return state.assetTransactions[assetId] ? getTransferAssetsFrom(
+      state.assetTransactions[assetId].transactionsList,
       state.accountId,
       resolvedSettlements
-    )
+    ) : []
   },
 
-  allAssetTransactions () {
-    return flatten(Object.values(state.rawAssetTransactions))
+  getPaginationMetaByAssetId: (state) => (assetId) => {
+    return state.assetTransactions[assetId]
+  },
+
+  allAssetsTransactions () {
+    const txs = Object.values(state.assetTransactions)
+      .map(a => a.transactionsList)
+    return flatten(txs)
   },
 
   allPendingTransactions: (state) => {
@@ -132,9 +143,9 @@ const getters = {
   },
 
   resolvedSettlements (state) {
-    let allAssetTransactionsCopy = getters.allAssetTransactions()
+    let allAssetsTransactionsCopy = getters.allAssetsTransactions()
     return getSettlementsFrom(
-      allAssetTransactionsCopy,
+      allAssetsTransactionsCopy,
       state.accountId
     )
   },
@@ -164,6 +175,14 @@ const getters = {
     return btcWallet ? btcWallet.bitcoin : null
   },
 
+  hasEthWallet (state, getters) {
+    return getters.wallets.some(w => w.domain === 'ethereum')
+  },
+
+  hasBtcWallet (state, getters) {
+    return getters.wallets.some(w => w.domain === 'bitcoin')
+  },
+
   withdrawWalletAddresses (state) {
     const wallet = find('eth_whitelist', state.accountInfo)
     return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
@@ -174,7 +193,23 @@ const getters = {
   },
 
   accountSignatories (state) {
-    return state.accountSignatories.map((s) => Buffer.from(s, 'base64').toString('hex'))
+    return state.accountSignatories
+  },
+
+  accountLimits (state) {
+    return state.accountLimits
+  },
+
+  rejectSettlementLoading (state) {
+    return state.rejectSettlementLoading
+  },
+
+  acceptSettlementLoading (state) {
+    return state.acceptSettlementLoading
+  },
+
+  accountId (state) {
+    return state.accountId
   }
 }
 
@@ -253,10 +288,33 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    Vue.set(state.rawAssetTransactions, assetId, transactions)
+    const txs = {
+      ...transactions,
+      loadedAmount: 100
+    }
+    Vue.set(state.assetTransactions, assetId, txs)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS] (state, { assetId, transactions }) {
+    const txs = {
+      allTransactionsSize: transactions.allTransactionsSize,
+      nextTxHash: transactions.nextTxHash,
+      loadedAmount: state.assetTransactions[assetId].loadedAmount + 100,
+      transactionsList: [
+        ...state.assetTransactions[assetId].transactionsList,
+        ...transactions.transactionsList
+      ]
+    }
+    Vue.set(state.assetTransactions, assetId, txs)
+  },
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -334,19 +392,29 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {},
+  [types.ACCEPT_SETTLEMENT_REQUEST] (state) {
+    state.acceptSettlementLoading = true
+  },
 
-  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {},
+  [types.ACCEPT_SETTLEMENT_SUCCESS] (state) {
+    state.acceptSettlementLoading = false
+  },
 
   [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
+    state.acceptSettlementLoading = true
     handleError(state, err)
   },
 
-  [types.REJECT_SETTLEMENT_REQUEST] (state) {},
+  [types.REJECT_SETTLEMENT_REQUEST] (state) {
+    state.rejectSettlementLoading = true
+  },
 
-  [types.REJECT_SETTLEMENT_SUCCESS] (state) {},
+  [types.REJECT_SETTLEMENT_SUCCESS] (state) {
+    state.rejectSettlementLoading = false
+  },
 
   [types.REJECT_SETTLEMENT_FAILURE] (state, err) {
+    state.rejectSettlementLoading = false
     handleError(state, err)
   },
 
@@ -389,6 +457,34 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_QUORUM_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_LIMITS_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_LIMITS_SUCCESS] (state, jsonData) {
+    const parsedJson = JSON.parse(jsonData)
+    const accountInfo = parsedJson[state.accountId]
+    const limits = accountInfo
+      ? Object.keys(accountInfo)
+        .filter(key => key.includes('limit_') && accountInfo[key])
+        .map(key => JSON.parse(accountInfo[key]))
+        .map(limit => {
+          const wallet = getters.wallets(state)
+            .find(w => w.assetId === limit.assetId)
+          return {
+            ...limit,
+            wallet: {
+              name: wallet.name,
+              asset: wallet.asset
+            }
+          }
+        })
+      : []
+    state.accountLimits = limits
+  },
+
+  [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -455,7 +551,9 @@ const actions = {
   updateAccount ({ commit, state }) {
     commit(types.UPDATE_ACCOUNT_REQUEST)
 
-    return irohaUtil.getAccount(state.accountId)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
       .then((account) => {
         commit(types.UPDATE_ACCOUNT_SUCCESS, { account })
       })
@@ -468,7 +566,12 @@ const actions = {
   getAccountAssetTransactions ({ commit, state }, { assetId }) {
     commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getAccountAssetTransactions(state.accountId, assetId)
+    return irohaUtil.getAccountAssetTransactions({
+      accountId: state.accountId,
+      assetId,
+      pageSize: 100,
+      firstTxHash: undefined
+    })
       .then(responses => {
         commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS, {
           assetId: assetId,
@@ -481,10 +584,37 @@ const actions = {
       })
   },
 
+  getAccountAssetTransactionsNextPage ({ commit, state }, { page, assetId }) {
+    const loadedAmount = state.assetTransactions[assetId].loadedAmount
+    const hash = state.assetTransactions[assetId].nextTxHash
+
+    if (loadedAmount < page * 10) {
+      commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST)
+      return irohaUtil.getAccountAssetTransactions({
+        accountId: state.accountId,
+        assetId,
+        pageSize: 100,
+        firstTxHash: hash.length ? hash : undefined
+      })
+        .then(responses => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS, {
+            assetId: assetId,
+            transactions: responses
+          })
+        })
+        .catch(err => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE, err)
+          throw err
+        })
+    }
+  },
+
   getAccountAssets ({ commit, state }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
-    return irohaUtil.getAccountAssets(state.accountId)
+    return irohaUtil.getAccountAssets({
+      accountId: state.accountId
+    })
       .then(assets => {
         commit(types.GET_ACCOUNT_ASSETS_SUCCESS, assets)
       })
@@ -497,7 +627,11 @@ const actions = {
   getAccountTransactions ({ commit, state }) {
     commit(types.GET_ACCOUNT_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getAccountTransactions(state.accountId)
+    return irohaUtil.getAccountTransactions({
+      accountId: state.accountId,
+      pageSize: 100,
+      firstTxHash: undefined
+    })
       .then(transactions => {
         commit(types.GET_ACCOUNT_TRANSACTIONS_SUCCESS, transactions)
       })
@@ -507,9 +641,10 @@ const actions = {
       })
   },
 
-  getAllUnsignedTransactions ({ commit, state }) {
+  getAllUnsignedTransactions ({ commit }) {
     commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_REQUEST)
-    return irohaUtil.getPendingTransactions()
+
+    return irohaUtil.getRawPendingTransactions()
       .then(transactions => {
         commit(types.GET_ALL_UNSIGNED_TRANSACTIONS_SUCCESS, transactions)
       })
@@ -519,28 +654,28 @@ const actions = {
       })
   },
 
-  getAllAssetTransactions ({ commit, dispatch, state }) {
+  getAllAssetsTransactions ({ commit, dispatch, state }) {
     commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
-    return new Promise((resolve, reject) => {
-      state.assets.map(({ assetId }) => {
+    return new Promise(async (resolve, reject) => {
+      for (let { assetId } of state.assets) {
         dispatch('getAccountAssetTransactions', { assetId })
-          .then(() => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
-            resolve()
-          })
-          .catch((err) => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE)
-            reject(err)
-            throw err
-          })
-      })
+          .catch(err => reject(err))
+      }
+      resolve()
     })
+      .then(() => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
+      })
+      .catch((err) => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
   },
 
   getPendingTransactions ({ commit }) {
     commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
 
-    return irohaUtil.getPendingTransactions()
+    return irohaUtil.getRawPendingTransactions()
       .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
       .catch(err => {
         commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
@@ -551,7 +686,13 @@ const actions = {
   transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, state.accountId, to, assetId, description, amount, state.accountQuorum)
+    return irohaUtil.transferAsset(privateKeys, state.accountQuorum, {
+      srcAccountId: state.accountId,
+      destAccountId: to,
+      assetId,
+      description,
+      amount
+    })
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
@@ -633,8 +774,11 @@ const actions = {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
-    const publicKeyBuffer = derivePublicKey(Buffer.from(privateKey, 'hex'))
-    return irohaUtil.addSignatory(privateKeys, state.accountId, publicKeyBuffer, state.accountQuorum)
+    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+    return irohaUtil.addSignatory(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      publicKey
+    })
       .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
@@ -645,7 +789,10 @@ const actions = {
 
   removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, state.accountId, publicKey, state.accountQuorum)
+    return irohaUtil.removeSignatory(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      publicKey
+    })
       .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
       .catch(err => {
         commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
@@ -655,7 +802,9 @@ const actions = {
 
   getSignatories ({ commit, state }) {
     commit(types.GET_ACCOUNT_SIGNATORIES_REQUEST)
-    return irohaUtil.getSignatories(state.accountId)
+    return irohaUtil.getSignatories({
+      accountId: state.accountId
+    })
       .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
       .catch(err => {
         commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
@@ -665,7 +814,10 @@ const actions = {
 
   editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, state.accountId, quorum, state.accountQuorum)
+    return irohaUtil.setAccountQuorum(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      quorum
+    })
       .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
       .catch(err => {
         commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
@@ -675,10 +827,24 @@ const actions = {
 
   getAccountQuorum ({ commit, state }) {
     commit(types.GET_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.getAccount(state.accountId)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
       .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountLimits ({ commit, state }) {
+    commit(types.GET_ACCOUNT_LIMITS_REQUEST)
+    return irohaUtil.getAccount({
+      accountId: state.accountId
+    })
+      .then(({ jsonData }) => commit(types.GET_ACCOUNT_LIMITS_SUCCESS, jsonData))
+      .catch(err => {
+        commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
         throw err
       })
   }

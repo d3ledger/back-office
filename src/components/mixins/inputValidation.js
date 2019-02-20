@@ -3,32 +3,33 @@ import lte from 'lodash/fp/lte'
 import { derivePublicKey } from 'ed25519.js'
 
 const privateKey = {
-  pattern: /^[A-Za-z0-9]{64}$/,
-  message: 'Private key should match [A-Za-z0-9]{64}'
+  pattern: /^[A-Fa-f0-9]{64}$/,
+  message: 'Private key should match [A-Fa-f0-9]{64}'
 }
 
 const set = {
   name: [
     { required: true, message: 'Please input username', trigger: 'change' },
-    { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-Z_0-9]{1,32}', trigger: 'change' }
+    { pattern: /^[a-z_0-9]{1,32}$/, message: 'Username should match [a-z_0-9]{1,32}', trigger: 'change' }
   ],
   nameDomain: [
     { required: true, message: 'Please input username', trigger: 'change' },
-    { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-Z_0-9]{1,32}@[a-Z_0-9]{1,9}', trigger: 'change' }
+    { pattern: /^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/, message: 'Username should match [a-z_0-9]{1,32}@[a-z_0-9]{1,9}', trigger: 'change' }
   ],
   privateKey: [
     { pattern: privateKey.pattern, message: privateKey.message, trigger: 'change' }
   ],
   nodeIp: [
-    { required: true, message: 'Please input node ip', trigger: 'change' },
-    { pattern: /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/, message: 'Invalid IP', trigger: 'change' }
+    { required: true, message: 'Please input node ip', trigger: 'change' }
   ],
   walletAddress: [
     { required: true, message: 'Please input wallet address', trigger: 'change' }
   ],
   tokensAmount: [
-    { required: true, message: 'Please input amount', trigger: 'change' },
-    { pattern: /^(?![0.]+$)\d+(\.\d+)?$/, message: 'Invalid amount', trigger: 'change' }
+    { required: true, message: 'Please input amount', trigger: 'change' }
+  ],
+  additionalInformation: [
+    { pattern: /^.{0,64}$/, message: 'Additional information should not be longer than 64 symbols', trigger: 'change' }
   ]
 }
 
@@ -39,11 +40,22 @@ set['privateKeyRequired'] = [
 
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
+const checkFirstZero = (v) => {
+  if (!v.length) return true
+
+  if (v[0] !== '0') return true
+  else {
+    return v[0] === '0' && v[1] === '.'
+  }
+}
+
 function checkBalance (maxValue, maxPrecision, asset) {
   return function validator (rule, value, callback, source, options) {
     const errors = []
     if (!asset) errors.push('Please select asset')
     else if (isNaN(Number(value))) errors.push('Invalid amount')
+    else if (!/^(?![0.]+$)\d+(\.\d+)?$/.test(value)) errors.push('Invalid amount')
+    else if (!checkFirstZero(value)) errors.push('Please remove zeros')
     else if (value !== null && gt(getPrecision(value))(maxPrecision)) errors.push(`Too big precision, maximum precision is ${maxPrecision}`)
     else if (value !== null && value.length === 0) errors.push('Please input amount')
     else if (gt(Number(value))(Number(maxValue))) errors.push('Current amount is bigger than your available balance')
@@ -72,6 +84,19 @@ function checkRepeatingPrivateKey (keys) {
   }
 }
 
+function checkNodeIp (canRegister) {
+  return function validator (rule, value, callback, source, options) {
+    const errors = []
+    let tempAddress = value.slice()
+    if (value.includes('http://')) tempAddress = tempAddress.substr(7)
+    if (value.includes('https://')) tempAddress = tempAddress.substr(8)
+    const validateAddress = /^([a-z0-9\-.]*)\.(([a-z]{2,4})|([0-9]{1,3}\.([0-9]{1,3})\.([0-9]{1,3})))|(:[0-9]{1,5})$/.test(tempAddress)
+    if (!validateAddress) errors.push('Invalid IP address')
+    if (canRegister !== undefined && canRegister === false) errors.push('There is no free relays now')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
@@ -89,6 +114,9 @@ function generateRules (form) {
     } else if (validationRule.pattern === 'repeatingPrivateKey') {
       const privateKeyRule = [{ validator: checkRepeatingPrivateKey(validationRule.keys) }]
       rules[key] = privateKeyRule
+    } else if (validationRule.pattern === 'nodeIp') {
+      const nodeIpRule = [{ validator: checkNodeIp(validationRule.canRegister) }]
+      rules[key] = nodeIpRule
     } else {
       rules[key] = set[validationRule]
     }

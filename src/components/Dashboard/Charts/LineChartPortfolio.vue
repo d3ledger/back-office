@@ -12,6 +12,7 @@
 <script>
 import currencySymbol from '@/components/mixins/currencySymbol'
 import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
 import debounce from 'lodash/fp/debounce'
 
 export default {
@@ -28,7 +29,8 @@ export default {
   },
   mixins: [
     currencySymbol,
-    dateFormat
+    dateFormat,
+    numberFormat
   ],
   data () {
     const fontFamily = "'IBM Plex Sans', sans-serif"
@@ -117,7 +119,7 @@ export default {
   methods: {
     onReady (instance, ECharts) {
       this.chart.tooltip.formatter = data => {
-        const value = parseFloat(data[0].value.toFixed(2)).toLocaleString()
+        const value = numberFormat.filters.formatNumberLong(data[0].value.toFixed(2))
         const time = this.formatDate(data[0].data.time * 1000)
         return `${time}<br/>${value} ${this.currencySymbol}`
       }
@@ -145,7 +147,17 @@ export default {
       const maxValue = Math.max.apply(null, this.data.map(i => i.sum))
       const WIDTH_PER_DIGIT = 10
       const OFFSET = 10
-      const yAxisWidth = OFFSET + maxValue.toFixed(0).length * WIDTH_PER_DIGIT
+      let digits
+      if (maxValue > 10) {
+        digits = maxValue.toFixed(0).length
+      } else if (maxValue > 4) {
+        digits = maxValue.toFixed(1).length
+      } else if (maxValue > 0.1) {
+        digits = maxValue.toFixed(2).length
+      } else {
+        digits = maxValue.toFixed(3).length
+      }
+      const yAxisWidth = OFFSET + digits * WIDTH_PER_DIGIT
 
       chartInstance.setOption({
         grid: {
