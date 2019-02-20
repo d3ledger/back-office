@@ -550,7 +550,12 @@ export default {
     ]),
 
     fetchWallet () {
-      this.updateMarketCard()
+      this.getAccountAssetTransactions({
+        assetId: this.wallet.assetId
+      })
+        .then(() => {
+          this.updateMarketCard()
+        })
     },
 
     updateMarketCard () {
