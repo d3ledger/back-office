@@ -174,16 +174,6 @@ export default {
 </script>
 
 <style scoped>
-  /*
-    ElementUI renders .el-form-item__label without a data attribute,
-    so scoped styles doesn't work for it. The `>>>` combinator solves this problem.
-    https://vue-loader.vuejs.org/en/features/scoped-css.html
-  */
-
-  .auth-form >>> .el-form-item__label::before {
-    display: none;
-  }
-
   .option.left {
     float: left;
     margin-right: 10px;

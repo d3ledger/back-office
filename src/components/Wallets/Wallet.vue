@@ -328,7 +328,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
+        <el-form-item>
           <el-button
             class="fullwidth black clickable"
             @click="onSubmitWithdrawalForm"

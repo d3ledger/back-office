@@ -121,7 +121,7 @@ export default {
   margin-bottom: 2rem;
 }
 .vertical_devider {
-  top: 1px;
+  top: 0.5rem;
   bottom: 1px;
   width: 2px;
   background: #f5f5f5;

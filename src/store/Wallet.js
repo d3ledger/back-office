@@ -107,7 +107,7 @@ const mutations = {
 
     // process volumeData
     const volumeCrypto = volumeData.Data
-      .filter(({ volume }) => Number.isFinite(volume))
+      .filter(({ volume }) => Number.isFinite(volume) && volume < Number.MAX_SAFE_INTEGER)
       .reduce((sum, { volume }) => sum + volume, 0)
     const volumeFiat = priceFiat * volumeCrypto
 
@@ -148,10 +148,11 @@ const actions = {
     return Promise.all([
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
-      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset }),
+      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
       cryptoCompareUtil.loadFullData(asset, currencies)
     ])
       .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
+        console.log('volumeData', volumeData)
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
           historicalDataFiat,
           historicalDataCrypto,

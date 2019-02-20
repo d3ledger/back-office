@@ -70,16 +70,13 @@
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
-            type="textarea"
-            :rows="2"
             v-model="exchangeForm.description"
             placeholder="Description"
-            resize="none"
           />
         </el-form-item>
       </el-form>
       <el-button
-        class="dialog-form_buttons action"
+        class="dialog-form_buttons action fullwidth"
         @click="onSubmitExchangeDialog()"
         style="margin-top: 40px"
         :loading="isExchangeSending"
