@@ -271,6 +271,13 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+            class="wallet-pagination"
+            :pager-count="11"
+            :page-size="5"
+            layout="prev, pager, next"
+            :total="1000">
+          </el-pagination>
         </el-card>
       </el-col>
     </el-row>
@@ -862,5 +869,39 @@ export default {
 .withdraw_form >>> .el-form-item__label::before,
 .transfer_form >>> .el-form-item__label::before {
   content: '';
+}
+
+.wallet-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.wallet-pagination >>> .el-icon {
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .el-icon:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number {
+  height: 4rem;
+  width: 3rem;
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .number:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number.active {
+  background-color: #f4f4f4;
+  color: #000000;
+  opacity: 1;
 }
 </style>
