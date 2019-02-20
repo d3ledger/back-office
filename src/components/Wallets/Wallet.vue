@@ -274,9 +274,11 @@
           <el-pagination
             class="wallet-pagination"
             :pager-count="11"
-            :page-size="5"
+            :page-size="10"
             layout="prev, pager, next"
-            :total="1000">
+            :total="paginationMeta.allTransactionsSize"
+            @current-change="onNextPage"
+          >
           </el-pagination>
         </el-card>
       </el-col>
@@ -440,6 +442,7 @@ export default {
   },
   data () {
     return {
+      activePage: 1,
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
@@ -467,7 +470,8 @@ export default {
       'withdrawWalletAddresses',
       'getTransactionsByAssetId',
       'accountQuorum',
-      'wallets'
+      'wallets',
+      'getPaginationMetaByAssetId'
     ]),
 
     wallet () {
@@ -476,14 +480,22 @@ export default {
       return this.$store.getters.wallets.find(w => (w.id === walletId)) || {}
     },
 
+    paginationMeta () {
+      if (!this.wallet) return []
+      return this.getPaginationMetaByAssetId(this.wallet.assetId)
+    },
+
     transactions () {
       if (!this.wallet) return []
-
-      return this.getTransactionsByAssetId(this.wallet.assetId).sort((t1, t2) => {
-        const date1 = t1.date ? t1.date : t1.from ? t1.from.date : t1.from ? t1.from.date : 0
-        const date2 = t2.date ? t2.date : t2.from ? t2.from.date : t2.from ? t2.from.date : 0
-        return date2 - date1
-      })
+      const paging = [this.activePage * 10 - 10, this.activePage * 10]
+      return this.getTransactionsByAssetId(this.wallet.assetId)
+        .slice()
+        .sort((t1, t2) => {
+          const date1 = t1.date ? t1.date : t1.from ? t1.from.date : t1.from ? t1.from.date : 0
+          const date2 = t2.date ? t2.date : t2.from ? t2.from.date : t2.from ? t2.from.date : 0
+          return date2 - date1
+        })
+        .slice(...paging)
     },
 
     displayPrecision () {
@@ -532,14 +544,16 @@ export default {
       'openExchangeDialog',
       'getAccountAssets',
       'getAccountAssetTransactions',
+      'getAccountAssetTransactionsNextPage',
       'getCryptoFullData',
       'transferAsset'
     ]),
 
     fetchWallet () {
-      this.getAccountAssets()
+      this.getAccountAssetTransactions({
+        assetId: this.wallet.assetId
+      })
         .then(() => {
-          this.getAccountAssetTransactions({ assetId: this.wallet.assetId })
           this.updateMarketCard()
         })
     },
@@ -644,6 +658,14 @@ export default {
         if (!valid) isValid = false
       })
       return isValid
+    },
+
+    onNextPage (page) {
+      this.getAccountAssetTransactionsNextPage({
+        page: this.page,
+        assetId: this.wallet.assetId
+      })
+      this.activePage = page
     }
   },
 

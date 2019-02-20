@@ -32,6 +32,7 @@ const types = flow(
   'UPDATE_ACCOUNT',
   'GET_ACCOUNT_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
+  'GET_ACCOUNT_ASSET_TRANSACTIONS_NP',
   'GET_ACCOUNT_ASSETS',
   'GET_ALL_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_SIGNATORIES',
@@ -58,7 +59,7 @@ function initialState () {
     accountQuorum: 0,
     accountSignatories: [],
     accountLimits: [],
-    rawAssetTransactions: {},
+    assetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
     rawPendingTransactions: null,
@@ -96,15 +97,21 @@ const getters = {
 
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
-    return getTransferAssetsFrom(
-      state.rawAssetTransactions[assetId],
+    return state.assetTransactions[assetId] ? getTransferAssetsFrom(
+      state.assetTransactions[assetId].transactionsList,
       state.accountId,
       resolvedSettlements
-    )
+    ) : []
   },
 
-  allAssetTransactions () {
-    return flatten(Object.values(state.rawAssetTransactions))
+  getPaginationMetaByAssetId: (state) => (assetId) => {
+    return state.assetTransactions[assetId]
+  },
+
+  allAssetsTransactions () {
+    const txs = Object.values(state.assetTransactions)
+      .map(a => a.transactionsList)
+    return flatten(txs)
   },
 
   allPendingTransactions: (state) => {
@@ -136,9 +143,9 @@ const getters = {
   },
 
   resolvedSettlements (state) {
-    let allAssetTransactionsCopy = getters.allAssetTransactions()
+    let allAssetsTransactionsCopy = getters.allAssetsTransactions()
     return getSettlementsFrom(
-      allAssetTransactionsCopy,
+      allAssetsTransactionsCopy,
       state.accountId
     )
   },
@@ -281,10 +288,33 @@ const mutations = {
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS] (state, { assetId, transactions }) {
-    Vue.set(state.rawAssetTransactions, assetId, transactions.transactionsList)
+    const txs = {
+      ...transactions,
+      loadedAmount: 100
+    }
+    Vue.set(state.assetTransactions, assetId, txs)
   },
 
   [types.GET_ACCOUNT_ASSET_TRANSACTIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS] (state, { assetId, transactions }) {
+    const txs = {
+      allTransactionsSize: transactions.allTransactionsSize,
+      nextTxHash: transactions.nextTxHash,
+      loadedAmount: state.assetTransactions[assetId].loadedAmount + 100,
+      transactionsList: [
+        ...state.assetTransactions[assetId].transactionsList,
+        ...transactions.transactionsList
+      ]
+    }
+    Vue.set(state.assetTransactions, assetId, txs)
+  },
+
+  [types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -435,20 +465,22 @@ const mutations = {
   [types.GET_ACCOUNT_LIMITS_SUCCESS] (state, jsonData) {
     const parsedJson = JSON.parse(jsonData)
     const accountInfo = parsedJson[state.accountId]
-    const limits = Object.keys(accountInfo)
-      .filter(key => key.includes('limit_') && accountInfo[key])
-      .map(key => JSON.parse(accountInfo[key]))
-      .map(limit => {
-        const wallet = getters.wallets(state)
-          .find(w => w.assetId === limit.assetId)
-        return {
-          ...limit,
-          wallet: {
-            name: wallet.name,
-            asset: wallet.asset
+    const limits = accountInfo
+      ? Object.keys(accountInfo)
+        .filter(key => key.includes('limit_') && accountInfo[key])
+        .map(key => JSON.parse(accountInfo[key]))
+        .map(limit => {
+          const wallet = getters.wallets(state)
+            .find(w => w.assetId === limit.assetId)
+          return {
+            ...limit,
+            wallet: {
+              name: wallet.name,
+              asset: wallet.asset
+            }
           }
-        }
-      })
+        })
+      : []
     state.accountLimits = limits
   },
 
@@ -552,6 +584,31 @@ const actions = {
       })
   },
 
+  getAccountAssetTransactionsNextPage ({ commit, state }, { page, assetId }) {
+    const loadedAmount = state.assetTransactions[assetId].loadedAmount
+    const hash = state.assetTransactions[assetId].nextTxHash
+
+    if (loadedAmount < page * 10) {
+      commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_REQUEST)
+      return irohaUtil.getAccountAssetTransactions({
+        accountId: state.accountId,
+        assetId,
+        pageSize: 100,
+        firstTxHash: hash.length ? hash : undefined
+      })
+        .then(responses => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_SUCCESS, {
+            assetId: assetId,
+            transactions: responses
+          })
+        })
+        .catch(err => {
+          commit(types.GET_ACCOUNT_ASSET_TRANSACTIONS_NP_FAILURE, err)
+          throw err
+        })
+    }
+  },
+
   getAccountAssets ({ commit, state }) {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
@@ -597,23 +654,22 @@ const actions = {
       })
   },
 
-  getAllAssetTransactions ({ commit, dispatch, state }) {
+  getAllAssetsTransactions ({ commit, dispatch, state }) {
     commit(types.GET_ALL_ASSET_TRANSACTIONS_REQUEST)
-
-    return new Promise((resolve, reject) => {
-      state.assets.map(({ assetId }) => {
+    return new Promise(async (resolve, reject) => {
+      for (let { assetId } of state.assets) {
         dispatch('getAccountAssetTransactions', { assetId })
-          .then(() => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
-            resolve()
-          })
-          .catch((err) => {
-            commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
-            reject(err)
-            throw err
-          })
-      })
+          .catch(err => reject(err))
+      }
+      resolve()
     })
+      .then(() => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_SUCCESS)
+      })
+      .catch((err) => {
+        commit(types.GET_ALL_ASSET_TRANSACTIONS_FAILURE, err)
+        throw err
+      })
   },
 
   getPendingTransactions ({ commit }) {

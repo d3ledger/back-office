@@ -41,8 +41,12 @@ html {
   margin: 0;
 }
 
-[class^="el-"]:not(i),
-[class*="el-"]:not(i) {
+.el-icon {
+  font-family: element-icons !important;
+}
+
+[class^="el-"]:not(i):not([class*='el-icon']),
+[class*="el-"]:not(i):not([class*='el-icon']) {
   font-family: 'IBM Plex Sans', sans-serif !important;
 }
 

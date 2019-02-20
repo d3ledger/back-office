@@ -133,7 +133,7 @@ export default {
     Promise.all([
       this.loadWalletsSortCriterion(),
       this.getAccountAssets(),
-      this.getAllAssetTransactions()
+      this.getAllAssetsTransactions()
     ])
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
@@ -148,7 +148,7 @@ export default {
   methods: {
     ...mapActions([
       'getAccountAssets',
-      'getAllAssetTransactions',
+      'getAllAssetsTransactions',
       'loadWalletsSortCriterion',
       'updateWalletsSortCriterion'
     ]),
