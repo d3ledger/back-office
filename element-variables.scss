@@ -402,17 +402,17 @@ $--button-padding-horizontal: 20px !default;
 
 $--button-medium-font-size: 14px !default;
 $--button-medium-border-radius: $--border-radius-base !default;
-$--button-medium-padding-vertical: 1.25rem !default;
+$--button-medium-padding-vertical: 1rem !default;
 $--button-medium-padding-horizontal: 20px !default;
 
 $--button-small-font-size: 12px !default;
 $--button-small-border-radius: #{$--border-radius-base - 1} !default;
-$--button-small-padding-vertical: 9px !default;
+$--button-small-padding-vertical: 0.7rem !default;
 $--button-small-padding-horizontal: 15px !default;
 
 $--button-mini-font-size: 12px !default;
 $--button-mini-border-radius: #{$--border-radius-base - 1} !default;
-$--button-mini-padding-vertical: 7px !default;
+$--button-mini-padding-vertical: 0.5rem !default;
 $--button-mini-padding-horizontal: 15px !default;
 
 $--button-default-color: $--color-text-regular !default;

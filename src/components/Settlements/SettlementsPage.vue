@@ -11,7 +11,7 @@
             <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
           </div>
           <div>
-            <el-button class="exchange_button" type="primary" @click="openExchangeDialog()">
+            <el-button class="exchange_button" size="medium" type="primary" @click="openExchangeDialog()">
               <fa-icon class="exchange_button-icon" icon="exchange-alt" />
               <span>
                 Exchange

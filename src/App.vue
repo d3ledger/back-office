@@ -193,6 +193,17 @@ button.el-dialog__headerbtn {
   padding-top: 0px;
 }
 
+.withdraw_form .el-input-group__append,
+.exchange_form .el-input-group__append,
+.transfer_form .el-input-group__append {
+  background-color: #2d2d2d;
+}
+
+.withdraw_form .el-input-group__append input,
+.exchange_form .el-input-group__append input,
+.transfer_form .el-input-group__append input {
+  font-weight: normal
+}
 /*
  * Login and SignUp pages
  */
