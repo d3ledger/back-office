@@ -152,7 +152,6 @@ const actions = {
       cryptoCompareUtil.loadFullData(asset, currencies)
     ])
       .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
-        console.log('volumeData', volumeData)
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
           historicalDataFiat,
           historicalDataCrypto,
