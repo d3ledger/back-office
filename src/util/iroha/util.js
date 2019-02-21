@@ -1,5 +1,7 @@
-import Debug from 'debug'
-const debug = Debug('iroha-util')
+import {
+  CommandService_v1Client as CommandService,
+  QueryService_v1Client as QueryService
+} from 'iroha-helpers/lib/proto/endpoint_pb_service'
 
 export const DEFAULT_TIMEOUT_LIMIT = 5000
 
@@ -15,24 +17,29 @@ export const cache = {
   nodeIp: null // persisted by localStorage
 }
 
-const protoEnumName = {}
-export function getProtoEnumName (obj, key, value) {
-  if (protoEnumName.hasOwnProperty(key)) {
-    if (protoEnumName[key].length < value) {
-      return 'unknown'
-    } else {
-      return protoEnumName[key][value]
-    }
-  } else {
-    protoEnumName[key] = []
-    for (let k in obj) {
-      let idx = obj[k]
-      if (isNaN(idx)) {
-        debug(`getProtoEnumName:wrong enum value, now is type of ${typeof idx} should be integer`)
-      } else {
-        protoEnumName[key][idx] = k
-      }
-    }
-    return getProtoEnumName(obj, key, value)
+export function newCommandService () {
+  return new CommandService(cache.nodeIp)
+}
+
+export function newQueryService () {
+  return new QueryService(cache.nodeIp)
+}
+
+export function newCommandServiceOptions (privateKeys, quorum) {
+  return {
+    privateKeys,
+    quorum,
+    creatorAccountId: cache.username,
+    commandService: new CommandService(cache.nodeIp),
+    timeoutLimit: DEFAULT_TIMEOUT_LIMIT
+  }
+}
+
+export function newQueryServiceOptions () {
+  return {
+    privateKey: cache.key,
+    creatorAccountId: cache.username,
+    queryService: new QueryService(cache.nodeIp),
+    timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
 }

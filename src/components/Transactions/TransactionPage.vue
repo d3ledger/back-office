@@ -81,9 +81,10 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
-import { mapActions, mapGetters } from 'vuex'
+import NOTIFICATIONS from '@/data/notifications'
 
 export default {
   name: 'transaction-page',
@@ -125,18 +126,16 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length + signatures.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
-                'Transaction succesfuly finalised and sent!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.TRANSACTION_SUCCESS,
+                NOTIFICATIONS.NOT_COMPLETED
               )
               this.getPendingTransactions()
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Transaction signing error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
             })
         })
         .finally(() => { this.isSending = false })

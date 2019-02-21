@@ -103,9 +103,10 @@ describe('Account store', () => {
         nodeIp: randomNodeIp(),
         notaryIp: randomNodeIp(),
         accountInfo: randomObject(),
+        accountLimits: [randomObject()],
         accountQuorum: randomAmountRng(),
         accountSignatories: [randomObject()],
-        rawAssetTransactions: randomObject(),
+        assetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
         rawPendingTransactions: [randomObject()],
@@ -118,14 +119,17 @@ describe('Account store', () => {
         nodeIp: MOCK_NODE_IP,
         notaryIp: MOCK_NOTARY_IP,
         accountInfo: {},
+        accountLimits: [],
         accountQuorum: 0,
         accountSignatories: [],
-        rawAssetTransactions: {},
+        assetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
         rawPendingTransactions: null,
         assets: [],
-        connectionError: null
+        connectionError: null,
+        acceptSettlementLoading: false,
+        rejectSettlementLoading: false
       }
 
       mutations[types.RESET](state)
@@ -171,13 +175,17 @@ describe('Account store', () => {
     testErrorHandling('LOGOUT_FAILURE')
 
     it('GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS should set transactions to state', () => {
-      const state = { rawAssetTransactions: {} }
+      const state = { assetTransactions: {} }
       const assetId = randomAssetId()
-      const transactions = MOCK_TRANSACTIONS
+      const transactions = {
+        allTransactionsSize: randomAmount(),
+        nextTxHash: randomHex(10),
+        loadedAmount: 100,
+        transactionsList: [randomObject()]
+      }
 
       mutations[types.GET_ACCOUNT_ASSET_TRANSACTIONS_SUCCESS](state, { assetId, transactions })
-
-      expect(state.rawAssetTransactions)
+      expect(state.assetTransactions)
         .to.have.property(assetId)
         .that.is.deep.equal(transactions)
     })
@@ -404,7 +412,11 @@ describe('Account store', () => {
 
     describe('getTransactionsByAssetId', () => {
       it('should return transformed transactions', () => {
-        const state = { rawAssetTransactions: MOCK_ASSET_TRANSACTIONS }
+        const state = {
+          assetTransactions: {
+            'omisego#test': MOCK_ASSET_TRANSACTIONS.transactionsList
+          }
+        }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
         const expectedKeys = [
           'amount',
@@ -424,7 +436,7 @@ describe('Account store', () => {
       })
 
       it('should return an empty array if there is no transactions', () => {
-        const state = { rawAssetTransactions: {} }
+        const state = { assetTransactions: {} }
         const result = getters.getTransactionsByAssetId(state)('omisego#test')
 
         expect(result).to.be.an('array').which.is.empty

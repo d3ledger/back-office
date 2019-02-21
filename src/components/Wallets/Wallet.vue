@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="wallet.assetId">
     <el-row style="margin-bottom: 20px">
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
@@ -154,26 +154,62 @@
                 <div class="transaction_details">
                   <div v-if="scope.row.to.from">
                     <el-row>
-                      <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
-                      <el-col :span="4" class="transaction_details-amount">
-                        <p>- {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }}</p>
-                        <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
+                      <el-col :span="6">
+                        {{ formatDateLong(scope.row.from.date) }}
                       </el-col>
-                      <el-col :span="16" class="transaction_details-message">
-                        {{ scope.row.from.message }}
+                      <el-col :span="18" >
+                        <p>
+                          <span class="transaction_details-title">Type: </span>
+                          <span>EXCHANGE</span>
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount outgoing:</span>
+                          {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount incoming:</span>
+                          {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Address:</span>
+                          {{ scope.row.from.to }}
+                        </p>
+                        <p v-if="scope.row.from.message.length">
+                          <span class="transaction_details-title">Desciption:</span>
+                          {{ scope.row.from.message }}
+                        </p>
                       </el-col>
                     </el-row>
                   </div>
                   <div v-else>
                     <el-row>
-                      <el-col :span="4">
+                      <el-col :span="6">
                         {{ formatDateLong(scope.row.date) }}
                       </el-col>
-                      <el-col :span="4" class="transaction_details-amount">
-                        {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
-                      </el-col>
-                      <el-col :span="16" class="transaction_details-message">
-                        {{ scope.row.message.length ? scope.row.message : 'Message not provided...' }}
+                      <el-col :span="18">
+                        <p>
+                          <span class="transaction_details-title">Type: </span>
+                          <span v-if="scope.row.to === 'notary'">WITHDRAWAL</span>
+                          <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
+                          <span v-else>TRANSFER</span>
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Amount:</span>
+                          {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
+                        </p>
+                        <p>
+                          <span class="transaction_details-title">Address:</span>
+                          <span v-if="scope.row.from === 'you'">
+                            {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                          </span>
+                          <span v-else>
+                            {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                          </span>
+                        </p>
+                        <p v-if="scope.row.message.length && scope.row.to !== 'notary' && scope.row.from !== 'notary'">
+                          <span class="transaction_details-title">Desciption:</span>
+                          {{ scope.row.message }}
+                        </p>
                       </el-col>
                     </el-row>
                   </div>
@@ -212,7 +248,7 @@
             <el-table-column label="Address" min-width="130" show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
-                  to {{ scope.row.from.from }}
+                  {{ scope.row.from.to }}
                 </span>
                 <span v-else-if="scope.row.from === 'you'">
                   {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
@@ -228,14 +264,22 @@
                   <p v-if="scope.row.from.to">
                     {{ scope.row.from.message }}
                   </p>
-                  <p v-else-if="scope.row.from === 'notary' || scope.row.to === 'notary'">
+                  <p v-else-if="scope.row.from !== 'notary' && scope.row.to !== 'notary'">
                     {{ scope.row.message }}
                   </p>
-                  <p v-else>{{ scope.row.message }}</p>
                 </span>
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+            class="wallet-pagination"
+            :pager-count="11"
+            :page-size="10"
+            layout="prev, pager, next"
+            :total="paginationMeta.allTransactionsSize"
+            @current-change="onNextPage"
+          >
+          </el-pagination>
         </el-card>
       </el-col>
     </el-row>
@@ -244,7 +288,7 @@
       :title="'Withdraw ' + wallet.asset"
       :visible.sync="withdrawFormVisible"
       @close="closeWithdrawDialog()"
-      width="500px"
+      width="450px"
       center
     >
       <el-form ref="withdrawForm" :model="withdrawForm" class="withdraw_form" :rules="rules">
@@ -295,7 +339,7 @@
     <el-dialog
       title="Deposit"
       :visible.sync="receiveFormVisible"
-      width="500px"
+      width="450px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -314,7 +358,7 @@
       title="Transfer"
       :visible.sync="transferFormVisible"
       @close="closeTransferForm()"
-      width="500px"
+      width="450px"
       center
     >
       <el-form ref="transferForm" :model="transferForm" class="transfer_form" :rules="rules">
@@ -334,7 +378,7 @@
         <el-form-item label="Counterparty" prop="to">
           <el-input v-model="transferForm.to" placeholder="Account id" />
         </el-form-item>
-        <el-form-item label="Additional information">
+        <el-form-item label="Additional information" prop="description">
           <el-input
             type="textarea"
             :rows="2"
@@ -354,18 +398,23 @@
       </el-button>
     </el-dialog>
   </div>
+  <div v-else>
+    <no-assets-card />
+  </div>
 </template>
 
 <script>
 // TODO: Transfer form all assets
 import QrcodeVue from 'qrcode.vue'
 import { mapActions, mapGetters } from 'vuex'
+import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
+import NOTIFICATIONS from '@/data/notifications'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -381,16 +430,19 @@ export default {
     inputValidation({
       to: 'nameDomain',
       amount: 'tokensAmount',
-      wallet: 'walletAddress'
+      wallet: 'walletAddress',
+      description: 'additionalInformation'
     }),
     messageMixin
   ],
   components: {
     AssetIcon,
-    QrcodeVue
+    QrcodeVue,
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   data () {
     return {
+      activePage: 1,
       receiveFormVisible: false,
       withdrawFormVisible: false,
       transferFormVisible: false,
@@ -418,7 +470,8 @@ export default {
       'withdrawWalletAddresses',
       'getTransactionsByAssetId',
       'accountQuorum',
-      'wallets'
+      'wallets',
+      'getPaginationMetaByAssetId'
     ]),
 
     wallet () {
@@ -427,10 +480,22 @@ export default {
       return this.$store.getters.wallets.find(w => (w.id === walletId)) || {}
     },
 
+    paginationMeta () {
+      if (!this.wallet) return []
+      return this.getPaginationMetaByAssetId(this.wallet.assetId)
+    },
+
     transactions () {
       if (!this.wallet) return []
-
+      const paging = [this.activePage * 10 - 10, this.activePage * 10]
       return this.getTransactionsByAssetId(this.wallet.assetId)
+        .slice()
+        .sort((t1, t2) => {
+          const date1 = t1.date ? t1.date : t1.from ? t1.from.date : t1.from ? t1.from.date : 0
+          const date2 = t2.date ? t2.date : t2.from ? t2.from.date : t2.from ? t2.from.date : 0
+          return date2 - date1
+        })
+        .slice(...paging)
     },
 
     displayPrecision () {
@@ -451,7 +516,9 @@ export default {
   },
 
   created () {
-    this.fetchWallet()
+    if (this.wallet.assetId) {
+      this.fetchWallet()
+    }
   },
 
   beforeMount () {
@@ -477,14 +544,16 @@ export default {
       'openExchangeDialog',
       'getAccountAssets',
       'getAccountAssetTransactions',
+      'getAccountAssetTransactionsNextPage',
       'getCryptoFullData',
       'transferAsset'
     ]),
 
     fetchWallet () {
-      this.getAccountAssets()
+      this.getAccountAssetTransactions({
+        assetId: this.wallet.assetId
+      })
         .then(() => {
-          this.getAccountAssetTransactions({ assetId: this.wallet.assetId })
           this.updateMarketCard()
         })
     },
@@ -514,10 +583,10 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
-                'Withdrawal request is submitted to notary!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.WITHDRAWAL_SUCCESS,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.resetWithdrawForm()
@@ -526,9 +595,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Withdrawal error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
             })
         })
         .finally(() => { this.isSending = false })
@@ -550,10 +617,10 @@ export default {
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
-              this.showMessageFromStatus(
+              this.$_showMessageFromStatus(
                 completed,
-                'Transfer successful!',
-                'Operation not completed. You should complete it on transactions page'
+                NOTIFICATIONS.TRANSFER_SUCCESS,
+                NOTIFICATIONS.NOT_COMPLETED
               )
 
               this.fetchWallet()
@@ -562,9 +629,7 @@ export default {
             })
             .catch(err => {
               console.error(err)
-              this.$alert(err.message, 'Transfer error', {
-                type: 'error'
-              })
+              this.$_showErrorAlertMessage(err.message, 'Transfer error')
             })
         })
         .finally(() => { this.isSending = false })
@@ -593,13 +658,21 @@ export default {
         if (!valid) isValid = false
       })
       return isValid
+    },
+
+    onNextPage (page) {
+      this.getAccountAssetTransactionsNextPage({
+        page: this.page,
+        assetId: this.wallet.assetId
+      })
+      this.activePage = page
     }
   },
 
   filters: {
     fitAmount (amount) {
       const withoutZeros = numberFormat.filters.formatPrecision(amount)
-      return withoutZeros.length > 15 ? `${withoutZeros.substr(0, 15)}...` : withoutZeros
+      return withoutZeros.length > 10 ? `${withoutZeros.substr(0, 10)}...` : withoutZeros
     }
   }
 }
@@ -812,8 +885,45 @@ export default {
 .transaction_details-message {
   word-break: break-all;
 }
+.transaction_details-title {
+  font-weight: 600;
+}
 .withdraw_form >>> .el-form-item__label::before,
 .transfer_form >>> .el-form-item__label::before {
   content: '';
+}
+
+.wallet-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.wallet-pagination >>> .el-icon {
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .el-icon:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number {
+  height: 4rem;
+  width: 3rem;
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .number:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number.active {
+  background-color: #f4f4f4;
+  color: #000000;
+  opacity: 1;
 }
 </style>

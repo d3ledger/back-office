@@ -1,265 +1,196 @@
 {
-  "omisego#test": [
-    {
+  "omisego#test": {
+    "transactionsList": [{
       "payload": {
         "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "alice@test",
-                "destAccountId": "admin@test",
-                "assetId": "omisego#test",
-                "description": "hello",
-                "amount": {
-                  "value": "0.39600075",
-                  "precision": 8
-                }
-              }
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "test@test",
+              "destAccountId": "alice@test",
+              "assetId": "omisego#test",
+              "description": "transfer 1/3",
+              "amount": "39"
             }
-          ],
+          }],
+          "creatorAccountId": "test@test",
+          "createdTime": 1548324347174,
+          "quorum": 1
+        }
+      },
+      "signaturesList": [{
+        "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f",
+        "signature": "daec63b8710e366c32fa07692a5f29095ad77efe2984e78104b7de0584fc4ce141717f9f70315b3b00b2e629cc0abad5c51a6246864cd886aae50cba6e214403"
+      }]
+    }, {
+      "payload": {
+        "reducedPayload": {
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "test@test",
+              "destAccountId": "alice@test",
+              "assetId": "omisego#test",
+              "description": "Deal #1",
+              "amount": "0.81"
+            }
+          }],
+          "creatorAccountId": "test@test",
+          "createdTime": 1548324348563,
+          "quorum": 1
+        }
+      },
+      "signaturesList": [{
+        "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f",
+        "signature": "fc28898baed1894d328c479c1d0e0f92f3a5aef611cf7608427361f3975e67d6a2c8458c00cc58ca1e22444d6dc87e6e3c2aed50b69997626a3fffc65675be03"
+      }]
+    }, {
+      "payload": {
+        "reducedPayload": {
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "test@test",
+              "destAccountId": "alice@test",
+              "assetId": "omisego#test",
+              "description": "Deal #2",
+              "amount": "0.15"
+            }
+          }],
+          "creatorAccountId": "test@test",
+          "createdTime": 1548324348559,
+          "quorum": 1
+        }
+      },
+      "signaturesList": [{
+        "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f",
+        "signature": "ef426c3758e15cc4ef1b08901697dd9fd835687f9d89becf9320057b50f64078ef6e869730cf0b9c0634e8f9621e3b3657dc9ad16064b4fe4e5d2f0bca196004"
+      }]
+    }, {
+      "payload": {
+        "reducedPayload": {
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "test@test",
+              "destAccountId": "alice@test",
+              "assetId": "omisego#test",
+              "description": "Deal #1",
+              "amount": "0.26"
+            }
+          }],
+          "creatorAccountId": "test@test",
+          "createdTime": 1548324348553,
+          "quorum": 1
+        }
+      },
+      "signaturesList": [{
+        "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f",
+        "signature": "499502363181d7cd0b3e0b0ae11d52072c0b8dff208afcbc26a2eca03e29d853fa058e1c4603091ac729c331f0a1cdef8d3771f9b3be45df84509b52a9135301"
+      }]
+    }, {
+      "payload": {
+        "reducedPayload": {
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "test@test",
+              "assetId": "omisego#test",
+              "description": "Deal #3",
+              "amount": "0.83"
+            }
+          }],
           "creatorAccountId": "alice@test",
-          "createdTime": 1528872321913
+          "createdTime": 1548324357266,
+          "quorum": 1
         }
       },
-      "signaturesList": [
-        {
-          "publicKey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
-          "signature":
-            "itKfWVrUYPlyuEHWOr1vpvnYdldTjYIDN80EWHPYXNOwHqapwHhi87zpB01SjetCE7GNPlR8O0mFN8db+yV6Aw=="
-        }
-      ]
-    },
-    {
+      "signaturesList": [{
+        "publicKey": "bcc4ab167ae7db371672170ed31e382f7c612fbfe918f99c276cd9dc199446a4",
+        "signature": "a1ba6b2e8dc16ab706193a1a0841c79428da3682e45633130f5de44ac30423582473c593e301381d13d71aeb10416eb6eca81cc30f6b54eed2d8757c4bface0e"
+      }]
+    }, {
       "payload": {
         "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "alice@test",
-                "destAccountId": "admin@test",
-                "assetId": "omisego#test",
-                "description": "hi",
-                "amount": {
-                  "value": "0.44646002",
-                  "precision": 8
-                }
-              }
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "test@test",
+              "assetId": "omisego#test",
+              "description": "Deal #1",
+              "amount": "0.84"
             }
-          ],
+          }],
           "creatorAccountId": "alice@test",
-          "createdTime": 1528872321922
+          "createdTime": 1548324357270,
+          "quorum": 1
         }
       },
-      "signaturesList": [
-        {
-          "publicKey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
-          "signature":
-            "gm1PodpdMZaR9MdStXePVlWBLX9gKcvadKpnMrFAglNF1mvpmHwnzmQgHs9Px4DX/bpx2xyb/86Lt4edO6jVBg=="
-        }
-      ]
-    },
-    {
+      "signaturesList": [{
+        "publicKey": "bcc4ab167ae7db371672170ed31e382f7c612fbfe918f99c276cd9dc199446a4",
+        "signature": "1d2238547bc721514e99b8cce892a7610be73109894ee1527664cb443d8f0b31144e82a8e7792fedea17eee2630296666129bf02fc6e5cea840ff4e060f30e09"
+      }]
+    }, {
       "payload": {
         "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "alice@test",
-                "destAccountId": "admin@test",
-                "assetId": "omisego#test",
-                "description": "",
-                "amount": {
-                  "value": "0.99913421",
-                  "precision": 8
-                }
-              }
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "test@test",
+              "assetId": "omisego#test",
+              "description": "PART_OF_DUMMY_SETTLEMENT",
+              "amount": "0.65"
             }
-          ],
+          }],
           "creatorAccountId": "alice@test",
-          "createdTime": 1528872321919
+          "createdTime": 1548324357260,
+          "quorum": 1
         }
       },
-      "signaturesList": [
-        {
-          "publicKey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
-          "signature":
-            "4/Jg1rEQ/5pB/QVwAliXNuGW7p7UsRzzL/E0oGZUobLWrk19+JQap0eQT4dZX3S4rncuIatR3VrJIbXuk1vGAw=="
-        }
-      ]
-    },
-    {
+      "signaturesList": [{
+        "publicKey": "bcc4ab167ae7db371672170ed31e382f7c612fbfe918f99c276cd9dc199446a4",
+        "signature": "a6085937e5569a94216b8d94dd463102cbdc10b937420b030accba1049f4ad0cf69c889105b8e65976988796a2920f379221e7cc7ff4edc1e9499f002d5c8a0a"
+      }]
+    }, {
       "payload": {
         "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "alice@test",
-                "destAccountId": "admin@test",
-                "assetId": "omisego#test",
-                "description": "hi",
-                "amount": {
-                  "value": "0.47356821",
-                  "precision": 8
-                }
-              }
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "test@test",
+              "assetId": "omisego#test",
+              "description": "PART_OF_DUMMY_SETTLEMENT",
+              "amount": "0.65"
             }
-          ],
+          }],
           "creatorAccountId": "alice@test",
-          "createdTime": 1528872321916
+          "createdTime": 1548324357273,
+          "quorum": 1
         }
       },
-      "signaturesList": [
-        {
-          "publicKey": "vMSrFnrn2zcWchcO0x44L3xhL7/pGPmcJ2zZ3BmURqQ=",
-          "signature":
-            "aGIFM5GuGoLkkJboOSjevo3aFDAZInBXPGy8alpbtocx/ehc3a9/MQNhHRh8Ij0y6jjCId4PAaljnEEuYa7KCQ=="
-        }
-      ]
-    },
-    {
+      "signaturesList": [{
+        "publicKey": "bcc4ab167ae7db371672170ed31e382f7c612fbfe918f99c276cd9dc199446a4",
+        "signature": "c480bc4d950681de6f3254f35633ed317a17323bc9348abe9fdbb2c1b2d30d515ec45f5dfdebd539e3c2132fdf95f4c64d6687b48adfd21146103ba480fa3203"
+      }]
+    }, {
       "payload": {
         "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "admin@test",
-                "destAccountId": "alice@test",
-                "assetId": "omisego#test",
-                "description": "initial tx",
-                "amount": {
-                  "value": "1.66206859",
-                  "precision": 8
-                }
-              }
+          "commandsList": [{
+            "transferAsset": {
+              "srcAccountId": "alice@test",
+              "destAccountId": "test@test",
+              "assetId": "omisego#test",
+              "description": "Deal #2",
+              "amount": "0.65"
             }
-          ],
-          "creatorAccountId": "admin@test",
-          "createdTime": 1528872311159
+          }],
+          "creatorAccountId": "alice@test",
+          "createdTime": 1548324357257,
+          "quorum": 1
         }
       },
-      "signaturesList": [
-        {
-          "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
-          "signature":
-            "iT7mbbOgAo+70PWSS8CLB3JFuw+yIpcpDzOW/utwi5oaGTW6Be7b81E3o6EXgvgwtcNasYOGT3TQNbfXdeYBCA=="
-        }
-      ]
-    },
-    {
-      "payload": {
-        "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "admin@test",
-                "destAccountId": "alice@test",
-                "assetId": "omisego#test",
-                "description": "hi",
-                "amount": {
-                  "value": "0.28568069",
-                  "precision": 8
-                }
-              }
-            }
-          ],
-          "creatorAccountId": "admin@test",
-          "createdTime": 1528872316349
-        }
-      },
-      "signaturesList": [
-        {
-          "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
-          "signature":
-            "ztbSgcqouCm9IxOAfrYCh+64txNHh2JvrSUQHd4w2yh42WsbOt6Rc7ADhiDH3GQpRUVp+XyohyX57rcMosx9CQ=="
-        }
-      ]
-    },
-    {
-      "payload": {
-        "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "admin@test",
-                "destAccountId": "alice@test",
-                "assetId": "omisego#test",
-                "description": "",
-                "amount": {
-                  "value": "0.77628717",
-                  "precision": 8
-                }
-              }
-            }
-          ],
-          "creatorAccountId": "admin@test",
-          "createdTime": 1528872316354
-        }
-      },
-      "signaturesList": [
-        {
-          "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
-          "signature":
-            "4DqLDA8JZwh/jwkn2QTBW1xV+kcaZOLhHSqM64ER99PcLXjJYboTMWm5cQKLl9LbpfjmCl2N1x5POvD2LjPYCQ=="
-        }
-      ]
-    },
-    {
-      "payload": {
-        "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "admin@test",
-                "destAccountId": "alice@test",
-                "assetId": "omisego#test",
-                "description": "hi",
-                "amount": {
-                  "value": "0.58337340",
-                  "precision": 8
-                }
-              }
-            }
-          ],
-          "creatorAccountId": "admin@test",
-          "createdTime": 1528872316358
-        }
-      },
-      "signaturesList": [
-        {
-          "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
-          "signature":
-            "5AlFKbIXwI0oNn4XzNDOENfgACDTkMCnzQWIxWMkACT6+thtqRjHOFxF4LfVcI/Z/2bSErHZxW7Tn8x1a3LQAw=="
-        }
-      ]
-    },
-    {
-      "payload": {
-        "reducedPayload": {
-          "commandsList": [
-            {
-              "transferAsset": {
-                "srcAccountId": "admin@test",
-                "destAccountId": "alice@test",
-                "assetId": "omisego#test",
-                "description": "hello",
-                "amount": {
-                  "value": "0.11840092",
-                  "precision": 8
-                }
-              }
-            }
-          ],
-          "creatorAccountId": "admin@test",
-          "createdTime": 1528872316346
-        }
-      },
-      "signaturesList": [
-        {
-          "publicKey": "iJ9riB4zG+IUh9t33PMsX409XoBm540v6sQjn+kdQW8=",
-          "signature":
-            "TewmkTNWgeT/YneVcSX5X7eNWo5XXriLW/8MnpoYu5+Q3jy1ZcysOVTcafRCNDMP797i1/oK3HtX0tQdKFGfDA=="
-        }
-      ]
-    }
-  ]
+      "signaturesList": [{
+        "publicKey": "bcc4ab167ae7db371672170ed31e382f7c612fbfe918f99c276cd9dc199446a4",
+        "signature": "98a315bb941d040aa55696867e092585db15176b59ccfcc31173df048281126cd67fe4ec262fd73c582fce02d6c8fbd5011ab8fa8b41cb1c90873b816a1bb501"
+      }]
+    }],
+    "allTransactionsSize": 9,
+    "nextTxHash": ""
+  }
 }

@@ -665,10 +665,6 @@ describe('Test transfer with one private key and quorum 2', () => {
       cy.get('#confirm-approval-form').click({ force: true })
     })
 
-    it('Handle success message', () => {
-      cy.get('.el-message', { timeout: 15000 }).should('be.visible')
-    })
-
     it('Go to transactions page', () => {
       cy.goToPage('transactions', 'Transactions')
     })
@@ -683,11 +679,6 @@ describe('Test transfer with one private key and quorum 2', () => {
         .type(validPrivateKey2)
         .should('have.value', validPrivateKey2)
       cy.get('#confirm-approval-form').click({ force: true })
-    })
-
-    it('Show message that transaction signed correctly', () => {
-      cy.wait(1000)
-      cy.get('.el-message', { timeout: 10000 }).should('be.visible')
     })
   })
 })

@@ -56,21 +56,27 @@
                   <el-row>
                     <el-col>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.BTC)"
+                        v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
-                        </el-button>
+                      </el-button>
+                      <div v-else-if="!walletType.includes(WalletTypes.BTC)" class="list-title">
+                        There is no free BTC relays now
+                      </div>
                       <el-button
-                        v-if="!walletType.includes(WalletTypes.ETH)"
+                        v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
+                      <div v-else-if="!walletType.includes(WalletTypes.ETH)" class="list-title">
+                        There is no free ETH relays now
+                      </div>
                       <span class="list-title" v-if="walletType.length === 2">
                         You already added all networks
                       </span>
@@ -110,20 +116,45 @@
           :xs="12"
           :lg="{ span: 9 }"
           :xl="{ span: 8 }"
-          class="right_column fullheight">
+          class="right_column fullheight"
+        >
           <el-card
             :body-style="{ padding: '0' }">
+            <div class="header_only">
+              <span class="header_btn-title">
+                Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b>
+              </span>
+              <el-button
+                data-cy="editQuorum"
+                class="action_button"
+                @click="quorumFormVisible = true">
+                <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
+              </el-button>
+            </div>
+          </el-card>
+          <el-card
+            class="card"
+            :body-style="{ padding: '0' }"
+          >
             <div class="header_btn">
-              <span>Public keys</span>
+              <span class="header_btn-title pointed" @click="updateActiveTab(1)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 1 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                Public keys
+              </span>
               <el-button class="action_button" data-cy="addPublicKey" @click="addKeyFormVisible = true">
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
-            <div>
+            <div v-if="activeTab === 1">
               <div class="settings-item" data-cy="accountSignatories">
                 <template v-for="(pubKey, index) in accountSignatories">
                   <div class="settings-item_row" :key="index">
-                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key pointed">{{ pubKey | substrKey}}</span>
+                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key text-overflow pointed">{{ pubKey }}</span>
                     <el-button
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
@@ -137,31 +168,27 @@
           </el-card>
           <el-card
             class="card"
-            :body-style="{ padding: '0' }">
-            <div class="header_only">
-              <span>Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b></span>
-              <el-button
-                data-cy="editQuorum"
-                class="action_button"
-                @click="quorumFormVisible = true">
-                <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
-              </el-button>
-            </div>
-          </el-card>
-          <el-card
-            class="card"
-            :body-style="{ padding: '0' }">
+            :body-style="{ padding: '0' }"
+          >
             <div class="header_btn">
-              <span>White list</span>
+              <span class="header_btn-title pointed" @click="updateActiveTab(2)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 2 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                White list
+              </span>
             </div>
-            <div>
+            <div v-if="activeTab === 2">
               <div class="settings-item">
                 <template v-for="(address, index) in withdrawWalletAddresses">
                   <div
                     v-if="withdrawWalletAddresses.length"
                     class="settings-item_row"
                     :key="index">
-                    <span class="settings-item_row-key">{{ address }}</span>
+                    <span class="settings-item_row-key text-overflow">{{ address }}</span>
                   </div>
                 </template>
                 <div
@@ -172,44 +199,58 @@
               </div>
             </div>
           </el-card>
+          <WalletLimitsCard :activeTab="activeTab" :updateActiveTab="updateActiveTab" />
         </el-col>
       </el-row>
     </el-main>
     <el-dialog
       title="Edit Quorum"
       :visible.sync="quorumFormVisible"
-      width="500px"
+      width="450px"
       center>
       <el-form ref="editQuorumForm" class="quorum_form" :model="quorumForm">
         <el-form-item>
           <el-input-number v-model="quorumForm.amount" :min="1" :max="accountSignatories.length"></el-input-number>
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
-          <el-button
-            @click="updateQuorum"
-            class="fullwidth black clickable"
-            :disabled="quorumForm.amount > accountSignatories.length"
-            :loading="quorumUpdating">
-            Update
-          </el-button>
-        </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-form_buttons-block">
+        <el-button
+          @click="updateQuorum"
+          class="dialog-form_buttons action"
+          :disabled="quorumForm.amount > accountSignatories.length"
+          :loading="quorumUpdating"
+        >
+          Update
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="quorumFormVisible = false"
+        >
+          Cancel
+        </el-button>
+      </div>
     </el-dialog>
     <el-dialog
       data-cy="addPublicKeyDialog"
       title="Public key"
       :visible.sync="addKeyFormVisible"
-      width="500px"
+      width="450px"
       center>
       <div class="approval_form-desc">
         Are you sure want to add new public key?
       </div>
-      <div slot="footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           type="danger"
           @click="addPublicKey"
-          class="fullwidth black clickable"
+          class="dialog-form_buttons action"
           :loading="addingNewKey">Add
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="addKeyFormVisible = false"
+        >
+          Cancel
         </el-button>
       </div>
     </el-dialog>
@@ -217,17 +258,23 @@
       data-cy="removePublicKeyDialog"
       title="Public key"
       :visible.sync="removeKeyFormVisible"
-      width="500px"
+      width="450px"
       center>
       <div class="approval_form-desc">
         Are you sure want to remove <b class="key_representation">{{ keyToRemove }}</b> public key?
       </div>
-      <div slot="footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           @click="removePublicKey"
-          class="fullwidth"
+          class="dialog-form_buttons action"
           type="danger"
           :loading="removingKey">Remove
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="removeKeyFormVisible = false"
+        >
+          Cancel
         </el-button>
       </div>
     </el-dialog>
@@ -237,30 +284,28 @@
       :visible.sync="downloadKeyVisible"
       :close-on-click-modal="false"
       :show-close="false"
-      width="500px"
+      width="450px"
       center>
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-form_buttons-block">
         <el-button
-          type="primary"
-          class="black"
+          class="dialog-form_buttons action"
           data-cy="buttonDownload"
           @click="onClickDownload"
         >
           <fa-icon icon="download"/>
           Download
         </el-button>
-
         <el-button
-          type="default"
+          class="dialog-form_buttons close"
           :disabled="!downloaded"
           data-cy="buttonConfirm"
           @click="downloadKeyVisible = false">
           Confirm
         </el-button>
-      </span>
+      </div>
     </el-dialog>
   </el-container>
 </template>
@@ -268,14 +313,21 @@
 <script>
 import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
+import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
+import { lazyComponent } from '@router'
+
 export default {
   name: 'settings-page',
+  components: {
+    WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard')
+  },
   data () {
     return {
+      activeTab: 1,
       quorumFormVisible: false,
       addKeyFormVisible: false,
       removeKeyFormVisible: false,
@@ -293,10 +345,14 @@ export default {
     }
   },
   mixins: [
-    dateFormat
+    dateFormat,
+    messageMixin
   ],
   created () {
     this.getSignatories()
+    this.getAccountLimits()
+    this.getFreeEthRelaysNumber()
+    this.getFreeBtcRelaysNumber()
   },
   computed: {
     ...mapGetters([
@@ -305,7 +361,9 @@ export default {
       'withdrawWalletAddresses',
       'accountQuorum',
       'accountSignatories',
-      'walletType'
+      'walletType',
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber'
     ]),
     currentFiat: {
       get () {
@@ -342,7 +400,10 @@ export default {
       'getAccountQuorum',
       'setNotaryIp',
       'addNetwork',
-      'updateAccount'
+      'getAccountLimits',
+      'updateAccount',
+      'getFreeEthRelaysNumber',
+      'getFreeBtcRelaysNumber'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -361,6 +422,7 @@ export default {
             })
         })
         .finally(() => {
+          this.updateActiveTab(1)
           this.addingNewKey = false
           this.addKeyFormVisible = false
           this.getSignatories()
@@ -388,6 +450,7 @@ export default {
             })
         })
         .finally(() => {
+          this.updateActiveTab(1)
           this.removingKey = false
           this.removeKeyFormVisible = false
           this.getSignatories()
@@ -455,10 +518,13 @@ export default {
         return this.addNetwork({ privateKeys }).then(() => {
           this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
           this.updateAccount()
-        }).catch(() => {
-          this.$message.error(`Something was wrong. You didn't register in network`)
+        }).catch((err) => {
+          this.$_showRegistrationError(err.message, err.response)
         })
       })
+    },
+    updateActiveTab (id) {
+      this.activeTab = id
     }
   },
   filters: {
@@ -483,24 +549,6 @@ export default {
   padding: 1.5rem 1.5rem;
 }
 
-.header_btn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-}
-
-.header_only {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-}
-
-.card {
-  margin-top: 0.5rem;
-}
-
 .settings {
   padding: 0 1.5rem;
 }
@@ -523,6 +571,7 @@ export default {
 
 .settings_item-header-title {
   font-size: 1rem;
+  font-weight: 300;
 }
 
 .currencies_list {
@@ -562,11 +611,79 @@ export default {
   margin-bottom: 5px;
 }
 
+.approval_form-desc {
+  text-align: center;
+}
+
+.quorum_form >>> .el-input-number {
+  width: 100%;
+}
+
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-right: 1rem;
+}
+</style>
+
+<style>
+.card {
+  margin-top: 0.5rem;
+}
+.header_btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+.header_btn-title {
+  font-weight: 300;
+  height: 2rem;
+  line-height: 2rem;
+}
+.header_btn-icon_block {
+  cursor: pointer;
+}
+.header_btn-icon {
+  width: 1rem !important;
+  margin-right: 1rem;
+  color: #bbbbbb;
+}
+.header_only {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.action_button {
+  border: 1px solid #000000;
+  text-transform: uppercase;
+  width: 5rem;
+  padding: 0.5rem;
+}
+.action_button:active,
+.action_button:focus,
+.action_button:hover {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
+}
+.action_button-icon {
+  font-size: 0.7rem;
+  height: 0.8rem;
+  margin-left: -0.2rem;
+  margin-right: 0.3rem;
+}
+.action_button.content_width {
+  width: fit-content
+}
+
 .settings-item {
   max-height: 20rem;
   overflow-y: scroll;
 }
-
 .settings-item_row {
   padding: 0 1.5rem;
   height: 3rem;
@@ -577,60 +694,24 @@ export default {
 .settings-item_row:hover {
   background-color: #f7f7f7;
 }
-
 .settings-item_row-key {
   font-size: 0.8rem;
   line-height: 3rem;
 }
-
-.settings-item_row-key.pointed {
-  cursor: pointer;
+.settings-item_row-key-item {
+  margin-right: 1rem;
 }
-
 .settings-item_row-delete {
   border: none;
   padding: 0;
   height: 0;
   line-height: 3rem;
+  font-size: 0.8rem;
 }
-
 .settings-item_row-delete:active,
 .settings-item_row-delete:focus,
 .settings-item_row-delete:hover {
   background-color: #ffffff;
   color: #000000;
-}
-
-.action_button {
-  border: 1px solid #000000;
-  text-transform: uppercase;
-  width: 5rem;
-  padding: 0.5rem;
-}
-
-.action_button:active,
-.action_button:focus,
-.action_button:hover {
-  background-color: #ffffff;
-  color: #000000;
-}
-
-.action_button-icon {
-  font-size: 0.7rem;
-  height: 0.8rem;
-  margin-left: -0.2rem;
-  margin-right: 0.3rem;
-}
-
-.action_button.content_width {
-  width: fit-content
-}
-
-.approval_form-desc {
-  text-align: center;
-}
-
-.quorum_form >>> .el-input-number {
-  width: 100%;
 }
 </style>

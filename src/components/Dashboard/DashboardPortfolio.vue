@@ -6,12 +6,12 @@
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
-          <el-tooltip :content="`current price: ${parseFloat(price.value).toLocaleString()} ${currencySymbol}`" placement="top-start">
+          <el-tooltip :content="`current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`" placement="top-start">
             <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <el-tooltip :content="`difference from the previous day: ${parseFloat(price.diff).toLocaleString()} ${currencySymbol}`" placement="top-start">
+          <el-tooltip :content="`difference from the previous day: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
             <p :class="classTrend(price.diff)">
               {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
             </p>
@@ -89,6 +89,10 @@ export default {
 
     selectLabel (label) {
       this.$store.dispatch('getPortfolioHistory', { filter: label })
+    },
+
+    formatNumberLongMethod (value) {
+      return numberFormat.filters.formatNumberLong(value)
     }
   }
 }

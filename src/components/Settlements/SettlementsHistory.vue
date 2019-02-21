@@ -20,24 +20,26 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Amount" min-width="220">
+    <el-table-column label="Amount" min-width="200">
         <template slot-scope="scope">
           {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
           {{ '→' }}
           {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
         </template>
     </el-table-column>
-    <el-table-column label="Counterparty" width="150">
+    <el-table-column label="Counterparty" min-width="120">
       <template slot-scope="scope">
         <div>
           {{ scope.row.from.to }}
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Date" min-width="120">
+    <el-table-column label="Date" width="120">
       <template slot-scope="scope">
         {{ formatDate(scope.row.from.date) }}
       </template>
+    </el-table-column>
+    <el-table-column width="200">
     </el-table-column>
   </el-table>
 </template>
@@ -64,13 +66,13 @@ export default {
   created () {
     Promise.all([
       this.getAccountAssets(),
-      this.getAllAssetTransactions()
+      this.getAllAssetsTransactions()
     ])
   },
   methods: {
     ...mapActions([
       'getAccountAssets',
-      'getAllAssetTransactions'
+      'getAllAssetsTransactions'
     ])
   }
 }

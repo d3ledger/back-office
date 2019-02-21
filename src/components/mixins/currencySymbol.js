@@ -1,3 +1,5 @@
+const ASSETS = require('@util/crypto-list.json')
+
 const symbols = {
   USD: '$',
   RUB: '₽',
@@ -7,8 +9,11 @@ const symbols = {
 const currencySymbol = {
   methods: {
     assetName (assetId) {
-      const wallet = this.$store.getters.wallets.find(w => w.assetId === assetId) || {}
-      return wallet.asset
+      const assetName = assetId.split('#')[0].toLowerCase()
+      const asset = ASSETS.find(a => {
+        return a.name.toLowerCase() === assetName || a.asset.toLowerCase() === assetName
+      })
+      return asset.asset
     }
   },
   computed: {

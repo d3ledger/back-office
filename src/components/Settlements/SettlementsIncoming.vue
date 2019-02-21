@@ -66,23 +66,23 @@
     <el-dialog
       title="Accept settlement?"
       :visible.sync="acceptanceDialogVisible"
-      width="500px"
+      width="450px"
       center
     >
       <div v-if="settlementForAcceptance">
-        Are you sure want to exchange
+        Are you sure you want to exchange
         {{ settlementForAcceptance.from.amount }} {{ assetName(settlementForAcceptance.from.assetId) }}
         for {{ settlementForAcceptance.to.amount }} {{ assetName(settlementForAcceptance.to.assetId) }}
         with {{ settlementForAcceptance.to.from }}?
       </div>
       <div slot="footer">
-        <el-button type="primary" class="fullwidth black clickable" @click="onAccept">Accept</el-button>
+        <el-button type="primary" class="fullwidth black clickable" @click="onAccept" :loading="acceptSettlementLoading">Accept</el-button>
       </div>
     </el-dialog>
     <el-dialog
       title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
-      width="500px"
+      width="450px"
       center
     >
       <div v-if="settlementForRejection">
@@ -92,7 +92,7 @@
         with {{ settlementForRejection.to.from }}?
       </div>
       <div slot="footer">
-        <el-button type="danger" @click="onReject" class="fullwidth">Reject</el-button>
+        <el-button type="danger" @click="onReject" class="fullwidth" :loading="rejectSettlementLoading">Reject</el-button>
       </div>
     </el-dialog>
   </section>
@@ -123,7 +123,9 @@ export default {
     ...mapGetters({
       settlements: 'incomingSettlements',
       wallets: 'wallets',
-      accountQuorum: 'accountQuorum'
+      accountQuorum: 'accountQuorum',
+      acceptSettlementLoading: 'acceptSettlementLoading',
+      rejectSettlementLoading: 'rejectSettlementLoading'
     })
   },
 
@@ -191,7 +193,7 @@ export default {
 <style scoped>
 .list_actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 .list_actions >>> button {
   background: #ffffff;

@@ -24,7 +24,9 @@ function login (username, privateKey, nodeIp) {
 
   setItem('iroha-wallet:nodeIp', nodeIp)
 
-  return getAccount(username)
+  return getAccount({
+    accountId: username
+  })
     .then(account => {
       debug('login succeeded!')
       return account
