@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const API_URL = process.env.VUE_APP_CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
+// const API_URL = process.env.VUE_APP_CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
+const API_URL = process.env.VUE_APP_CRYPTO_API_URL || '/'
 
 let axiosAPI = axios.create({
   baseURL: API_URL

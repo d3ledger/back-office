@@ -29,6 +29,13 @@
       </el-row>
     </el-main>
   </el-container>
+  <el-container v-else-if="hasNoData">
+    <el-main class="column-fullheight card-wrapper flex-direction-row">
+      <el-card class="card">
+        There is no data about current portfolio. Please, check your internet connection or report to administrator.
+      </el-card>
+    </el-main>
+  </el-container>
   <el-container v-else>
     <no-assets-card />
   </el-container>
@@ -77,6 +84,9 @@ export default {
     ]),
     hasNonEmptyWallets () {
       return this.portfolioList.length && (this.portfolioList.length > this.portfolioList.filter(t => t.price === 0).length)
+    },
+    hasNoData () {
+      return !this.hasNonEmptyWallets && this.wallets.length > 0
     }
   }
 }
