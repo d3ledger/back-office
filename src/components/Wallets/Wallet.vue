@@ -142,7 +142,12 @@
     <el-row>
       <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
         <el-card :body-style="{ padding: '0' }">
-          <div class="card_header">History</div>
+          <div class="card_header">
+            <div class="card_header-title">
+              <span class="card_header-name card_history-title">History</span>
+              <el-button size="medium" type="primary" @click="fetchWallet">Refresh</el-button>
+            </div>
+          </div>
           <el-table
             :data="transactions"
             ref="table"
@@ -731,7 +736,11 @@ export default {
 
 .card_header-filter {
   display: flex;
-  justify-content: center
+  justify-content: center;
+}
+
+.card_history-title {
+  font-size: 1.2rem;
 }
 
 .chart_time-filter {
@@ -784,14 +793,6 @@ export default {
 
 .top-left-card >>> .button+.button {
   border-left: 1px solid #e8e8e8;
-}
-
-.card-header {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .card_actions {
