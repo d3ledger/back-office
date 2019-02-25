@@ -46,6 +46,7 @@ describe('Test settings page', () => {
             .should('have.value', this.validPrivateKey)
         })
       cy.get('#confirm-approval-form').click({ force: true })
+      cy.waitForConfirmation()
     })
 
     it('Download private key', () => {

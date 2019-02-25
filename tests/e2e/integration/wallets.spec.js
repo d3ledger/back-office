@@ -540,6 +540,7 @@ describe('Test transfer with one private key', () => {
             .should('have.value', this.validPrivateKey)
         })
       cy.get('#confirm-approval-form').click({ force: true })
+      cy.waitForConfirmation()
     })
 
     it('Handle success message', () => {
@@ -604,6 +605,7 @@ describe('Test transfer with two private keys', () => {
           }
         })
       cy.get('#confirm-approval-form').click({ force: true })
+      cy.waitForConfirmation()
     })
 
     it('Handle success message', () => {
@@ -663,6 +665,7 @@ describe('Test transfer with one private key and quorum 2', () => {
           }
         })
       cy.get('#confirm-approval-form').click({ force: true })
+      cy.waitForConfirmation()
     })
 
     it('Go to transactions page', () => {
@@ -679,6 +682,7 @@ describe('Test transfer with one private key and quorum 2', () => {
         .type(validPrivateKey2)
         .should('have.value', validPrivateKey2)
       cy.get('#confirm-approval-form').click({ force: true })
+      cy.waitForConfirmation()
     })
   })
 })

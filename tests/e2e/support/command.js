@@ -13,6 +13,10 @@ Cypress.Commands.add('upload_file', (fileName, selector) => {
   })
 })
 
+Cypress.Commands.add('waitForConfirmation', (time = 5000) => {
+  cy.wait(time)
+})
+
 Cypress.Commands.add('goToPage', (url, expect) => {
   cy.wait(2000)
   cy.get(`.el-side-menu .el-menu-item:contains("${expect}")`).click({ force: true })

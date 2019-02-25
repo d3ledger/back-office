@@ -87,91 +87,7 @@
         EXCHANGE
       </el-button>
     </el-dialog>
-    <el-dialog
-      id="approval-dialog"
-      title="Confirm the transaction"
-      width="450px"
-      :visible="approvalDialogVisible"
-      @close="closeApprovalDialogWith()"
-      center
-    >
-      <el-form
-        ref="approvalForm"
-        :model="approvalForm"
-        class="approval_form"
-        label-position="top"
-        @validate="updateNumberOfValidKeys"
-      >
-        <el-form-item class="approval_form-item-clearm">
-          <el-row class="approval_form-desc">
-            <p>
-              Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-              <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
-                You need to enter at least {{ approvalDialogMinAmountKeys }} key.
-              </span>
-            </p>
-            <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
-          </el-row>
-        </el-form-item>
-
-        <el-form-item
-          label="Private key"
-          v-for="(key, index) in approvalForm.privateKeys"
-          :key="index"
-          :prop="`privateKeys.${index}.hex`"
-          :rules="rules.repeatingPrivateKey"
-          class="approval_form-item-clearm"
-        >
-          <el-row type="flex" justify="space-between">
-            <el-col :span="20">
-              <el-input
-                v-model="key.hex"
-                :class="{ 'is-empty': !key.hex }"
-              />
-            </el-col>
-
-            <el-upload
-              class="approval_form-upload"
-              action=""
-              :auto-upload="false"
-              :show-file-list="false"
-              :on-change="(f, l) => onFileChosen(f, l, key)"
-            >
-              <el-button>
-                <fa-icon icon="upload" />
-              </el-button>
-            </el-upload>
-          </el-row>
-        </el-form-item>
-
-        <el-form-item
-          class="approval_form-counter"
-          v-if="accountQuorum > 1"
-        >
-          <el-row type="flex" justify="center">
-            <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
-              {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
-            </div>
-          </el-row>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-form_buttons-block">
-        <el-button
-          id="confirm-approval-form"
-          class="dialog-form_buttons action"
-          @click="submitApprovalDialog()"
-          :disabled="disableConfig()"
-        >
-          Confirm
-        </el-button>
-        <el-button
-          class="dialog-form_buttons close"
-          @click="closeApprovalDialogWith()"
-        >
-          Cancel
-        </el-button>
-      </div>
-    </el-dialog>
+    <confirm-modal/>
   </el-container>
 </template>
 
@@ -190,7 +106,6 @@ export default {
     messageMixin,
     numberFormat,
     inputValidation({
-      privateKey: 'repeatingPrivateKey',
       to: 'nameDomain',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount',
@@ -198,7 +113,8 @@ export default {
     })
   ],
   components: {
-    Menu: lazyComponent('Home/Menu')
+    Menu: lazyComponent('Home/Menu'),
+    ConfirmModal: lazyComponent('common/modals/ConfirmModal')
   },
   data () {
     return {
@@ -208,10 +124,6 @@ export default {
         offer_amount: '',
         description: null
       },
-      approvalForm: {
-        privateKeys: [],
-        numberOfValidKeys: 0
-      },
       isExchangeSending: false
     }
   },
@@ -219,9 +131,6 @@ export default {
   computed: {
     ...mapGetters([
       'wallets',
-      'approvalDialogVisible',
-      'approvalDialogSignatures',
-      'approvalDialogMinAmountKeys',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum'
@@ -262,12 +171,6 @@ export default {
     }
   },
 
-  watch: {
-    approvalDialogVisible (isVisible) {
-      if (isVisible) this.beforeOpenApprovalDialog()
-    }
-  },
-
   created () {
     this.$store.dispatch('getAllUnsignedTransactions')
     this.$store.dispatch('loadSettings')
@@ -301,27 +204,9 @@ export default {
   methods: {
     ...mapActions([
       'openApprovalDialog',
-      'closeApprovalDialog',
       'closeExchangeDialog',
       'getOfferToRequestPrice'
     ]),
-
-    insertPrivateKey (key, i) {
-      this.$set(this.approvalForm.privateKeys, i, key)
-    },
-
-    closeApprovalDialogWith () {
-      this.closeApprovalDialog()
-      this.$refs.approvalForm.resetFields()
-      this.$refs.approvalForm.clearValidate()
-    },
-
-    submitApprovalDialog () {
-      this.$refs.approvalForm.validate(valid => {
-        if (!valid) return
-        this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
-      })
-    },
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
@@ -374,47 +259,6 @@ export default {
               })
           })
       })
-    },
-
-    beforeOpenApprovalDialog () {
-      const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
-      this.$set(this.approvalForm, 'privateKeys', privateKeys)
-      this.updateNumberOfValidKeys()
-
-      this._refreshRules({
-        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
-      })
-    },
-
-    onFileChosen (file, fileList, key) {
-      const reader = new FileReader()
-      reader.onload = (ev) => {
-        key.hex = (ev.target.result || '').trim()
-      }
-      reader.readAsText(file.raw)
-    },
-
-    updateNumberOfValidKeys () {
-      if (!this.$refs.approvalForm) return
-
-      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
-        return x.validateState === 'success' && !!x.fieldValue
-      }).length
-    },
-
-    disableConfig () {
-      if (this.exchangeDialogVisible) {
-        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
-      } else {
-        if (this.approvalDialogMinAmountKeys === 1) {
-          return this.approvalForm.numberOfValidKeys < 1
-        }
-        return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
-      }
-    },
-
-    subscribeNotifications () {
-
     }
   }
 }
