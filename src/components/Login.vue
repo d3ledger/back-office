@@ -124,6 +124,11 @@ export default {
     })
   },
 
+  created () {
+    const nodeIp = this.$store.state.Account.nodeIp
+    this.form.nodeIp = nodeIp || this.listOfNodes[0].value
+  },
+
   methods: {
     ...mapActions([
       'login'
