@@ -106,4 +106,14 @@ export default {
   background: #f5f5f5;
   position: absolute;
 }
+.card-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card {
+  max-width: 600px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
 </style>
