@@ -47,7 +47,9 @@ const types = flow(
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_LIMITS'
+  'GET_ACCOUNT_LIMITS',
+  'SUBSCRIBE_PUSH_NOTIFICATIONS',
+  'UNSUBSCRIBE_PUSH_NOTIFICATIONS'
 ])
 
 function initialState () {
@@ -210,6 +212,11 @@ const getters = {
 
   accountId (state) {
     return state.accountId
+  },
+
+  subscribed (state) {
+    const subscription = find('push_subscription', state.accountInfo)
+    return subscription && subscription.push_subscription.length > 0
   }
 }
 
@@ -485,6 +492,22 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST] (state) {},
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) {},
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST] (state) {},
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) { },
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -847,7 +870,45 @@ const actions = {
         commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
         throw err
       })
+  },
+
+  subscribePushNotifications ({ commit, state, dispatch }, { privateKeys, settings }) {
+    commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
+    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      key: `push_subscription`,
+      // eslint-disable-next-line
+      value: JSON.stringify(settings).replace(/"/g, '\\\"')
+    })
+      .then(() => {
+        commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
+  },
+
+  unsubscribePushNotifications ({ commit, state, dispatch }, { privateKeys }) {
+    commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      key: `push_subscription`,
+      value: ''
+    })
+      .then(() => {
+        dispatch('updateAccount')
+
+        commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
   }
+
 }
 
 export default {

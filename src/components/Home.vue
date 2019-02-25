@@ -411,6 +411,10 @@ export default {
         }
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
       }
+    },
+
+    subscribeNotifications () {
+
     }
   }
 }
