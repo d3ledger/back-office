@@ -290,7 +290,7 @@
     </el-row>
 
     <el-dialog
-      :title="'Withdraw ' + wallet.asset"
+      :title="'Withdraw'"
       :visible.sync="withdrawFormVisible"
       @close="closeWithdrawDialog()"
       width="450px"

@@ -756,4 +756,11 @@ export default {
   background-color: #ffffff;
   color: #000000;
 }
+.el-input-number__decrease, .el-input-number__increase {
+  padding: 1rem;
+  bottom: 1px;
+}
+.el-input-number .el-input__inner {
+  padding: 0;
+}
 </style>

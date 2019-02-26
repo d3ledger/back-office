@@ -100,7 +100,7 @@ export default {
   padding-right: 10px;
 }
 .vertical_devider {
-  top: 0.5rem;
+  top: 1px;
   bottom: 1px;
   width: 2px;
   background: #f5f5f5;
