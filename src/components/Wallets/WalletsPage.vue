@@ -89,7 +89,7 @@ export default {
     }),
     walletsWithFiatPrice () {
       return this.wallets.map((x, i) => {
-        x.fiat = this.portfolioPercent[i].price
+        x.fiat = this.portfolioPercent[i] ? this.portfolioPercent[i].price : 1
         return x
       })
     },

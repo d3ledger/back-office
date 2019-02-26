@@ -60,7 +60,7 @@
         </el-form-item>
         <span class="form-item-text">
           Market price:
-          <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset" class="form-item-text-amount">
+          <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice" class="form-item-text-amount">
             1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
           </span>
           <span v-else>...</span>
