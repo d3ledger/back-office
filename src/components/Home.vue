@@ -84,7 +84,7 @@
         EXCHANGE
       </el-button>
     </el-dialog>
-    <confirm-modal/>
+    <confirm-modal :isExchangeDialogVisible="this.exchangeDialogVisible"/>
   </el-container>
 </template>
 

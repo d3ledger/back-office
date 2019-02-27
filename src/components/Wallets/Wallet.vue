@@ -14,9 +14,7 @@
               <div class="top-left-card">
                 <div class="amount">
                   <el-tooltip class="item" effect="dark" :content="`${ amountWithPrecision } ${ wallet.asset }`" placement="top-start">
-                    <h2>
-                      {{ wallet.amount | fitAmount }} {{ wallet.asset }}
-                    </h2>
+                    <h2 class="text-overflow">{{ wallet.amount | fitAmount }}</h2>
                   </el-tooltip>
                 </div>
                 <div class="card_actions">
@@ -683,8 +681,7 @@ export default {
 
   filters: {
     fitAmount (amount) {
-      const withoutZeros = numberFormat.filters.formatPrecision(amount)
-      return withoutZeros.length > 10 ? `${withoutZeros.substr(0, 10)}...` : withoutZeros
+      return numberFormat.filters.formatPrecision(amount)
     }
   }
 }
@@ -933,5 +930,9 @@ export default {
   background-color: #f4f4f4;
   color: #000000;
   opacity: 1;
+}
+
+.text-overflow {
+  /* margin-right: 5rem; */
 }
 </style>

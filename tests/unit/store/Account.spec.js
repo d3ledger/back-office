@@ -109,7 +109,6 @@ describe('Account store', () => {
         assetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
-        rawPendingTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -125,7 +124,6 @@ describe('Account store', () => {
         assetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
-        rawPendingTransactions: null,
         assets: [],
         connectionError: null,
         acceptSettlementLoading: false,

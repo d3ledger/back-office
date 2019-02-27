@@ -660,13 +660,6 @@ export default {
 .quorum_form >>> .el-input-number {
   width: 100%;
 }
-
-.text-overflow {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  margin-right: 1rem;
-}
 </style>
 
 <style>
