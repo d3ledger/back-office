@@ -42,7 +42,7 @@ describe('Reports page', () => {
 
     cy.get('#reports-page tr:contains("Monaco") button:contains("CSV")')
       .click()
-      .shouldDownload(expectedFilename)
+      .shouldDownloadCSV(expectedFilename)
   })
 
   it('should download a file when clicking a PDF button', () => {
@@ -50,7 +50,7 @@ describe('Reports page', () => {
 
     cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
       .click()
-      .shouldDownload(expectedFilename)
+      .shouldDownloadPDF(expectedFilename)
   })
 
   it('opens "New Report" dialog', () => {
@@ -70,7 +70,7 @@ describe('Reports page', () => {
 
     cy.get('#reports-page .el-dialog button:contains("CSV")')
       .click({ force: true })
-      .shouldDownload(expectedFilename)
+      .shouldDownloadCSV(expectedFilename)
   })
 
   it('should download the new report as PDF', () => {
@@ -78,6 +78,6 @@ describe('Reports page', () => {
 
     cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
-      .shouldDownload(expectedFilename)
+      .shouldDownloadPDF(expectedFilename)
   })
 })
