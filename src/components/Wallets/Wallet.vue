@@ -385,8 +385,6 @@
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
-            type="textarea"
-            :rows="2"
             v-model="transferForm.description"
             placeholder="Details"
             resize="none"
