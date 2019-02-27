@@ -931,8 +931,4 @@ export default {
   color: #000000;
   opacity: 1;
 }
-
-.text-overflow {
-  /* margin-right: 5rem; */
-}
 </style>
