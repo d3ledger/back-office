@@ -55,4 +55,5 @@ Cypress.Commands.add('shouldDownload', {
   cy.on('window:alert', stub)
   cy.wrap(subject).should(() => expect(stub.called).to.be.true)
     .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+  cy.wait(1000)
 })
