@@ -40,7 +40,8 @@
                 "createRole": {
                   "roleName": "relay_deployer",
                   "permissions": [
-                    "can_set_detail"
+                    "can_set_detail",
+                    "can_get_domain_accounts"
                   ]
                 }
               },
@@ -64,7 +65,9 @@
                     "can_get_domain_accounts",
                     "can_get_all_txs",
                     "can_get_blocks",
-                    "can_set_quorum"
+                    "can_set_quorum",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory"
                   ]
                 }
               },
@@ -91,6 +94,14 @@
                   "roleName": "admin",
                   "permissions": [
                     "can_get_all_accounts"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "rmq",
+                  "permissions": [
+                    "can_get_blocks"
                   ]
                 }
               },
@@ -136,18 +147,25 @@
                 "createRole": {
                   "roleName": "tester",
                   "permissions": [
+                    "can_create_asset",
+                    "can_set_detail",
+                    "can_transfer",
+                    "can_receive",
+                    "can_add_asset_qty",
+                    "can_subtract_asset_qty",
+                    "can_create_domain",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory",
+                    "can_add_peer",
+                    "can_append_role",
+                    "can_create_role",
+                    "can_detach_role",
+                    "can_get_all_acc_detail",
                     "can_get_all_accounts",
                     "can_get_all_acc_ast",
-                    "can_add_asset_qty",
-                    "can_transfer",
-                    "can_create_asset",
-                    "can_create_account",
-                    "can_receive",
-                    "can_read_assets",
-                    "can_append_role",
-                    "can_add_peer",
-                    "can_set_detail",
                     "can_get_blocks",
+                    "can_get_roles",
+                    "can_get_all_signatories",
                     "can_get_domain_accounts",
                     "can_set_quorum",
                     "can_add_signatory",
@@ -156,7 +174,6 @@
                     "can_get_domain_acc_detail",
                     "can_read_assets",
                     "can_grant_can_set_my_quorum",
-                    "can_grant_can_add_my_signatory",
                     "can_grant_can_transfer_my_assets",
                     "can_get_my_signatories",
                     "can_remove_signatory"
@@ -173,9 +190,58 @@
               },
               {
                 "createRole": {
+                  "roleName": "rollback",
+                  "permissions": [
+                    "can_transfer",
+                    "can_set_quorum",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory"
+                  ]
+                }
+              },
+              {
+                "createRole": {
                   "roleName": "notary_list_holder",
                   "permissions": [
                     "can_set_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "sora",
+                  "permissions": [
+                    "can_get_my_acc_ast",
+                    "can_transfer",
+                    "can_receive",
+                    "can_add_domain_asset_qty"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "sora_client",
+                  "permissions": [
+                    "can_get_my_account",
+                    "can_get_my_acc_ast",
+                    "can_get_my_acc_ast_txs",
+                    "can_get_my_acc_txs",
+                    "can_get_my_txs",
+                    "can_transfer",
+                    "can_receive",
+                    "can_set_quorum",
+                    "can_add_signatory",
+                    "can_get_my_signatories",
+                    "can_remove_signatory"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "btc_fee_rate_setter",
+                  "permissions": [
+                    "can_set_detail",
+                    "can_get_all_accounts"
                   ]
                 }
               },
@@ -201,6 +267,19 @@
                 "createDomain": {
                   "domainId": "ethereum",
                   "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "sora",
+                  "defaultRole": "sora_client"
+                }
+              },
+              {
+                "createAsset": {
+                  "assetName": "xor",
+                  "domainId": "sora",
+                  "precision": 18
                 }
               },
               {
@@ -231,15 +310,47 @@
               },
               {
                 "createAccount": {
+                  "accountName": "rmq",
+                  "domainId": "notary",
+                  "publicKey": "7a4af859a775dd7c7b4024c97c8118f0280455b8135f6f41422101f0397e0fa5"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "rmq@notary",
+                  "roleName": "rmq"
+                }
+              },
+              {
+                "createAccount": {
                   "accountName": "notary",
                   "domainId": "notary",
-                  "publicKey": "8d834b79be4f5019352207e5c6f155e2661d54eeb1a32e68f100735756c8d89c"
+                  "publicKey": "825fd700dba3b294dd65029b2ec1f21b5bf464e6f795c487962cb598780ab0d1"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "notary@notary",
                   "roleName": "notary"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "registration_service",
+                  "domainId": "notary",
+                  "publicKey": "28da166c2c37e302d751ad8442af5ebfab097df522bcf4717f9ef24e722375de"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "registration_service@notary",
+                  "roleName": "registration_service"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "registration_service@notary",
+                  "roleName": "client"
                 }
               },
               {
@@ -339,6 +450,19 @@
                 }
               },
               {
+                "createAccount": {
+                  "accountName": "btc_fee_rate",
+                  "domainId": "notary",
+                  "publicKey": "1776d3cf1e73b0f361dd9287f8aa7d95f78bb6abe44784ce1cd173096084abd0"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_fee_rate@notary",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
                 "appendRole": {
                   "accountId": "withdrawal@notary",
                   "roleName": "withdrawal"
@@ -348,7 +472,7 @@
                 "createAccount": {
                   "accountName": "btc_withdrawal_service",
                   "domainId": "notary",
-                  "publicKey": "09274270232f43fd794c5c81762ac1c8687f7083682654656ea96d1f9b14f4d3"
+                  "publicKey": "2ea1d2c3eb5b35a85b393622609ae116ddb2ea35e060fc74adb3b2caa324eacb"
                 }
               },
               {
@@ -360,6 +484,24 @@
               {
                 "appendRole": {
                   "accountId": "btc_withdrawal_service@notary",
+                  "roleName": "rollback"
+                }
+              },{
+                "setAccountQuorum":{
+                  "accountId":"btc_withdrawal_service@notary",
+                  "quorum":1
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_sign_collector",
+                  "domainId": "notary",
+                  "publicKey": "64cc926373cbc0e3ae1e756cb89caa00fd3066094b72bfb1c2c6c99f3d008626"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_sign_collector@notary",
                   "roleName": "signature_collector"
                 }
               },
@@ -439,13 +581,41 @@
                 "createAccount": {
                   "accountName": "admin",
                   "domainId": "notary",
-                  "publicKey": "CS5xsDGlGtrpJPfNlE8Dca6LhQJGnjJpOIUzTe3MYAE="
+                  "publicKey": "092e71b031a51adae924f7cd944f0371ae8b8502469e32693885334dedcc6001"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "admin@notary",
                   "roleName": "admin"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "sora",
+                  "domainId": "sora",
+                  "publicKey": "5665875b228b9eee51fbb7525e21b7fc8b7db9fb6e92c0c6fd9269b1342a1b03"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "sora@sora",
+                  "roleName": "sora"
+                }
+              },
+              {
+                "addAssetQuantity": {
+                  "assetId": "xor#sora",
+                  "amount": "1618033988749894848204586834"
+                }
+              },
+              {
+                "transferAsset": {
+                  "srcAccountId": "notary@notary",
+                  "destAccountId": "sora@sora",
+                  "assetId": "xor#sora",
+                  "description": "initial supply",
+                  "amount": "1618033988749894848204586834"
                 }
               },
               {

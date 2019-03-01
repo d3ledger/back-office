@@ -19,15 +19,19 @@ import {
 import { commands, queries } from 'iroha-helpers'
 
 const irohaDomain = 'd3'
+const soraDomain = 'sora'
 const testAccName = 'test'
 const aliceAccName = 'alice'
+const soraAccName = 'sora'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
+const soraAccFull = `${soraAccName}@${soraDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
 const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex')).toString('hex')
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex')).toString('hex')
+const soraPrivKeyHex = fs.readFileSync(path.join(__dirname, `${soraAccFull}.priv`)).toString().trim()
 
 const NODE_IP = process.env.NODE_IP || 'localhost:50051'
 const DEFAULT_TIMEOUT_LIMIT = 5000
@@ -114,24 +118,31 @@ async function setup () {
 
 async function initializeAssets () {
   console.log('initializing assets')
-  for (let w of wallets) {
-    const precision = w.precision
-    const amount = w.amount
-    const assetName = w.name.toLowerCase()
-    const assetId = assetName + `#${irohaDomain}`
+  // for (let w of wallets) {
+  //   const precision = w.precision
+  //   const amount = w.amount
+  //   const assetName = w.name.toLowerCase()
+  //   const assetId = assetName + `#${irohaDomain}`
 
-    console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} BEGIN ####`)
-    await tryToCreateAsset(assetName, irohaDomain, precision)
-    await tryAddAssetQuantity(assetId, amount)
-    await tryToSplitAmount(assetId, amount)
-    const task1 = tryToSendRandomAmount(assetId, testAccFull, amount, precision, [testPrivKeyHex, alicePrivKeyHex], 2)
-    const task2 = tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, [alicePrivKeyHex], 1)
-    const tasks = {
-      t1: await task1,
-      t2: await task2
-    }
-    console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
-  }
+  //   console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} BEGIN ####`)
+  //   await tryToCreateAsset(assetName, irohaDomain, precision)
+  //   await tryAddAssetQuantity(assetId, amount)
+  //   await tryToSplitAmount(assetId, amount)
+  //   const task1 = tryToSendRandomAmount(assetId, testAccFull, amount, precision, [testPrivKeyHex, alicePrivKeyHex], 2)
+  //   const task2 = tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, [alicePrivKeyHex], 1)
+  //   const tasks = {
+  //     t1: await task1,
+  //     t2: await task2
+  //   }
+  //   console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
+  // }
+
+  console.log('\x1b[36m%s\x1b[0m', `#### XOR START ####`)
+
+  await tryToSendAmount('xor#sora', soraAccFull, aliceAccFull, 100, [soraPrivKeyHex], 1)
+  await tryToSendAmount('xor#sora', soraAccFull, testAccFull, 100, [soraPrivKeyHex], 1)
+
+  console.log('\x1b[36m%s\x1b[0m', `#### XOR END ####`)
 }
 
 async function tryToCreateAccount (accountName, domainId, publicKey) {
@@ -247,6 +258,7 @@ async function tryToSendRandomAmount (assetId, accountId, amount, precision, pri
   console.log(`Sending random amount (${amount}) of ${assetId} to ${accountId}`)
   const from = accountId
   const to = _.sample(_.without(accounts, from))
+  console.log('from, to', from, to)
   const txAmount = _.random(3, 5)
   for (let i = 0; i < txAmount; i++) {
     const message = _.sample(['Deal #1', 'Deal #2', 'Deal #3', 'PART_OF_DUMMY_SETTLEMENT'])
@@ -265,6 +277,26 @@ async function tryToSendRandomAmount (assetId, accountId, amount, precision, pri
     } catch (error) {
       console.log(error)
     }
+  }
+}
+
+async function tryToSendAmount (assetId, from, to, amount, privateKeys, quorum) {
+  console.log(`Sending amount (${amount}) of ${assetId} from ${from} to ${to}`)
+  const message = _.sample(['Deal #1', 'Deal #2', 'Deal #3', 'PART_OF_DUMMY_SETTLEMENT'])
+
+  try {
+    await commands.transferAsset(
+      newCommandServiceOptions(privateKeys, quorum, from),
+      {
+        srcAccountId: from,
+        destAccountId: to,
+        assetId,
+        description: message,
+        amount: String(amount)
+      }
+    )
+  } catch (error) {
+    console.log(error)
   }
 }
 

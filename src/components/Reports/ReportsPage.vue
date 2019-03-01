@@ -244,12 +244,13 @@ export default {
       return Promise.all(promises)
         .then(mergeDailyAndMinutePrices)
         .then(res => {
-          return res
+          let data = res
             .find(x => (x.asset === asset))
             .data
-            .map(({ time, close }) => {
-              return { date: time * 1000, price: close }
-            })
+          data = data.length ? data : []
+          return data.map(({ time, close }) => {
+            return { date: time * 1000, price: close }
+          })
         })
     },
 
