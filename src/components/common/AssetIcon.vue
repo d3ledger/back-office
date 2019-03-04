@@ -1,6 +1,7 @@
 <template>
   <div>
-    <i v-if="isIconPresent" :style="{'font-size': size + 'px'}" :class="'cc ' + asset.toUpperCase()" />
+    <img v-if="isSora" :style="{'height': size + 'px'}" src="@/assets/icons/sora.png" >
+    <i v-else-if="isIconPresent" :style="{'font-size': size + 'px'}" :class="'cc ' + asset.toUpperCase()" />
     <img v-else src="@/assets/icons/coins.svg" :style="{width: size+'px'}" />
   </div>
 </template>
@@ -217,7 +218,12 @@ export default {
   },
 
   computed: {
-    isIconPresent: function () { return this.coinNames.includes(this.asset.toUpperCase()) }
+    isIconPresent () {
+      return this.coinNames.includes(this.asset.toUpperCase())
+    },
+    isSora () {
+      return this.asset.toUpperCase() === 'XOR'
+    }
   }
 }
 </script>

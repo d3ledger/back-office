@@ -553,6 +553,7 @@ export default {
     ]),
 
     fetchWallet () {
+      this.getAccountAssets()
       this.getAccountAssetTransactions({
         assetId: this.wallet.assetId
       })

@@ -126,15 +126,13 @@ async function initializeAssets () {
     const assetId = assetName + `#${irohaDomain}`
 
     console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} BEGIN ####`)
+
     await tryToCreateAsset(assetName, irohaDomain, precision)
     await tryAddAssetQuantity(assetId, amount)
     await tryToSplitAmount(assetId, amount)
-    const task1 = tryToSendRandomAmount(assetId, testAccFull, amount, precision, [testPrivKeyHex, alicePrivKeyHex], 2)
-    const task2 = tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, [alicePrivKeyHex], 1)
-    const tasks = {
-      t1: await task1,
-      t2: await task2
-    }
+    await tryToSendRandomAmount(assetId, testAccFull, amount, precision, [testPrivKeyHex, alicePrivKeyHex], 2)
+    await tryToSendRandomAmount(assetId, aliceAccFull, amount, precision, [alicePrivKeyHex], 1)
+
     console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
   }
 
