@@ -10,7 +10,6 @@
         class="auth-form"
         ref="form"
         :model="form"
-        :rules="rules"
         label-position="top"
       >
         <el-form-item label="Private key" prop="privateKey">
@@ -18,41 +17,65 @@
             <el-col :span="20">
               <el-input
                 name="privateKey"
-                v-model="form.privateKey"
+                v-model="$v.form.privateKey.$model"
                 :disabled="isLoading"
+                :class="[
+                  _isValid($v.form.privateKey) ? 'border_success' : '',
+                  _isError($v.form.privateKey) ? 'border_fail' : ''
+                ]"
               />
             </el-col>
 
             <el-upload
-              class="auth-form_upload"
               action=""
               :auto-upload="false"
               :show-file-list="false"
               :on-change="onFileChosen"
               :disabled="isLoading"
+              :class="[
+                'auth-form_upload',
+                _isValid($v.form.privateKey) ? 'border_success' : '',
+                _isError($v.form.privateKey) ? 'border_fail' : ''
+              ]"
             >
               <el-button>
                 <fa-icon icon="upload" />
               </el-button>
             </el-upload>
           </el-row>
+          <span
+            v-if="_isError($v.form.privateKey)"
+            class="el-form-item__error"
+          >Please provide correct private key</span>
         </el-form-item>
         <el-form-item label="Username" prop="username">
           <el-input
             name="username"
-            v-model="form.username"
+            v-model="$v.form.username.$model"
             :disabled="isLoading"
+            :class="[
+              _isValid($v.form.username) ? 'border_success' : '',
+              _isError($v.form.username) ? 'border_fail' : ''
+            ]"
           />
+          <span
+            v-if="_isError($v.form.username)"
+            class="el-form-item__error"
+          >Please provide correct username</span>
         </el-form-item>
         <el-form-item label="Node IP" prop="nodeIp">
           <el-select
-            v-model="form.nodeIp"
-            class="auth-form_select"
+            v-model="$v.form.nodeIp.$model"
             :disabled="isLoading"
             style="width: 100%;"
             filterable
             allow-create
             popper-class="black-form_select-dropdown"
+            :class="[
+              'auth-form_select',
+              _isValid($v.form.nodeIp) ? 'border_success' : '',
+              _isError($v.form.nodeIp) ? 'border_fail' : ''
+            ]"
           >
             <el-option
               v-for="node in listOfNodes"
@@ -63,6 +86,10 @@
               <span class="option right">{{ node.value }}</span>
             </el-option>
           </el-select>
+          <span
+            v-if="_isError($v.form.nodeIp)"
+            class="el-form-item__error"
+          >Please provide correct node ip</span>
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
@@ -91,21 +118,40 @@
 </template>
 
 <script>
-import inputValidation from '@/components/mixins/inputValidation'
 import listOfNodes from '@/data/nodes'
 import messageMixin from '@/components/mixins/message'
 import { mapActions } from 'vuex'
+
+import {
+  _keyPattern,
+  _nodeIp,
+  _usernameWithDomain,
+  errorHandler
+} from '@/components/mixins/validation'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'login',
   mixins: [
     messageMixin,
-    inputValidation({
-      username: 'nameDomain',
-      privateKey: 'privateKeyRequired',
-      nodeIp: 'nodeIp'
-    })
+    errorHandler
   ],
+  validations: {
+    form: {
+      username: {
+        required,
+        _usernameWithDomain
+      },
+      privateKey: {
+        required,
+        _keyPattern
+      },
+      nodeIp: {
+        required,
+        _nodeIp
+      }
+    }
+  },
   data () {
     return {
       isLoading: false,
@@ -116,12 +162,6 @@ export default {
       },
       listOfNodes
     }
-  },
-
-  beforeMount () {
-    this._refreshRules({
-      nodeIp: { pattern: 'nodeIp' }
-    })
   },
 
   created () {
@@ -139,16 +179,15 @@ export default {
       reader.onload = (ev) => {
         this.form.privateKey = (ev.target.result || '').trim()
         this.form.username = fileList[fileList.length - 1].name.replace('.priv', '')
-        this.$refs['form'].validate()
+        this.$v.$touch()
       }
 
       reader.readAsText(file.raw)
     },
 
     onSubmit () {
-      this.$refs['form'].validate((valid) => {
-        if (!valid) return false
-
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
         this.isLoading = true
 
         const nodeIp = this.form.nodeIp.includes('://') ? this.form.nodeIp : `http://${this.form.nodeIp}`
@@ -167,7 +206,7 @@ export default {
           .finally(() => {
             this.isLoading = false
           })
-      })
+      }
     }
   }
 }

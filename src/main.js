@@ -88,6 +88,10 @@ import 'echarts/lib/component/dataZoom'
 
 import VueClipboard from 'vue-clipboard2'
 
+import Vuelidate from 'vuelidate'
+
+Vue.use(Vuelidate)
+
 VueClipboard.config.autoSetContainer = true
 Vue.use(VueClipboard)
 

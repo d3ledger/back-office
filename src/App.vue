@@ -342,4 +342,16 @@ button.el-dialog__headerbtn {
   white-space: nowrap;
   margin-right: 1rem;
 }
+.border_success,
+.border_success .el-input__inner,
+.border_success .el-textarea__inner,
+.border_success .el-button {
+  border-color: #67c23a !important;
+}
+.border_fail,
+.border_fail .el-input__inner,
+.border_fail .el-textarea__inner,
+.border_fail .el-button {
+  border-color: #f56c6c !important;
+}
 </style>

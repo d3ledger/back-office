@@ -6,5 +6,13 @@ export const registrationIPs = [
   {
     'value': IROHA_REGISTRATION_URL,
     'label': 'Iroha registartion'
+  },
+  {
+    'value': ETH_NOTARY_URL,
+    'label': 'Ethereum registration'
+  },
+  {
+    'value': BTC_NOTARY_URL,
+    'label': 'Bitcoin registration'
   }
 ]

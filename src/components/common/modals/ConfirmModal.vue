@@ -9,7 +9,6 @@
   >
     <el-form
       ref="approvalForm"
-      :model="approvalForm"
       class="approval_form"
       label-position="top"
       @validate="updateNumberOfValidKeys"
@@ -32,29 +31,39 @@
         v-for="(key, index) in approvalForm.privateKeys"
         :key="index"
         :prop="`privateKeys.${index}.hex`"
-        :rules="rules.repeatingPrivateKey"
         class="approval_form-item-clearm"
       >
         <el-row type="flex" justify="space-between">
           <el-col :span="20">
             <el-input
               v-model="key.hex"
-              :class="{ 'is-empty': !key.hex }"
+              @blur="checkPrivateKey(index)"
+              :class="[
+                _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
+                _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
+              ]"
             />
           </el-col>
-
           <el-upload
             class="approval_form-upload"
             action=""
             :auto-upload="false"
             :show-file-list="false"
-            :on-change="(f, l) => onFileChosen(f, l, key)"
+            :on-change="(f, l) => onFileChosen(f, l, key, index)"
+            :class="[
+              _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
+              _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
+            ]"
           >
             <el-button>
               <fa-icon icon="upload" />
             </el-button>
           </el-upload>
         </el-row>
+        <span
+          v-if="_isError($v.approvalForm.privateKeys.$each[index])"
+          class="el-form-item__error"
+        >Please provide correct private key</span>
       </el-form-item>
 
       <el-form-item
@@ -115,8 +124,9 @@
 </template>
 
 <script>
-import inputValidation from '@/components/mixins/inputValidation'
+import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'confirm-modal',
@@ -127,10 +137,29 @@ export default {
     }
   },
   mixins: [
-    inputValidation({
-      privateKey: 'repeatingPrivateKey'
-    })
+    errorHandler
   ],
+  props: {
+    isExchangeDialogVisible: {
+      type: Boolean,
+      required: true
+    }
+  },
+  validations () {
+    return {
+      approvalForm: {
+        privateKeys: {
+          required,
+          _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+          $each: {
+            hex: {
+              _keyPattern
+            }
+          }
+        }
+      }
+    }
+  },
   data () {
     return {
       approvalForm: {
@@ -159,30 +188,29 @@ export default {
     ...mapActions([
       'closeApprovalDialog'
     ]),
-    insertPrivateKey (key, i) {
-      this.$set(this.approvalForm.privateKeys, i, key)
-    },
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
       this.closeApprovalDialog()
-      this.$refs.approvalForm.resetFields()
-      this.$refs.approvalForm.clearValidate()
+      this.resetForm()
       this.isWaitFormVisible = false
       this.periodOfFinalisation = null
       this.timeToReject = 5
     },
     beforeSubmitApprovalDialog () {
-      this.$refs.approvalForm.validate(valid => {
-        if (!valid) return
-        this.isWaitFormVisible = true
-        this.periodOfFinalisation = setInterval(() => {
-          if (this.timeToReject <= 0) {
-            clearInterval(this.periodOfFinalisation)
-            this.submitApprovalDialog()
-          }
-          this.countdown()
-        }, 1000)
-      })
+      this.$v.approvalForm.$touch()
+      console.log(this.$v)
+
+      // this.$refs.approvalForm.validate(valid => {
+      //   if (!valid) return
+      //   this.isWaitFormVisible = true
+      //   this.periodOfFinalisation = setInterval(() => {
+      //     if (this.timeToReject <= 0) {
+      //       clearInterval(this.periodOfFinalisation)
+      //       this.submitApprovalDialog()
+      //     }
+      //     this.countdown()
+      //   }, 1000)
+      // })
     },
     countdown () {
       this.timeToReject = this.timeToReject - 1
@@ -197,24 +225,29 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
-
-      this._refreshRules({
-        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
-      })
     },
-    onFileChosen (file, fileList, key) {
+    onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()
       reader.onload = (ev) => {
         key.hex = (ev.target.result || '').trim()
+        this.$v.approvalForm.privateKeys.$each[index].$touch()
+        this.updateNumberOfValidKeys()
       }
       reader.readAsText(file.raw)
     },
+    checkPrivateKey (index) {
+      this.$v.approvalForm.privateKeys.$each[index].$touch()
+      this.updateNumberOfValidKeys()
+    },
     updateNumberOfValidKeys () {
-      if (!this.$refs.approvalForm) return
-
-      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
-        return x.validateState === 'success' && !!x.fieldValue
-      }).length
+      const privateKeysFields = this.$v.approvalForm.privateKeys.$each.$iter
+      let tempNumberOfValidKeys = 0
+      for (const field in privateKeysFields) {
+        if (this._isValid(privateKeysFields[field], 'hex')) {
+          tempNumberOfValidKeys += 1
+        }
+      }
+      this.$set(this.approvalForm, 'numberOfValidKeys', tempNumberOfValidKeys)
     },
     disableConfig () {
       if (this.isExchangeDialogVisible) {
@@ -224,6 +257,13 @@ export default {
           return this.approvalForm.numberOfValidKeys < 1
         }
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
+      }
+    },
+    resetForm () {
+      this.$v.approvalForm.$reset()
+      this.approvalForm = {
+        privateKeys: [],
+        numberOfValidKeys: 0
       }
     }
   }
