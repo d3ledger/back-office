@@ -489,8 +489,7 @@ import {
   _walletAddress,
   _usernameWithDomain,
   _amount,
-  errorHandler,
-  maskHandler
+  errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
 
@@ -506,8 +505,7 @@ export default {
     numberFormat,
     currencySymbol,
     messageMixin,
-    errorHandler,
-    maskHandler
+    errorHandler
   ],
   validations () {
     return {
