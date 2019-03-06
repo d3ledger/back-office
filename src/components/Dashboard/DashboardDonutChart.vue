@@ -83,6 +83,10 @@ export default {
   font-size: 0.9rem;
 }
 
+.list_crypto {
+  width: 210px;
+}
+
 .list_crypto-content {
   display: flex;
   flex-wrap: wrap;
