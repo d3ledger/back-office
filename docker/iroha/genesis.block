@@ -80,6 +80,7 @@
                     "can_get_my_acc_ast_txs",
                     "can_get_my_acc_txs",
                     "can_get_my_txs",
+                    "can_get_all_accounts",
                     "can_transfer",
                     "can_receive",
                     "can_set_quorum",
