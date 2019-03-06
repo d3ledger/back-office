@@ -192,20 +192,17 @@ export default {
       this.timeToReject = 5
     },
     beforeSubmitApprovalDialog () {
-      this.$v.approvalForm.$touch()
-      console.log(this.$v)
+      this.$v.$touch()
+      if (this.$v.$invalid) return
 
-      // this.$refs.approvalForm.validate(valid => {
-      //   if (!valid) return
-      //   this.isWaitFormVisible = true
-      //   this.periodOfFinalisation = setInterval(() => {
-      //     if (this.timeToReject <= 0) {
-      //       clearInterval(this.periodOfFinalisation)
-      //       this.submitApprovalDialog()
-      //     }
-      //     this.countdown()
-      //   }, 1000)
-      // })
+      this.isWaitFormVisible = true
+      this.periodOfFinalisation = setInterval(() => {
+        if (this.timeToReject <= 0) {
+          clearInterval(this.periodOfFinalisation)
+          this.submitApprovalDialog()
+        }
+        this.countdown()
+      }, 1000)
     },
     countdown () {
       this.timeToReject = this.timeToReject - 1
