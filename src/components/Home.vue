@@ -103,7 +103,7 @@ export default {
     messageMixin,
     numberFormat,
     inputValidation({
-      to: 'userExist',
+      to: 'checkAccountId',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount',
       description: 'additionalInformation'
@@ -189,7 +189,7 @@ export default {
         precision: precision,
         asset: this.exchangeDialogRequestAsset
       },
-      to: { pattern: 'userExist', accountId: this.exchangeForm.to }
+      to: { pattern: 'checkAccountId', accountId: this.exchangeForm.to }
     })
   },
 
