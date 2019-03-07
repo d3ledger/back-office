@@ -431,7 +431,7 @@ export default {
     numberFormat,
     currencySymbol,
     inputValidation({
-      to: 'nameDomain',
+      to: 'userExist',
       amount: 'tokensAmount',
       wallet: 'walletAddress',
       description: 'additionalInformation'
@@ -537,7 +537,8 @@ export default {
         amount: this.wallet.amount,
         precision: this.wallet.precision,
         asset: this.wallet.assetId
-      }
+      },
+      to: { pattern: 'userExist', accountId: this.transferForm.to }
     })
   },
 

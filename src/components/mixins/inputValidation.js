@@ -104,10 +104,8 @@ function checkUserExist (accountId) {
     let account
     try {
       account = await irohaUtil.getAccount({accountId})
-    } finally {
-      if (!account) errors.push('Destination user doesn\'t exist')
-    }
-    console.log(account)
+    } catch (e) {}
+    if (!account) errors.push('Destination user doesn\'t exist')
     callback(errors)
   }
 }

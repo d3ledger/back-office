@@ -66,7 +66,7 @@
           <span v-else>...</span>
         </span>
         <el-form-item label="Counterparty" prop="to">
-          <el-input v-model="exchangeForm.to" placeholder="Account id" @change="changeCounterparty()"/>
+          <el-input v-model="exchangeForm.to" placeholder="Account id"/>
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
@@ -256,13 +256,6 @@ export default {
                 this.isExchangeSending = false
               })
           })
-      })
-    },
-
-    changeCounterparty (accountId) {
-      console.log(2)
-      this._refreshRules({
-        to: { pattern: 'userExist', accountId }
       })
     }
   }
