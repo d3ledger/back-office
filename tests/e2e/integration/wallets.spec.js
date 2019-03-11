@@ -242,7 +242,7 @@ describe('Test wallets page without white list', () => {
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.1'
-      const account = 'james@bond'
+      const account = 'test@d3'
       cy.get('div.el-dialog').eq(2)
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
