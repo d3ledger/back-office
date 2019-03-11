@@ -606,8 +606,9 @@ export default {
         .finally(() => { this.isSending = false })
     },
 
-    onSubmitTransferForm () {
-      if (!this.validateForm('transferForm')) return
+    async onSubmitTransferForm () {
+      const isValid = await this.asyncValidateForm('transferForm')
+      if (!isValid) return
 
       this.openApprovalDialog()
         .then(privateKeys => {
@@ -656,6 +657,11 @@ export default {
     closeTransferForm () {
       this.resetTransferForm()
       this.transferForm.description = ''
+    },
+
+    async asyncValidateForm (ref) {
+      let isValid = await this.$refs[ref].validate()
+      return isValid
     },
 
     validateForm (ref) {
