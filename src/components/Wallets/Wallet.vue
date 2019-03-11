@@ -290,7 +290,7 @@
     </el-row>
 
     <el-dialog
-      :title="'Withdraw ' + wallet.asset"
+      :title="'Withdraw'"
       :visible.sync="withdrawFormVisible"
       @close="closeWithdrawDialog()"
       width="450px"
@@ -328,7 +328,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item style="margin-bottom: 0;">
+        <el-form-item>
           <el-button
             class="fullwidth black clickable"
             @click="onSubmitWithdrawalForm"
@@ -385,8 +385,6 @@
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
-            type="textarea"
-            :rows="2"
             v-model="transferForm.description"
             placeholder="Details"
             resize="none"

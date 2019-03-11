@@ -339,16 +339,6 @@ export default {
     align-items: center;
   }
 
-  /*
-    ElementUI renders .el-form-item__label without a data attribute,
-    so scoped styles doesn't work for it. The `>>>` combinator solves this problem.
-    https://vue-loader.vuejs.org/en/features/scoped-css.html
-  */
-
-  .auth-form >>> .el-form-item__label::before {
-    display: none;
-  }
-
   .el-tag {
     margin-right: 1rem;
   }

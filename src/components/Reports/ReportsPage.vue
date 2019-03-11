@@ -10,7 +10,7 @@
             <div class="header">
               <span>Reports</span>
               <div>
-                <el-button class="report_button" type="primary" @click="reportFormVisible = true">
+                <el-button class="report_button" size="medium" type="primary" @click="reportFormVisible = true">
                   <fa-icon class="report_button-icon" icon="file" />
                   <span data-cy="getReport">
                     Reports

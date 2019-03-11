@@ -30,7 +30,7 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400');
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,400,500,700');
 
 html {
   box-sizing: border-box;
@@ -95,7 +95,7 @@ a:hover {
 }
 
 .form-item-text-amount {
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .fullwidth.el-button {
@@ -140,6 +140,70 @@ button.el-dialog__headerbtn {
   cursor: pointer;
 }
 
+/*
+ * Input
+ */
+
+.withdraw_form .el-input__inner,
+.exchange_form .el-input__inner,
+.transfer_form .el-input__inner {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.8);
+  border: 1px solid #dcdfe6;
+  font-weight: 700;
+  height: 4.5rem;
+  padding-left: 1.2rem;
+  padding-top: 1.2rem;
+  line-height: 0;
+  font-size: 1rem;
+}
+
+.withdraw_form .el-input__inner:focus,
+.exchange_form .el-input__inner:focus,
+.transfer_form .el-input__inner:focus {
+  border: 1px solid #dcdfe6;
+  color: rgba(0, 0, 0, 0.8);
+  background-color: #ffffff;
+  opacity: 1;
+}
+
+.withdraw_form .el-form-item,
+.exchange_form .el-form-item,
+.transfer_form .el-form-item {
+  height: 4.4rem;
+  margin-bottom: 32px;
+}
+
+.withdraw_form .el-form-item__label,
+.exchange_form .el-form-item__label,
+.transfer_form .el-form-item__label {
+  line-height: 1;
+  position: relative;
+  top: 1.5rem;
+  z-index: 10;
+  margin-left: 1.2rem;
+  font-size: 0.8rem;
+  opacity: 0.56;
+  color: rgba(0, 0, 0, 0.8);;
+}
+
+.withdraw_form .el-input--suffix input,
+.exchange_form .el-input--suffix input,
+.transfer_form .el-input--suffix input {
+  padding-top: 0px;
+}
+
+.withdraw_form .el-input-group__append,
+.exchange_form .el-input-group__append,
+.transfer_form .el-input-group__append {
+  background-color: #2d2d2d;
+}
+
+.withdraw_form .el-input-group__append input,
+.exchange_form .el-input-group__append input,
+.transfer_form .el-input-group__append input {
+  font-weight: normal
+}
 /*
  * Login and SignUp pages
  */
@@ -207,6 +271,10 @@ button.el-dialog__headerbtn {
   color: #ffffff;
 }
 
+.el-form-item__label::before {
+  display: none !important;
+}
+
 .auth-form_upload .el-button,
 .auth-form_upload .el-button:focus {
   width: 3.8rem;
@@ -267,4 +335,5 @@ button.el-dialog__headerbtn {
   border-color: #ffffff;
   color: #ffffff;
 }
+
 </style>

@@ -83,6 +83,10 @@ export default {
   font-size: 0.9rem;
 }
 
+.list_crypto {
+  width: 210px;
+}
+
 .list_crypto-content {
   display: flex;
   flex-wrap: wrap;
@@ -91,8 +95,8 @@ export default {
 }
 
 .list_crypto-content .list_crypto-content-item {
-  min-width: 86px;
-  margin-right: 20px;
+  min-width: 90px;
+  margin-right: 15px;
   margin-bottom: 15px;
 }
 
@@ -112,7 +116,8 @@ export default {
 
 .list_crypto-content-percent {
   font-weight: 600;
-  min-width: 50px;
+  min-width: 33px;
+  display: inline-block;
 }
 
 .donut-chart {
