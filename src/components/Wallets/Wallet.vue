@@ -607,6 +607,7 @@ export default {
 
     onSubmitTransferForm () {
       if (!this.validateForm('transferForm')) return
+
       this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
