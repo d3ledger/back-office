@@ -39,7 +39,7 @@ describe('Reports page', () => {
 
   it('should download a file when clicking a CSV button', () => {
     const expectedFilename = `report-augur-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
-
+    cy.wait(1000)
     cy.get('#reports-page tr:contains("Augur") button:contains("CSV")')
       .click()
       .shouldDownloadCSV(expectedFilename, cy.stub())
@@ -47,7 +47,7 @@ describe('Reports page', () => {
 
   it('should download a file when clicking a PDF button', () => {
     const expectedFilename = `report-golem-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
-
+    cy.wait(1000)
     cy.get('#reports-page tr:contains("Golem") button:contains("PDF")')
       .click()
       .shouldDownloadPDF(expectedFilename, cy.stub())
@@ -67,7 +67,7 @@ describe('Reports page', () => {
 
   it('should download the new report as CSV', () => {
     const expectedFilename = `report-augur-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
-
+    cy.wait(1000)
     cy.get('#reports-page .el-dialog button:contains("CSV")')
       .click({ force: true })
       .shouldDownloadCSV(expectedFilename, cy.stub())
@@ -82,7 +82,7 @@ describe('Reports page', () => {
 
   it('should download the new report as PDF', () => {
     const expectedFilename = `report-golem-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
-
+    cy.wait(1000)
     cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
       .shouldDownloadPDF(expectedFilename, cy.stub())
