@@ -66,7 +66,7 @@
           <span v-else>...</span>
         </span>
         <el-form-item label="Counterparty" prop="to">
-          <el-input v-model="exchangeForm.to" placeholder="Account id" />
+          <el-input v-model="exchangeForm.to" placeholder="Account id"/>
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
@@ -103,7 +103,7 @@ export default {
     messageMixin,
     numberFormat,
     inputValidation({
-      to: 'nameDomain',
+      to: 'checkAccountId',
       request_amount: 'tokensAmount',
       offer_amount: 'tokensAmount',
       description: 'additionalInformation'
@@ -188,7 +188,8 @@ export default {
         amount: Number.MAX_SAFE_INTEGER,
         precision: precision,
         asset: this.exchangeDialogRequestAsset
-      }
+      },
+      to: { pattern: 'checkAccountId', accountId: this.exchangeForm.to }
     })
   },
 

@@ -431,7 +431,7 @@ export default {
     numberFormat,
     currencySymbol,
     inputValidation({
-      to: 'nameDomain',
+      to: 'checkAccountId',
       amount: 'tokensAmount',
       wallet: 'walletAddress',
       description: 'additionalInformation'
@@ -537,7 +537,8 @@ export default {
         amount: this.wallet.amount,
         precision: this.wallet.precision,
         asset: this.wallet.assetId
-      }
+      },
+      to: { pattern: 'checkAccountId', accountId: this.transferForm.to }
     })
   },
 
@@ -605,8 +606,9 @@ export default {
         .finally(() => { this.isSending = false })
     },
 
-    onSubmitTransferForm () {
-      if (!this.validateForm('transferForm')) return
+    async onSubmitTransferForm () {
+      const isValid = await this.asyncValidateForm('transferForm')
+      if (!isValid) return
 
       this.openApprovalDialog()
         .then(privateKeys => {
@@ -655,6 +657,11 @@ export default {
     closeTransferForm () {
       this.resetTransferForm()
       this.transferForm.description = ''
+    },
+
+    async asyncValidateForm (ref) {
+      let isValid = await this.$refs[ref].validate()
+      return isValid
     },
 
     validateForm (ref) {
