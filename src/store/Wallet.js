@@ -134,7 +134,7 @@ const mutations = {
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
-    Vue.set(state.cryptoInfo, 'isLoading', false)
+    Vue.set(state, 'cryptoInfo', initialState().cryptoInfo)
     handleError(state, err)
   }
 }

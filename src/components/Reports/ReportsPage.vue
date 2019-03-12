@@ -228,14 +228,12 @@ export default {
 
         minutePrices.forEach(assetMinute => {
           const utcTomorrow = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1)
-          const currentPrice = assetMinute.data.pop()
-
+          const currentPrice = assetMinute.data.length ? assetMinute.data.pop() : {}
           currentPrice.time = Math.floor(utcTomorrow / 1000)
 
-          dailyPrices
-            .find(assetDaily => assetDaily.asset === assetMinute.asset)
-            .data
-            .push(currentPrice)
+          let dailyPrice = dailyPrices.find(assetDaily => assetDaily.asset === assetMinute.asset)
+          dailyPrice = dailyPrice.data.length ? dailyPrice.data : []
+          dailyPrice.push(currentPrice)
         })
 
         return dailyPrices
@@ -244,12 +242,13 @@ export default {
       return Promise.all(promises)
         .then(mergeDailyAndMinutePrices)
         .then(res => {
-          return res
+          let data = res
             .find(x => (x.asset === asset))
             .data
-            .map(({ time, close }) => {
-              return { date: time * 1000, price: close }
-            })
+          data = data.length ? data : []
+          return data.map(({ time, close }) => {
+            return { date: time * 1000, price: close }
+          })
         })
     },
 

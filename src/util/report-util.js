@@ -197,7 +197,8 @@ export function generateReportData ({
   const isToYou = (tx) => (tx.to === 'you')
   const isFromYou = (tx) => (tx.from === 'you')
   const getDailyPriceFiat = (dateExpected) => {
-    return priceFiatList.find(({ date }) => isSameDay(date, dateExpected)).price
+    const dateFiat = priceFiatList.find(({ date }) => isSameDay(date, dateExpected))
+    return dateFiat ? dateFiat.price : 0
   }
 
   /*

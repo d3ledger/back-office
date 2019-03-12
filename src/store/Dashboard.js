@@ -270,7 +270,10 @@ const actions = {
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
-    const wallets = getters.wallets.filter(w => Number(w.amount) !== 0)
+    const wallets = getters.wallets
+      .filter(w => Number(w.amount) !== 0)
+      .filter(w => getters.portfolioList.find(p => p.asset === w.asset))
+
     const crypto = (wallets.length && !data.crypto) ? getters.portfolioChart.crypto || wallets[0].asset : data.crypto
     if (crypto) {
       commit(types.SELECT_CHART_CRYPTO, crypto)
