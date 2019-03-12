@@ -73,8 +73,15 @@ describe('Reports page', () => {
       .shouldDownloadCSV(expectedFilename, cy.stub())
   })
 
+  it('fills the form', () => {
+    cy.get('#reports-page .el-dialog input#wallet-selector').click()
+    cy.get('.el-select-dropdown .el-select-dropdown__item:contains("Golem")').click({ force: true })
+    cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type(format(dateFrom, 'YYYY-MM-DD'), { force: true })
+    cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
+  })
+
   it('should download the new report as PDF', () => {
-    const expectedFilename = `report-augur-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
+    const expectedFilename = `report-golem-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
 
     cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
