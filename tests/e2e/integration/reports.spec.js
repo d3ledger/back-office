@@ -38,17 +38,17 @@ describe('Reports page', () => {
   })
 
   it('should download a file when clicking a CSV button', () => {
-    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
+    const expectedFilename = `report-augur-${startOfPreviousMonth}-${endOfPreviousMonth}.csv`
 
-    cy.get('#reports-page tr:contains("Monaco") button:contains("CSV")')
+    cy.get('#reports-page tr:contains("Augur") button:contains("CSV")')
       .click()
       .shouldDownloadCSV(expectedFilename, cy.stub())
   })
 
   it('should download a file when clicking a PDF button', () => {
-    const expectedFilename = `report-monaco-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
+    const expectedFilename = `report-augur-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
 
-    cy.get('#reports-page tr:contains("Monaco") button:contains("PDF")')
+    cy.get('#reports-page tr:contains("Augur") button:contains("PDF")')
       .click()
       .shouldDownloadPDF(expectedFilename, cy.stub())
   })
@@ -60,13 +60,13 @@ describe('Reports page', () => {
 
   it('fills the form', () => {
     cy.get('#reports-page .el-dialog input#wallet-selector').click()
-    cy.get('.el-select-dropdown .el-select-dropdown__item:contains("Monaco")').click({ force: true })
+    cy.get('.el-select-dropdown .el-select-dropdown__item:contains("Augur")').click({ force: true })
     cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type(format(dateFrom, 'YYYY-MM-DD'), { force: true })
     cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
   })
 
   it('should download the new report as CSV', () => {
-    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
+    const expectedFilename = `report-augur-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.csv`
 
     cy.get('#reports-page .el-dialog button:contains("CSV")')
       .click({ force: true })
@@ -74,7 +74,7 @@ describe('Reports page', () => {
   })
 
   it('should download the new report as PDF', () => {
-    const expectedFilename = `report-monaco-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
+    const expectedFilename = `report-augur-${format(dateFrom, 'YYYYMMDD')}-${format(dateTo, 'YYYYMMDD')}.pdf`
 
     cy.get('#reports-page .el-dialog button:contains("PDF")')
       .click({ force: true })
