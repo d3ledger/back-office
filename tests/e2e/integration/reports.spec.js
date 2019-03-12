@@ -46,9 +46,9 @@ describe('Reports page', () => {
   })
 
   it('should download a file when clicking a PDF button', () => {
-    const expectedFilename = `report-augur-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
+    const expectedFilename = `report-golem-${startOfPreviousMonth}-${endOfPreviousMonth}.pdf`
 
-    cy.get('#reports-page tr:contains("Augur") button:contains("PDF")')
+    cy.get('#reports-page tr:contains("Golem") button:contains("PDF")')
       .click()
       .shouldDownloadPDF(expectedFilename, cy.stub())
   })
