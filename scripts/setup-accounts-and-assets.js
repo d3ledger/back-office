@@ -257,7 +257,6 @@ async function tryToSendRandomAmount (assetId, accountId, amount, precision, pri
   console.log(`Sending random amount (${amount}) of ${assetId} to ${accountId}`)
   const from = accountId
   const to = _.sample(_.without(accounts, from))
-  console.log('from, to', from, to)
   const txAmount = _.random(3, 5)
   for (let i = 0; i < txAmount; i++) {
     const message = _.sample(['Deal #1', 'Deal #2', 'Deal #3', 'PART_OF_DUMMY_SETTLEMENT'])

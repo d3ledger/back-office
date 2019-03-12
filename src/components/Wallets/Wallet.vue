@@ -14,7 +14,7 @@
               <div class="top-left-card">
                 <div class="amount">
                   <el-tooltip class="item" effect="dark" :content="`${ amountWithPrecision } ${ wallet.asset }`" placement="top-start">
-                    <h2 class="text-overflow">{{ wallet.amount | fitAmount }}</h2>
+                    <h2 class="text-overflow">{{ wallet.amount | fitAmount }} {{ wallet.asset }}</h2>
                   </el-tooltip>
                 </div>
                 <div class="card_actions">
