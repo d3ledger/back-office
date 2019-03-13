@@ -18,68 +18,6 @@
             <div class="auth-form_tag">d3</div>
           </el-row>
         </el-form-item>
-        <el-form-item label="Whitelist address" prop="newAddress" ref="newAddress">
-          <el-row type="flex" justify="space-between">
-            <el-col :span="20">
-              <el-input
-                name="newAddress"
-                v-model="form.newAddress"
-              />
-            </el-col>
-            <div class="auth-form_upload">
-              <el-button
-                @click="onClickAddAddressToWhiteList"
-                :disabled="isLoading"
-                data-cy="add-whitelist"
-              >
-                <span>
-                  ADD
-                </span>
-              </el-button>
-            </div>
-          </el-row>
-        </el-form-item>
-        <el-form-item
-          label="Registration IP"
-          prop="nodeIp"
-        >
-          <el-select
-            v-model="form.nodeIp"
-            class="auth-form_select"
-            :disabled="isLoading"
-            style="width: 100%;"
-            filterable
-            allow-create
-            @change="selectNotaryIp"
-            popper-class="black-form_select-dropdown"
-          >
-            <el-option
-              v-for="node in registrationIPs"
-              :key="node.value"
-              :label="node.label"
-              :value="node.value">
-              <span class="option left">{{ node.label }}</span>
-              <span class="option right">{{ node.value }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          class="auth_whitelist"
-          v-if="form.whitelist.length"
-        >
-          <el-tag
-            v-for="(item, idx) in form.whitelist"
-            :key="item"
-            size="small"
-            class="auth_whitelist-tag"
-            closable
-            @close="() => onClickRemoveItemFromWitelist(idx)"
-          >
-            <span>
-              {{ item }}
-            </span>
-          </el-tag>
-        </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
             data-cy="signup"
@@ -142,16 +80,14 @@ import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
-import { registrationIPs, ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
+import { IROHA_REGISTRATION_URL, BTC_NOTARY_URL, ETH_NOTARY_URL, registrationIPs } from '@/data/urls'
 
 export default {
   name: 'signup',
   mixins: [
     messageMixin,
     inputValidation({
-      username: 'name',
-      newAddress: 'walletAddress',
-      nodeIp: 'nodeIp'
+      username: 'name'
     })
   ],
   data () {
@@ -162,8 +98,7 @@ export default {
       form: {
         username: '',
         newAddress: '',
-        whitelist: [],
-        nodeIp: registrationIPs[0].value
+        nodeIp: IROHA_REGISTRATION_URL
       },
       dialogVisible: false,
       dialog: {
@@ -175,9 +110,7 @@ export default {
   },
 
   beforeMount () {
-    this.updateWhiteListValidationRules()
-    this.getFreeBtcRelaysNumber()
-    this.getFreeEthRelaysNumber()
+    this.selectNotaryIp()
   },
 
   created () {
@@ -199,33 +132,26 @@ export default {
     ]),
 
     onSubmit () {
-      this.updateFreeRelaysRule()
-      this.$refs['newAddress'].clearValidate()
-      this.$refs['form'].validateField('nodeIp', (nodeIpErrorMessage) => {
-        if (nodeIpErrorMessage) return false
+      this.$refs['form'].validateField('username', (usernameErrorMessage) => {
+        if (usernameErrorMessage) return false
 
-        this.$refs['form'].validateField('username', (usernameErrorMessage) => {
-          if (usernameErrorMessage) return false
+        this.isLoading = true
 
-          this.isLoading = true
-
-          this.signup({
-            username: this.form.username,
-            whitelist: this.form.whitelist
-          })
-            .then(({ username, privateKey }) => {
-              this.dialog.username = username
-              this.dialog.privateKey = privateKey
-              this.dialogVisible = true
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showRegistrationError(err.message, err.response)
-            })
-            .finally(() => {
-              this.isLoading = false
-            })
+        this.signup({
+          username: this.form.username
         })
+          .then(({ username, privateKey }) => {
+            this.dialog.username = username
+            this.dialog.privateKey = privateKey
+            this.dialogVisible = true
+          })
+          .catch(err => {
+            console.error(err)
+            this.$_showRegistrationError(err.message, err.response)
+          })
+          .finally(() => {
+            this.isLoading = false
+          })
       })
     },
 
