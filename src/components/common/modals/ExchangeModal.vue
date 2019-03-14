@@ -41,7 +41,7 @@
         <span
           v-if="_isError($v.exchangeForm.offer_amount)"
           class="el-form-item__error"
-        >Please provide correct private key</span>
+        >{{ _showError($v.exchangeForm.offer_amount) }}</span>
       </el-form-item>
       <span class="form-item-text">
         Available balance:
@@ -79,7 +79,7 @@
         <span
           v-if="_isError($v.exchangeForm.request_amount)"
           class="el-form-item__error"
-        >Please provide correct private key</span>
+        >{{ _showError($v.exchangeForm.request_amount) }}</span>
       </el-form-item>
       <span class="form-item-text">
         Market price:
@@ -100,12 +100,10 @@
         <span
           v-if="_isError($v.exchangeForm.to)"
           class="el-form-item__error"
-        >Please provide correct private key</span>
+        >{{ _showError($v.exchangeForm.to) }}</span>
       </el-form-item>
       <el-form-item label="Additional information" prop="description">
         <el-input
-          type="textarea"
-          :rows="2"
           v-model="$v.exchangeForm.description.$model"
           placeholder="Description"
           resize="none"
@@ -117,11 +115,11 @@
         <span
           v-if="_isError($v.exchangeForm.description)"
           class="el-form-item__error"
-        >Please provide correct private key</span>
+        >{{ _showError($v.exchangeForm.description) }}</span>
       </el-form-item>
     </el-form>
     <el-button
-      class="dialog-form_buttons action"
+      class="dialog-form_buttons fullwidth action"
       @click="onSubmitExchangeDialog()"
       style="margin-top: 40px"
       :loading="isExchangeSending"
@@ -139,8 +137,9 @@ import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
 
 import {
-  _usernameWithDomain,
+  _user,
   _amount,
+  _wallet,
   errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
@@ -159,15 +158,18 @@ export default {
       exchangeForm: {
         to: {
           required,
-          _usernameWithDomain
+          _userDomain: _user.nameDomain,
+          _userExist: _user.nameExist
         },
         request_amount: {
           required,
-          _amount: _amount({ amount, precision }, this.exchangeDialogRequestAsset)
+          _asset: _wallet.asset(this.exchangeDialogRequestAsset),
+          _amount: _amount({ amount, precision })
         },
         offer_amount: {
           required,
-          _amount: _amount(wallet, this.exchangeDialogOfferAsset)
+          _asset: _wallet.asset(this.exchangeDialogOfferAsset),
+          _amount: _amount(wallet)
         },
         description: {
           maxLength: maxLength(64)

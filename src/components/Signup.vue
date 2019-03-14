@@ -35,7 +35,7 @@
           <span
             v-if="_isError($v.form.username)"
             class="el-form-item__error"
-          >Please provide correct username</span>
+          >{{ _showError($v.form.username) }}</span>
         </el-form-item>
         <el-form-item
           label="Registration IP"
@@ -67,7 +67,7 @@
           <span
             v-if="_isError($v.form.nodeIp)"
             class="el-form-item__error"
-          >Please provide correct node ip</span>
+          >{{ _showError($v.form.nodeIp) }}</span>
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
@@ -127,12 +127,12 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 import { registrationIPs } from '@/data/urls'
 
-import { _nodeIp, _username, errorHandler } from '@/components/mixins/validation'
+import { _nodeIp, _user, errorHandler } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
@@ -145,7 +145,7 @@ export default {
     form: {
       username: {
         required,
-        _username
+        _userName: _user.name
       },
       nodeIp: {
         required,
@@ -171,53 +171,32 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.selectNotaryIp()
-  },
-
-  created () {
-    this.getFreeBtcRelaysNumber()
-    this.getFreeEthRelaysNumber()
-  },
-
-  computed: {
-    ...mapGetters([
-      'freeEthRelaysNumber',
-      'freeBtcRelaysNumber'
-    ])
-  },
-
   methods: {
     ...mapActions([
       'setNotaryIp',
-      'signup',
-      'getFreeEthRelaysNumber',
-      'getFreeBtcRelaysNumber'
+      'signup'
     ]),
 
     onSubmit () {
-      this.updateFreeRelaysRule()
-      this.$refs['form'].validateField('nodeIp', (nodeIpErrorMessage) => {
-        if (nodeIpErrorMessage) return false
-
-        this.isLoading = true
-
-        this.signup({
-          username: this.form.username
-        })
-          .then(({ username, privateKey }) => {
-            this.dialog.username = username
-            this.dialog.privateKey = privateKey
-            this.dialogVisible = true
-          })
-          .catch(err => {
-            console.error(err)
-            this.$_showRegistrationError(err.message, err.response)
-          })
-          .finally(() => {
-            this.isLoading = false
-          })
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+      this.isLoading = true
+      this.signup({
+        username: this.form.username,
+        whitelist: this.form.whitelist
       })
+        .then(({ username, privateKey }) => {
+          this.dialog.username = username
+          this.dialog.privateKey = privateKey
+          this.dialogVisible = true
+        })
+        .catch(err => {
+          console.error(err)
+          this.$_showRegistrationError(err.message, err.response)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
 
     onCloseDialog () {
@@ -239,7 +218,6 @@ export default {
 
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
-      this.updateFreeRelaysRule()
     }
   }
 }

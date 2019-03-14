@@ -26,45 +26,47 @@
         </el-row>
       </el-form-item>
 
-      <el-form-item
-        label="Private key"
-        v-for="(key, index) in approvalForm.privateKeys"
-        :key="index"
-        :prop="`privateKeys.${index}.hex`"
-        class="approval_form-item-clearm"
-      >
-        <el-row type="flex" justify="space-between">
-          <el-col :span="20">
-            <el-input
-              v-model="key.hex"
-              @blur="checkPrivateKey(index)"
+      <template v-for="(key, index) in $v.approvalForm.privateKeys.$each.$iter">
+        <el-form-item
+          label="Private key"
+          :key="index"
+          :prop="`privateKeys.${index}.hex`"
+          class="approval_form-item-clearm"
+        >
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                v-model="key.hex.$model"
+                @blur="checkPrivateKey(index)"
+                @input="checkPrivateKey(index)"
+                :class="[
+                  _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
+                  _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
+                ]"
+              />
+            </el-col>
+            <el-upload
+              class="approval_form-upload"
+              action=""
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="(f, l) => onFileChosen(f, l, key, index)"
               :class="[
                 _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
                 _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
               ]"
-            />
-          </el-col>
-          <el-upload
-            class="approval_form-upload"
-            action=""
-            :auto-upload="false"
-            :show-file-list="false"
-            :on-change="(f, l) => onFileChosen(f, l, key, index)"
-            :class="[
-              _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
-              _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
-            ]"
-          >
-            <el-button>
-              <fa-icon icon="upload" />
-            </el-button>
-          </el-upload>
-        </el-row>
-        <span
-          v-if="_isError($v.approvalForm.privateKeys.$each[index])"
-          class="el-form-item__error"
-        >Please provide correct private key</span>
-      </el-form-item>
+            >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+          <span
+            v-if="_isError($v.approvalForm.privateKeys.$each[index])"
+            class="el-form-item__error"
+          >Please provide correct private key</span>
+        </el-form-item>
+      </template>
 
       <el-form-item
         class="approval_form-counter"
@@ -126,16 +128,10 @@
 <script>
 import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
-import { required } from 'vuelidate/lib/validators'
+import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'confirm-modal',
-  props: {
-    isExchangeDialogVisible: {
-      type: Boolean,
-      required: true
-    }
-  },
   mixins: [
     errorHandler
   ],
@@ -144,10 +140,11 @@ export default {
       approvalForm: {
         privateKeys: {
           required,
-          _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+          minLength: minLength(1),
           $each: {
             hex: {
-              _keyPattern
+              _keyPattern,
+              _keyDuplication: _keyDuplication(this.approvalDialogSignatures)
             }
           }
         }
@@ -221,7 +218,7 @@ export default {
     onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        key.hex = (ev.target.result || '').trim()
+        key.hex.$model = (ev.target.result || '').trim()
         this.$v.approvalForm.privateKeys.$each[index].$touch()
         this.updateNumberOfValidKeys()
       }

@@ -46,7 +46,7 @@
           <span
             v-if="_isError($v.form.privateKey)"
             class="el-form-item__error"
-          >Please provide correct private key</span>
+          >{{ _showError($v.form.privateKey) }}</span>
         </el-form-item>
         <el-form-item label="Username" prop="username">
           <el-input
@@ -61,7 +61,7 @@
           <span
             v-if="_isError($v.form.username)"
             class="el-form-item__error"
-          >Please provide correct username</span>
+          >{{ _showError($v.form.username) }}</span>
         </el-form-item>
         <el-form-item label="Node IP" prop="nodeIp">
           <el-select
@@ -89,7 +89,7 @@
           <span
             v-if="_isError($v.form.nodeIp)"
             class="el-form-item__error"
-          >Please provide correct node ip</span>
+          >{{ _showError($v.form.nodeIp) }}</span>
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
@@ -125,7 +125,7 @@ import { mapActions } from 'vuex'
 import {
   _keyPattern,
   _nodeIp,
-  _usernameWithDomain,
+  _user,
   errorHandler
 } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
@@ -140,7 +140,7 @@ export default {
     form: {
       username: {
         required,
-        _usernameWithDomain
+        _userDomain: _user.nameDomain
       },
       privateKey: {
         required,

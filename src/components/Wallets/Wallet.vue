@@ -317,7 +317,7 @@
           <span
             v-if="_isError($v.withdrawForm.amount)"
             class="el-form-item__error"
-          >Please provide correct amount</span>
+          >{{ _showError($v.withdrawForm.amount) }}</span>
         </el-form-item>
         <span class="form-item-text">
           Available balance:
@@ -355,7 +355,7 @@
           <span
             v-if="_isError($v.withdrawForm.wallet)"
             class="el-form-item__error"
-          >Please provide correct wallet address</span>
+          >{{ _showError($v.withdrawForm.wallet) }}</span>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -418,7 +418,7 @@
           <span
             v-if="_isError($v.transferForm.amount)"
             class="el-form-item__error"
-          >Please provide correct amount</span>
+          >{{ _showError($v.transferForm.amount) }}</span>
         </el-form-item>
         <span class="form-item-text">
           Available balance:
@@ -438,12 +438,10 @@
           <span
             v-if="_isError($v.transferForm.to)"
             class="el-form-item__error"
-          >Please provide correct account id</span>
+          >{{ _showError($v.transferForm.to) }}</span>
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
-            type="textarea"
-            :rows="2"
             v-model="$v.transferForm.description.$model"
             placeholder="Details"
             resize="none"
@@ -455,7 +453,7 @@
           <span
             v-if="_isError($v.transferForm.description)"
             class="el-form-item__error"
-          >Please provide correct description</span>
+          >{{ _showError($v.transferForm.description) }}</span>
         </el-form-item>
       </el-form>
       <el-button
@@ -486,9 +484,9 @@ import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
 
 import {
-  _walletAddress,
-  _usernameWithDomain,
+  _wallet,
   _amount,
+  _user,
   errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
@@ -516,13 +514,14 @@ export default {
         },
         wallet: {
           required,
-          _walletAddress
+          _address: _wallet.address
         }
       },
       transferForm: {
         to: {
           required,
-          _usernameWithDomain
+          _userDomain: _user.nameDomain,
+          _userExist: _user.nameExist
         },
         amount: {
           required,
@@ -699,7 +698,7 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: this.transferForm.amount.toString()
+            amount: this.transferForm.amount
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -722,21 +721,25 @@ export default {
     },
 
     resetTransferForm () {
-      this.$refs.transferForm.resetFields()
+      if (this.$refs.transferForm) {
+        this.$v.$reset()
+        this.$refs.transferForm.resetFields()
+      }
     },
 
     resetWithdrawForm () {
-      this.$refs.withdrawForm.resetFields()
+      if (this.$refs.withdrawForm) {
+        this.$v.$reset()
+        this.$refs.withdrawForm.resetFields()
+      }
     },
 
     closeWithdrawDialog () {
       this.resetWithdrawForm()
-      this.$v.$reset()
     },
 
     closeTransferForm () {
       this.resetTransferForm()
-      this.$v.$reset()
     },
 
     onNextPage (page) {
