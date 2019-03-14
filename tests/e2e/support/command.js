@@ -47,12 +47,16 @@ Cypress.Commands.add('setTimezone', (timezone) => {
  * downloading a file so Cypress can detect window:alert event to verify that
  * the correct file will be downloaded.
  */
-Cypress.Commands.add('shouldDownload', {
+Cypress.Commands.add('shouldDownloadCSV', {
   prevSubject: true
-}, (subject, expectedFilename) => {
-  const stub = cy.stub()
-
+}, (subject, expectedFilename, stub) => {
   cy.on('window:alert', stub)
-  cy.wrap(subject).should(() => expect(stub.called).to.be.true)
-    .then(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+  cy.wrap(subject).should(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
+})
+
+Cypress.Commands.add('shouldDownloadPDF', {
+  prevSubject: true
+}, (subject, expectedFilename, stub) => {
+  cy.on('window:alert', stub)
+  cy.wrap(subject).should(() => expect(stub.getCall(0)).to.be.calledWith(`downloading ${expectedFilename}`))
 })

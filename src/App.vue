@@ -336,4 +336,10 @@ button.el-dialog__headerbtn {
   color: #ffffff;
 }
 
+.text-overflow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  margin-right: 1rem;
+}
 </style>

@@ -19,7 +19,7 @@
         <el-row class="approval_form-desc">
           <p>
             Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-            <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
+            <span v-if="accountQuorum > 1 && !isExchangeDialogVisible">
               You need to enter at least {{ approvalDialogMinAmountKeys }} key.
             </span>
           </p>
@@ -120,6 +120,12 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'confirm-modal',
+  props: {
+    isExchangeDialogVisible: {
+      type: Boolean,
+      required: true
+    }
+  },
   mixins: [
     inputValidation({
       privateKey: 'repeatingPrivateKey'
@@ -211,7 +217,7 @@ export default {
       }).length
     },
     disableConfig () {
-      if (this.exchangeDialogVisible) {
+      if (this.isExchangeDialogVisible) {
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
       } else {
         if (this.approvalDialogMinAmountKeys === 1) {

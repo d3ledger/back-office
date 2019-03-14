@@ -93,13 +93,15 @@ export default {
     LogoutIcon,
     SvgIcon
   },
-  updated () {
-    this.getPendingTransactions()
+  watch: {
+    isCollapsed (value) {
+      if (!value) this.getAllUnsignedTransactions()
+    }
   },
   methods: {
     ...mapActions([
       'logout',
-      'getPendingTransactions'
+      'getAllUnsignedTransactions'
     ]),
     onLogout () {
       this.logout()

@@ -63,10 +63,6 @@ const getSignatories = ({
   }
 )
 
-const getPendingTransactions = () => queries.getPendingTransactions(
-  newQueryServiceOptions()
-)
-
 const getRawPendingTransactions = () => queries.getRawPendingTransactions(
   newQueryServiceOptions()
 )
@@ -86,7 +82,6 @@ export {
   getAccountTransactions,
   getAccountDetail,
   getSignatories,
-  getPendingTransactions,
   getRawPendingTransactions,
   getAssetInfo
 }

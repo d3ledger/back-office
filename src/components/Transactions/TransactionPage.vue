@@ -106,13 +106,13 @@ export default {
     ])
   },
   created () {
-    this.getPendingTransactions()
+    this.getAllUnsignedTransactions()
   },
   methods: {
     ...mapActions([
       'openApprovalDialog',
       'signPendingTransaction',
-      'getPendingTransactions'
+      'getAllUnsignedTransactions'
     ]),
     onSignPendingTransaction (txStoreId, signatures) {
       this.openApprovalDialog({ signatures })
@@ -131,7 +131,7 @@ export default {
                 NOTIFICATIONS.TRANSACTION_SUCCESS,
                 NOTIFICATIONS.NOT_COMPLETED
               )
-              this.getPendingTransactions()
+              this.getAllUnsignedTransactions()
             })
             .catch(err => {
               console.error(err)

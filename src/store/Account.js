@@ -64,7 +64,6 @@ function initialState () {
     assetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
-    rawPendingTransactions: null,
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
@@ -117,7 +116,7 @@ const getters = {
   },
 
   allPendingTransactions: (state) => {
-    let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
+    let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
     return pendingTransactionsCopy ? getTransferAssetsFrom(
       pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
@@ -362,16 +361,6 @@ const mutations = {
   },
 
   [types.GET_ALL_UNSIGNED_TRANSACTIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
-
-  [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawPendingTransactions = transactions
-  },
-
-  [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -695,17 +684,6 @@ const actions = {
       })
   },
 
-  getPendingTransactions ({ commit }) {
-    commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
-
-    return irohaUtil.getRawPendingTransactions()
-      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
-      .catch(err => {
-        commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
-        throw err
-      })
-  },
-
   transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
@@ -728,7 +706,7 @@ const actions = {
   signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
     commit(types.SIGN_PENDING_REQUEST)
 
-    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
+    return irohaUtil.signPendingTransaction(privateKeys, state.rawUnsignedTransactions.getTransactionsList()[txStoreId])
       .then(() => {
         commit(types.SIGN_PENDING_SUCCESS)
       })
