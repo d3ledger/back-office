@@ -4,14 +4,6 @@ export const IROHA_REGISTRATION_URL = process.env.VUE_APP_IROHA_REGISTRATION_URL
 
 export const registrationIPs = [
   {
-    'value': ETH_NOTARY_URL,
-    'label': 'Ethereum registration'
-  },
-  {
-    'value': BTC_NOTARY_URL,
-    'label': 'Bitcoin registartion'
-  },
-  {
     'value': IROHA_REGISTRATION_URL,
     'label': 'Iroha registartion'
   }

@@ -36,12 +36,6 @@ export default {
     }
   },
 
-  beforeCreate () {
-    console.log(this.ethWalletAddress, this.hasEthWallet)
-    console.log(this.btcWalletAddress, this.hasBtcWallet)
-    console.log(!this.ethWalletAddress && !this.btcWalletAddress)
-  },
-
   computed: {
     ...mapState({
       accountId: state => state.Account.accountId

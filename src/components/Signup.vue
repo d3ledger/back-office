@@ -18,6 +18,30 @@
             <div class="auth-form_tag">d3</div>
           </el-row>
         </el-form-item>
+        <el-form-item
+          label="Registration IP"
+          prop="nodeIp"
+        >
+          <el-select
+            v-model="form.nodeIp"
+            class="auth-form_select"
+            :disabled="isLoading"
+            style="width: 100%;"
+            filterable
+            allow-create
+            @change="selectNotaryIp"
+            popper-class="black-form_select-dropdown"
+          >
+            <el-option
+              v-for="node in registrationIPs"
+              :key="node.value"
+              :label="node.label"
+              :value="node.value">
+              <span class="option left">{{ node.label }}</span>
+              <span class="option right">{{ node.value }}</span>
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
             data-cy="signup"
@@ -80,7 +104,7 @@ import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
 import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
-import { IROHA_REGISTRATION_URL, BTC_NOTARY_URL, ETH_NOTARY_URL, registrationIPs } from '@/data/urls'
+import { registrationIPs } from '@/data/urls'
 
 export default {
   name: 'signup',
@@ -98,7 +122,7 @@ export default {
       form: {
         username: '',
         newAddress: '',
-        nodeIp: IROHA_REGISTRATION_URL
+        nodeIp: registrationIPs[0].value
       },
       dialogVisible: false,
       dialog: {
@@ -172,46 +196,9 @@ export default {
       this.downloaded = true
     },
 
-    onClickAddAddressToWhiteList () {
-      this.$refs['form'].validateField('newAddress', (errorMessage) => {
-        if (errorMessage) return
-
-        this.form.whitelist.push(this.form.newAddress)
-        this.$refs['newAddress'].resetField()
-
-        this.updateWhiteListValidationRules()
-      })
-    },
-
-    onClickRemoveItemFromWitelist (index) {
-      this.form.whitelist.splice(index, 1)
-
-      /*
-        Update validation rules + re-validate inserted field
-      */
-      this.updateWhiteListValidationRules()
-      this.$refs['form'].validateField('newAddress')
-    },
-
-    updateWhiteListValidationRules () {
-      this._refreshRules({
-        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist },
-        nodeIp: { pattern: 'nodeIp' }
-      })
-    },
-
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
       this.updateFreeRelaysRule()
-    },
-
-    updateFreeRelaysRule () {
-      const canRegister = ((this.form.nodeIp === ETH_NOTARY_URL) && this.freeEthRelaysNumber > 0) ||
-        ((this.form.nodeIp === BTC_NOTARY_URL) && this.freeBtcRelaysNumber > 0)
-
-      this._refreshRules({
-        nodeIp: { pattern: 'nodeIp', canRegister }
-      })
     }
   }
 }
