@@ -27,7 +27,9 @@ const types = flow(
 )([
   'GET_OFFER_TO_REQUEST_PRICE',
   'GET_FREE_ETH_RELAYS',
-  'GET_FREE_BTC_RELAYS'
+  'GET_FREE_BTC_RELAYS',
+  'LOAD_NODE_IP',
+  'LOAD_REGISTRATION_IP'
 ])
 
 function initialState () {
@@ -49,7 +51,9 @@ function initialState () {
     walletsSortCriterion: null,
     dashboardSortCriterion: null,
     freeEthRelaysNumber: 0,
-    freeBtcRelaysNumber: 0
+    freeBtcRelaysNumber: 0,
+    nodeIPs: [],
+    registrationIPs: []
   }
 }
 
@@ -133,6 +137,22 @@ const mutations = {
   },
 
   [types.GET_FREE_BTC_RELAYS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.LOAD_NODE_IP_REQUEST] (state) {},
+  [types.LOAD_NODE_IP_SUCCESS] (state, IPs) {
+    state.nodeIPs = IPs
+  },
+  [types.LOAD_NODE_IP_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.LOAD_REGISTRATION_IP_REQUEST] (state) {},
+  [types.LOAD_REGISTRATION_IP_SUCCESS] (state, IPs) {
+    state.registrationIPs = IPs
+  },
+  [types.LOAD_REGISTRATION_IP_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -236,6 +256,32 @@ const actions = {
         commit(types.GET_FREE_BTC_RELAYS_FAILURE, err)
         throw err
       })
+  },
+
+  loadNodeAddresses ({ commit }) {
+    commit(types.LOAD_NODE_IP_REQUEST)
+
+    return notaryUtil.getNodeAddresses()
+      .then(IPs => {
+        commit(types.LOAD_NODE_IP_SUCCESS, IPs)
+      })
+      .catch(err => {
+        commit(types.LOAD_NODE_IP_FAILURE, err)
+        throw err
+      })
+  },
+
+  loadRegistrationAddreses ({ commit }) {
+    commit(types.LOAD_REGISTRATION_IP_REQUEST)
+
+    return notaryUtil.getRegistrationAddresses()
+      .then(IPs => {
+        commit(types.LOAD_REGISTRATION_IP_SUCCESS, IPs)
+      })
+      .catch(err => {
+        commit(types.LOAD_REGISTRATION_IP_FAILURE, err)
+        throw err
+      })
   }
 }
 
@@ -272,6 +318,12 @@ const getters = {
   },
   freeBtcRelaysNumber (state) {
     return state.freeBtcRelaysNumber
+  },
+  nodeIPs (state) {
+    return state.nodeIPs
+  },
+  registrationIPs (state) {
+    return state.registrationIPs
   }
 }
 

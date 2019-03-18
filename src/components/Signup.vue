@@ -130,7 +130,6 @@
 import { mapActions } from 'vuex'
 import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
-import { registrationIPs } from '@/data/urls'
 
 import { _nodeIp, _user, errorHandler } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
@@ -155,12 +154,11 @@ export default {
   },
   data () {
     return {
-      registrationIPs,
       isLoading: false,
       predefinedDomain: 'd3',
       form: {
         username: '',
-        nodeIp: registrationIPs[0].value
+        nodeIp: ''
       },
       dialogVisible: false,
       dialog: {
@@ -169,6 +167,22 @@ export default {
       },
       downloaded: false
     }
+  },
+
+  created () {
+    this.form.nodeIp = this.registrationIPs[0].value || ''
+  },
+
+  beforeMount () {
+    this.selectNotaryIp()
+  },
+
+  computed: {
+    ...mapGetters([
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber',
+      'registrationIPs'
+    ])
   },
 
   methods: {

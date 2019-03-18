@@ -78,7 +78,7 @@
             ]"
           >
             <el-option
-              v-for="node in listOfNodes"
+              v-for="node in nodeIPs"
               :key="node.value"
               :label="node.label"
               :value="node.value">
@@ -118,9 +118,8 @@
 </template>
 
 <script>
-import listOfNodes from '@/data/nodes'
 import messageMixin from '@/components/mixins/message'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import {
   _keyPattern,
@@ -159,14 +158,19 @@ export default {
         username: '',
         privateKey: '',
         nodeIp: this.$store.state.Account.nodeIp
-      },
-      listOfNodes
+      }
     }
   },
 
   created () {
     const nodeIp = this.$store.state.Account.nodeIp
-    this.form.nodeIp = nodeIp || this.listOfNodes[0].value
+    this.form.nodeIp = nodeIp || this.nodeIPs[0].value
+  },
+
+  computed: {
+    ...mapGetters([
+      'nodeIPs'
+    ])
   },
 
   methods: {
