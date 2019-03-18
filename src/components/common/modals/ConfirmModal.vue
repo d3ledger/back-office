@@ -38,7 +38,7 @@
               <el-input
                 v-model="key.hex.$model"
                 @blur="checkPrivateKey(index)"
-                @change="checkPrivateKey(index)"
+                @input="checkPrivateKey(index)"
                 :class="[
                   _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
                   _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
