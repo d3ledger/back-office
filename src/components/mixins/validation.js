@@ -34,8 +34,14 @@ export const _keyPattern = (value) => {
 }
 
 export const _keyDuplication = (keys) => (value) => {
-  console.log(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))
-  if (keys.includes(derivePublicKey(Buffer.from(value, 'hex')).toString('hex'))) {
+  let publicKey
+  try {
+    publicKey = derivePublicKey(Buffer.from(value, 'hex'))
+  } catch (error) {
+    console.error('Error: Invalid private key')
+    return false
+  }
+  if (keys.includes(publicKey)) {
     return false
   }
   return true
