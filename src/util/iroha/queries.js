@@ -63,6 +63,14 @@ const getSignatories = ({
   }
 )
 
+const getTransactions = ({
+  transactionIds
+}) => queries.getTransactions(
+  newQueryServiceOptions(), {
+    tx_hashes: transactionIds
+  }
+)
+
 const getRawPendingTransactions = () => queries.getRawPendingTransactions(
   newQueryServiceOptions()
 )
@@ -82,6 +90,7 @@ export {
   getAccountTransactions,
   getAccountDetail,
   getSignatories,
+  getTransactions,
   getRawPendingTransactions,
   getAssetInfo
 }
