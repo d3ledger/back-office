@@ -64,10 +64,10 @@ const getSignatories = ({
 )
 
 const getTransactions = ({
-  transactionIds
+  txHashes
 }) => queries.getTransactions(
   newQueryServiceOptions(), {
-    tx_hashes: transactionIds
+    txHashes
   }
 )
 

@@ -10,7 +10,7 @@
             <input v-model="transactionId" />
             <el-table
               class="transactions_table"
-              :data="allPendingTransactions">
+              :data="searchedTransactions">
               <el-table-column type="expand">
                 <template slot-scope="scope">
                   <div class="transaction_details">
@@ -59,20 +59,6 @@
                   {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
               </el-table-column>
-              <el-table-column width="210">
-                <template slot-scope="scope">
-                  <div class="transaction_action">
-                    <el-button
-                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
-                      size="medium"
-                      type="primary"
-                      plain
-                    >
-                      Add signatures
-                    </el-button>
-                  </div>
-                </template>
-              </el-table-column>
             </el-table>
           </el-card>
         </el-col>
@@ -85,7 +71,6 @@
 import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
-import NOTIFICATIONS from '@/data/notifications'
 
 export default {
   name: 'transaction-page',
@@ -102,52 +87,20 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'allPendingTransactions',
-      'wallets',
-      'accountQuorum'
+      'searchedTransactions',
+      'filteredTransactions'
     ])
-  },
-  created () {
-    this.getAllUnsignedTransactions()
   },
 
   beforeUpdate () {
-    console.log(this.transactionId)
+    this.searchTransactionsByAccountId({accountId: this.transactionId})
   },
 
   methods: {
     ...mapActions([
-      'openApprovalDialog',
-      'signPendingTransaction',
-      'getAllUnsignedTransactions'
+      'searchTransactionById',
+      'searchTransactionsByAccountId'
     ]),
-
-    onSignPendingTransaction (txStoreId, signatures) {
-      this.openApprovalDialog({ signatures })
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.isSending = true
-
-          return this.signPendingTransaction({
-            privateKeys,
-            txStoreId
-          })
-            .then(() => {
-              let completed = privateKeys.length + signatures.length === this.accountQuorum
-              this.$_showMessageFromStatus(
-                completed,
-                NOTIFICATIONS.TRANSACTION_SUCCESS,
-                NOTIFICATIONS.NOT_COMPLETED
-              )
-              this.getAllUnsignedTransactions()
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
-            })
-        })
-        .finally(() => { this.isSending = false })
-    },
     calculateEstimatedTime (date) {
       const rightDate = date + this.liveTimeOfTransaction
       return this.compareDates(rightDate, new Date().getTime())

@@ -13,7 +13,8 @@ const types = flow(
   map(x => [x, x]),
   fromPairs
 )([
-  'SEARCH_TRANSACTIONS'
+  'SEARCH_TRANSACTION_BY_ID',
+  'SEARCH_TRANSACTIONS_BY_ACCOUNT_ID'
 ])
 
 function initialState () {
@@ -53,31 +54,62 @@ function handleError (state, err) {
 }
 
 const mutations = {
-  [types.SEARCH_TRANSACTIONS_REQUEST] (state, result) {
+  [types.SEARCH_TRANSACTION_BY_ID_REQUEST] (state) {
+  },
+
+  [types.SEARCH_TRANSACTION_BY_ID_SUCCESS] (state, result) {
     state.searchedTransactions = result.transactions
   },
 
-  [types.SEARCH_TRANSACTIONS_SUCCESS] (state) {},
+  [types.SEARCH_TRANSACTION_BY_ID_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+  [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_REQUEST] (state) {
+  },
 
-  [types.SEARCH_TRANSACTIONS_FAILURE] (state, err) {
+  [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_SUCCESS] (state, result) {
+    state.searchedTransactions = result.transactions
+  },
+
+  [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
 
 const actions = {
-  getAccountAssetTransactions ({ commit, state }, { transactionIds }) {
-    commit(types.SEARCH_TRANSACTIONS_REQUEST)
-
+  searchTransactionById ({ commit, state }, { transactionId }) {
+    commit(types.SEARCH_TRANSACTION_BY_ID_REQUEST)
+    console.log(1, transactionId)
     return irohaUtil.getTransactions({
-      transactionIds
+      txHashes: [transactionId]
     })
       .then(responses => {
-        commit(types.SEARCH_TRANSACTIONS_SUCCESS, {
+        console.log(2, responses)
+        commit(types.SEARCH_TRANSACTION_BY_ID_SUCCESS, {
           transactions: responses
         })
       })
       .catch(err => {
-        commit(types.SEARCH_TRANSACTIONS_FAILURE, err)
+        commit(types.SEARCH_TRANSACTION_BY_ID_FAILURE, err)
+        throw err
+      })
+  },
+  searchTransactionsByAccountId ({ commit, state }, { accountId }) {
+    commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_REQUEST)
+    console.log(1, accountId)
+    return irohaUtil.getAccountTransactions({
+      accountId,
+      pageSize: 100,
+      firstTxHash: undefined
+    })
+      .then(responses => {
+        console.log(2, responses)
+        commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_SUCCESS, {
+          transactions: responses.transactionsList
+        })
+      })
+      .catch(err => {
+        commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE, err)
         throw err
       })
   }
