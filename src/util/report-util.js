@@ -30,7 +30,7 @@ export function generatePDF (params) {
   debug('generating PDF output...')
 
   return fontLoader.load().then(() => new Promise((resolve, reject) => {
-    const { formatDate, formatPrecision } = params
+    const { formatDate, formatDateWith, formatPrecision } = params
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const docDefinition = {
       info: {
@@ -46,7 +46,7 @@ export function generatePDF (params) {
 
       content: [
         { image: REPORT_LOGO, width: 200, style: 'logo' },
-        { text: `Report (${formatDate(data.dateFrom)} - ${formatDate(data.dateTo)})`, style: 'title' },
+        { text: `Report (${formatDateWith(data.dateFrom, 'MMM. D YYYY HH:mm')} - ${formatDateWith(data.dateTo, 'MMM. D YYYY HH:mm')})`, style: 'title' },
         { text: `Account ID: ${data.accountId}` },
         { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
 
