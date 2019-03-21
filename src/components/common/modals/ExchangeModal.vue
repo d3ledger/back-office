@@ -15,6 +15,7 @@
       <el-form-item label="I send" prop="offer_amount" >
         <el-input
           name="amount"
+          type="number"
           v-model="$v.exchangeForm.offer_amount.$model"
           placeholder="0"
           :class="[
@@ -53,6 +54,7 @@
       <el-form-item label="I receive" prop="request_amount">
         <el-input
           name="amount"
+          type="number"
           v-model="$v.exchangeForm.request_amount.$model"
           placeholder="0"
           :class="[
@@ -154,6 +156,7 @@ export default {
   validations () {
     const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
     const { amount, precision } = wallet || { amount: 0, precision: 0 }
+    const offerAmount = { amount: Number.MAX_SAFE_INTEGER, precision }
     return {
       exchangeForm: {
         to: {
@@ -164,12 +167,12 @@ export default {
         request_amount: {
           required,
           _asset: _wallet.asset(this.exchangeDialogRequestAsset),
-          _amount: _amount({ amount, precision })
+          _amount: _amount(offerAmount)
         },
         offer_amount: {
           required,
           _asset: _wallet.asset(this.exchangeDialogOfferAsset),
-          _amount: _amount(wallet)
+          _amount: _amount({ amount, precision })
         },
         description: {
           maxLength: maxLength(64)
