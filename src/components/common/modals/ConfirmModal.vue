@@ -9,7 +9,6 @@
   >
     <el-form
       ref="approvalForm"
-      :model="approvalForm"
       class="approval_form"
       label-position="top"
       @validate="updateNumberOfValidKeys"
@@ -19,7 +18,7 @@
         <el-row class="approval_form-desc">
           <p>
             Please enter your private key<span v-if="accountQuorum > 1">s</span>.
-            <span v-if="accountQuorum > 1 && !isExchangeDialogVisible">
+            <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
               You need to enter at least {{ approvalDialogMinAmountKeys }} key.
             </span>
           </p>
@@ -27,35 +26,47 @@
         </el-row>
       </el-form-item>
 
-      <el-form-item
-        label="Private key"
-        v-for="(key, index) in approvalForm.privateKeys"
-        :key="index"
-        :prop="`privateKeys.${index}.hex`"
-        :rules="rules.repeatingPrivateKey"
-        class="approval_form-item-clearm"
-      >
-        <el-row type="flex" justify="space-between">
-          <el-col :span="20">
-            <el-input
-              v-model="key.hex"
-              :class="{ 'is-empty': !key.hex }"
-            />
-          </el-col>
-
-          <el-upload
-            class="approval_form-upload"
-            action=""
-            :auto-upload="false"
-            :show-file-list="false"
-            :on-change="(f, l) => onFileChosen(f, l, key)"
-          >
-            <el-button>
-              <fa-icon icon="upload" />
-            </el-button>
-          </el-upload>
-        </el-row>
-      </el-form-item>
+      <template v-for="(key, index) in $v.approvalForm.privateKeys.$each.$iter">
+        <el-form-item
+          label="Private key"
+          :key="index"
+          :prop="`privateKeys.${index}.hex`"
+          class="approval_form-item-clearm"
+        >
+          <el-row type="flex" justify="space-between">
+            <el-col :span="20">
+              <el-input
+                v-model="key.hex.$model"
+                @blur="checkPrivateKey(index)"
+                @input="checkPrivateKey(index)"
+                :class="[
+                  _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
+                  _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
+                ]"
+              />
+            </el-col>
+            <el-upload
+              class="approval_form-upload"
+              action=""
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="(f, l) => onFileChosen(f, l, key, index)"
+              :class="[
+                _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
+                _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
+              ]"
+            >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+          <span
+            v-if="_isError($v.approvalForm.privateKeys.$each[index])"
+            class="el-form-item__error"
+          >Please provide correct private key</span>
+        </el-form-item>
+      </template>
 
       <el-form-item
         class="approval_form-counter"
@@ -115,22 +126,31 @@
 </template>
 
 <script>
-import inputValidation from '@/components/mixins/inputValidation'
+import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
+import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'confirm-modal',
-  props: {
-    isExchangeDialogVisible: {
-      type: Boolean,
-      required: true
+  mixins: [
+    errorHandler
+  ],
+  validations () {
+    return {
+      approvalForm: {
+        privateKeys: {
+          required,
+          minLength: minLength(1),
+          $each: {
+            hex: {
+              _keyPattern,
+              _keyDuplication: _keyDuplication(this.approvalDialogSignatures)
+            }
+          }
+        }
+      }
     }
   },
-  mixins: [
-    inputValidation({
-      privateKey: 'repeatingPrivateKey'
-    })
-  ],
   data () {
     return {
       approvalForm: {
@@ -144,6 +164,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'exchangeDialogVisible',
       'approvalDialogVisible',
       'approvalDialogSignatures',
       'approvalDialogMinAmountKeys',
@@ -159,30 +180,26 @@ export default {
     ...mapActions([
       'closeApprovalDialog'
     ]),
-    insertPrivateKey (key, i) {
-      this.$set(this.approvalForm.privateKeys, i, key)
-    },
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
       this.closeApprovalDialog()
-      this.$refs.approvalForm.resetFields()
-      this.$refs.approvalForm.clearValidate()
+      this.resetForm()
       this.isWaitFormVisible = false
       this.periodOfFinalisation = null
       this.timeToReject = 5
     },
     beforeSubmitApprovalDialog () {
-      this.$refs.approvalForm.validate(valid => {
-        if (!valid) return
-        this.isWaitFormVisible = true
-        this.periodOfFinalisation = setInterval(() => {
-          if (this.timeToReject <= 0) {
-            clearInterval(this.periodOfFinalisation)
-            this.submitApprovalDialog()
-          }
-          this.countdown()
-        }, 1000)
-      })
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
+      this.isWaitFormVisible = true
+      this.periodOfFinalisation = setInterval(() => {
+        if (this.timeToReject <= 0) {
+          clearInterval(this.periodOfFinalisation)
+          this.submitApprovalDialog()
+        }
+        this.countdown()
+      }, 1000)
     },
     countdown () {
       this.timeToReject = this.timeToReject - 1
@@ -197,33 +214,45 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
-
-      this._refreshRules({
-        repeatingPrivateKey: { pattern: 'repeatingPrivateKey', keys: this.approvalDialogSignatures }
-      })
     },
-    onFileChosen (file, fileList, key) {
+    onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()
       reader.onload = (ev) => {
-        key.hex = (ev.target.result || '').trim()
+        key.hex.$model = (ev.target.result || '').trim()
+        this.$v.approvalForm.privateKeys.$each[index].$touch()
+        this.updateNumberOfValidKeys()
       }
       reader.readAsText(file.raw)
     },
+    checkPrivateKey (index) {
+      this.$v.approvalForm.privateKeys.$each[index].$touch()
+      this.updateNumberOfValidKeys()
+    },
     updateNumberOfValidKeys () {
-      if (!this.$refs.approvalForm) return
-
-      this.approvalForm.numberOfValidKeys = this.$refs.approvalForm.fields.filter(x => {
-        return x.validateState === 'success' && !!x.fieldValue
-      }).length
+      const privateKeysFields = this.$v.approvalForm.privateKeys.$each.$iter
+      let tempNumberOfValidKeys = 0
+      for (const field in privateKeysFields) {
+        if (this._isValid(privateKeysFields[field], 'hex')) {
+          tempNumberOfValidKeys += 1
+        }
+      }
+      this.$set(this.approvalForm, 'numberOfValidKeys', tempNumberOfValidKeys)
     },
     disableConfig () {
-      if (this.isExchangeDialogVisible) {
+      if (this.exchangeDialogVisible) {
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.accountQuorum)
       } else {
         if (this.approvalDialogMinAmountKeys === 1) {
           return this.approvalForm.numberOfValidKeys < 1
         }
         return !(this.approvalForm.numberOfValidKeys + this.approvalDialogSignatures.length === this.approvalDialogMinAmountKeys)
+      }
+    },
+    resetForm () {
+      this.$v.approvalForm.$reset()
+      this.approvalForm = {
+        privateKeys: [],
+        numberOfValidKeys: 0
       }
     }
   }

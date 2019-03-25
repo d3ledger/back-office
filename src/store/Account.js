@@ -117,7 +117,7 @@ const getters = {
 
   allPendingTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
-    return pendingTransactionsCopy ? getTransferAssetsFrom(
+    return !Array.isArray(pendingTransactionsCopy) ? getTransferAssetsFrom(
       pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
     ).filter(tx => tx.from === 'you') : []

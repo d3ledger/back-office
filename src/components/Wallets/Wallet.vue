@@ -294,13 +294,30 @@
       width="450px"
       center
     >
-      <el-form ref="withdrawForm" :model="withdrawForm" class="withdraw_form" :rules="rules">
+      <el-form
+        ref="withdrawForm"
+        :model="withdrawForm"
+        class="withdraw_form"
+      >
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="withdrawForm.amount" placeholder="0">
+          <el-input
+            name="amount"
+            v-model="$v.withdrawForm.amount.$model"
+            placeholder="0"
+            type="number"
+            :class="[
+              _isValid($v.withdrawForm.amount) ? 'border_success' : '',
+              _isError($v.withdrawForm.amount) ? 'border_fail' : ''
+            ]"
+          >
             <div slot="append">
               {{ wallet.asset }}
             </div>
           </el-input>
+          <span
+            v-if="_isError($v.withdrawForm.amount)"
+            class="el-form-item__error"
+          >{{ _showError($v.withdrawForm.amount) }}</span>
         </el-form-item>
         <span class="form-item-text">
           Available balance:
@@ -310,14 +327,24 @@
         </span>
         <el-form-item label="Address" prop="wallet">
           <el-input
-            v-if="withdrawWalletAddresses.length === 0"
-            v-model="withdrawForm.wallet"
-            placeholder="withdrawal address" />
+            v-if="!withdrawWalletAddresses.length"
+            v-model="$v.withdrawForm.wallet.$model"
+            placeholder="withdrawal address"
+            :class="[
+              _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
+              _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
+            ]"
+          />
           <el-select
             v-else
-            class="withdraw-wallet_select"
-            v-model="withdrawForm.wallet"
-            placeholder="Select withdrawal address">
+            v-model="$v.withdrawForm.wallet.$model"
+            placeholder="Select withdrawal address"
+            :class="[
+              'withdraw-wallet_select',
+              _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
+              _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
+            ]"
+          >
             <el-option
               v-for="address in withdrawWalletAddresses"
               :key="address"
@@ -325,6 +352,10 @@
               :value="address">
             </el-option>
           </el-select>
+          <span
+            v-if="_isError($v.withdrawForm.wallet)"
+            class="el-form-item__error"
+          >{{ _showError($v.withdrawForm.wallet) }}</span>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -364,13 +395,30 @@
       width="450px"
       center
     >
-      <el-form ref="transferForm" :model="transferForm" class="transfer_form" :rules="rules">
+      <el-form
+        ref="transferForm"
+        :model="transferForm"
+        class="transfer_form"
+      >
         <el-form-item label="I send" prop="amount">
-          <el-input name="amount" v-model="transferForm.amount" placeholder="0">
+          <el-input
+            name="amount"
+            v-model="$v.transferForm.amount.$model"
+            placeholder="0"
+            type="number"
+            :class="[
+              _isValid($v.transferForm.amount) ? 'border_success' : '',
+              _isError($v.transferForm.amount) ? 'border_fail' : ''
+            ]"
+          >
             <div slot="append">
               {{ wallet.asset }}
             </div>
           </el-input>
+          <span
+            v-if="_isError($v.transferForm.amount)"
+            class="el-form-item__error"
+          >{{ _showError($v.transferForm.amount) }}</span>
         </el-form-item>
         <span class="form-item-text">
           Available balance:
@@ -379,14 +427,33 @@
           </span>
         </span>
         <el-form-item label="Counterparty" prop="to">
-          <el-input v-model="transferForm.to" placeholder="Account id" />
+          <el-input
+            v-model="$v.transferForm.to.$model"
+            placeholder="Account id"
+            :class="[
+              _isValid($v.transferForm.to) ? 'border_success' : '',
+              _isError($v.transferForm.to) ? 'border_fail' : ''
+            ]"
+          />
+          <span
+            v-if="_isError($v.transferForm.to)"
+            class="el-form-item__error"
+          >{{ _showError($v.transferForm.to) }}</span>
         </el-form-item>
         <el-form-item label="Additional information" prop="description">
           <el-input
-            v-model="transferForm.description"
+            v-model="$v.transferForm.description.$model"
             placeholder="Details"
             resize="none"
+            :class="[
+              _isValid($v.transferForm.description) ? 'border_success' : '',
+              _isError($v.transferForm.description) ? 'border_fail' : ''
+            ]"
           />
+          <span
+            v-if="_isError($v.transferForm.description)"
+            class="el-form-item__error"
+          >{{ _showError($v.transferForm.description) }}</span>
         </el-form-item>
       </el-form>
       <el-button
@@ -413,9 +480,16 @@ import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
-import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
+
+import {
+  _wallet,
+  _amount,
+  _user,
+  errorHandler
+} from '@/components/mixins/validation'
+import { required, maxLength } from 'vuelidate/lib/validators'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -428,14 +502,37 @@ export default {
     dateFormat,
     numberFormat,
     currencySymbol,
-    inputValidation({
-      to: 'checkAccountId',
-      amount: 'tokensAmount',
-      wallet: 'walletAddress',
-      description: 'additionalInformation'
-    }),
-    messageMixin
+    messageMixin,
+    errorHandler
   ],
+  validations () {
+    return {
+      withdrawForm: {
+        amount: {
+          required,
+          _amount: _amount(this.wallet, this.wallet.assetId)
+        },
+        wallet: {
+          required,
+          _address: _wallet.address
+        }
+      },
+      transferForm: {
+        to: {
+          required,
+          _userDomain: _user.nameDomain,
+          _userExist: _user.nameExist
+        },
+        amount: {
+          required,
+          _amount: _amount(this.wallet, this.wallet.assetId)
+        },
+        description: {
+          maxLength: maxLength(64)
+        }
+      }
+    }
+  },
   components: {
     AssetIcon,
     QrcodeVue,
@@ -522,24 +619,6 @@ export default {
     }
   },
 
-  beforeMount () {
-    this._refreshRules({
-      wallet: { pattern: 'walletAddress' }
-    })
-  },
-
-  beforeUpdate () {
-    this._refreshRules({
-      amount: {
-        pattern: 'tokensAmount',
-        amount: this.wallet.amount,
-        precision: this.wallet.precision,
-        asset: this.wallet.assetId
-      },
-      to: { pattern: 'checkAccountId', accountId: this.transferForm.to }
-    })
-  },
-
   methods: {
     ...mapActions([
       'openApprovalDialog',
@@ -569,7 +648,8 @@ export default {
     },
 
     onSubmitWithdrawalForm () {
-      if (!this.validateForm('withdrawForm')) return
+      this.$v.withdrawForm.$touch()
+      if (this.$v.withdrawForm.$invalid) return
 
       this.openApprovalDialog()
         .then(privateKeys => {
@@ -592,8 +672,8 @@ export default {
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
-              this.resetWithdrawForm()
               this.fetchWallet()
+              this.closeWithdrawDialog()
               this.withdrawFormVisible = false
             })
             .catch(err => {
@@ -604,9 +684,9 @@ export default {
         .finally(() => { this.isSending = false })
     },
 
-    async onSubmitTransferForm () {
-      const isValid = await this.asyncValidateForm('transferForm')
-      if (!isValid) return
+    onSubmitTransferForm () {
+      this.$v.transferForm.$touch()
+      if (this.$v.transferForm.$invalid) return
 
       this.openApprovalDialog()
         .then(privateKeys => {
@@ -618,7 +698,7 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: this.transferForm.amount.toString()
+            amount: this.transferForm.amount
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -629,7 +709,7 @@ export default {
               )
 
               this.fetchWallet()
-              this.resetTransferForm()
+              this.closeTransferForm()
               this.transferFormVisible = false
             })
             .catch(err => {
@@ -641,11 +721,17 @@ export default {
     },
 
     resetTransferForm () {
-      this.$refs.transferForm.resetFields()
+      if (this.$refs.transferForm) {
+        this.$v.$reset()
+        this.$refs.transferForm.resetFields()
+      }
     },
 
     resetWithdrawForm () {
-      this.$refs.withdrawForm.resetFields()
+      if (this.$refs.withdrawForm) {
+        this.$v.$reset()
+        this.$refs.withdrawForm.resetFields()
+      }
     },
 
     closeWithdrawDialog () {
@@ -654,20 +740,6 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
-      this.transferForm.description = ''
-    },
-
-    async asyncValidateForm (ref) {
-      let isValid = await this.$refs[ref].validate()
-      return isValid
-    },
-
-    validateForm (ref) {
-      let isValid = true
-      this.$refs[ref].validate(valid => {
-        if (!valid) isValid = false
-      })
-      return isValid
     },
 
     onNextPage (page) {

@@ -23,7 +23,6 @@ describe('Test register page', () => {
     cy.get('.el-input__inner[name="username"]').type('jasonstatham')
       .should('have.value', 'jasonstatham')
     cy.get('.el-form-item__content > .el-button.fullwidth').click()
-    cy.get('.el-message-box__title:contains("Sign up error")').should('be.visible')
   })
 
   it.skip('Confirm should redirect to Log in', () => {
