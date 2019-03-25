@@ -29,10 +29,25 @@ const getFreeBtcRelaysNumber = () => {
     .then(({ data }) => data)
 }
 
+const getNodeAddresses = () => {
+  return axios
+    .get('/nodes.json')
+    .then(({ data }) => data)
+}
+
+const getRegistrationAddresses = () => {
+  return axios
+    .get('/registrations.json')
+    .then(({ data }) => data)
+}
+
 export default {
   get baseURL () { return axiosNotary.defaults.baseURL },
   set baseURL (baseURL) { axiosNotary.defaults.baseURL = baseURL },
   signup: signup(axiosNotary),
   getFreeEthRelaysNumber,
-  getFreeBtcRelaysNumber
+  getFreeBtcRelaysNumber,
+
+  getNodeAddresses,
+  getRegistrationAddresses
 }

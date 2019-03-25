@@ -6,7 +6,7 @@
 
 <script>
 import debounce from 'lodash/debounce'
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'App',
@@ -22,9 +22,18 @@ export default {
   },
 
   methods: {
+    ...mapActions([
+      'loadNodeAddresses',
+      'loadRegistrationAddreses'
+    ]),
     showConnectionErrorMessage: debounce(function () {
       this.$message.error(`connection error: Please check IP address OR your internet connection`)
     }, 1000)
+  },
+
+  created () {
+    this.loadNodeAddresses()
+    this.loadRegistrationAddreses()
   }
 }
 </script>
