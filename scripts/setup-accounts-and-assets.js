@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-return-await */
 /*

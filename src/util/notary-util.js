@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import axios from 'axios'
 import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 

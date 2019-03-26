@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import chai from 'chai'
 import reportUtilInjector from 'inject-loader!@util/report-util.js'
 import { format as formatDateOriginal } from 'date-fns'

@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export default {
   SETTLEMENT_SUCCESS: 'New settlement has successfully been created!',
   TRANSACTION_SUCCESS: 'Transaction succesfuly finalised and sent!',

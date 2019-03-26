@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { subMonths, format, startOfMonth, endOfMonth } from 'date-fns'
 
 const testKeyPath = 'test@d3.priv'

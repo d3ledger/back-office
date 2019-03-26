@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 Cypress.Commands.add('upload_file', (fileName, selector) => {
   return cy.get(selector).then(subject => {
     return cy.fixture(fileName, 'base64')

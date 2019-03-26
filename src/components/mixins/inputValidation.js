@@ -1,3 +1,8 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
 import { derivePublicKey } from 'ed25519.js'
