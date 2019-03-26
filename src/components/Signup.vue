@@ -127,7 +127,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 
