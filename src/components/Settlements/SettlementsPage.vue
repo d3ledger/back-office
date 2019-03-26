@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <el-container class="column-fullheight">
     <el-header class="header" :style="{ height: '3.9rem' }">

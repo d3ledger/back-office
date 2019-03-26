@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <svg xmlns="http://www.w3.org/2000/svg"
     :width="width"

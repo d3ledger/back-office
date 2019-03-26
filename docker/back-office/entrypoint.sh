@@ -1,4 +1,7 @@
 #!/bin/bash
+##
+## Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0##
+
 cd /app
 yarn
 yarn build

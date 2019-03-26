@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <router-link class="card" :to="'/wallets/' + walletId">
     <asset-icon :asset="asset" :size="24" style="margin-right: 20px" />

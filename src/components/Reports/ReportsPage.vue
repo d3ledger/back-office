@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <el-container id="reports-page" v-if="wallets.length">
     <el-main>

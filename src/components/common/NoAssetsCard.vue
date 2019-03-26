@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <el-main class="column-fullheight card-wrapper flex-direction-row">
     <el-card v-if="!showEthCard && !showBtcCard" class="card">

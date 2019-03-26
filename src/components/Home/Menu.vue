@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template class="menu">
   <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
     <el-menu

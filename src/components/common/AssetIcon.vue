@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <div>
     <img v-if="isSora" :style="{'height': size + 'px'}" src="@/assets/icons/sora.png" >

@@ -1,3 +1,5 @@
+<!-- Copyright D3 Ledger, Inc. All Rights Reserved. SPDX-License-Identifier: Apache-2.0  -->
+
 <template>
   <el-container v-if="isDashboardLoading" v-loading.fullscreen="isDashboardLoading" />
   <el-container v-else-if="hasNonEmptyWallets">
