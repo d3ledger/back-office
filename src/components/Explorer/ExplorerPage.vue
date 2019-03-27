@@ -7,56 +7,69 @@
             <div class="header">
               <span>Transactions</span>
             </div>
-            <input v-model="transactionId" />
+            <el-row>
+              <el-col :span="12">
+                <el-input v-model="searchField" @input="search($event)"/>
+              </el-col>
+              <el-col :span="12">
+                <el-radio-group v-model="currentSearchType" size="small">
+                  <el-radio
+                    v-for="(value, index) in searchType"
+                    :key="index"
+                    :label="value"
+                    class="currencies_list-select"
+                    border
+                  >{{ value }}</el-radio>
+                </el-radio-group>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-date-picker
+                  style="width: 100%"
+                  v-model="dateFrom"
+                  type="datetime"
+                />
+              </el-col>
+              <el-col :span="12">
+                <el-date-picker
+                  style="width: 100%"
+                  v-model="dateTo"
+                  type="datetime"
+                />
+              </el-col>
+            </el-row>
             <el-table
               class="transactions_table"
-              :data="searchedTransactions">
-              <el-table-column type="expand">
+              :data="transactions">
+              <el-table-column label="Time" min-width="175" sortable>
                 <template slot-scope="scope">
-                  <div class="transaction_details">
-                    <p>
-                      {{ scope.row.from }} transfered {{ scope.row.amount }}
-                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
-                    </p>
-                    <div>
-                      <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                      <p>Message: {{ scope.row.message }}</p>
-                    </div>
-                  </div>
+                  {{ formatDateLong(scope.row.payload.reducedPayload.createdTime) }}
                 </template>
               </el-table-column>
-              <el-table-column label="Date" width="110">
+              <el-table-column label="From" sortable>
                 <template slot-scope="scope">
-                  {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
+                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" min-width="60">
+              <el-table-column label="To" sortable>
                 <template slot-scope="scope">
-                  {{ scope.row.from === 'you' ? '−' : '+' }}{{Number(scope.row.amount) }}
-                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset}}
+                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.destAccountId }}
                 </template>
               </el-table-column>
-              <el-table-column label="Address" min-width="90" show-overflow-tooltip>
+              <el-table-column label="Amount" sortable>
                 <template slot-scope="scope">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.amount }}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" min-width="90" show-overflow-tooltip>
+              <el-table-column label="Asset" sortable>
                 <template slot-scope="scope">
-                  <div>
-                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
-                    <div v-else>{{ scope.row.message }}</div>
-                  </div>
+                  {{ assetName(scope.row.payload.reducedPayload.commandsList[0].transferAsset.assetId) }}
                 </template>
               </el-table-column>
-              <el-table-column label="Expire" width="70">
+              <el-table-column label="Description">
                 <template slot-scope="scope">
-                  {{ calculateEstimatedTime(scope.row.date) }}
-                </template>
-              </el-table-column>
-              <el-table-column label="Signs" width="60">
-                <template slot-scope="scope">
-                  {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.description }}
                 </template>
               </el-table-column>
             </el-table>
@@ -70,40 +83,68 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
-import messageMixin from '@/components/mixins/message'
+import currencySymbol from '@/components/mixins/currencySymbol'
+
+const BLOCK_TYPE = 'Block'
+const TRANSACTION_TYPE = 'Transaction'
+const ACCOUNT_TYPE = 'Account'
 
 export default {
-  name: 'transaction-page',
+  name: 'explorer-page',
   mixins: [
     dateFormat,
-    messageMixin
+    currencySymbol
   ],
   data () {
     return {
-      liveTimeOfTransaction: 24 * 60 * 60 * 1000, // 24h in milliseconds
-      isSending: false,
-      transactionId: ''
+      searchField: '',
+      searchType: [BLOCK_TYPE, TRANSACTION_TYPE, ACCOUNT_TYPE],
+      currentSearchType: ACCOUNT_TYPE,
+      dateFrom: 0,
+      dateTo: 0
     }
   },
   computed: {
     ...mapGetters([
-      'searchedTransactions',
-      'filteredTransactions'
-    ])
+      'searchedTransactions'
+    ]),
+    transactions () {
+      let transactions = [...this.searchedTransactions]
+
+      if (this.dateFrom > 0) {
+        transactions = transactions.filter(item => item.payload.reducedPayload.createdTime > +this.dateFrom)
+      }
+
+      if (this.dateTo > 0) {
+        transactions = transactions.filter(item => item.payload.reducedPayload.createdTime < +this.dateTo)
+      }
+
+      return transactions
+    }
   },
 
   beforeUpdate () {
-    this.searchTransactionsByAccountId({accountId: this.transactionId})
+    console.log(this.searchedTransactions)
   },
 
   methods: {
     ...mapActions([
       'searchTransactionById',
-      'searchTransactionsByAccountId'
+      'searchTransactionsByAccountId',
+      'searchTransactionsByBlock'
     ]),
-    calculateEstimatedTime (date) {
-      const rightDate = date + this.liveTimeOfTransaction
-      return this.compareDates(rightDate, new Date().getTime())
+    search () {
+      switch (this.currentSearchType) {
+        case BLOCK_TYPE:
+          this.searchTransactionsByBlock({height: this.searchField})
+          break
+        case TRANSACTION_TYPE:
+          this.searchTransactionById({transactionId: this.searchField})
+          break
+        case ACCOUNT_TYPE:
+          this.searchTransactionsByAccountId({accountId: this.searchField})
+          break
+      }
     }
   }
 }

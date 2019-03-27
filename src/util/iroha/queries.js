@@ -67,7 +67,15 @@ const getTransactions = ({
   txHashes
 }) => queries.getTransactions(
   newQueryServiceOptions(), {
-    txHashes
+    transactionsHashes: txHashes
+  }
+)
+
+const getBlock = ({
+  height
+}) => queries.getBlock(
+  newQueryServiceOptions(), {
+    height
   }
 )
 
@@ -91,6 +99,7 @@ export {
   getAccountDetail,
   getSignatories,
   getTransactions,
+  getBlock,
   getRawPendingTransactions,
   getAssetInfo
 }

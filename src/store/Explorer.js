@@ -14,7 +14,8 @@ const types = flow(
   fromPairs
 )([
   'SEARCH_TRANSACTION_BY_ID',
-  'SEARCH_TRANSACTIONS_BY_ACCOUNT_ID'
+  'SEARCH_TRANSACTIONS_BY_ACCOUNT_ID',
+  'SEARCH_TRANSACTIONS_BY_BLOCK'
 ])
 
 function initialState () {
@@ -62,6 +63,7 @@ const mutations = {
   },
 
   [types.SEARCH_TRANSACTION_BY_ID_FAILURE] (state, err) {
+    state.searchedTransactions = []
     handleError(state, err)
   },
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_REQUEST] (state) {
@@ -72,6 +74,18 @@ const mutations = {
   },
 
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE] (state, err) {
+    state.searchedTransactions = []
+    handleError(state, err)
+  },
+  [types.SEARCH_TRANSACTIONS_BY_BLOCK_REQUEST] (state) {
+  },
+
+  [types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS] (state, result) {
+    state.searchedTransactions = result.transactions
+  },
+
+  [types.SEARCH_TRANSACTIONS_BY_BLOCK_FAILURE] (state, err) {
+    state.searchedTransactions = []
     handleError(state, err)
   }
 }
@@ -96,20 +110,35 @@ const actions = {
   },
   searchTransactionsByAccountId ({ commit, state }, { accountId }) {
     commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_REQUEST)
-    console.log(1, accountId)
     return irohaUtil.getAccountTransactions({
       accountId,
       pageSize: 100,
       firstTxHash: undefined
     })
       .then(responses => {
-        console.log(2, responses)
         commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_SUCCESS, {
           transactions: responses.transactionsList
         })
       })
       .catch(err => {
         commit(types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE, err)
+        throw err
+      })
+  },
+
+  searchTransactionsByBlock ({ commit, state }, { height }) {
+    commit(types.SEARCH_TRANSACTIONS_BY_BLOCK_REQUEST)
+    return irohaUtil.getBlock({
+      height
+    })
+      .then(responses => {
+        console.log(2, responses)
+        commit(types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS, {
+          transactions: responses.transactionsList
+        })
+      })
+      .catch(err => {
+        commit(types.SEARCH_TRANSACTIONS_BY_BLOCK_FAILURE, err)
         throw err
       })
   }
