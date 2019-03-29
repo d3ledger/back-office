@@ -70,7 +70,14 @@ const mutations = {
   },
 
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_SUCCESS] (state, result) {
-    state.searchedTransactions = result.transactions
+    state.searchedTransactions = result.transactions.map(item => ({
+      createdTime: item.payload.reducedPayload.createdTime,
+      srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
+      destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
+      amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
+      assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
+      description: item.payload.reducedPayload.commandsList[0].transferAsset.description
+    }))
   },
 
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE] (state, err) {
@@ -93,12 +100,10 @@ const mutations = {
 const actions = {
   searchTransactionById ({ commit, state }, { transactionId }) {
     commit(types.SEARCH_TRANSACTION_BY_ID_REQUEST)
-    console.log(1, transactionId)
     return irohaUtil.getTransactions({
       txHashes: [transactionId]
     })
       .then(responses => {
-        console.log(2, responses)
         commit(types.SEARCH_TRANSACTION_BY_ID_SUCCESS, {
           transactions: responses
         })
@@ -132,7 +137,6 @@ const actions = {
       height
     })
       .then(responses => {
-        console.log(2, responses)
         commit(types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS, {
           transactions: responses.transactionsList
         })

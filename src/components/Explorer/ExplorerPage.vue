@@ -5,72 +5,86 @@
         <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
-              <span>Transactions</span>
+              <span>Transaction explorer</span>
             </div>
-            <el-row>
-              <el-col :span="12">
-                <el-input v-model="searchField" @input="search($event)"/>
-              </el-col>
-              <el-col :span="12">
-                <el-radio-group v-model="currentSearchType" size="small">
-                  <el-radio
-                    v-for="(value, index) in searchType"
-                    :key="index"
-                    :label="value"
-                    class="currencies_list-select"
-                    border
-                  >{{ value }}</el-radio>
-                </el-radio-group>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-date-picker
-                  style="width: 100%"
-                  v-model="dateFrom"
-                  type="datetime"
-                />
-              </el-col>
-              <el-col :span="12">
-                <el-date-picker
-                  style="width: 100%"
-                  v-model="dateTo"
-                  type="datetime"
-                />
-              </el-col>
-            </el-row>
+            <div class="search">
+              <el-row>
+                <el-col :span="24">
+                  <el-form style="width: 100%">
+                    <el-form-item label="Query">
+                      <el-input v-model="searchField" @input="search($event)" placeholder="Start to type a query"/>
+                    </el-form-item>
+                  </el-form>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form style="width: 100%">
+                    <el-form-item label="Search by">
+                      <el-radio-group v-model="currentSearchType" size="small">
+                        <el-radio
+                          v-for="(value, index) in searchType"
+                          :key="index"
+                          :label="value"
+                          class="currencies_list-select"
+                          border
+                        >{{ value }}</el-radio>
+                      </el-radio-group>
+                    </el-form-item>
+                  </el-form>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="11">
+                  <el-form style="width: 100%">
+                    <el-form-item label="Date from">
+                      <el-date-picker
+                        style="width: 100%"
+                        v-model="dateFrom"
+                        type="datetime"
+                        placeholder="Date from"
+                      />
+                    </el-form-item>
+                  </el-form>
+                </el-col>
+                <el-col :span="12" :offset="1">
+                  <el-form style="width: 100%">
+                    <el-form-item label="Date to">
+                      <el-date-picker
+                        style="width: 100%"
+                        v-model="dateTo"
+                        type="datetime"
+                        placeholder="Date to"
+                      />
+                    </el-form-item>
+                  </el-form>
+                </el-col>
+              </el-row>
+            </div>
             <el-table
               class="transactions_table"
+              height="100vh"
               :data="transactions">
-              <el-table-column label="Time" min-width="175" sortable>
+              <el-table-column label="Time" min-width="175" prop="createdTime" sortable>
                 <template slot-scope="scope">
-                  {{ formatDateLong(scope.row.payload.reducedPayload.createdTime) }}
+                  {{ formatDateLong(scope.row.createdTime) }}
                 </template>
               </el-table-column>
               <el-table-column label="From" sortable>
                 <template slot-scope="scope">
-                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId }}
+                  {{ scope.row.srcAccountId }}
                 </template>
               </el-table-column>
-              <el-table-column label="To" sortable>
+              <el-table-column label="To" prop="destAccountId" sortable>
+              </el-table-column>
+              <el-table-column label="Amount" prop="amount" sortable>
+              </el-table-column>
+              <el-table-column label="Asset" prop="assetId" sortable>
                 <template slot-scope="scope">
-                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.destAccountId }}
+                  {{ assetName(scope.row.assetId) }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" sortable>
-                <template slot-scope="scope">
-                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.amount }}
-                </template>
-              </el-table-column>
-              <el-table-column label="Asset" sortable>
-                <template slot-scope="scope">
-                  {{ assetName(scope.row.payload.reducedPayload.commandsList[0].transferAsset.assetId) }}
-                </template>
-              </el-table-column>
-              <el-table-column label="Description">
-                <template slot-scope="scope">
-                  {{ scope.row.payload.reducedPayload.commandsList[0].transferAsset.description }}
-                </template>
+              <el-table-column label="Description" prop="description">
               </el-table-column>
             </el-table>
           </el-card>
@@ -100,8 +114,8 @@ export default {
       searchField: '',
       searchType: [BLOCK_TYPE, TRANSACTION_TYPE, ACCOUNT_TYPE],
       currentSearchType: ACCOUNT_TYPE,
-      dateFrom: 0,
-      dateTo: 0
+      dateFrom: '',
+      dateTo: ''
     }
   },
   computed: {
@@ -112,11 +126,11 @@ export default {
       let transactions = [...this.searchedTransactions]
 
       if (this.dateFrom > 0) {
-        transactions = transactions.filter(item => item.payload.reducedPayload.createdTime > +this.dateFrom)
+        transactions = transactions.filter(item => item.createdTime > +this.dateFrom)
       }
 
       if (this.dateTo > 0) {
-        transactions = transactions.filter(item => item.payload.reducedPayload.createdTime < +this.dateTo)
+        transactions = transactions.filter(item => item.createdTime < +this.dateTo)
       }
 
       return transactions
@@ -156,6 +170,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 1.5rem;
+}
+.search {
+  padding: 0.9rem 1.5rem;
+}
+.search_types {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 .transactions_table {
   padding: 0.9rem 1.5rem;

@@ -47,7 +47,7 @@
         <SvgIcon v-else iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Transactions</span>
       </el-menu-item>
-      <el-menu-item index="/explorer">
+      <el-menu-item v-if="true" index="/explorer">
         <SvgIcon iconName="Explorer" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Explorer</span>
       </el-menu-item>

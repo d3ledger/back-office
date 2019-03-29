@@ -831,7 +831,9 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
+      .then((account) => {
+        commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
@@ -843,7 +845,10 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then(({ jsonData }) => commit(types.GET_ACCOUNT_LIMITS_SUCCESS, jsonData))
+      .then((account) => {
+        console.log('acc', account)
+        commit(types.GET_ACCOUNT_LIMITS_SUCCESS, account.jsonData)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
         throw err
