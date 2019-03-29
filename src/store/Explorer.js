@@ -59,7 +59,14 @@ const mutations = {
   },
 
   [types.SEARCH_TRANSACTION_BY_ID_SUCCESS] (state, result) {
-    state.searchedTransactions = result.transactions
+    state.searchedTransactions = result.transactions.map(item => ({
+      createdTime: item.payload.reducedPayload.createdTime,
+      srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
+      destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
+      amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
+      assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
+      description: item.payload.reducedPayload.commandsList[0].transferAsset.description
+    }))
   },
 
   [types.SEARCH_TRANSACTION_BY_ID_FAILURE] (state, err) {

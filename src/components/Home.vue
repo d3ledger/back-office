@@ -24,8 +24,9 @@ export default {
     return {}
   },
   created () {
-    this.$store.dispatch('getAllUnsignedTransactions')
-    this.$store.dispatch('loadSettings')
+    this.getAllUnsignedTransactions()
+    this.loadSettings()
+    this.getAccountRoles()
   },
   computed: {
     ...mapGetters([

@@ -63,7 +63,6 @@
             </div>
             <el-table
               class="transactions_table"
-              height="100vh"
               :data="transactions">
               <el-table-column label="Time" min-width="175" prop="createdTime" sortable>
                 <template slot-scope="scope">

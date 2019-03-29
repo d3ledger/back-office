@@ -9,6 +9,14 @@ const getAccount = ({
   }
 )
 
+const getRawAccount = ({
+  accountId
+}) => queries.getRawAccount(
+  newQueryServiceOptions(), {
+    accountId
+  }
+)
+
 const getAccountAssets = ({
   accountId
 }) => queries.getAccountAssets(
@@ -93,6 +101,7 @@ const getAssetInfo = ({
 
 export {
   getAccount,
+  getRawAccount,
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,

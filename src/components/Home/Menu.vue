@@ -47,7 +47,7 @@
         <SvgIcon v-else iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Transactions</span>
       </el-menu-item>
-      <el-menu-item v-if="true" index="/explorer">
+      <el-menu-item v-if="isAdmin" index="/explorer">
         <SvgIcon iconName="Explorer" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Explorer</span>
       </el-menu-item>
@@ -118,12 +118,16 @@ export default {
   computed: {
     ...mapGetters([
       'incomingSettlements',
-      'allPendingTransactions'
+      'allPendingTransactions',
+      'accountRoles'
     ]),
     currentActiveMenu () {
       if (this.$route.path.includes('wallets')) return '/wallets'
       if (this.$route.path.includes('settlements')) return '/settlements/history'
       return this.$route.path
+    },
+    isAdmin () {
+      return this.accountRoles.includes('admin')
     }
   }
 }
