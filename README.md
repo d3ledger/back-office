@@ -35,6 +35,11 @@ $ yarn serve
 ```
 This will serve application with hot reload.
 
+To run Iroha
+``` bash
+$ yarn start-iroha
+```
+
 ### How to build
 To build application for deployment
 ``` bash
