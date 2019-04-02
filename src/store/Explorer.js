@@ -20,9 +20,7 @@ const types = flow(
 
 function initialState () {
   return {
-    searchedTransactions: [],
-    filteredTransactions: [],
-    filterIsActive: false
+    searchedTransactions: []
   }
 }
 
@@ -31,9 +29,6 @@ const state = initialState()
 const getters = {
   searchedTransactions (state) {
     return state.searchedTransactions
-  },
-  filteredTransactions (state) {
-    return state.filteredTransactions
   }
 }
 
@@ -96,6 +91,15 @@ const mutations = {
 
   [types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS] (state, result) {
     state.searchedTransactions = result.transactions
+      .filter(item => item.payload.reducedPayload.commandsList[0].transferAsset)
+      .map(item => ({
+        createdTime: item.payload.reducedPayload.createdTime,
+        srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
+        destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
+        amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
+        assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
+        description: item.payload.reducedPayload.commandsList[0].transferAsset.description
+      }))
   },
 
   [types.SEARCH_TRANSACTIONS_BY_BLOCK_FAILURE] (state, err) {
@@ -145,7 +149,7 @@ const actions = {
     })
       .then(responses => {
         commit(types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS, {
-          transactions: responses.transactionsList
+          transactions: responses.payload.transactionsList
         })
       })
       .catch(err => {

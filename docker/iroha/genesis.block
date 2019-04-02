@@ -96,7 +96,8 @@
                   "permissions": [
                     "can_get_all_accounts",
                     "can_get_all_txs",
-                    "can_get_all_acc_txs"
+                    "can_get_all_acc_txs",
+                    "can_get_blocks"
                   ]
                 }
               },
