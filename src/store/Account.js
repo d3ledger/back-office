@@ -876,7 +876,6 @@ const actions = {
       accountId: state.accountId
     })
       .then((response) => {
-        console.log('acc', response)
         commit(types.GET_ACCOUNT_ROLES_SUCCESS, response)
       })
       .catch(err => {

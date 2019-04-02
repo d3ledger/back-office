@@ -136,10 +136,6 @@ export default {
     }
   },
 
-  beforeUpdate () {
-    console.log(this.searchedTransactions)
-  },
-
   methods: {
     ...mapActions([
       'searchTransactionById',
