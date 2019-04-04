@@ -12,7 +12,7 @@
                 <el-col :span="24">
                   <el-form style="width: 100%">
                     <el-form-item label="Query">
-                      <el-input v-model="searchField" @input="search($event)" placeholder="Start to type a query"/>
+                      <el-input v-model="searchField" @input="search()" placeholder="Start to type a query"/>
                     </el-form-item>
                   </el-form>
                 </el-col>
@@ -28,6 +28,7 @@
                           :label="value"
                           class="currencies_list-select"
                           border
+                          @change="search()"
                         >{{ value }}</el-radio>
                       </el-radio-group>
                     </el-form-item>
