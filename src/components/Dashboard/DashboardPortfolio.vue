@@ -6,7 +6,7 @@
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
-          <el-tooltip :content="`current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`" placement="top-start">
+          <el-tooltip :content="`last price at ${formatTime(price.time)}: ${formatNumberLongMethod(price.value)} ${currencySymbol}`" placement="top-start">
             <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
           </el-tooltip>
         </div>
@@ -110,6 +110,25 @@ export default {
 
     formatNumberLongMethod (value) {
       return numberFormat.filters.formatNumberLong(value)
+    },
+
+    getDiffMessage () {
+      switch (this.portfolioFilter) {
+        case '1H': {
+          return 'Last minute change'
+        }
+        case '1D': {
+          return 'Last hour change'
+        }
+        case '1W':
+        case '1M':
+        case '1Y': {
+          return 'Last day change'
+        }
+        default: {
+          return 'Difference from the last period'
+        }
+      }
     }
   }
 }
