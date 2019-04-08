@@ -138,21 +138,22 @@ const mutations = {
 
   [types.GET_PORTFOLIO_FULL_PRICE] (state) {
     const today = last(state.portfolio.assetsHistory)
-    const prevDay = nth(-2)(state.portfolio.assetsHistory)
+    const prevDay = nth(-2)(state.portfolio.assetsHistory).sum
+    const current = state.portfolio.assetsFullPrice
 
-    if (state.portfolio.assetsFullPrice.time <= today.time) {
+    if (current.time <= today.time) {
       Vue.set(state.portfolio, 'assetsFullPrice', {
         value: today.sum.toFixed(2),
-        diff: (today.sum - prevDay.sum).toFixed(2),
-        percent: (100 - ((prevDay.sum * 100) / today.sum)).toFixed(2),
+        diff: (today.sum - prevDay).toFixed(2),
+        percent: (100 - ((prevDay * 100) / today.sum)).toFixed(2),
         time: today.time
       })
     } else {
       Vue.set(state.portfolio, 'assetsFullPrice', {
-        value: state.portfolio.assetsFullPrice.value,
-        diff: (state.portfolio.assetsFullPrice.value - prevDay.sum).toFixed(2),
-        percent: (100 - ((prevDay.sum * 100) / state.portfolio.assetsFullPrice.value)).toFixed(2),
-        time: state.portfolio.assetsFullPrice.time
+        value: current.value,
+        diff: (current.value - prevDay).toFixed(2),
+        percent: (100 - ((prevDay * 100) / current.value)).toFixed(2),
+        time: current.time
       })
     }
   },
