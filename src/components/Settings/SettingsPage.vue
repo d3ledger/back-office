@@ -535,7 +535,7 @@ export default {
         this.setNotaryIp({ ip: network === WalletTypes.BTC ? BTC_NOTARY_URL : ETH_NOTARY_URL })
 
         return this.addNetwork({ privateKeys }).then(() => {
-          this.$message.success(`You successfuly registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
+          this.$message.success(`You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
           this.updateAccount()
         }).catch((err) => {
           this.$_showRegistrationError(err.message, err.response)
