@@ -8,18 +8,16 @@
               <span>Transaction explorer</span>
             </div>
             <div class="search">
-              <el-row>
-                <el-col :span="24">
-                  <el-form style="width: 100%">
+              <el-form style="width: 100%" @submit.native.prevent>
+                <el-row>
+                  <el-col :span="24">
                     <el-form-item label="Query">
                       <el-input v-model="searchField" @input="search()" placeholder="Start to type a query"/>
                     </el-form-item>
-                  </el-form>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12">
-                  <el-form style="width: 100%">
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
                     <el-form-item label="Search by">
                       <el-radio-group v-model="currentSearchType" size="small">
                         <el-radio
@@ -32,12 +30,10 @@
                         >{{ value }}</el-radio>
                       </el-radio-group>
                     </el-form-item>
-                  </el-form>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="11">
-                  <el-form style="width: 100%">
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="11">
                     <el-form-item label="Date from">
                       <el-date-picker
                         style="width: 100%"
@@ -46,10 +42,8 @@
                         placeholder="Date from"
                       />
                     </el-form-item>
-                  </el-form>
-                </el-col>
-                <el-col :span="12" :offset="1">
-                  <el-form style="width: 100%">
+                  </el-col>
+                  <el-col :span="12" :offset="1">
                     <el-form-item label="Date to">
                       <el-date-picker
                         style="width: 100%"
@@ -58,9 +52,9 @@
                         placeholder="Date to"
                       />
                     </el-form-item>
-                  </el-form>
-                </el-col>
-              </el-row>
+                  </el-col>
+                </el-row>
+              </el-form>
             </div>
             <el-table
               class="transactions_table"
@@ -126,11 +120,11 @@ export default {
       let transactions = [...this.searchedTransactions]
 
       if (this.dateFrom > 0) {
-        transactions = transactions.filter(item => item.createdTime > +this.dateFrom)
+        transactions = transactions.filter(item => item.createdTime > this.dateFrom.getTime())
       }
 
       if (this.dateTo > 0) {
-        transactions = transactions.filter(item => item.createdTime < +this.dateTo)
+        transactions = transactions.filter(item => item.createdTime < this.dateTo.getTime())
       }
 
       return transactions
