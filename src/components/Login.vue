@@ -212,6 +212,10 @@ export default {
           })
       }
     }
+  },
+
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   }
 }
 </script>
