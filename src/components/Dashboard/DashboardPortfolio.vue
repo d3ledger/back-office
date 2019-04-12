@@ -110,25 +110,6 @@ export default {
 
     formatNumberLongMethod (value) {
       return numberFormat.filters.formatNumberLong(value)
-    },
-
-    getDiffMessage () {
-      switch (this.portfolioFilter) {
-        case '1H': {
-          return 'Last minute change'
-        }
-        case '1D': {
-          return 'Last hour change'
-        }
-        case '1W':
-        case '1M':
-        case '1Y': {
-          return 'Last day change'
-        }
-        default: {
-          return 'Difference from the last period'
-        }
-      }
     }
   }
 }
