@@ -8,11 +8,30 @@
               <span>Transaction explorer</span>
             </div>
             <div class="search">
-              <el-form style="width: 100%" @submit.native.prevent>
+              <el-form
+                style="width: 100%"
+                :model="form"
+                ref="form"
+                @submit.native.prevent>
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item label="Query">
-                      <el-input v-model="searchField" @input="search()" placeholder="Start to type a query"/>
+                    <el-form-item label="Query" prop="query">
+                      <el-input
+                        name="query"
+                        v-model="$v.form.query.$model"
+                        @input="search()"
+                        :placeholder="placeholder"
+                        :class="[
+                          _isValid($v.form.query) ? 'border_success' : '',
+                          _isError($v.form.query) ? 'border_fail' : ''
+                        ]"
+                      />
+                      <span
+                        v-if="_isError($v.form.query)"
+                        class="el-form-item__error"
+                      >
+                        {{ _showError($v.form.query) }}
+                      </span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -58,7 +77,8 @@
             </div>
             <el-table
               class="transactions_table"
-              :data="transactions">
+              :data="transactions"
+              v-loading="explorerLoading">
               <el-table-column label="Time" min-width="175" prop="createdTime" sortable>
                 <template slot-scope="scope">
                   {{ formatDateLong(scope.row.createdTime) }}
@@ -92,29 +112,45 @@
 import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
-
-const BLOCK_TYPE = 'Block'
-const TRANSACTION_TYPE = 'Transaction'
-const ACCOUNT_TYPE = 'Account'
+import {
+  _explorerQuery,
+  errorHandler
+} from '@/components/mixins/validation'
+import { required } from 'vuelidate/lib/validators'
+import { SearchTypes } from '@/data/enums'
 
 export default {
   name: 'explorer-page',
   mixins: [
     dateFormat,
-    currencySymbol
+    currencySymbol,
+    errorHandler
   ],
+  validations () {
+    return {
+      form: {
+        query: {
+          required,
+          _explorerQuery: _explorerQuery(this.currentSearchType)
+        }
+      }
+    }
+  },
   data () {
     return {
-      searchField: '',
-      searchType: [BLOCK_TYPE, TRANSACTION_TYPE, ACCOUNT_TYPE],
-      currentSearchType: ACCOUNT_TYPE,
+      form: {
+        query: ''
+      },
+      searchType: [SearchTypes.BLOCK_TYPE, SearchTypes.TRANSACTION_TYPE, SearchTypes.ACCOUNT_TYPE],
+      currentSearchType: SearchTypes.ACCOUNT_TYPE,
       dateFrom: '',
       dateTo: ''
     }
   },
   computed: {
     ...mapGetters([
-      'searchedTransactions'
+      'searchedTransactions',
+      'explorerLoading'
     ]),
     transactions () {
       let transactions = [...this.searchedTransactions]
@@ -128,6 +164,18 @@ export default {
       }
 
       return transactions
+    },
+    placeholder () {
+      switch (this.currentSearchType) {
+        case SearchTypes.BLOCK_TYPE:
+          return 'Type a query, example "1"'
+        case SearchTypes.TRANSACTION_TYPE:
+          return 'Type a query, example "0x00000000000000000000"'
+        case SearchTypes.ACCOUNT_TYPE:
+          return 'Type a query, example "user@d3"'
+        default:
+          return 'Type a query@'
+      }
     }
   },
 
@@ -139,14 +187,14 @@ export default {
     ]),
     search () {
       switch (this.currentSearchType) {
-        case BLOCK_TYPE:
-          this.searchTransactionsByBlock({height: this.searchField})
+        case SearchTypes.BLOCK_TYPE:
+          this.searchTransactionsByBlock({height: this.form.query})
           break
-        case TRANSACTION_TYPE:
-          this.searchTransactionById({transactionId: this.searchField})
+        case SearchTypes.TRANSACTION_TYPE:
+          this.searchTransactionById({transactionId: this.form.query})
           break
-        case ACCOUNT_TYPE:
-          this.searchTransactionsByAccountId({accountId: this.searchField})
+        case SearchTypes.ACCOUNT_TYPE:
+          this.searchTransactionsByAccountId({accountId: this.form.query})
           break
       }
     }

@@ -20,7 +20,8 @@ const types = flow(
 
 function initialState () {
   return {
-    searchedTransactions: []
+    searchedTransactions: [],
+    loading: false
   }
 }
 
@@ -29,6 +30,9 @@ const state = initialState()
 const getters = {
   searchedTransactions (state) {
     return state.searchedTransactions
+  },
+  explorerLoading (state) {
+    return state.loading
   }
 }
 
@@ -51,42 +55,55 @@ function handleError (state, err) {
 
 const mutations = {
   [types.SEARCH_TRANSACTION_BY_ID_REQUEST] (state) {
+    state.loading = true
   },
 
   [types.SEARCH_TRANSACTION_BY_ID_SUCCESS] (state, result) {
-    state.searchedTransactions = result.transactions.map(item => ({
-      createdTime: item.payload.reducedPayload.createdTime,
-      srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
-      destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
-      amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
-      assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
-      description: item.payload.reducedPayload.commandsList[0].transferAsset.description
-    }))
+    state.searchedTransactions = result.transactions
+      .filter(item => item.payload.reducedPayload.commandsList[0].transferAsset)
+      .map(item => ({
+        createdTime: item.payload.reducedPayload.createdTime,
+        srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
+        destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
+        amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
+        assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
+        description: item.payload.reducedPayload.commandsList[0].transferAsset.description
+      }))
+    state.loading = false
   },
 
   [types.SEARCH_TRANSACTION_BY_ID_FAILURE] (state, err) {
     state.searchedTransactions = []
+    state.loading = false
+
     handleError(state, err)
   },
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_REQUEST] (state) {
+    state.loading = true
   },
 
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_SUCCESS] (state, result) {
-    state.searchedTransactions = result.transactions.map(item => ({
-      createdTime: item.payload.reducedPayload.createdTime,
-      srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
-      destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
-      amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
-      assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
-      description: item.payload.reducedPayload.commandsList[0].transferAsset.description
-    }))
+    state.searchedTransactions = result.transactions
+      .filter(item => item.payload.reducedPayload.commandsList[0].transferAsset)
+      .map(item => ({
+        createdTime: item.payload.reducedPayload.createdTime,
+        srcAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.srcAccountId,
+        destAccountId: item.payload.reducedPayload.commandsList[0].transferAsset.destAccountId,
+        amount: item.payload.reducedPayload.commandsList[0].transferAsset.amount,
+        assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
+        description: item.payload.reducedPayload.commandsList[0].transferAsset.description
+      }))
+    state.loading = false
   },
 
   [types.SEARCH_TRANSACTIONS_BY_ACCOUNT_ID_FAILURE] (state, err) {
     state.searchedTransactions = []
+    state.loading = false
+
     handleError(state, err)
   },
   [types.SEARCH_TRANSACTIONS_BY_BLOCK_REQUEST] (state) {
+    state.loading = true
   },
 
   [types.SEARCH_TRANSACTIONS_BY_BLOCK_SUCCESS] (state, result) {
@@ -100,10 +117,13 @@ const mutations = {
         assetId: item.payload.reducedPayload.commandsList[0].transferAsset.assetId,
         description: item.payload.reducedPayload.commandsList[0].transferAsset.description
       }))
+    state.loading = false
   },
 
   [types.SEARCH_TRANSACTIONS_BY_BLOCK_FAILURE] (state, err) {
     state.searchedTransactions = []
+    state.loading = false
+
     handleError(state, err)
   }
 }
