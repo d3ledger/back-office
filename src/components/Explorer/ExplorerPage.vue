@@ -186,16 +186,18 @@ export default {
       'searchTransactionsByBlock'
     ]),
     search () {
-      switch (this.currentSearchType) {
-        case SearchTypes.BLOCK_TYPE:
-          this.searchTransactionsByBlock({height: this.form.query})
-          break
-        case SearchTypes.TRANSACTION_TYPE:
-          this.searchTransactionById({transactionId: this.form.query})
-          break
-        case SearchTypes.ACCOUNT_TYPE:
-          this.searchTransactionsByAccountId({accountId: this.form.query})
-          break
+      if (this._isValid(this.$v.form.query)) {
+        switch (this.currentSearchType) {
+          case SearchTypes.BLOCK_TYPE:
+            this.searchTransactionsByBlock({height: this.form.query})
+            break
+          case SearchTypes.TRANSACTION_TYPE:
+            this.searchTransactionById({transactionId: this.form.query})
+            break
+          case SearchTypes.ACCOUNT_TYPE:
+            this.searchTransactionsByAccountId({accountId: this.form.query})
+            break
+        }
       }
     }
   }
