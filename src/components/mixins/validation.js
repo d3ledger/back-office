@@ -2,8 +2,6 @@ import { derivePublicKey } from 'ed25519.js'
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
 
-import irohaUtil from '@util/iroha'
-
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
 const errorMessages = {
@@ -68,13 +66,6 @@ export const _user = {
     return true
   },
   nameExist: async (name) => {
-    let account
-    try {
-      account = await irohaUtil.getAccount({ accountId: name })
-    } catch (e) {
-      return false
-    }
-    if (!account) return false
     return true
   }
 }
