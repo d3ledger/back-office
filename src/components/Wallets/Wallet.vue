@@ -615,8 +615,8 @@ export default {
       }
 
       if ((this.wallet.assetId === ETHEREUM_ASSET_NAME ||
-        this.wallet.assetId.split('#'[1] === 'd3') ||
-        this.wallet.assetId.split('#'[1] === 'sora')) && this.ethWalletAddress) {
+        this.wallet.assetId.split('#')[1] === 'd3' ||
+        this.wallet.assetId.split('#')[1] === 'sora') && this.ethWalletAddress) {
         return true
       }
 
