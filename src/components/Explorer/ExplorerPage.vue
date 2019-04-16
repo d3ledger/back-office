@@ -174,7 +174,7 @@ export default {
         case SearchTypes.ACCOUNT_TYPE:
           return 'Type a query, example "user@d3"'
         default:
-          return 'Type a query@'
+          return 'Type a query'
       }
     }
   },
