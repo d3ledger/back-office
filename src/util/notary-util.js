@@ -1,8 +1,16 @@
 import axios from 'axios'
-import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
+// import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
-let axiosNotary = axios.create({
-  baseURL: ETH_NOTARY_URL
+const axiosNotaryRegistration = axios.create({
+  baseURL: ''
+})
+
+const axiosNotaryETH = axios.create({
+  baseURL: ''
+})
+
+const axiosNotaryBTC = axios.create({
+  baseURL: ''
 })
 
 const signup = axios => (name, whitelist, publicKey) => {
@@ -18,15 +26,29 @@ const signup = axios => (name, whitelist, publicKey) => {
 }
 
 const getFreeEthRelaysNumber = () => {
-  return axios
-    .get(`${ETH_NOTARY_URL}/free-addresses/number`)
+  return axiosNotaryETH
+    .get('/free-addresses/number')
     .then(({ data }) => data)
 }
 
 const getFreeBtcRelaysNumber = () => {
-  return axios
-    .get(`${BTC_NOTARY_URL}/free-addresses/number`)
+  return axiosNotaryBTC
+    .get('/free-addresses/number')
     .then(({ data }) => data)
+}
+
+const getRelaysAddresses = () => {
+  return axios
+    .get('/relays.json')
+    .then(({ data }) => {
+      const { ETH, BTC } = data
+      if (ETH.value) {
+        axiosNotaryETH.defaults.baseURL = data.ETH.value
+      }
+      if (BTC.value) {
+        axiosNotaryBTC.defaults.baseURL = data.BTC.value
+      }
+    })
 }
 
 const getNodeAddresses = () => {
@@ -42,12 +64,13 @@ const getRegistrationAddresses = () => {
 }
 
 export default {
-  get baseURL () { return axiosNotary.defaults.baseURL },
-  set baseURL (baseURL) { axiosNotary.defaults.baseURL = baseURL },
-  signup: signup(axiosNotary),
+  get baseURL () { return axiosNotaryRegistration.defaults.baseURL },
+  set baseURL (baseURL) { axiosNotaryRegistration.defaults.baseURL = baseURL },
+  signup: signup(axiosNotaryRegistration),
   getFreeEthRelaysNumber,
   getFreeBtcRelaysNumber,
 
+  getRelaysAddresses,
   getNodeAddresses,
   getRegistrationAddresses
 }

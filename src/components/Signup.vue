@@ -195,6 +195,9 @@ export default {
       this.$v.$touch()
       if (this.$v.$invalid) return
       this.isLoading = true
+
+      this.selectNotaryIp()
+
       this.signup({
         username: this.form.username,
         whitelist: this.form.whitelist

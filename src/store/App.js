@@ -29,7 +29,8 @@ const types = flow(
   'GET_FREE_ETH_RELAYS',
   'GET_FREE_BTC_RELAYS',
   'LOAD_NODE_IP',
-  'LOAD_REGISTRATION_IP'
+  'LOAD_REGISTRATION_IP',
+  'LOAD_RELAY_IP'
 ])
 
 function initialState () {
@@ -153,6 +154,12 @@ const mutations = {
     state.registrationIPs = IPs
   },
   [types.LOAD_REGISTRATION_IP_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.LOAD_RELAY_IP_REQUEST] (state) {},
+  [types.LOAD_RELAY_IP_SUCCESS] (state) {},
+  [types.LOAD_RELAY_IP_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -280,6 +287,19 @@ const actions = {
       })
       .catch(err => {
         commit(types.LOAD_REGISTRATION_IP_FAILURE, err)
+        throw err
+      })
+  },
+
+  loadRelayAddresses ({ commit }) {
+    commit(types.LOAD_RELAY_IP_REQUEST)
+
+    return notaryUtil.getRelaysAddresses()
+      .then(() => {
+        commit(types.LOAD_RELAY_IP_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.LOAD_RELAY_IP_FAILURE, err)
         throw err
       })
   }
