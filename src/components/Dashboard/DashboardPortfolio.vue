@@ -11,7 +11,7 @@
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <el-tooltip :content="`${getDiffMessage()}: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
+          <el-tooltip :content="`${getDiffMessage}: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
             <p :class="classTrend(price.diff)">
               {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
             </p>
