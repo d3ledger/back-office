@@ -21,6 +21,11 @@ const convertTime = (date, zone) => {
 
 const dateFormat = {
   methods: {
+    formatTime (date) {
+      const timeZoneLabel = this.$store.getters.settingsView.timezone
+      const time = convertTime(date, timeZoneLabel)
+      return format(time, 'HH:mm:ss')
+    },
     formatDate (date) {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)

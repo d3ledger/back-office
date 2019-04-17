@@ -11,7 +11,7 @@
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <el-tooltip :content="`difference from the previous day: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
+          <el-tooltip :content="`${getDiffMessage()}: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
             <p :class="classTrend(price.diff)">
               {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
             </p>
@@ -43,10 +43,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
   name: 'dashboard-portfolio',
@@ -55,7 +56,8 @@ export default {
   },
   mixins: [
     numberFormat,
-    currencySymbol
+    currencySymbol,
+    dateFormat
   ],
   props: {
     price: {
@@ -77,9 +79,24 @@ export default {
     ...mapGetters([
       'portfolioFilter',
       'portfolioHistoryIsLoading'
-    ])
+    ]),
+    getDiffMessage () {
+      switch (this.portfolioFilter) {
+        case '1H': return 'Last minute change'
+        case '1D': return 'Last hour change'
+        case '1W':
+        case '1M':
+        case '1Y': return 'Last day change'
+        default: return 'Difference from the last period'
+      }
+    }
+
   },
   methods: {
+    ...mapActions([
+      'getPortfolioHistory'
+    ]),
+
     classTrend (value) {
       let className = 'neutraltrend'
       if (value > 0) className = 'uptrend'
@@ -88,7 +105,7 @@ export default {
     },
 
     selectLabel (label) {
-      this.$store.dispatch('getPortfolioHistory', { filter: label })
+      this.getPortfolioHistory({ filter: label })
     },
 
     formatNumberLongMethod (value) {
