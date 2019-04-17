@@ -233,6 +233,10 @@ export default {
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
     }
+  },
+
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   }
 }
 </script>

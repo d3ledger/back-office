@@ -18,11 +18,11 @@
                   </el-tooltip>
                 </div>
                 <div class="card_actions">
-                  <div role="button" class="card_actions-button button" @click="receiveFormVisible = true">
+                  <div v-if="accountExist" role="button" class="card_actions-button button" @click="receiveFormVisible = true">
                     <fa-icon class="card_actions-button-text" icon="angle-double-down" />
                     <span class="card_actions-button-text" data-cy="deposit">Deposit</span>
                   </div>
-                  <div role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
+                  <div v-if="accountExist" role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
                     <fa-icon class="card_actions-button-text" icon="angle-double-up" />
                     <span class="card_actions-button-text" data-cy="withdraw">Withdraw</span>
                   </div>
@@ -495,6 +495,7 @@ import { required, maxLength } from 'vuelidate/lib/validators'
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
 const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
 const BITCOIN_ASSET_NAME = 'btc#bitcoin'
+const ETHEREUM_ASSET_NAME = 'eth#ethereum'
 
 export default {
   name: 'wallet',
@@ -606,6 +607,20 @@ export default {
 
     walletAddress () {
       return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWalletAddress : this.ethWalletAddress
+    },
+
+    accountExist () {
+      if (this.wallet.assetId === BITCOIN_ASSET_NAME && this.btcWalletAddress) {
+        return true
+      }
+
+      if ((this.wallet.assetId === ETHEREUM_ASSET_NAME ||
+        this.wallet.assetId.split('#')[1] === 'd3' ||
+        this.wallet.assetId.split('#')[1] === 'sora') && this.ethWalletAddress) {
+        return true
+      }
+
+      return false
     }
   },
 

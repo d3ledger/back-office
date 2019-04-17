@@ -31,6 +31,10 @@ export default {
     ...mapGetters([
       'accountQuorum'
     ])
+  },
+
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   }
 }
 </script>
