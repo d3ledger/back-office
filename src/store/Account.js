@@ -16,6 +16,7 @@ import { WalletTypes } from '@/data/enums'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
+const ADDRESS_WAITING_TIME = 3 * 24 * 60 * 60 * 1000
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -50,7 +51,9 @@ const types = flow(
   'GET_ACCOUNT_QUORUM',
   'GET_ACCOUNT_LIMITS',
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
-  'UNSUBSCRIBE_PUSH_NOTIFICATIONS'
+  'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
+  'SET_ETH_WHITELIST',
+  'SET_BTC_WHITELIST'
 ])
 
 function initialState () {
@@ -186,17 +189,45 @@ const getters = {
     return getters.wallets.some(w => w.domain === 'bitcoin')
   },
 
-  withdrawWalletAddresses (state) {
-    const wallet = find('eth_whitelist', state.accountInfo)
-    return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
+  ethWhiteListAddresses (state, getters) {
+    return getters.ethWhiteListAddressesAll
+      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .map(item => item[0])
+  },
+
+  ethWhiteListAddressesAll (state) {
+    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].eth_whitelist : null
+    if (brvsWhitelist) {
+      const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
+      return Object.entries(brvsWhitelistParsed)
+    }
+
+    return []
+  },
+
+  btcWhiteListAddresses (state, getters) {
+    return getters.btcWhiteListAddressesAll
+      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .map(item => item[0])
+  },
+
+  btcWhiteListAddressesAll (state) {
+    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].btc_whitelist : null
+    if (brvsWhitelist) {
+      const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
+      return Object.entries(brvsWhitelistParsed)
+    }
+
+    return []
   },
 
   accountQuorum (state) {
-    return state.accountQuorum
+    const quorum = find('user_quorum', state.accountInfo)
+    return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
   },
 
   accountSignatories (state) {
-    return state.accountSignatories
+    return state.accountSignatories.filter((item, key) => key % 2 === 1)
   },
 
   accountLimits (state) {
@@ -513,6 +544,22 @@ const mutations = {
   [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) { },
 
   [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SET_ETH_WHITELIST_REQUEST] (state) {},
+
+  [types.SET_ETH_WHITELIST_SUCCESS] (state) { },
+
+  [types.SET_ETH_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SET_BTC_WHITELIST_REQUEST] (state) {},
+
+  [types.SET_BTC_WHITELIST_SUCCESS] (state) { },
+
+  [types.SET_BTC_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -911,16 +958,35 @@ const actions = {
       value: ''
     })
       .then(() => {
-        dispatch('updateAccount')
-
         commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
       })
       .catch(err => {
         commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
         throw err
       })
-  }
+  },
 
+  setWhiteList ({ commit, state, dispatch }, { privateKeys, whitelist, type }) {
+    const key = type === WalletTypes.ETH ? 'eth_whitelist' : 'btc_whitelist'
+
+    commit(types.SET_WHITELIST_REQUEST)
+    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+      accountId: state.accountId,
+      key,
+      // eslint-disable-next-line
+      value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
+    })
+      .then(() => {
+        dispatch('updateAccount')
+
+        commit(types.SET_WHITELIST_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SET_WHITELIST_FAILURE)
+        throw err
+      })
+  }
 }
 
 export default {

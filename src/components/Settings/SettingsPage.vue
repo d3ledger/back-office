@@ -191,21 +191,84 @@
                     :icon="activeTab === 2 ? 'angle-down' : 'angle-right'"
                   />
                 </span>
-                White list
+                Ethereum white list
               </span>
+              <el-button
+                class="action_button"
+                data-cy="addEthWhiteAddress"
+                @click="addingType = WalletTypes.ETH; addWhiteAddressFormVisible = true">
+                <fa-icon class="action_button-icon" icon="plus" /> Add
+              </el-button>
             </div>
             <div v-if="activeTab === 2">
               <div class="settings-item">
-                <template v-for="(address, index) in withdrawWalletAddresses">
+                <template v-for="(address, index) in ethWhiteListAddressesAll">
                   <div
-                    v-if="withdrawWalletAddresses.length"
+                    v-if="ethWhiteListAddressesAll.length"
                     class="settings-item_row"
                     :key="index">
-                    <span class="settings-item_row-key text-overflow">{{ address }}</span>
+                    <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
+                    <div>
+                      <el-tag type="info">Pending {{ address[1] }}</el-tag>
+                      <el-button
+                        data-cy="removeAddress"
+                        class="settings-item_row-delete"
+                        @click="removingType = WalletTypes.ETH; removeAddressFormVisible = true; addressToRemove = address[0]">
+                        <fa-icon icon="trash-alt"/>
+                      </el-button>
+                    </div>
                   </div>
                 </template>
                 <div
-                  v-if="!withdrawWalletAddresses.length"
+                  v-if="!ethWhiteListAddressesAll.length"
+                  class="settings-item_row">
+                  <span class="settings-item_row-key">You can withdraw to any address</span>
+                </div>
+              </div>
+            </div>
+          </el-card>
+          <el-card
+            class="card"
+            :body-style="{ padding: '0' }"
+          >
+            <div class="header_btn">
+              <span class="header_btn-title pointed" @click="updateActiveTab(3)">
+                <span class="header_btn-icon_block">
+                  <fa-icon
+                    class="header_btn-icon"
+                    :icon="activeTab === 3 ? 'angle-down' : 'angle-right'"
+                  />
+                </span>
+                Bitcoin white list
+              </span>
+              <el-button
+                class="action_button"
+                data-cy="addEthWhiteAddress"
+                @click="addingType = WalletTypes.BTC; addWhiteAddressFormVisible = true">
+                <fa-icon class="action_button-icon" icon="plus" /> Add
+              </el-button>
+            </div>
+            <div v-if="activeTab === 2">
+              <div class="settings-item">
+                <template v-for="(address, index) in btcWhiteListAddressesAll">
+                  <div
+                    v-if="btcWhiteListAddressesAll.length"
+                    class="settings-item_row"
+                    :key="index">
+                    <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
+                    <div>
+                      <el-tag type="info">Pending {{ address[1] }}</el-tag>
+                      <el-button
+                        data-cy="removeAddress"
+                        class="settings-item_row-delete"
+                        @click="removingType = WalletTypes.BTC; removeAddressFormVisible = true; addressToRemove = address[0]">
+                        <fa-icon icon="trash-alt"/>
+                      </el-button>
+                    </div>
+                  </div>
+                </template>
+                <div
+                  v-if="!btcWhiteListAddressesAll.length"
                   class="settings-item_row">
                   <span class="settings-item_row-key">You can withdraw to any address</span>
                 </div>
@@ -320,6 +383,56 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      data-cy="addWhiteAddressDialog"
+      title="Add new white address"
+      :visible.sync="addWhiteAddressFormVisible"
+      width="450px"
+      center>
+      <el-form ref="newWhiteAddressForm" class="quorum_form" :model="whitelistForm">
+        <el-form-item>
+          <el-input v-model="whitelistForm.address"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-form_buttons-block">
+        <el-button
+          type="danger"
+          @click="addWhiteList"
+          class="dialog-form_buttons action"
+          :loading="addingNewAddress">Add
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="addWhiteAddressFormVisible = false"
+        >
+          Cancel
+        </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog
+      data-cy="removeAddressForm"
+      title="Remove white address"
+      :visible.sync="removeAddressFormVisible"
+      width="450px"
+      center>
+      <div class="approval_form-desc">
+        Are you sure want to remove <b class="key_representation">{{ addressToRemove }}</b> address from whitelist?
+      </div>
+      <div slot="footer" class="dialog-form_buttons-block">
+        <el-button
+          @click="removeWhiteAddress"
+          class="dialog-form_buttons action"
+          type="danger"
+          :loading="removingAddress">Remove
+        </el-button>
+        <el-button
+          class="dialog-form_buttons close"
+          @click="removeAddressFormVisible = false"
+        >
+          Cancel
+        </el-button>
+      </div>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -354,7 +467,17 @@ export default {
       removingKey: false,
       quorumUpdating: false,
       WalletTypes,
-      notifications: false
+      notifications: false,
+      addWhiteAddressFormVisible: false,
+      addingNewAddress: false,
+      removingAddress: false,
+      removeAddressFormVisible: false,
+      removingType: '',
+      addingType: '',
+      addressToRemove: null,
+      whitelistForm: {
+        address: ''
+      }
     }
   },
   mixins: [
@@ -373,7 +496,8 @@ export default {
     ...mapGetters([
       'settingsFiatCurrencies',
       'settingsCryptoCurrencies',
-      'withdrawWalletAddresses',
+      'ethWhiteListAddressesAll',
+      'btcWhiteListAddressesAll',
       'accountQuorum',
       'accountSignatories',
       'walletType',
@@ -423,7 +547,9 @@ export default {
       'getFreeEthRelaysNumber',
       'getFreeBtcRelaysNumber',
       'subscribePushNotifications',
-      'unsubscribePushNotifications'
+      'unsubscribePushNotifications',
+      'setEthWhiteList',
+      'setBtcWhiteList'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -497,6 +623,59 @@ export default {
           this.getAccountQuorum()
           this.quorumFormVisible = false
           this.quorumUpdating = false
+        })
+    },
+    addWhiteAddress () {
+      const currentWhiteList = this.addingType === WalletTypes.ETH ? this.ethWhiteListAddressesAll : this.btcWhiteListAddressesAll
+      const whitelist = [...currentWhiteList.map(item => item[0]), this.whitelistForm.address]
+
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.addingNewAddress = true
+          return this.setWhiteList({
+            privateKeys,
+            whitelist,
+            type: this.addingType
+          })
+            .then(() => {
+              this.$message.success('Address successfully added')
+            })
+            .catch((err) => {
+              this.$message.error('Failed to add address')
+              console.error(err)
+            })
+        })
+        .finally(() => {
+          this.addWhiteAddressFormVisible = false
+          this.addingNewAddress = false
+        })
+    },
+    removeWhiteAddress () {
+      const currentWhiteList = this.removingType === WalletTypes.ETH ? this.ethWhiteListAddressesAll : this.btcWhiteListAddressesAll
+      const whitelist = [...currentWhiteList.filter(item => item[0] !== this.addressToRemove), this.whitelistForm.address]
+
+      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+        .then(privateKeys => {
+          if (!privateKeys) return
+          this.removingAddress = true
+          return this.setWhiteList({
+            privateKeys,
+            whitelist,
+            type: this.addingType
+          })
+            .then(() => {
+              this.$message.success('Address successfully removed')
+            })
+            .catch((err) => {
+              this.$message.error('Failed to remove address')
+              console.error(err)
+            })
+        })
+        .finally(() => {
+          this.removeWhiteAddressFormVisible = false
+          this.removingAddress = false
+          this.addressToRemove = null
         })
     },
     onClickDownload () {

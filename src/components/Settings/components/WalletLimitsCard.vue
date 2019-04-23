@@ -5,11 +5,11 @@
       :body-style="{ padding: '0' }"
     >
       <div class="header_btn">
-        <span class="header_btn-title pointed" @click="updateActiveTab(3)">
+        <span class="header_btn-title pointed" @click="updateActiveTab(4)">
           <span class="header_btn-icon_block">
             <fa-icon
               class="header_btn-icon"
-              :icon="activeTab === 3 ? 'angle-down' : 'angle-right'"
+              :icon="activeTab === 4 ? 'angle-down' : 'angle-right'"
             />
           </span>
           Wallet limits
