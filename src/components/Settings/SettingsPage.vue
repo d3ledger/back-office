@@ -209,7 +209,9 @@
                     :key="index">
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tag type="info">Pending {{ address[1] }}</el-tag>
+                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000 + ADDRESS_WAITING_TIME)}`" placement="top">
+                        <el-tag class="pending" v-if="address[1] * 1000 + ADDRESS_WAITING_TIME > Date.now()" type="info">Pending</el-tag>
+                      </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
                         class="settings-item_row-delete"
@@ -248,7 +250,7 @@
                 <fa-icon class="action_button-icon" icon="plus" /> Add
               </el-button>
             </div>
-            <div v-if="activeTab === 2">
+            <div v-if="activeTab === 3">
               <div class="settings-item">
                 <template v-for="(address, index) in btcWhiteListAddressesAll">
                   <div
@@ -257,7 +259,9 @@
                     :key="index">
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tag type="info">Pending {{ address[1] }}</el-tag>
+                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000 + ADDRESS_WAITING_TIME)}`" placement="top">
+                        <el-tag class="pending" v-if="address[1] * 1000 + ADDRESS_WAITING_TIME > Date.now()" type="info">Pending</el-tag>
+                      </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
                         class="settings-item_row-delete"
@@ -397,7 +401,7 @@
       <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           type="danger"
-          @click="addWhiteList"
+          @click="addWhiteAddress"
           class="dialog-form_buttons action"
           :loading="addingNewAddress">Add
         </el-button>
@@ -441,7 +445,7 @@ import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
-import { WalletTypes } from '@/data/enums'
+import { WalletTypes, ADDRESS_WAITING_TIME } from '@/data/consts'
 import { lazyComponent } from '@router'
 import pushUtil from '@util/push-util'
 
@@ -477,7 +481,8 @@ export default {
       addressToRemove: null,
       whitelistForm: {
         address: ''
-      }
+      },
+      ADDRESS_WAITING_TIME
     }
   },
   mixins: [
@@ -548,8 +553,7 @@ export default {
       'getFreeBtcRelaysNumber',
       'subscribePushNotifications',
       'unsubscribePushNotifications',
-      'setEthWhiteList',
-      'setBtcWhiteList'
+      'setWhiteList'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -649,6 +653,7 @@ export default {
         .finally(() => {
           this.addWhiteAddressFormVisible = false
           this.addingNewAddress = false
+          this.whitelistForm.address = ''
         })
     },
     removeWhiteAddress () {
@@ -935,5 +940,8 @@ export default {
 }
 .el-input-number .el-input__inner {
   padding: 0;
+}
+.pending {
+  margin-right: 20px
 }
 </style>

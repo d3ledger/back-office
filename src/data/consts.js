@@ -8,3 +8,5 @@ export const SearchTypes = Object.freeze({
   TRANSACTION_TYPE: 'Transaction',
   ACCOUNT_TYPE: 'Account'
 })
+
+export const ADDRESS_WAITING_TIME = 3 * 24 * 60 * 60 * 1000

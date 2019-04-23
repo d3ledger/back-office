@@ -12,11 +12,10 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes } from '@/data/enums'
+import { WalletTypes, ADDRESS_WAITING_TIME } from '@/data/consts'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
-const ADDRESS_WAITING_TIME = 3 * 24 * 60 * 60 * 1000
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -52,8 +51,7 @@ const types = flow(
   'GET_ACCOUNT_LIMITS',
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
-  'SET_ETH_WHITELIST',
-  'SET_BTC_WHITELIST'
+  'SET_WHITELIST'
 ])
 
 function initialState () {
