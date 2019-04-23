@@ -72,6 +72,7 @@
                         v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
+                        :loading="registering"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
@@ -83,6 +84,7 @@
                         v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
+                        :loading="registering"
                       >
                         <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
@@ -472,6 +474,7 @@ export default {
       quorumUpdating: false,
       WalletTypes,
       notifications: false,
+      registering: false,
       addWhiteAddressFormVisible: false,
       addingNewAddress: false,
       removingAddress: false,
@@ -716,7 +719,7 @@ export default {
       this.openApprovalDialog().then(privateKeys => {
         if (!privateKeys) return
 
-        this.isSending = true
+        this.registering = true
         this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
 
         return this.addNetwork({ privateKeys }).then(() => {
@@ -725,6 +728,8 @@ export default {
         }).catch((err) => {
           this.$_showRegistrationError(err.message, err.response)
         })
+      }).finally(() => {
+        this.registering = true
       })
     },
     updateActiveTab (id) {
