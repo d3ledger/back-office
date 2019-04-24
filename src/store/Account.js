@@ -200,7 +200,7 @@ const getters = {
       return Object.entries(brvsWhitelistParsed)
     } else {
       const wallet = find('eth_whitelist', state.accountInfo)
-      return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
+      return wallet ? JSON.parse(wallet.eth_whitelist) : []
     }
   },
 
@@ -217,7 +217,7 @@ const getters = {
       return Object.entries(brvsWhitelistParsed)
     } else {
       const wallet = find('btc_whitelist', state.accountInfo)
-      return wallet ? wallet.btc_whitelist.split(',').map(w => w.trim()) : []
+      return wallet ? JSON.parse(wallet.btc_whitelist) : []
     }
   },
 
@@ -573,12 +573,12 @@ const actions = {
     commit(types.SET_NOTARY_IP, ip)
   },
 
-  signup ({ commit }, { username }) {
+  signup ({ commit }, { username, whitelist }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, publicKey)
+    return notaryUtil.signup(username, whitelist, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
