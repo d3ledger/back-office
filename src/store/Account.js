@@ -34,6 +34,7 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS_NP',
   'GET_ACCOUNT_ASSETS',
+  'GET_ACCOUNT_ROLES',
   'GET_ALL_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_SIGNATORIES',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
@@ -61,6 +62,7 @@ function initialState () {
     accountQuorum: 0,
     accountSignatories: [],
     accountLimits: [],
+    accountRoles: [],
     assetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
@@ -211,6 +213,10 @@ const getters = {
 
   accountId (state) {
     return state.accountId
+  },
+
+  accountRoles (state) {
+    return state.accountRoles
   },
 
   subscribed (state) {
@@ -481,6 +487,16 @@ const mutations = {
   },
 
   [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_ROLES_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_ROLES_SUCCESS] (state, response) {
+    state.accountRoles = response.array[1]
+  },
+
+  [types.GET_ACCOUNT_ROLES_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -831,7 +847,9 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
+      .then((account) => {
+        commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
@@ -843,9 +861,25 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then(({ jsonData }) => commit(types.GET_ACCOUNT_LIMITS_SUCCESS, jsonData))
+      .then((account) => {
+        commit(types.GET_ACCOUNT_LIMITS_SUCCESS, account.jsonData)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountRoles ({ commit, state }) {
+    commit(types.GET_ACCOUNT_ROLES_REQUEST)
+    return irohaUtil.getRawAccount({
+      accountId: state.accountId
+    })
+      .then((response) => {
+        commit(types.GET_ACCOUNT_ROLES_SUCCESS, response)
+      })
+      .catch(err => {
+        commit(types.GET_ACCOUNT_ROLES_FAILURE, err)
         throw err
       })
   },

@@ -9,6 +9,14 @@ const getAccount = ({
   }
 )
 
+const getRawAccount = ({
+  accountId
+}) => queries.getRawAccount(
+  newQueryServiceOptions(), {
+    accountId
+  }
+)
+
 const getAccountAssets = ({
   accountId
 }) => queries.getAccountAssets(
@@ -63,6 +71,22 @@ const getSignatories = ({
   }
 )
 
+const getTransactions = ({
+  txHashes
+}) => queries.getTransactions(
+  newQueryServiceOptions(), {
+    transactionsHashes: txHashes
+  }
+)
+
+const getBlock = ({
+  height
+}) => queries.getBlock(
+  newQueryServiceOptions(), {
+    height
+  }
+)
+
 const getRawPendingTransactions = () => queries.getRawPendingTransactions(
   newQueryServiceOptions()
 )
@@ -77,11 +101,14 @@ const getAssetInfo = ({
 
 export {
   getAccount,
+  getRawAccount,
   getAccountAssets,
   getAccountAssetTransactions,
   getAccountTransactions,
   getAccountDetail,
   getSignatories,
+  getTransactions,
+  getBlock,
   getRawPendingTransactions,
   getAssetInfo
 }
