@@ -625,6 +625,7 @@ export default {
     },
 
     whiteListAddresses () {
+      console.log(1)
       return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWhiteListAddresses : this.ethWhiteListAddresses
     }
   },

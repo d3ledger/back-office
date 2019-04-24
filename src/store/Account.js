@@ -188,6 +188,13 @@ const getters = {
   },
 
   ethWhiteListAddresses (state, getters) {
+    const wallet = find('eth_whitelist', state.accountInfo)
+    const whitelist = wallet ? JSON.parse(wallet.eth_whitelist) : []
+
+    if (whitelist.length > 0 && getters.ethWhiteListAddressesAll.length === 0) {
+      return whitelist
+    }
+
     return getters.ethWhiteListAddressesAll
       .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
       .map(item => item[0])
@@ -198,10 +205,9 @@ const getters = {
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
-    } else {
-      const wallet = find('eth_whitelist', state.accountInfo)
-      return wallet ? JSON.parse(wallet.eth_whitelist) : []
     }
+
+    return []
   },
 
   btcWhiteListAddresses (state, getters) {
