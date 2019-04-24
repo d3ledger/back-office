@@ -24,6 +24,7 @@ export default {
   methods: {
     ...mapActions([
       'loadNodeAddresses',
+      'loadRelayAddresses',
       'loadRegistrationAddreses'
     ]),
     showConnectionErrorMessage: debounce(function () {
@@ -32,6 +33,7 @@ export default {
   },
 
   created () {
+    this.loadRelayAddresses()
     this.loadNodeAddresses()
     this.loadRegistrationAddreses()
   }
