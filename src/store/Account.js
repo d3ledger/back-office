@@ -200,7 +200,7 @@ const getters = {
       return Object.entries(brvsWhitelistParsed)
     } else {
       const wallet = find('eth_whitelist', state.accountInfo)
-      return wallet ? JSON.parse(wallet.eth_whitelist) : []
+      return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
     }
   },
 
@@ -217,7 +217,7 @@ const getters = {
       return Object.entries(brvsWhitelistParsed)
     } else {
       const wallet = find('btc_whitelist', state.accountInfo)
-      return wallet ? JSON.parse(wallet.btc_whitelist) : []
+      return wallet ? wallet.btc_whitelist.split(',').map(w => w.trim()) : []
     }
   },
 
