@@ -54,7 +54,9 @@ function initialState () {
     freeEthRelaysNumber: 0,
     freeBtcRelaysNumber: 0,
     nodeIPs: [],
-    registrationIPs: []
+    registrationIPs: [],
+    btcRegistrationIp: null,
+    ethRegistrationIp: null
   }
 }
 
@@ -158,7 +160,10 @@ const mutations = {
   },
 
   [types.LOAD_RELAY_IP_REQUEST] (state) {},
-  [types.LOAD_RELAY_IP_SUCCESS] (state) {},
+  [types.LOAD_RELAY_IP_SUCCESS] (state, IPs) {
+    state.btcRegistrationIp = IPs.BTC.value
+    state.ethRegistrationIp = IPs.ETH.value
+  },
   [types.LOAD_RELAY_IP_FAILURE] (state, err) {
     handleError(state, err)
   }
@@ -295,8 +300,8 @@ const actions = {
     commit(types.LOAD_RELAY_IP_REQUEST)
 
     return notaryUtil.getRelaysAddresses()
-      .then(() => {
-        commit(types.LOAD_RELAY_IP_SUCCESS)
+      .then(IPs => {
+        commit(types.LOAD_RELAY_IP_SUCCESS, IPs)
       })
       .catch(err => {
         commit(types.LOAD_RELAY_IP_FAILURE, err)
@@ -334,7 +339,8 @@ const getters = {
     return state.dashboardSortCriterion
   },
   freeEthRelaysNumber (state) {
-    return state.freeEthRelaysNumber
+    // return state.freeEthRelaysNumber
+    return 10
   },
   freeBtcRelaysNumber (state) {
     return state.freeBtcRelaysNumber
@@ -344,6 +350,12 @@ const getters = {
   },
   registrationIPs (state) {
     return state.registrationIPs
+  },
+  btcRegistrationIp (state) {
+    return state.btcRegistrationIp
+  },
+  ethRegistrationIp (state) {
+    return state.ethRegistrationIp
   }
 }
 

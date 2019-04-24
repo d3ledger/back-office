@@ -199,8 +199,7 @@ export default {
       this.selectNotaryIp()
 
       this.signup({
-        username: this.form.username,
-        whitelist: this.form.whitelist
+        username: this.form.username
       })
         .then(({ username, privateKey }) => {
           this.dialog.username = username

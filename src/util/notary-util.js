@@ -5,19 +5,18 @@ const axiosNotaryRegistration = axios.create({
   baseURL: ''
 })
 
-const axiosNotaryETH = axios.create({
+const axiosETH = axios.create({
   baseURL: ''
 })
 
-const axiosNotaryBTC = axios.create({
+const axiosBTC = axios.create({
   baseURL: ''
 })
 
-const signup = axios => (name, whitelist, publicKey) => {
+const signup = axios => (name, publicKey) => {
   // Unfortunately, server awaits for formData, and it is the only way to provide it.
   let postData = new FormData()
   postData.append('name', name)
-  postData.append('whitelist', whitelist)
   postData.append('pubkey', publicKey)
 
   return axios
@@ -26,13 +25,13 @@ const signup = axios => (name, whitelist, publicKey) => {
 }
 
 const getFreeEthRelaysNumber = () => {
-  return axiosNotaryETH
+  return axiosETH
     .get('/free-addresses/number')
     .then(({ data }) => data)
 }
 
 const getFreeBtcRelaysNumber = () => {
-  return axiosNotaryBTC
+  return axiosBTC
     .get('/free-addresses/number')
     .then(({ data }) => data)
 }
@@ -43,11 +42,12 @@ const getRelaysAddresses = () => {
     .then(({ data }) => {
       const { ETH, BTC } = data
       if (ETH.value) {
-        axiosNotaryETH.defaults.baseURL = data.ETH.value
+        axiosETH.defaults.baseURL = data.ETH.value
       }
       if (BTC.value) {
-        axiosNotaryBTC.defaults.baseURL = data.BTC.value
+        axiosBTC.defaults.baseURL = data.BTC.value
       }
+      return data
     })
 }
 
