@@ -1,6 +1,6 @@
 {
   "ETH": {
-    "value": "http://localhost:8085"
+    "value": "http://localhost:8083"
   },
   "BTC": {
     "value": "http://localhost:8086"
