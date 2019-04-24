@@ -329,7 +329,6 @@ import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
 import { WalletTypes } from '@/data/enums'
-import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 import { lazyComponent } from '@router'
 import pushUtil from '@util/push-util'
 
@@ -380,7 +379,9 @@ export default {
       'walletType',
       'freeEthRelaysNumber',
       'freeBtcRelaysNumber',
-      'subscribed'
+      'subscribed',
+      'btcRegistrationIp',
+      'ethRegistrationIp'
     ]),
     currentFiat: {
       get () {
@@ -532,7 +533,7 @@ export default {
         if (!privateKeys) return
 
         this.isSending = true
-        this.setNotaryIp({ ip: network === WalletTypes.BTC ? BTC_NOTARY_URL : ETH_NOTARY_URL })
+        this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
 
         return this.addNetwork({ privateKeys }).then(() => {
           this.$message.success(`You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)

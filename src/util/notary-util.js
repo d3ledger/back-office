@@ -1,15 +1,22 @@
 import axios from 'axios'
-import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
+// import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
-let axiosNotary = axios.create({
-  baseURL: ETH_NOTARY_URL
+const axiosNotaryRegistration = axios.create({
+  baseURL: ''
 })
 
-const signup = axios => (name, whitelist, publicKey) => {
+const axiosETH = axios.create({
+  baseURL: ''
+})
+
+const axiosBTC = axios.create({
+  baseURL: ''
+})
+
+const signup = axios => (name, publicKey) => {
   // Unfortunately, server awaits for formData, and it is the only way to provide it.
   let postData = new FormData()
   postData.append('name', name)
-  postData.append('whitelist', whitelist)
   postData.append('pubkey', publicKey)
 
   return axios
@@ -18,15 +25,30 @@ const signup = axios => (name, whitelist, publicKey) => {
 }
 
 const getFreeEthRelaysNumber = () => {
-  return axios
-    .get(`${ETH_NOTARY_URL}/free-addresses/number`)
+  return axiosETH
+    .get('/free-addresses/number')
     .then(({ data }) => data)
 }
 
 const getFreeBtcRelaysNumber = () => {
-  return axios
-    .get(`${BTC_NOTARY_URL}/free-addresses/number`)
+  return axiosBTC
+    .get('/free-addresses/number')
     .then(({ data }) => data)
+}
+
+const getRelaysAddresses = () => {
+  return axios
+    .get('/relays.json')
+    .then(({ data }) => {
+      const { ETH, BTC } = data
+      if (ETH.value) {
+        axiosETH.defaults.baseURL = data.ETH.value
+      }
+      if (BTC.value) {
+        axiosBTC.defaults.baseURL = data.BTC.value
+      }
+      return data
+    })
 }
 
 const getNodeAddresses = () => {
@@ -42,12 +64,13 @@ const getRegistrationAddresses = () => {
 }
 
 export default {
-  get baseURL () { return axiosNotary.defaults.baseURL },
-  set baseURL (baseURL) { axiosNotary.defaults.baseURL = baseURL },
-  signup: signup(axiosNotary),
+  get baseURL () { return axiosNotaryRegistration.defaults.baseURL },
+  set baseURL (baseURL) { axiosNotaryRegistration.defaults.baseURL = baseURL },
+  signup: signup(axiosNotaryRegistration),
   getFreeEthRelaysNumber,
   getFreeBtcRelaysNumber,
 
+  getRelaysAddresses,
   getNodeAddresses,
   getRegistrationAddresses
 }

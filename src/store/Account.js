@@ -522,12 +522,12 @@ const actions = {
     commit(types.SET_NOTARY_IP, ip)
   },
 
-  signup ({ commit }, { username, whitelist }) {
+  signup ({ commit }, { username }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, whitelist, publicKey)
+    return notaryUtil.signup(username, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
