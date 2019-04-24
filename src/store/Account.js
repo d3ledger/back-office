@@ -225,7 +225,11 @@ const getters = {
   },
 
   accountSignatories (state) {
-    return state.accountSignatories.filter((item, key) => key % 2 === 1)
+    if (state.accountInfo['brvs@brvs']) {
+      return state.accountSignatories.filter((item, key) => key % 2 === 1)
+    } else {
+      return state.accountSignatories
+    }
   },
 
   accountLimits (state) {
