@@ -339,8 +339,7 @@ const getters = {
     return state.dashboardSortCriterion
   },
   freeEthRelaysNumber (state) {
-    // return state.freeEthRelaysNumber
-    return 10
+    return state.freeEthRelaysNumber
   },
   freeBtcRelaysNumber (state) {
     return state.freeBtcRelaysNumber
