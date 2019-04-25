@@ -117,7 +117,7 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
-import { SearchTypes } from '@/data/enums'
+import { SearchTypes } from '@/data/consts'
 
 export default {
   name: 'explorer-page',
