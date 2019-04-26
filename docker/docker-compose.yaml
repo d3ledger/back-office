@@ -20,8 +20,6 @@ services:
       - d3-back-office
     volumes:
       - ./iroha:/opt/iroha_data
-    logging:
-      driver: none
     # ports:
     #   - 50051:50051
 
@@ -32,8 +30,6 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
     networks:
       - d3-back-office
-    logging:
-      driver: none
 
   grpcwebproxy:
     build:
@@ -48,8 +44,6 @@ services:
       - --allow_all_origins=true
     networks:
       - d3-back-office
-    logging:
-      driver: none
     # ports:
     #   - 8081:8080
 
