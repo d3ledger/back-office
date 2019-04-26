@@ -2,6 +2,8 @@ import { derivePublicKey } from 'ed25519.js'
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
 
+import { SearchTypes } from '@/data/enums'
+
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
 const errorMessages = {
@@ -16,7 +18,9 @@ const errorMessages = {
   _address: 'Please provide correct address',
 
   _asset: 'Please select asset',
-  _amount: 'Please provide correct amount'
+  _amount: 'Please provide correct amount',
+
+  _explorerQuery: 'Query is incorrect'
 }
 
 /**
@@ -90,6 +94,18 @@ export const _amount = (wallet) => (amount) => {
   else if (amount !== null && amount.length === 0) return false
   else if (gt(Number(amount))(Number(wallet.amount))) return false
   else if (lte(Number(amount))(0)) return false
+  return true
+}
+
+export const _explorerQuery = (type) => (query) => {
+  if (type === SearchTypes.ACCOUNT_TYPE) {
+    return _user.nameDomain(query)
+  } else if (type === SearchTypes.BLOCK_TYPE) {
+    const parsed = parseInt(query)
+    return Number.isInteger(parsed) && parsed.toString().length === query.length
+  } else if (type === SearchTypes.TRANSACTION_TYPE) {
+    return true
+  }
   return true
 }
 

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 
 export default {
@@ -24,8 +24,9 @@ export default {
     return {}
   },
   created () {
-    this.$store.dispatch('getAllUnsignedTransactions')
-    this.$store.dispatch('loadSettings')
+    this.getAllUnsignedTransactions()
+    this.loadSettings()
+    this.getAccountRoles()
   },
   computed: {
     ...mapGetters([
@@ -35,6 +36,14 @@ export default {
 
   mounted () {
     document.documentElement.style.setProperty('--show-loading', 'none')
+  },
+
+  methods: {
+    ...mapActions([
+      'getAllUnsignedTransactions',
+      'loadSettings',
+      'getAccountRoles'
+    ])
   }
 }
 </script>
