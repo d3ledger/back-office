@@ -84,7 +84,8 @@ new Promise((resolve, reject) => resolve())
     {
       accountId: testAccFull,
       key: 'eth_whitelist',
-      value: '0x1234567890123456789012345678901234567890'
+      // eslint-disable-next-line
+      value: JSON.stringify(['0x1234567890123456789012345678901234567890']).replace(/"/g, '\\\"')
     }
   ))
   .then(async () => await tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))

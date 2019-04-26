@@ -2,7 +2,7 @@ import { derivePublicKey } from 'ed25519.js'
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
 
-import { SearchTypes } from '@/data/enums'
+import { SearchTypes } from '@/data/consts'
 
 const getPrecision = (v) => (v.split('.')[1] || []).length
 

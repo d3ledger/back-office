@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapActions } from 'vuex'
 import { generatePDF, generateCSV } from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
@@ -184,10 +184,15 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('getAccountAssets')
+    this.getAccountAssets()
     this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
   },
   methods: {
+    ...mapActions([
+      'getAccountAssets',
+      'getAccountAssetTransactions'
+    ]),
+
     isDisabledDate: (date) => isAfter(date, endOfToday()),
 
     /*
@@ -260,7 +265,7 @@ export default {
 
       Promise.all([
         this.loadPriceFiatList(wallet.asset, dateFrom, dateTo),
-        this.$store.dispatch('getAccountAssetTransactions', { assetId })
+        this.getAccountAssetTransactions({ assetId })
       ]).then(([priceFiatList]) => {
         const params = {
           accountId: this.accountId,

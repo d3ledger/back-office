@@ -327,7 +327,7 @@
         </span>
         <el-form-item label="Address" prop="wallet">
           <el-input
-            v-if="!withdrawWalletAddresses.length"
+            v-if="!whiteListAddresses.length"
             v-model="$v.withdrawForm.wallet.$model"
             placeholder="withdrawal address"
             :class="[
@@ -346,7 +346,7 @@
             ]"
           >
             <el-option
-              v-for="address in withdrawWalletAddresses"
+              v-for="address in whiteListAddresses"
               :key="address"
               :label="address"
               :value="address">
@@ -566,7 +566,8 @@ export default {
       'settingsView',
       'ethWalletAddress',
       'btcWalletAddress',
-      'withdrawWalletAddresses',
+      'ethWhiteListAddresses',
+      'btcWhiteListAddresses',
       'getTransactionsByAssetId',
       'accountQuorum',
       'wallets',
@@ -621,6 +622,10 @@ export default {
       }
 
       return false
+    },
+
+    whiteListAddresses () {
+      return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWhiteListAddresses : this.ethWhiteListAddresses
     }
   },
 
