@@ -1,4 +1,4 @@
-def tag = ["master":"latest", "develop":"dev" ]
+def tag = ["master":"latest", "develop":"develop" ]
 def scmVars
 
 pipeline {
