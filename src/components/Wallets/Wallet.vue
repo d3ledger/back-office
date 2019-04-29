@@ -611,6 +611,7 @@ export default {
     },
 
     accountExist () {
+      console.log(this.wallet.assetId)
       if (this.wallet.assetId === BITCOIN_ASSET_NAME && this.btcWalletAddress) {
         return true
       }

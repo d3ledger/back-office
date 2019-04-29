@@ -12,7 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes, ADDRESS_WAITING_TIME } from '@/data/consts'
+import { WalletTypes } from '@/data/consts'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -196,7 +196,7 @@ const getters = {
     }
 
     return getters.ethWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
       .map(item => item[0])
   },
 
@@ -212,7 +212,7 @@ const getters = {
 
   btcWhiteListAddresses (state, getters) {
     return getters.btcWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
       .map(item => item[0])
   },
 
