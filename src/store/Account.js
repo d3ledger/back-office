@@ -444,7 +444,7 @@ const mutations = {
   },
 
   [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
-    state.acceptSettlementLoading = true
+    state.acceptSettlementLoading = false
     handleError(state, err)
   },
 
@@ -803,7 +803,7 @@ const actions = {
       offerAmount,
       description,
       to,
-      1,
+      2,
       requestAssetId,
       requestAmount
     )
