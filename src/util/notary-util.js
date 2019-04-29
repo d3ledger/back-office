@@ -1,5 +1,6 @@
 import axios from 'axios'
-// import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
+
+const PROTOCOL = location.protocol
 
 const axiosNotaryRegistration = axios.create({
   baseURL: ''
@@ -42,10 +43,10 @@ const getRelaysAddresses = () => {
     .then(({ data }) => {
       const { ETH, BTC } = data
       if (ETH.value) {
-        axiosETH.defaults.baseURL = data.ETH.value
+        axiosETH.defaults.baseURL = `${PROTOCOL}//${data.ETH.value}`
       }
       if (BTC.value) {
-        axiosBTC.defaults.baseURL = data.BTC.value
+        axiosBTC.defaults.baseURL = `${PROTOCOL}//${data.BTC.value}`
       }
       return data
     })
@@ -65,7 +66,9 @@ const getRegistrationAddresses = () => {
 
 export default {
   get baseURL () { return axiosNotaryRegistration.defaults.baseURL },
-  set baseURL (baseURL) { axiosNotaryRegistration.defaults.baseURL = baseURL },
+  set baseURL (baseURL) {
+    axiosNotaryRegistration.defaults.baseURL = `${PROTOCOL}//${baseURL}`
+  },
   signup: signup(axiosNotaryRegistration),
   getFreeEthRelaysNumber,
   getFreeBtcRelaysNumber,

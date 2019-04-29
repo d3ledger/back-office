@@ -1,7 +1,7 @@
 <template>
   <span>
     <el-card
-      class="card"
+      class="settings-card"
       :body-style="{ padding: '0' }"
     >
       <div class="header_btn">
@@ -18,7 +18,7 @@
           <fa-icon class="action_button-icon" icon="plus" /> Add
         </el-button>
       </div>
-      <div v-if="activeTab === 3">
+      <div v-if="activeTab === 4">
         <div class="settings-item">
           <template v-for="(limit, index) in accountLimits">
             <div

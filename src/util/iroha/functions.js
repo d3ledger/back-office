@@ -22,7 +22,8 @@ function login (username, privateKey, nodeIp) {
   cache.key = privateKey
   cache.nodeIp = nodeIp
 
-  setItem('iroha-wallet:nodeIp', nodeIp)
+  const url = new URL(nodeIp)
+  setItem('d3-app:nodeIp', url.host)
 
   return getAccount({
     accountId: username
@@ -46,11 +47,11 @@ function logout () {
 }
 
 function getStoredNodeIp () {
-  return getItem('iroha-wallet:nodeIp') || ''
+  return getItem('d3-app:nodeIp') || ''
 }
 
 function clearStorage () {
-  removeItem('iroha-wallet:nodeIp')
+  removeItem('d3-app:nodeIp')
 }
 
 function isLoggedIn () {
