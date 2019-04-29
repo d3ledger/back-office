@@ -1,8 +1,8 @@
 {
   "ETH": {
-    "value": "http://localhost:8083"
+    "value": "localhost:8083"
   },
   "BTC": {
-    "value": "http://localhost:8086"
+    "value": "localhost:8086"
   }
 }
