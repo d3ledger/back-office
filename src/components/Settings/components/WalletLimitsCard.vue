@@ -1,7 +1,7 @@
 <template>
   <span>
     <el-card
-      class="card"
+      class="settings-card"
       :body-style="{ padding: '0' }"
     >
       <div class="header_btn">

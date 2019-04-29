@@ -148,7 +148,7 @@
             </div>
           </el-card>
           <el-card
-            class="card"
+            class="settings-card"
             :body-style="{ padding: '0' }"
           >
             <div class="header_btn">
@@ -182,7 +182,7 @@
             </div>
           </el-card>
           <el-card
-            class="card"
+            class="settings-card"
             :body-style="{ padding: '0' }"
           >
             <div class="header_btn">
@@ -232,7 +232,7 @@
             </div>
           </el-card>
           <el-card
-            class="card"
+            class="settings-card"
             :body-style="{ padding: '0' }"
           >
             <div class="header_btn">
@@ -851,8 +851,8 @@ export default {
 }
 </style>
 
-<style>
-.card {
+<style scope>
+.settings-card {
   margin-top: 0.5rem;
 }
 .header_btn {
