@@ -12,7 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes, ADDRESS_WAITING_TIME } from '@/data/consts'
+import { WalletTypes } from '@/data/consts'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -196,7 +196,7 @@ const getters = {
     }
 
     return getters.ethWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
       .map(item => item[0])
   },
 
@@ -212,7 +212,7 @@ const getters = {
 
   btcWhiteListAddresses (state, getters) {
     return getters.btcWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 + ADDRESS_WAITING_TIME < Date.now())
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
       .map(item => item[0])
   },
 
@@ -444,7 +444,7 @@ const mutations = {
   },
 
   [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
-    state.acceptSettlementLoading = true
+    state.acceptSettlementLoading = false
     handleError(state, err)
   },
 
@@ -579,12 +579,12 @@ const actions = {
     commit(types.SET_NOTARY_IP, ip)
   },
 
-  signup ({ commit }, { username, whitelist }) {
+  signup ({ commit }, { username }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, whitelist, publicKey)
+    return notaryUtil.signup(username, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
@@ -803,7 +803,7 @@ const actions = {
       offerAmount,
       description,
       to,
-      1,
+      2,
       requestAssetId,
       requestAmount
     )

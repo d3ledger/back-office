@@ -211,8 +211,8 @@
                     :key="index">
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000 + ADDRESS_WAITING_TIME)}`" placement="top">
-                        <el-tag class="pending" v-if="address[1] * 1000 + ADDRESS_WAITING_TIME > Date.now()" type="info">Pending</el-tag>
+                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000)}`" placement="top">
+                        <el-tag class="pending" v-if="address[1] * 1000 > Date.now()" type="info">Pending</el-tag>
                       </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
@@ -261,8 +261,8 @@
                     :key="index">
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000 + ADDRESS_WAITING_TIME)}`" placement="top">
-                        <el-tag class="pending" v-if="address[1] * 1000 + ADDRESS_WAITING_TIME > Date.now()" type="info">Pending</el-tag>
+                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000)}`" placement="top">
+                        <el-tag class="pending" v-if="address[1] * 1000 > Date.now()" type="info">Pending</el-tag>
                       </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
@@ -447,7 +447,7 @@ import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
-import { WalletTypes, ADDRESS_WAITING_TIME } from '@/data/consts'
+import { WalletTypes } from '@/data/consts'
 import { lazyComponent } from '@router'
 import pushUtil from '@util/push-util'
 
@@ -484,8 +484,7 @@ export default {
       addressToRemove: null,
       whitelistForm: {
         address: ''
-      },
-      ADDRESS_WAITING_TIME
+      }
     }
   },
   mixins: [

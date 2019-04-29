@@ -275,15 +275,10 @@ export default {
               )
 
               this.closeExchangeDialogWith()
-              // TODO: think, maybe it is a bad idea to close form after success.
-              Object.assign(
-                this.$data.exchangeForm,
-                this.$options.data().exchangeForm
-              )
             })
             .catch(err => {
               console.error(err)
-              this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
+              this.$_showErrorAlertMessage(err.message, 'Exchange error')
             })
             .finally(() => {
               this.isExchangeSending = false
