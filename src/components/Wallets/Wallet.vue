@@ -495,7 +495,6 @@ import { required, maxLength } from 'vuelidate/lib/validators'
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
 const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
 const BITCOIN_ASSET_NAME = 'btc#bitcoin'
-const ETHEREUM_ASSET_NAME = 'eth#ethereum'
 
 export default {
   name: 'wallet',
@@ -611,14 +610,15 @@ export default {
     },
 
     accountExist () {
-      console.log(this.wallet.assetId)
-      if (this.wallet.assetId === BITCOIN_ASSET_NAME && this.btcWalletAddress) {
+      let assetDomain = this.wallet.assetId.split('#')[1]
+
+      if (assetDomain === 'bitcoin' && this.btcWalletAddress) {
         return true
       }
 
-      if ((this.wallet.assetId === ETHEREUM_ASSET_NAME ||
-        this.wallet.assetId.split('#')[1] === 'd3' ||
-        this.wallet.assetId.split('#')[1] === 'sora') && this.ethWalletAddress) {
+      if ((assetDomain === 'ethereum' ||
+        assetDomain === 'd3' ||
+        assetDomain === 'sora') && this.ethWalletAddress) {
         return true
       }
 
