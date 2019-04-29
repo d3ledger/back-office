@@ -97,6 +97,7 @@
                     "can_get_all_accounts",
                     "can_get_all_txs",
                     "can_get_all_acc_txs",
+                    "can_get_all_acc_ast",
                     "can_get_blocks"
                   ]
                 }
@@ -605,21 +606,6 @@
                 "appendRole": {
                   "accountId": "sora@sora",
                   "roleName": "sora"
-                }
-              },
-              {
-                "addAssetQuantity": {
-                  "assetId": "xor#sora",
-                  "amount": "1618033988749894848204586834"
-                }
-              },
-              {
-                "transferAsset": {
-                  "srcAccountId": "notary@notary",
-                  "destAccountId": "sora@sora",
-                  "assetId": "xor#sora",
-                  "description": "initial supply",
-                  "amount": "1618033988749894848204586834"
                 }
               },
               {
