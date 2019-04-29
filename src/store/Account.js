@@ -99,7 +99,7 @@ const getters = {
     })
   },
 
-  avaliableAssets (state) {
+  availableAssets (state) {
     return ASSETS
       .map(t => {
         const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
@@ -126,7 +126,7 @@ const getters = {
               domain = 'sora'
               break
             default:
-              throw new Error('Undefined asset! Please check avaliableAssets method!')
+              throw new Error('Undefined asset! Please check availableAssets method!')
           }
           return {
             id: `${name}$${domain}`,
