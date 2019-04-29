@@ -1,7 +1,7 @@
 <template>
   <el-container class="auth-container">
     <div style="margin-top: 2.5rem">
-      <img src="@/assets/logo.svg" alt="D3"/>
+      <img src="@/assets/logo.svg" alt="D3" @click="onShowVersion"/>
     </div>
     <span class="auth-welcome">Welcome to D3</span>
     <div class="auth-form-container">
@@ -158,7 +158,10 @@ export default {
         username: '',
         privateKey: '',
         nodeIp: this.$store.state.Account.nodeIp
-      }
+      },
+
+      versionTimeout: null,
+      countToShowVersion: 0
     }
   },
 
@@ -211,6 +214,31 @@ export default {
             this.isLoading = false
           })
       }
+    },
+
+    beforeShowVersion () {
+      this.versionTimeout = setTimeout(_ => this.afterShowVersion(), 3 * 1000)
+    },
+
+    onShowVersion () {
+      if (!this.versionTimeout) this.beforeShowVersion()
+
+      if (this.countToShowVersion === 10) {
+        const full = process.env.VUE_APP_COMMIT_HASH
+        const short = process.env.VUE_APP_COMMIT_HASH_SHORT
+        console.group('D3 - Information')
+        console.info(`Full version: ${full}`)
+        console.info(`Short version: ${short}`)
+        console.groupEnd()
+      }
+      this.countToShowVersion += 1
+    },
+
+    afterShowVersion () {
+      clearTimeout(this.versionTimeout)
+
+      this.countToShowVersion = 0
+      this.versionTimeout = null
     }
   },
 
