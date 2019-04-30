@@ -67,10 +67,12 @@
         <el-form-item label="Wallets">
           <el-select
             id="wallet-selector"
-            v-model="selectedWallet"
+            v-model="selectedWallets"
             placeholder="Choose wallets for a report"
             style="width: 100%;"
             size="large"
+            multiple
+            collapse-tags
           >
             <el-option
               v-for="wallet in wallets"
@@ -97,7 +99,9 @@
           <el-button
             class="fullwidth black clickable"
             style="margin-top: 40px;"
-            @click="download({ date, assetId: selectedWallet }, 'pdf')"
+            @click="downloadSeveral({ date }, 'pdf')"
+            :loading="isPDFGenerating"
+            :disabled="isCSVGenerating"
           >
             <fa-icon icon="download"/>
             PDF
@@ -108,7 +112,9 @@
           <el-button
             class="fullwidth black clickable"
             style="margin-top: 40px;"
-            @click="download({ date, assetId: selectedWallet }, 'csv')"
+            @click="downloadSeveral({ date, assets: selectedWallets }, 'csv')"
+            :loading="isCSVGenerating"
+            :disabled="isPDFGenerating"
           >
             <fa-icon icon="download"/>
             CSV
@@ -124,7 +130,12 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import { generatePDF, generateCSV } from '@util/report-util'
+import {
+  generatePDF,
+  generateCSV,
+  generateMultipleCSV,
+  generateMultiplePDF
+} from '@util/report-util'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
 import FileSaver from 'file-saver'
@@ -152,11 +163,14 @@ export default {
   data () {
     return {
       reportFormVisible: false,
-      selectedWallet: null,
+      selectedWallets: [],
       date: '',
       pickerOptions: {
         disabledDate: this.isDisabledDate
-      }
+      },
+
+      isPDFGenerating: false,
+      isCSVGenerating: false
     }
   },
   computed: {
@@ -185,14 +199,15 @@ export default {
   },
   created () {
     this.getAccountAssets()
-    this.selectedWallet = this.wallets && this.wallets.length && this.wallets[0].assetId
+    if (this.wallets && this.wallets.length) {
+      this.selectedWallets = this.wallets.map(w => w.assetId)
+    }
   },
   methods: {
     ...mapActions([
       'getAccountAssets',
       'getAccountAssetTransactions'
     ]),
-
     isDisabledDate: (date) => isAfter(date, endOfToday()),
 
     /*
@@ -271,7 +286,6 @@ export default {
           accountId: this.accountId,
           wallet,
           transactions: this.$store.getters.getTransactionsByAssetId(assetId),
-          assetId,
           priceFiatList,
           dateFrom,
           dateTo,
@@ -293,6 +307,80 @@ export default {
 
           this.$message.error(`Failed to generate a report. Please try again later.`)
         })
+    },
+
+    downloadSeveral ({ date }, fileFormat) {
+      const now = new Date()
+      const wallets = this.selectedWallets.map(id => this.wallets.find(w => w.assetId === id))
+
+      if (!wallets.length) {
+        this.$message.error('Please select at least one wallet for report!')
+        return
+      }
+
+      if (date.length !== 2) {
+        this.$message.error('Please select correct date!')
+        return
+      }
+
+      if (fileFormat === 'pdf') {
+        this.isPDFGenerating = true
+      } else {
+        this.isCSVGenerating = true
+      }
+
+      const dateFrom = date[0]
+      const dateTo = isAfter(endOfDay(date[1]), now) ? now : endOfDay(date[1])
+
+      const getTxsPromises = []
+      const getPricePrimises = []
+
+      wallets.forEach(w => {
+        getTxsPromises.push(
+          this.getAccountAssetTransactions({ assetId: w.assetId })
+        )
+        getPricePrimises.push(
+          this.loadPriceFiatList(w.asset, dateFrom, dateTo)
+        )
+      })
+
+      Promise.all([
+        ...getTxsPromises,
+        ...getPricePrimises
+      ]).then(res => {
+        const data = res
+          .filter(Boolean)
+          .map((prices, i) => ({
+            accountId: this.accountId,
+            wallet: wallets[i],
+            transactions: this.$store.getters.getTransactionsByAssetId(wallets[i].assetId),
+            priceFiatList: prices,
+            dateFrom,
+            dateTo,
+            formatDate: this.formatDate.bind(this),
+            formatDateWith: this.formatDateWith.bind(this),
+            formatPrecision: numberFormat.filters.formatPrecision.bind(this),
+            fiat: this.settingsView.fiat
+          }))
+
+        const generating = (fileFormat === 'pdf')
+          ? generateMultiplePDF(data)
+          : generateMultipleCSV(data)
+
+        generating
+          .then(({ blob }) => {
+            const convertedDateFrom = this.formatDateWith(dateFrom, 'MMM_D_YYYY_HH_mm')
+            const convertedDateTo = this.formatDateWith(dateTo, 'MMM_D_YYYY_HH_mm')
+            this.saveBlob(
+              blob,
+              `report-${convertedDateFrom}-${convertedDateTo}.${fileFormat}`
+            )
+          })
+          .finally(_ => {
+            this.isPDFGenerating = false
+            this.isCSVGenerating = false
+          })
+      })
     },
 
     saveBlob (blob, filename) {

@@ -159,6 +159,144 @@ export function generateCSV (params) {
   })
 }
 
+export function generateMultiplePDF (data) {
+  debug('generating PDF output...')
+  const dateFrom = data[0].dateFrom
+  const dateTo = data[0].dateTo
+  const formatDateWith = data[0].formatDateWith
+  const accountId = data[0].accountId
+  const docDefinition = {
+    info: {
+      title: `report`,
+      creationDate: new Date()
+    },
+
+    styles: {
+      title: { fontSize: 24, margin: [0, 0, 0, 10] },
+      heading1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
+      logo: { alignment: 'center', margin: [0, 0, 0, 25] }
+    },
+
+    content: [
+      { image: REPORT_LOGO, width: 200, style: 'logo' },
+      { text: `Report (${formatDateWith(dateFrom, 'MMM. D YYYY HH:mm')} - ${formatDateWith(dateTo, 'MMM. D YYYY HH:mm')})`, style: 'title' },
+      { text: `Account ID: ${accountId}` }
+    ]
+  }
+
+  data.forEach(params => {
+    const { formatDate, formatPrecision } = params
+    const data = generateReportData.call(this, { ext: 'pdf', ...params })
+    const walletDefinition = [
+      { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
+
+      { text: `Summary`, style: 'heading1' },
+      { text: `Ending Balance: ${formatPrecision(data.endingBalance)} ${data.cryptoCurrencyUnit}` },
+      { text: `Ending Balance in ${data.fiat}: ${formatPrecision(data.endingBalanceFiat)}` },
+      { text: `Starting Balance: ${formatPrecision(data.startingBalance)} ${data.cryptoCurrencyUnit}` },
+      { text: `Starting Balance in ${data.fiat}: ${formatPrecision(data.startingBalanceFiat)}` },
+      { text: `Net Change: ${formatPrecision(data.netChange)} ${data.cryptoCurrencyUnit}` },
+      { text: `Transfers In: ${formatPrecision(data.transfersIn)} ${data.cryptoCurrencyUnit}` },
+      { text: `Transfers Out: ${formatPrecision(data.transfersOut)} ${data.cryptoCurrencyUnit}` },
+
+      { text: `Transactions By Day`, style: 'heading1' },
+      {
+        layout: 'lightHorizontalLines',
+        table: {
+          headerRows: 1,
+          widths: ['15%', '17%', '17%', '17%', '17%', '17%'],
+          body: [
+            ['Date', 'In', `In (${data.fiat})`, 'Out', `Out (${data.fiat})`, 'Net'],
+            ...data.transactionsByDay.map(tx => ([
+              tx.date,
+              formatPrecision(tx.dailyIn),
+              formatPrecision(tx.dailyInFiat),
+              formatPrecision(tx.dailyOut),
+              formatPrecision(tx.dailyOutFiat),
+              formatPrecision(tx.dailyNet)
+            ]))
+          ]
+        }
+      },
+
+      { text: `Transaction Details`, style: 'heading1' },
+      {
+        layout: 'lightHorizontalLines',
+        table: {
+          headerRows: 1,
+          widths: ['15%', '40%', '45%'],
+          body: [
+            ['Time', 'Description', 'Information'],
+            ...data.transactionDetails.map(tx => ([
+              formatDate(tx.time),
+              tx.description,
+              formatInformation(
+                formatPrecision(tx.amount),
+                formatPrecision(tx.amountFiat),
+                data.fiat,
+                formatPrecision(tx.balance)
+              )
+            ]))
+          ]
+        }
+      }
+    ]
+
+    docDefinition.content.push(walletDefinition)
+  })
+
+  return fontLoader
+    .load()
+    .then(_ => new Promise((resolve, reject) => {
+      const pdfDocGenerator = pdfMake.createPdf(docDefinition)
+
+      pdfDocGenerator.getBlob(blob => {
+        debug('successfully generated PDF output')
+        resolve({ blob })
+      })
+    }))
+}
+
+export function generateMultipleCSV (data) {
+  const dataForCSV = []
+
+  data.forEach(params => {
+    const data = generateReportData.call(this, { ext: 'csv', ...params })
+    const { formatDateWith } = params
+    dataForCSV.push(
+      data.transactionDetails.map(tx => {
+        return {
+          'Asset': params.wallet.asset,
+          'Time': formatDateWith(tx.time, 'MMM. D YYYY HH:mm'),
+          'To': tx.to,
+          'Amount': tx.amount,
+          [`Amount in ${data.fiat}`]: tx.amountFiat,
+          'Balance': tx.balance,
+          [`Balance in ${data.fiat}`]: tx.balanceFiat,
+          'Description': tx.description
+        }
+      })
+    )
+  })
+
+  let csv
+
+  try {
+    csv = json2csv(dataForCSV, ',', false)
+  } catch (err) {
+    throw err
+  }
+
+  const blob = new Blob(
+    [csv],
+    { type: 'text/csv;charset=utf-8' }
+  )
+
+  debug('successfully generated CSV output', csv)
+
+  return Promise.resolve({ blob })
+}
+
 /**
  * Generate a report data object
  * @param {Object} params
