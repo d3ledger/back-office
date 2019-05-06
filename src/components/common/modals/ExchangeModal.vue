@@ -196,11 +196,13 @@ export default {
       'wallets',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
-      'accountQuorum'
+      'accountQuorum',
+      'availableAssets'
     ]),
 
     assetsWithoutOffer () {
-      return this.wallets.filter(a => a.asset !== this.exchangeDialogOfferAsset)
+      return this.availableAssets
+        .filter(a => a.asset !== this.exchangeDialogOfferAsset)
     },
 
     assetsWithoutRequest () {

@@ -19,19 +19,17 @@ import {
 import { commands, queries } from 'iroha-helpers'
 
 const irohaDomain = 'd3'
-const soraDomain = 'sora'
+
 const testAccName = 'test'
 const aliceAccName = 'alice'
-const soraAccName = 'xor'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
-const soraAccFull = `${soraAccName}@${soraDomain}`
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
 const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex')).toString('hex')
+
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex')).toString('hex')
-const soraPrivKeyHex = fs.readFileSync(path.join(__dirname, `${soraAccFull}.priv`)).toString().trim()
 
 const NODE_IP = process.env.NODE_IP || 'localhost:50051'
 const DEFAULT_TIMEOUT_LIMIT = 5000
@@ -124,7 +122,13 @@ async function initializeAssets () {
     const precision = w.precision
     const amount = w.amount
     const assetName = w.name.toLowerCase()
-    const assetId = assetName + `#${irohaDomain}`
+    let assetId = ''
+
+    if (assetName === 'sora') {
+      assetId = 'xor#sora'
+    } else {
+      assetId = `${assetName}#${irohaDomain}`
+    }
 
     console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} BEGIN ####`)
 
@@ -136,13 +140,6 @@ async function initializeAssets () {
 
     console.log('\x1b[36m%s\x1b[0m', `#### ${assetName} END ####`)
   }
-
-  console.log('\x1b[36m%s\x1b[0m', `#### XOR BEGIN ####`)
-
-  await tryToSendAmount('xor#sora', soraAccFull, aliceAccFull, 100, [soraPrivKeyHex], 1)
-  await tryToSendAmount('xor#sora', soraAccFull, testAccFull, 100, [soraPrivKeyHex], 1)
-
-  console.log('\x1b[36m%s\x1b[0m', `#### XOR END ####`)
 }
 
 async function tryToCreateAccount (accountName, domainId, publicKey) {

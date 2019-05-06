@@ -365,4 +365,10 @@ button.el-dialog__headerbtn {
 .border_fail .el-button {
   border-color: #f56c6c !important;
 }
+
+.el-loading-mask.is-fullscreen
+.el-loading-spinner
+.circular circle {
+  stroke: #f56c6c;
+}
 </style>

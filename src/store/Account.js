@@ -99,6 +99,47 @@ const getters = {
     })
   },
 
+  availableAssets (state) {
+    return ASSETS
+      .map(t => {
+        const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
+        if (isERC20) {
+          return {
+            id: `${t.name}$d3`,
+            assetId: `${t.name}#d3`,
+            domain: 'd3',
+
+            name: t.name,
+            asset: t.asset
+          }
+        } else {
+          const name = t.name.toLowerCase()
+          let domain = ''
+          switch (t.asset) {
+            case 'ETH':
+              domain = 'ethereum'
+              break
+            case 'BTC':
+              domain = 'bitcoin'
+              break
+            case 'XOR':
+              domain = 'sora'
+              break
+            default:
+              throw new Error('Undefined asset! Please check availableAssets method!')
+          }
+          return {
+            id: `${name}$${domain}`,
+            assetId: `${name}#${domain}`,
+            domain: domain,
+
+            name: t.name,
+            asset: t.asset
+          }
+        }
+      })
+  },
+
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
     return state.assetTransactions[assetId] ? getTransferAssetsFrom(
