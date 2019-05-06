@@ -281,6 +281,10 @@ const getters = {
     }
   },
 
+  accountSignatoriesAmount (state, getters) {
+    return getters.accountSignatories.length
+  },
+
   accountLimits (state) {
     return state.accountLimits
   },
