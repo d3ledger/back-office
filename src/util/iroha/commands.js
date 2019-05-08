@@ -52,10 +52,10 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   let txClient = newCommandService()
 
   let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
-  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
+  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, quorum: senderQuorum })
 
   let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
-  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
+  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
@@ -70,15 +70,29 @@ function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
+    .findIndex(tx => {
+      // console.log(tx)
+      return !tx.signaturesList.length
+    })
+  // const indexOfSigned = cloneDeep(batchArray)
+  //   .map(tx => tx.toObject())
+  //   .findIndex(tx => tx.signaturesList.length)
 
-  batchArray[indexOfSigned].clearSignaturesList()
+  // batchArray[indexOfSigned].clearSignaturesList()
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit)
+  const indexOfSigned = cloneDeep(batchArray)
+    .map(tx => tx.toObject())
+    .findIndex(tx => {
+      console.log(tx)
+      return !tx.signaturesList.length
+    })
+
+  console.log(batchArray, indexOfSigned)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'ENOUGH_SIGNATURES_COLLECTED',
+    'STATEFUL_VALIDATION_FAILED'
+  ])
 }
 
 function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {

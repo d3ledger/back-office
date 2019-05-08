@@ -273,16 +273,16 @@ const getters = {
     return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
   },
 
+  quorum (state, getters) {
+    return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : state.accountQuorum
+  },
+
   accountSignatories (state) {
     if (state.accountInfo['brvs@brvs']) {
       return state.accountSignatories.filter((item, key) => key % 2 === 1)
     } else {
       return state.accountSignatories
     }
-  },
-
-  accountSignatoriesAmount (state, getters) {
-    return getters.accountSignatories.length
   },
 
   accountLimits (state) {
@@ -835,7 +835,7 @@ const actions = {
   },
 
   createSettlement (
-    { commit, state },
+    { commit, state, getters },
     { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
@@ -843,7 +843,7 @@ const actions = {
     return irohaUtil.createSettlement(
       privateKeys,
       state.accountId,
-      state.accountQuorum,
+      getters.quorum,
       offerAssetId,
       offerAmount,
       description,
@@ -889,12 +889,12 @@ const actions = {
       })
   },
 
-  addSignatory ({ commit, state }, privateKeys) {
+  addSignatory ({ commit, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
     const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
-    return irohaUtil.addSignatory(privateKeys, state.accountQuorum, {
+    return irohaUtil.addSignatory(privateKeys, getters.quorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -906,9 +906,9 @@ const actions = {
       })
   },
 
-  removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
+  removeSignatory ({ commit, state, getters }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, state.accountQuorum, {
+    return irohaUtil.removeSignatory(privateKeys, getters.quorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -986,9 +986,9 @@ const actions = {
       })
   },
 
-  subscribePushNotifications ({ commit, state, dispatch }, { privateKeys, settings }) {
+  subscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys, settings }) {
     commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
-    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
       accountId: state.accountId,
       key: `push_subscription`,
       // eslint-disable-next-line
@@ -1004,10 +1004,10 @@ const actions = {
       })
   },
 
-  unsubscribePushNotifications ({ commit, state, dispatch }, { privateKeys }) {
+  unsubscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys }) {
     commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
 
-    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
       accountId: state.accountId,
       key: `push_subscription`,
       value: ''
@@ -1022,11 +1022,11 @@ const actions = {
       })
   },
 
-  setWhiteList ({ commit, state, dispatch }, { privateKeys, whitelist, type }) {
+  setWhiteList ({ commit, state, dispatch, getters }, { privateKeys, whitelist, type }) {
     const key = type === WalletTypes.ETH ? 'eth_whitelist' : 'btc_whitelist'
 
     commit(types.SET_WHITELIST_REQUEST)
-    return irohaUtil.setAccountDetail(privateKeys, state.accountQuorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
       accountId: state.accountId,
       key,
       // eslint-disable-next-line

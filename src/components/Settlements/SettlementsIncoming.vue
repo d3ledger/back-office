@@ -145,12 +145,13 @@ export default {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
         .then(privateKeys => {
           if (!privateKeys) return
-
+          console.log(this.settlementForAcceptance)
           return this.acceptSettlement({
             privateKeys,
             settlementBatch: this.settlementForAcceptance.from.batch
           })
-            .then(() => {
+            .then((result) => {
+              console.log(result)
               this.$message.success('Accepted')
             })
             .catch(err => {
