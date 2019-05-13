@@ -17,29 +17,27 @@ export const cache = {
   nodeIp: null // persisted by localStorage
 }
 
-export function newCommandService () {
-  return new CommandService(cache.nodeIp)
-}
-
-export function newQueryService () {
-  return new QueryService(cache.nodeIp)
-}
-
 export function newCommandServiceOptions (privateKeys, quorum) {
+  const url = new URL(cache.nodeIp)
+  url.protocol = location.protocol
+
   return {
     privateKeys,
     quorum,
     creatorAccountId: cache.username,
-    commandService: new CommandService(cache.nodeIp),
+    commandService: new CommandService(url),
     timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
 }
 
 export function newQueryServiceOptions () {
+  const url = new URL(cache.nodeIp)
+  url.protocol = location.protocol
+
   return {
     privateKey: cache.key,
     creatorAccountId: cache.username,
-    queryService: new QueryService(cache.nodeIp),
+    queryService: new QueryService(url),
     timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
 }
