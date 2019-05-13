@@ -17,27 +17,35 @@ export const cache = {
   nodeIp: null // persisted by localStorage
 }
 
-export function newCommandServiceOptions (privateKeys, quorum) {
+const DYNAMIC_URL = () => {
   const url = new URL(cache.nodeIp)
   url.protocol = location.protocol
+  return url.origin
+}
 
+export function newCommandService () {
+  return new CommandService(DYNAMIC_URL())
+}
+
+export function newQueryService () {
+  return new QueryService(DYNAMIC_URL())
+}
+
+export function newCommandServiceOptions (privateKeys, quorum) {
   return {
     privateKeys,
     quorum,
     creatorAccountId: cache.username,
-    commandService: new CommandService(url),
+    commandService: new CommandService(DYNAMIC_URL()),
     timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
 }
 
 export function newQueryServiceOptions () {
-  const url = new URL(cache.nodeIp)
-  url.protocol = location.protocol
-
   return {
     privateKey: cache.key,
     creatorAccountId: cache.username,
-    queryService: new QueryService(url),
+    queryService: new QueryService(DYNAMIC_URL()),
     timeoutLimit: DEFAULT_TIMEOUT_LIMIT
   }
 }
