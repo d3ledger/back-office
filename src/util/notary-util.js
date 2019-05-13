@@ -43,10 +43,10 @@ const getRelaysAddresses = () => {
     .then(({ data }) => {
       const { ETH, BTC } = data
       if (ETH.value) {
-        axiosETH.defaults.baseURL = `${PROTOCOL}//${data.ETH.value}`
+        axiosETH.defaults.baseURL = `${PROTOCOL}://${data.ETH.value}`
       }
       if (BTC.value) {
-        axiosBTC.defaults.baseURL = `${PROTOCOL}//${data.BTC.value}`
+        axiosBTC.defaults.baseURL = `${PROTOCOL}://${data.BTC.value}`
       }
       return data
     })
@@ -67,7 +67,7 @@ const getRegistrationAddresses = () => {
 export default {
   get baseURL () { return axiosNotaryRegistration.defaults.baseURL },
   set baseURL (baseURL) {
-    axiosNotaryRegistration.defaults.baseURL = `${PROTOCOL}//${baseURL}`
+    axiosNotaryRegistration.defaults.baseURL = `${PROTOCOL}://${baseURL}`
   },
   signup: signup(axiosNotaryRegistration),
   getFreeEthRelaysNumber,
