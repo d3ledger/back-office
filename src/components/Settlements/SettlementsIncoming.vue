@@ -150,7 +150,7 @@ export default {
             privateKeys,
             settlementBatch: this.settlementForAcceptance.from.batch
           })
-            .then((result) => {
+            .then(() => {
               this.$message.success('Accepted')
             })
             .catch(err => {
