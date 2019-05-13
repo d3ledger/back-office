@@ -120,7 +120,7 @@ const actions = {
       lastTransactionDate: 0,
       totalAmountInterval: 0
     }
-    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: getters.accountId,
       key: `limit_${_assetId}`,
       // Iroha don't allow quotes in strings
@@ -136,7 +136,7 @@ const actions = {
   removeAssetLimit ({ commit, getters }, { privateKeys, limit }) {
     commit(types.REMOVE_ASSET_LIMIT_REQUEST)
     const _assetId = limit.assetId.replace('#', '_')
-    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: getters.accountId,
       key: `limit_${_assetId}`,
       value: ''

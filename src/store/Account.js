@@ -273,8 +273,8 @@ const getters = {
     return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
   },
 
-  quorum (state, getters) {
-    return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : state.accountQuorum
+  irohaQuorum (state, getters) {
+    return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : getters.accountQuorum
   },
 
   accountSignatories (state) {
@@ -802,10 +802,10 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, state.accountQuorum, {
+    return irohaUtil.transferAsset(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
       assetId,
@@ -843,7 +843,7 @@ const actions = {
     return irohaUtil.createSettlement(
       privateKeys,
       state.accountId,
-      getters.quorum,
+      getters.irohaQuorum,
       offerAssetId,
       offerAmount,
       description,
@@ -874,10 +874,10 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
+  rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(state.accountQuorum)
+    const fake = new Array(getters.accountQuorum)
       .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
@@ -894,7 +894,7 @@ const actions = {
 
     const { privateKey } = irohaUtil.generateKeypair()
     const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
-    return irohaUtil.addSignatory(privateKeys, getters.quorum, {
+    return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -908,7 +908,7 @@ const actions = {
 
   removeSignatory ({ commit, state, getters }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, getters.quorum, {
+    return irohaUtil.removeSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -931,9 +931,9 @@ const actions = {
       })
   },
 
-  editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
+  editAccountQuorum ({ commit, state, getters }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, state.accountQuorum, {
+    return irohaUtil.setAccountQuorum(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       quorum
     })
@@ -988,7 +988,7 @@ const actions = {
 
   subscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys, settings }) {
     commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
-    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       key: `push_subscription`,
       // eslint-disable-next-line
@@ -1007,7 +1007,7 @@ const actions = {
   unsubscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys }) {
     commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
 
-    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       key: `push_subscription`,
       value: ''
@@ -1026,7 +1026,7 @@ const actions = {
     const key = type === WalletTypes.ETH ? 'eth_whitelist' : 'btc_whitelist'
 
     commit(types.SET_WHITELIST_REQUEST)
-    return irohaUtil.setAccountDetail(privateKeys, getters.quorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       key,
       // eslint-disable-next-line
