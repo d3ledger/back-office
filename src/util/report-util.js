@@ -39,8 +39,9 @@ export function generatePDF (params) {
       },
 
       styles: {
-        title: { fontSize: 24, margin: [0, 0, 0, 10] },
+        title: { fontSize: 20, margin: [0, 0, 0, 10] },
         heading1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
+        heading2: { fontSize: 20, bold: true, margin: [0, 10, 0, 5] },
         logo: { alignment: 'center', margin: [0, 0, 0, 25] }
       },
 
@@ -48,9 +49,9 @@ export function generatePDF (params) {
         { image: REPORT_LOGO, width: 200, style: 'logo' },
         { text: `Report (${formatDateWith(data.dateFrom, 'MMM. D YYYY HH:mm')} - ${formatDateWith(data.dateTo, 'MMM. D YYYY HH:mm')})`, style: 'title' },
         { text: `Account ID: ${data.accountId}` },
-        { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
+        { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})`, style: 'heading1' },
 
-        { text: `Summary`, style: 'heading1' },
+        { text: `Summary`, style: 'heading2' },
         { text: `Ending Balance: ${formatPrecision(data.endingBalance)} ${data.cryptoCurrencyUnit}` },
         { text: `Ending Balance in ${data.fiat}: ${formatPrecision(data.endingBalanceFiat)}` },
         { text: `Starting Balance: ${formatPrecision(data.startingBalance)} ${data.cryptoCurrencyUnit}` },
@@ -59,7 +60,7 @@ export function generatePDF (params) {
         { text: `Transfers In: ${formatPrecision(data.transfersIn)} ${data.cryptoCurrencyUnit}` },
         { text: `Transfers Out: ${formatPrecision(data.transfersOut)} ${data.cryptoCurrencyUnit}` },
 
-        { text: `Transactions By Day`, style: 'heading1' },
+        { text: `Transactions By Day`, style: 'heading2' },
         {
           layout: 'lightHorizontalLines',
           table: {
@@ -79,7 +80,7 @@ export function generatePDF (params) {
           }
         },
 
-        { text: `Transaction Details`, style: 'heading1' },
+        { text: `Transaction Details`, style: 'heading2' },
         {
           layout: 'lightHorizontalLines',
           table: {
@@ -172,8 +173,9 @@ export function generateMultiplePDF (data) {
     },
 
     styles: {
-      title: { fontSize: 24, margin: [0, 0, 0, 10] },
+      title: { fontSize: 20, margin: [0, 0, 0, 10] },
       heading1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
+      heading2: { fontSize: 20, bold: true, margin: [0, 10, 0, 5] },
       logo: { alignment: 'center', margin: [0, 0, 0, 25] }
     },
 
@@ -188,9 +190,9 @@ export function generateMultiplePDF (data) {
     const { formatDate, formatPrecision } = params
     const data = generateReportData.call(this, { ext: 'pdf', ...params })
     const walletDefinition = [
-      { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})` },
+      { text: `Wallet: ${data.walletName} (${data.cryptoCurrencyUnit})`, style: 'heading1' },
 
-      { text: `Summary`, style: 'heading1' },
+      { text: `Summary`, style: 'heading2' },
       { text: `Ending Balance: ${formatPrecision(data.endingBalance)} ${data.cryptoCurrencyUnit}` },
       { text: `Ending Balance in ${data.fiat}: ${formatPrecision(data.endingBalanceFiat)}` },
       { text: `Starting Balance: ${formatPrecision(data.startingBalance)} ${data.cryptoCurrencyUnit}` },
@@ -199,7 +201,7 @@ export function generateMultiplePDF (data) {
       { text: `Transfers In: ${formatPrecision(data.transfersIn)} ${data.cryptoCurrencyUnit}` },
       { text: `Transfers Out: ${formatPrecision(data.transfersOut)} ${data.cryptoCurrencyUnit}` },
 
-      { text: `Transactions By Day`, style: 'heading1' },
+      { text: `Transactions By Day`, style: 'heading2' },
       {
         layout: 'lightHorizontalLines',
         table: {
@@ -219,7 +221,7 @@ export function generateMultiplePDF (data) {
         }
       },
 
-      { text: `Transaction Details`, style: 'heading1' },
+      { text: `Transaction Details`, style: 'heading2' },
       {
         layout: 'lightHorizontalLines',
         table: {
