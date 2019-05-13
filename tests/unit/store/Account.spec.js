@@ -368,7 +368,7 @@ describe('Account store', () => {
           amount: randomAmount()
         }
 
-        actions.transferAsset({ commit, state }, params)
+        actions.transferAsset({ commit, state, getters }, params)
           .then(() => {
             expect(commit.args).to.deep.equal([
               [types.TRANSFER_ASSET_REQUEST],
