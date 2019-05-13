@@ -51,6 +51,10 @@
         <SvgIcon iconName="Explorer" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
         <span class="title-left" slot="title">Explorer</span>
       </el-menu-item>
+      <el-menu-item v-if="isAdmin" index="/fee">
+        <SvgIcon iconName="Explorer" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
+        <span class="title-left" slot="title">Fee</span>
+      </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
         <span class="title-left" slot="title">Settings</span>
