@@ -71,27 +71,20 @@ function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
     .findIndex(tx => {
-      // console.log(tx)
       return !tx.signaturesList.length
     })
-  // const indexOfSigned = cloneDeep(batchArray)
-  //   .map(tx => tx.toObject())
-  //   .findIndex(tx => tx.signaturesList.length)
 
-  // batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
   const indexOfSigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
-    .findIndex(tx => {
-      console.log(tx)
-      return !tx.signaturesList.length
-    })
+    .findIndex(tx => tx.signaturesList.length)
 
-  console.log(batchArray, indexOfSigned)
+  batchArray[indexOfSigned].clearSignaturesList()
+
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+
   return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'ENOUGH_SIGNATURES_COLLECTED',
-    'STATEFUL_VALIDATION_FAILED'
+    'COMMITED',
+    'COMMITED'
   ])
 }
 
