@@ -7,6 +7,7 @@ import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { getParsedItem, setStringifyItem } from '@util/storage-util'
 import notaryUtil from '@util/notary-util'
+import configUtil from '@util/config-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -28,9 +29,8 @@ const types = flow(
   'GET_OFFER_TO_REQUEST_PRICE',
   'GET_FREE_ETH_RELAYS',
   'GET_FREE_BTC_RELAYS',
-  'LOAD_NODE_IP',
-  'LOAD_REGISTRATION_IP',
-  'LOAD_RELAY_IP'
+
+  'LOAD_CONFIGURATION_FILE'
 ])
 
 function initialState () {
@@ -143,28 +143,15 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.LOAD_NODE_IP_REQUEST] (state) {},
-  [types.LOAD_NODE_IP_SUCCESS] (state, IPs) {
-    state.nodeIPs = IPs
-  },
-  [types.LOAD_NODE_IP_FAILURE] (state, err) {
-    handleError(state, err)
-  },
+  [types.LOAD_CONFIGURATION_FILE_REQUEST] (state) {},
+  [types.LOAD_CONFIGURATION_FILE_SUCCESS] (state, config) {
+    state.nodeIPs = config.nodes
+    state.registrationIPs = config.registrations
 
-  [types.LOAD_REGISTRATION_IP_REQUEST] (state) {},
-  [types.LOAD_REGISTRATION_IP_SUCCESS] (state, IPs) {
-    state.registrationIPs = IPs
+    state.btcRegistrationIp = config.relays.BTC.value
+    state.ethRegistrationIp = config.relays.ETH.value
   },
-  [types.LOAD_REGISTRATION_IP_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.LOAD_RELAY_IP_REQUEST] (state) {},
-  [types.LOAD_RELAY_IP_SUCCESS] (state, IPs) {
-    state.btcRegistrationIp = IPs.BTC.value
-    state.ethRegistrationIp = IPs.ETH.value
-  },
-  [types.LOAD_RELAY_IP_FAILURE] (state, err) {
+  [types.LOAD_CONFIGURATION_FILE_FAILURE] (state, err) {
     handleError(state, err)
   }
 }
@@ -244,10 +231,10 @@ const actions = {
     commit(types.UPDATE_DASHBOARD_SORT_CRITERION, criterion)
   },
 
-  getFreeEthRelaysNumber ({ commit }) {
+  getFreeEthRelaysNumber ({ commit, state }) {
     commit(types.GET_FREE_ETH_RELAYS_REQUEST)
 
-    return notaryUtil.getFreeEthRelaysNumber()
+    return notaryUtil.getFreeRelaysNumber(state.ethRegistrationIp)
       .then(relays => {
         commit(types.GET_FREE_ETH_RELAYS_SUCCESS, relays)
       })
@@ -257,10 +244,10 @@ const actions = {
       })
   },
 
-  getFreeBtcRelaysNumber ({ commit }) {
+  getFreeBtcRelaysNumber ({ commit, state }) {
     commit(types.GET_FREE_BTC_RELAYS_REQUEST)
 
-    return notaryUtil.getFreeBtcRelaysNumber()
+    return notaryUtil.getFreeRelaysNumber(state.btcRegistrationIp)
       .then(relays => {
         commit(types.GET_FREE_BTC_RELAYS_SUCCESS, relays)
       })
@@ -270,41 +257,13 @@ const actions = {
       })
   },
 
-  loadNodeAddresses ({ commit }) {
-    commit(types.LOAD_NODE_IP_REQUEST)
+  loadConfiguration ({ commit }) {
+    commit(types.LOAD_CONFIGURATION_FILE_REQUEST)
 
-    return notaryUtil.getNodeAddresses()
-      .then(IPs => {
-        commit(types.LOAD_NODE_IP_SUCCESS, IPs)
-      })
+    return configUtil.getConfiguration()
+      .then(config => commit(types.LOAD_CONFIGURATION_FILE_SUCCESS, config))
       .catch(err => {
-        commit(types.LOAD_NODE_IP_FAILURE, err)
-        throw err
-      })
-  },
-
-  loadRegistrationAddreses ({ commit }) {
-    commit(types.LOAD_REGISTRATION_IP_REQUEST)
-
-    return notaryUtil.getRegistrationAddresses()
-      .then(IPs => {
-        commit(types.LOAD_REGISTRATION_IP_SUCCESS, IPs)
-      })
-      .catch(err => {
-        commit(types.LOAD_REGISTRATION_IP_FAILURE, err)
-        throw err
-      })
-  },
-
-  loadRelayAddresses ({ commit }) {
-    commit(types.LOAD_RELAY_IP_REQUEST)
-
-    return notaryUtil.getRelaysAddresses()
-      .then(IPs => {
-        commit(types.LOAD_RELAY_IP_SUCCESS, IPs)
-      })
-      .catch(err => {
-        commit(types.LOAD_RELAY_IP_FAILURE, err)
+        commit(types.LOAD_CONFIGURATION_FILE_FAILURE)
         throw err
       })
   }

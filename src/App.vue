@@ -23,9 +23,7 @@ export default {
 
   methods: {
     ...mapActions([
-      'loadNodeAddresses',
-      'loadRelayAddresses',
-      'loadRegistrationAddreses'
+      'loadConfiguration'
     ]),
     showConnectionErrorMessage: debounce(function () {
       this.$message.error(`connection error: Please check IP address OR your internet connection`)
@@ -33,9 +31,7 @@ export default {
   },
 
   created () {
-    this.loadRelayAddresses()
-    this.loadNodeAddresses()
-    this.loadRegistrationAddreses()
+    this.loadConfiguration()
   }
 }
 </script>
