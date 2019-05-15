@@ -21,7 +21,8 @@ const types = flow(
   fromPairs
 )([
   'ADD_ASSET_LIMIT',
-  'REMOVE_ASSET_LIMIT'
+  'REMOVE_ASSET_LIMIT',
+  'SET_TRANSFER_FEE'
 ])
 
 function initialState () {
@@ -85,7 +86,13 @@ const mutations = {
 
   [types.REMOVE_ASSET_LIMIT_REQUEST] () {},
 
-  [types.REMOVE_ASSET_LIMIT_FAILURE] () {}
+  [types.REMOVE_ASSET_LIMIT_FAILURE] () {},
+
+  [types.SET_TRANSFER_FEE_SUCCESS] () {},
+
+  [types.SET_TRANSFER_FEE_REQUEST] () {},
+
+  [types.SET_TRANSFER_FEE_FAILURE] () {}
 }
 
 const actions = {
@@ -121,7 +128,7 @@ const actions = {
       totalAmountInterval: 0
     }
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId: getters.accountId,
+      accountId: state.accountId,
       key: `limit_${_assetId}`,
       // Iroha don't allow quotes in strings
       // eslint-disable-next-line
@@ -137,7 +144,7 @@ const actions = {
     commit(types.REMOVE_ASSET_LIMIT_REQUEST)
     const _assetId = limit.assetId.replace('#', '_')
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId: getters.accountId,
+      accountId: state.accountId,
       key: `limit_${_assetId}`,
       value: ''
     })
