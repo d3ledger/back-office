@@ -80,7 +80,8 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'GET_CUSTOM_ASSETS'
+  'GET_CUSTOM_ASSETS',
+  'SET_TRANSFER_FEE'
 ])
 
 function initialState () {
@@ -171,6 +172,7 @@ const getters = {
           return {
             id: `${t.name}$d3`,
             assetId: `${t.name}#d3`,
+            feeId: `${t.name}_d3`,
             domain: 'd3',
 
             name: t.name,
@@ -195,6 +197,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
+            feeId: `${name}_${domain}`,
             domain: domain,
 
             name: t.name,
@@ -336,9 +339,10 @@ const getters = {
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
+    } else {
+      const wallet = find('eth_whitelist', state.accountInfo)
+      return wallet ? JSON.parse(wallet.eth_whitelist) : []
     }
-
-    return []
   },
 
   btcWhiteListAddresses (state, getters) {
@@ -398,6 +402,10 @@ const getters = {
   subscribed (state) {
     const subscription = find('push_subscription', state.accountInfo)
     return subscription && subscription.push_subscription.length > 0
+  },
+
+  transferFee (state) {
+    return state.accountInfo['transfer_billing@d3'] || {}
   }
 }
 
@@ -692,17 +700,19 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SET_ETH_WHITELIST_REQUEST] (state) {},
+  [types.SET_WHITELIST_REQUEST] (state) {},
 
-  [types.SET_ETH_WHITELIST_SUCCESS] (state) { },
+  [types.SET_WHITELIST_SUCCESS] (state) { },
 
-  [types.SET_ETH_WHITELIST_FAILURE] (state, err) {
+  [types.SET_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
   },
 
-  [types.SET_BTC_WHITELIST_REQUEST] (state) {},
+  [types.SET_TRANSFER_FEE_SUCCESS] () {},
 
-  [types.SET_BTC_WHITELIST_SUCCESS] (state) { },
+  [types.SET_TRANSFER_FEE_REQUEST] () {},
+
+  [types.SET_TRANSFER_FEE_FAILURE] () {},
 
   [types.SET_BTC_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
@@ -1156,6 +1166,27 @@ const actions = {
       .then(res => commit(types.GET_CUSTOM_ASSETS_SUCCESS, res))
       .catch(err => {
         commit(types.GET_CUSTOM_ASSETS_FAILURE, err)
+        throw err
+      })
+  },
+
+  setTransferFee ({commit, state, dispatch, getters}, {privateKeys, asset, fee}) {
+    commit(types.SET_TRANSFER_FEE_REQUEST)
+    console.log(asset, fee, state.accountId, privateKeys, getters.irohaQuorum)
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: 'transfer_billing@d3',
+      // accountId: state.accountId,
+      key: asset.toLowerCase(),
+      // eslint-disable-next-line
+      value: fee
+    })
+      .then(() => {
+        dispatch('updateAccount')
+
+        commit(types.SET_TRANSFER_FEE_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SET_TRANSFER_FEE_FAILURE)
         throw err
       })
   }

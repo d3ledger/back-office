@@ -468,6 +468,19 @@
                 }
               },
               {
+                "createAccount": {
+                  "accountName": "transfer_billing",
+                  "domainId": "d3",
+                  "publicKey": "1776d3cf1e73b0f361dd9287f8aa7d95f78bb6abe44784ce1cd173096084abd0"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "transfer_billing@d3",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
                 "appendRole": {
                   "accountId": "withdrawal@notary",
                   "roleName": "withdrawal"
