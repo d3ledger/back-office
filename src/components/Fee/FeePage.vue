@@ -102,9 +102,14 @@ export default {
     ])
   },
 
+  beforeMount () {
+    this.getTransferFee()
+  },
+
   methods: {
     ...mapActions([
       'setTransferFee',
+      'getTransferFee',
       'openApprovalDialog'
     ]),
 
@@ -127,6 +132,7 @@ export default {
             fee: this.feeAmount
           })
             .then(() => {
+              this.getTransferFee()
               this.$message.success('Fee successfully setted')
             })
             .catch((err) => {

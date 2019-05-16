@@ -52,7 +52,8 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'SET_TRANSFER_FEE'
+  'SET_TRANSFER_FEE',
+  'GET_TRANSFER_FEE'
 ])
 
 function initialState () {
@@ -71,7 +72,8 @@ function initialState () {
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
-    rejectSettlementLoading: false
+    rejectSettlementLoading: false,
+    transferFee: {}
   }
 }
 
@@ -315,7 +317,7 @@ const getters = {
   },
 
   transferFee (state) {
-    return state.accountInfo['transfer_billing@d3'] || {}
+    return state.transferFee
   }
 }
 
@@ -622,7 +624,15 @@ const mutations = {
 
   [types.SET_TRANSFER_FEE_REQUEST] () {},
 
-  [types.SET_TRANSFER_FEE_FAILURE] () {}
+  [types.SET_TRANSFER_FEE_FAILURE] () {},
+
+  [types.GET_TRANSFER_FEE_REQUEST] () {},
+
+  [types.GET_TRANSFER_FEE_SUCCESS] (state, response) {
+    state.transferFee = response['admin@notary']
+  },
+
+  [types.GET_TRANSFER_FEE_FAILURE] () {}
 }
 
 const actions = {
@@ -1054,7 +1064,6 @@ const actions = {
     console.log(asset, fee, state.accountId, privateKeys, getters.irohaQuorum)
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: 'transfer_billing@d3',
-      // accountId: state.accountId,
       key: asset.toLowerCase(),
       // eslint-disable-next-line
       value: fee
@@ -1066,6 +1075,23 @@ const actions = {
       })
       .catch(err => {
         commit(types.SET_TRANSFER_FEE_FAILURE)
+        throw err
+      })
+  },
+
+  getTransferFee ({commit, state, dispatch, getters}) {
+    commit(types.GET_TRANSFER_FEE_REQUEST)
+
+    return irohaUtil.getAccountDetail({
+      accountId: 'transfer_billing@d3'
+    })
+      .then((result) => {
+        dispatch('updateAccount')
+
+        commit(types.GET_TRANSFER_FEE_SUCCESS, result)
+      })
+      .catch(err => {
+        commit(types.GET_TRANSFER_FEE_FAILURE)
         throw err
       })
   }
