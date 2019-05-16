@@ -130,11 +130,9 @@ export default {
   },
 
   created () {
-    Promise.all([
-      this.loadWalletsSortCriterion(),
-      this.getAccountAssets(),
-      this.getAllAssetsTransactions()
-    ])
+    this.loadWalletsSortCriterion()
+    this.getAccountAssets()
+    this.getAllAssetsTransactions()
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
   },
