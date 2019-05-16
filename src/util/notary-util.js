@@ -20,7 +20,7 @@ const signup = axios => (name, publicKey) => {
 const getFreeRelaysNumber = (url) => {
   return axios({
     url: '/free-addresses/number',
-    baseURL: url
+    baseURL: `${PROTOCOL}//${url}`
   })
     .then(({ data }) => data)
 }
