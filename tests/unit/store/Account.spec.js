@@ -131,7 +131,12 @@ describe('Account store', () => {
         connectionError: null,
         acceptSettlementLoading: false,
         rejectSettlementLoading: false,
-        customAssets: {}
+        customAssets: {},
+        transferFee: {},
+        custodyFee: {},
+        accountCreationFee: {},
+        exchangeFee: {},
+        withdrawalFee: {}
       }
 
       mutations[types.RESET](state)
