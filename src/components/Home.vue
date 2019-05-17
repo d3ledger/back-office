@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <Menu :quorum='accountQuorum'/>
+    <Menu :quorum="accountQuorum"/>
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 62px;">
       <router-view />
     </el-main>
@@ -23,15 +23,15 @@ export default {
   data () {
     return {}
   },
-  created () {
-    this.getAllUnsignedTransactions()
-    this.loadSettings()
-    this.getAccountRoles()
-  },
   computed: {
     ...mapGetters([
       'accountQuorum'
     ])
+  },
+  created () {
+    this.getAllUnsignedTransactions()
+    this.loadSettings()
+    this.getAccountRoles()
   },
 
   mounted () {

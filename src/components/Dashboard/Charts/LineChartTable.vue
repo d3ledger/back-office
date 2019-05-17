@@ -15,7 +15,11 @@ import dateFormat from '@/components/mixins/dateFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
-  name: 'line-chart-table',
+  name: 'LineChartTable',
+  mixins: [
+    currencySymbol,
+    dateFormat
+  ],
   props: {
     data: {
       type: Array,
@@ -26,10 +30,6 @@ export default {
       required: true
     }
   },
-  mixins: [
-    currencySymbol,
-    dateFormat
-  ],
   data () {
     const fontFamily = "'IBM Plex Sans', sans-serif"
 

@@ -1,45 +1,89 @@
 <template>
   <div v-if="wallet.assetId">
     <el-row style="margin-bottom: 20px">
-      <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
+      <el-col
+        :xs="24"
+        :lg="{ span: 22, offset: 1 }"
+        :xl="{ span: 20, offset: 2 }">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-card class="card" :body-style="{ padding: '0' }">
+            <el-card
+              :body-style="{ padding: '0' }"
+              class="card">
               <div class="card_header">
                 <div class="card_header-title">
                   <div>{{ wallet.name }}</div>
-                  <asset-icon :asset="wallet.asset" :size="17" style="color: black;"/>
+                  <asset-icon
+                    :asset="wallet.asset"
+                    :size="17"
+                    style="color: black;"/>
                 </div>
               </div>
               <div class="top-left-card">
                 <div class="amount">
-                  <el-tooltip class="item" effect="dark" :content="`${ amountWithPrecision } ${ wallet.asset }`" placement="top-start">
+                  <el-tooltip
+                    :content="`${ amountWithPrecision } ${ wallet.asset }`"
+                    class="item"
+                    effect="dark"
+                    placement="top-start">
                     <h2 class="text-overflow">{{ wallet.amount | fitAmount }} {{ wallet.asset }}</h2>
                   </el-tooltip>
                 </div>
                 <div class="card_actions">
-                  <div v-if="accountExist" role="button" class="card_actions-button button" @click="receiveFormVisible = true">
-                    <fa-icon class="card_actions-button-text" icon="angle-double-down" />
-                    <span class="card_actions-button-text" data-cy="deposit">Deposit</span>
+                  <div
+                    v-if="accountExist"
+                    role="button"
+                    class="card_actions-button button"
+                    @click="receiveFormVisible = true">
+                    <fa-icon
+                      class="card_actions-button-text"
+                      icon="angle-double-down" />
+                    <span
+                      class="card_actions-button-text"
+                      data-cy="deposit">Deposit</span>
                   </div>
-                  <div v-if="accountExist" role="button" class="card_actions-button button" @click="withdrawFormVisible = true">
-                    <fa-icon class="card_actions-button-text" icon="angle-double-up" />
-                    <span class="card_actions-button-text" data-cy="withdraw">Withdraw</span>
+                  <div
+                    v-if="accountExist"
+                    role="button"
+                    class="card_actions-button button"
+                    @click="withdrawFormVisible = true">
+                    <fa-icon
+                      class="card_actions-button-text"
+                      icon="angle-double-up" />
+                    <span
+                      class="card_actions-button-text"
+                      data-cy="withdraw">Withdraw</span>
                   </div>
-                  <div role="button" class="card_actions-button button" @click="transferFormVisible = true">
-                    <fa-icon class="card_actions-button-text" icon="arrow-right" />
-                    <span class="card_actions-button-text" data-cy="transfer">Transfer</span>
+                  <div
+                    role="button"
+                    class="card_actions-button button"
+                    @click="transferFormVisible = true">
+                    <fa-icon
+                      class="card_actions-button-text"
+                      icon="arrow-right" />
+                    <span
+                      class="card_actions-button-text"
+                      data-cy="transfer">Transfer</span>
                   </div>
-                  <div role="button" class="card_actions-button button" @click="openExchangeDialog(wallet.asset)">
-                    <fa-icon class="card_actions-button-text" icon="exchange-alt" />
-                    <span class="card_actions-button-text" data-cy="exchange">Exchange</span>
+                  <div
+                    role="button"
+                    class="card_actions-button button"
+                    @click="openExchangeDialog(wallet.asset)">
+                    <fa-icon
+                      class="card_actions-button-text"
+                      icon="exchange-alt" />
+                    <span
+                      class="card_actions-button-text"
+                      data-cy="exchange">Exchange</span>
                   </div>
                 </div>
               </div>
             </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card class="card" :body-style="{ padding : '0' }">
+            <el-card
+              :body-style="{ padding : '0' }"
+              class="card">
               <div class="card_header-divided">
                 <div class="card_header-title">
                   <div class="card_header-name">Market</div>
@@ -49,19 +93,21 @@
                       :key="period"
                       :class="[selectedMarketPeriod !== period ? 'chart_time-filter' : 'chart_time-filter selected']"
                       @click="selectedMarketPeriod = period"
-                      >
+                    >
                       <p class="chart_time-filter_value">{{ period }}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="card-info" v-loading="cryptoInfo.isLoading">
+              <div
+                v-loading="cryptoInfo.isLoading"
+                class="card-info">
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="9">
                     <p
-                      class="card-info-amount"
                       :title="`the current price of 1 ${wallet.asset} in ${settingsView.fiat}`"
+                      class="card-info-amount"
                     >
                       {{ cryptoInfo.current.fiat | formatNumberLong }} {{ currencySymbol }}
                     </p>
@@ -75,8 +121,8 @@
                   </el-col>
                   <el-col :span="15">
                     <p
-                      class="card-info-amount"
                       :title="`the current price of 1 ${wallet.asset} in ${settingsView.crypto}`"
+                      class="card-info-amount"
                     >
                       {{ cryptoInfo.current.crypto | formatNumberLong }} {{ settingsView.crypto }}
                     </p>
@@ -94,14 +140,14 @@
                   <el-col :span="9">
                     <p class="card-info-title">Market Cap</p>
                     <p
-                      class="card-info-amount--small"
                       :title="`the market cap in ${settingsView.fiat}`"
+                      class="card-info-amount--small"
                     >
                       {{ cryptoInfo.market.cap.fiat | formatNumberShort }} {{ currencySymbol }}
                     </p>
                     <p
-                      class="card-info-amount--small"
                       :title="`the market cap in ${wallet.asset}`"
+                      class="card-info-amount--small"
                     >
                       {{ cryptoInfo.market.cap.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
@@ -109,14 +155,14 @@
                   <el-col :span="8">
                     <p class="card-info-title">Volume ({{ selectedMarketPeriod }})</p>
                     <p
-                      class="card-info-amount--small"
                       :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
+                      class="card-info-amount--small"
                     >
                       {{ cryptoInfo.market.volume.fiat | formatNumberShort }} {{ currencySymbol }}
                     </p>
                     <p
-                      class="card-info-amount--small"
                       :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${wallet.asset}`"
+                      class="card-info-amount--small"
                     >
                       {{ cryptoInfo.market.volume.crypto | formatNumberShort }} {{ wallet.asset }}
                     </p>
@@ -124,8 +170,8 @@
                   <el-col :span="7">
                     <p class="card-info-title">Circulating Supply</p>
                     <p
-                      class="card-info-amount--small"
                       :title="`the total supply in ${wallet.asset}`"
+                      class="card-info-amount--small"
                     >
                       {{ cryptoInfo.market.supply | formatNumberShort }} {{ wallet.asset }}
                     </p>
@@ -138,17 +184,23 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :xs="24" :lg="{ span: 22, offset: 1 }" :xl="{ span: 20, offset: 2 }">
+      <el-col
+        :xs="24"
+        :lg="{ span: 22, offset: 1 }"
+        :xl="{ span: 20, offset: 2 }">
         <el-card :body-style="{ padding: '0' }">
           <div class="card_header">
             <div class="card_header-title">
               <span class="card_header-name card_history-title">History</span>
-              <el-button size="medium" type="primary" @click="fetchWallet">Refresh</el-button>
+              <el-button
+                size="medium"
+                type="primary"
+                @click="fetchWallet">Refresh</el-button>
             </div>
           </div>
           <el-table
-            :data="transactions"
             ref="table"
+            :data="transactions"
             class="wallets_table"
             @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
           >
@@ -219,7 +271,9 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="Date" width="130">
+            <el-table-column
+              label="Date"
+              width="130">
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
                   {{ formatDate(scope.row.from.date) }}
@@ -229,7 +283,9 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="Type" width="130">
+            <el-table-column
+              label="Type"
+              width="130">
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">EXCHANGE</span>
                 <span v-else-if="scope.row.to === 'notary'">WITHDRAWAL</span>
@@ -237,18 +293,28 @@
                 <span v-else>TRANSFER</span>
               </template>
             </el-table-column>
-            <el-table-column label="Amount" width="130" show-overflow-tooltip>
+            <el-table-column
+              label="Amount"
+              width="130"
+              show-overflow-tooltip>
               <template slot-scope="scope">
-                <span class="table_amount" v-if="scope.row.from.to">
+                <span
+                  v-if="scope.row.from.to"
+                  class="table_amount">
                   <p>- {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }} </p>
                   <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
                 </span>
-                <span class="table_amount" v-else>
+                <span
+                  v-else
+                  class="table_amount">
                   {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }} {{ wallet.asset }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="Address" min-width="130" show-overflow-tooltip>
+            <el-table-column
+              label="Address"
+              min-width="130"
+              show-overflow-tooltip>
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
                   {{ scope.row.from.to }}
@@ -261,7 +327,11 @@
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="message" label="Description" min-width="160" show-overflow-tooltip>
+            <el-table-column
+              prop="message"
+              label="Description"
+              min-width="160"
+              show-overflow-tooltip>
               <template slot-scope="scope">
                 <span class="wallets_table-message">
                   <p v-if="scope.row.from.to">
@@ -275,14 +345,13 @@
             </el-table-column>
           </el-table>
           <el-pagination
-            class="wallet-pagination"
             :pager-count="11"
             :page-size="10"
-            layout="prev, pager, next"
             :total="paginationMeta.allTransactionsSize"
+            class="wallet-pagination"
+            layout="prev, pager, next"
             @current-change="onNextPage"
-          >
-          </el-pagination>
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -290,25 +359,27 @@
     <el-dialog
       :title="'Withdraw'"
       :visible.sync="withdrawFormVisible"
-      @close="closeWithdrawDialog()"
       width="450px"
       center
+      @close="closeWithdrawDialog()"
     >
       <el-form
         ref="withdrawForm"
         :model="withdrawForm"
         class="withdraw_form"
       >
-        <el-form-item label="I send" prop="amount">
+        <el-form-item
+          label="I send"
+          prop="amount">
           <el-input
-            name="amount"
             v-model="$v.withdrawForm.amount.$model"
-            placeholder="0"
-            type="number"
             :class="[
               _isValid($v.withdrawForm.amount) ? 'border_success' : '',
               _isError($v.withdrawForm.amount) ? 'border_fail' : ''
             ]"
+            name="amount"
+            placeholder="0"
+            type="number"
           >
             <div slot="append">
               {{ wallet.asset }}
@@ -322,35 +393,36 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{wallet.amount | formatPrecision}} {{wallet.asset}}
+            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
           </span>
         </span>
-        <el-form-item label="Address" prop="wallet">
+        <el-form-item
+          label="Address"
+          prop="wallet">
           <el-input
             v-if="!whiteListAddresses.length"
             v-model="$v.withdrawForm.wallet.$model"
-            placeholder="withdrawal address"
             :class="[
               _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
               _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
             ]"
+            placeholder="withdrawal address"
           />
           <el-select
             v-else
             v-model="$v.withdrawForm.wallet.$model"
-            placeholder="Select withdrawal address"
             :class="[
               'withdraw-wallet_select',
               _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
               _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
             ]"
+            placeholder="Select withdrawal address"
           >
             <el-option
               v-for="address in whiteListAddresses"
               :key="address"
               :label="address"
-              :value="address">
-            </el-option>
+              :value="address"/>
           </el-select>
           <span
             v-if="_isError($v.withdrawForm.wallet)"
@@ -359,10 +431,10 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            class="fullwidth black clickable"
-            @click="onSubmitWithdrawalForm"
             :loading="isSending"
+            class="fullwidth black clickable"
             style="margin-top: 40px"
+            @click="onSubmitWithdrawalForm"
           >
             Withdraw
           </el-button>
@@ -371,15 +443,17 @@
     </el-dialog>
 
     <el-dialog
-      title="Deposit"
       :visible.sync="receiveFormVisible"
+      title="Deposit"
       width="450px"
       center
     >
       <div style="display: flex; flex-direction: column; align-items: center;">
         <div style="text-align: center; margin-bottom: 20px">
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
-          <p><span data-cy="deposit-address" class="monospace">{{ walletAddress }}</span></p>
+          <p><span
+            data-cy="deposit-address"
+            class="monospace">{{ walletAddress }}</span></p>
         </div>
         <qrcode-vue
           :value="walletAddress"
@@ -389,27 +463,29 @@
     </el-dialog>
 
     <el-dialog
-      title="Transfer"
       :visible.sync="transferFormVisible"
-      @close="closeTransferForm()"
+      title="Transfer"
       width="450px"
       center
+      @close="closeTransferForm()"
     >
       <el-form
         ref="transferForm"
         :model="transferForm"
         class="transfer_form"
       >
-        <el-form-item label="I send" prop="amount">
+        <el-form-item
+          label="I send"
+          prop="amount">
           <el-input
-            name="amount"
             v-model="$v.transferForm.amount.$model"
-            placeholder="0"
-            type="number"
             :class="[
               _isValid($v.transferForm.amount) ? 'border_success' : '',
               _isError($v.transferForm.amount) ? 'border_fail' : ''
             ]"
+            name="amount"
+            placeholder="0"
+            type="number"
           >
             <div slot="append">
               {{ wallet.asset }}
@@ -423,32 +499,36 @@
         <span class="form-item-text">
           Available balance:
           <span class="form-item-text-amount">
-            {{wallet.amount | formatPrecision}} {{wallet.asset}}
+            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
           </span>
         </span>
-        <el-form-item label="Counterparty" prop="to">
+        <el-form-item
+          label="Counterparty"
+          prop="to">
           <el-input
             v-model="$v.transferForm.to.$model"
-            placeholder="Account id"
             :class="[
               _isValid($v.transferForm.to) ? 'border_success' : '',
               _isError($v.transferForm.to) ? 'border_fail' : ''
             ]"
+            placeholder="Account id"
           />
           <span
             v-if="_isError($v.transferForm.to)"
             class="el-form-item__error"
           >{{ _showError($v.transferForm.to) }}</span>
         </el-form-item>
-        <el-form-item label="Additional information" prop="description">
+        <el-form-item
+          label="Additional information"
+          prop="description">
           <el-input
             v-model="$v.transferForm.description.$model"
-            placeholder="Details"
-            resize="none"
             :class="[
               _isValid($v.transferForm.description) ? 'border_success' : '',
               _isError($v.transferForm.description) ? 'border_fail' : ''
             ]"
+            placeholder="Details"
+            resize="none"
           />
           <span
             v-if="_isError($v.transferForm.description)"
@@ -457,10 +537,10 @@
         </el-form-item>
       </el-form>
       <el-button
-        class="fullwidth black clickable"
-        @click="onSubmitTransferForm"
-        style="margin-top: 40px"
         :loading="isSending"
+        class="fullwidth black clickable"
+        style="margin-top: 40px"
+        @click="onSubmitTransferForm"
       >
         TRANSFER
       </el-button>
@@ -497,7 +577,17 @@ const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notar
 const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
-  name: 'wallet',
+  name: 'Wallet',
+  filters: {
+    fitAmount (amount) {
+      return numberFormat.filters.formatPrecision(amount)
+    }
+  },
+  components: {
+    AssetIcon,
+    QrcodeVue,
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   mixins: [
     dateFormat,
     numberFormat,
@@ -532,11 +622,6 @@ export default {
         }
       }
     }
-  },
-  components: {
-    AssetIcon,
-    QrcodeVue,
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   data () {
     return {
@@ -769,12 +854,6 @@ export default {
         assetId: this.wallet.assetId
       })
       this.activePage = page
-    }
-  },
-
-  filters: {
-    fitAmount (amount) {
-      return numberFormat.filters.formatPrecision(amount)
     }
   }
 }

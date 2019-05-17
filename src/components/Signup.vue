@@ -1,27 +1,33 @@
 <template>
   <el-container class="auth-container">
     <div style="margin-top: 2.5rem">
-      <img src="@/assets/logo.svg" alt="D3"/>
+      <img
+        src="@/assets/logo.svg"
+        alt="D3">
     </div>
     <span class="auth-welcome">Sign Up</span>
     <div class="auth-form-container">
       <el-form
-        class="auth-form"
         ref="form"
         :model="form"
+        class="auth-form"
         label-position="top"
       >
-        <el-form-item label="Username" prop="username">
-          <el-row type="flex" justify="space-between">
+        <el-form-item
+          label="Username"
+          prop="username">
+          <el-row
+            type="flex"
+            justify="space-between">
             <el-col :span="20">
               <el-input
-                name="username"
                 v-model="$v.form.username.$model"
                 :disabled="isLoading"
                 :class="[
                   _isValid($v.form.username) ? 'border_success' : '',
                   _isError($v.form.username) ? 'border_fail' : ''
                 ]"
+                name="username"
               />
             </el-col>
             <div
@@ -44,16 +50,16 @@
           <el-select
             v-model="$v.form.nodeIp.$model"
             :disabled="isLoading"
+            :class="[
+              'auth-form_select',
+              _isValid($v.form.nodeIp) ? 'border_success' : '',
+              _isError($v.form.nodeIp) ? 'border_fail' : ''
+            ]"
             style="width: 100%;"
             filterable
             allow-create
-            @change="selectNotaryIp"
             popper-class="black-form_select-dropdown"
-              :class="[
-                'auth-form_select',
-                _isValid($v.form.nodeIp) ? 'border_success' : '',
-                _isError($v.form.nodeIp) ? 'border_fail' : ''
-              ]"
+            @change="selectNotaryIp"
           >
             <el-option
               v-for="node in registrationIPs"
@@ -71,11 +77,11 @@
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
+            :loading="isLoading"
             data-cy="signup"
             class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
-            :loading="isLoading"
           >
             Sign Up
           </el-button>
@@ -86,25 +92,29 @@
         <router-link
           to="/login"
         >
-          <el-button data-cy="login" class="auth_goto-container-button fullwidth">
+          <el-button
+            data-cy="login"
+            class="auth_goto-container-button fullwidth">
             Log in
           </el-button>
         </router-link>
       </div>
     </div>
     <el-dialog
-      title="Private key"
       :visible.sync="dialogVisible"
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
+      title="Private key"
       width="400px"
       center
     >
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer">
         <el-button
           type="primary"
           class="black"
@@ -115,9 +125,9 @@
         </el-button>
 
         <el-button
+          :disabled="!downloaded"
           type="default"
           @click="onCloseDialog"
-          :disabled="!downloaded"
         >
           Confirm
         </el-button>
@@ -135,7 +145,7 @@ import { _nodeIp, _user, errorHandler } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'signup',
+  name: 'Signup',
   mixins: [
     messageMixin,
     errorHandler
@@ -169,6 +179,14 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters([
+      'freeEthRelaysNumber',
+      'freeBtcRelaysNumber',
+      'registrationIPs'
+    ])
+  },
+
   created () {
     this.form.nodeIp = this.registrationIPs[0].value || ''
   },
@@ -177,12 +195,8 @@ export default {
     this.selectNotaryIp()
   },
 
-  computed: {
-    ...mapGetters([
-      'freeEthRelaysNumber',
-      'freeBtcRelaysNumber',
-      'registrationIPs'
-    ])
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   },
 
   methods: {
@@ -235,10 +249,6 @@ export default {
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
     }
-  },
-
-  mounted () {
-    document.documentElement.style.setProperty('--show-loading', 'none')
   }
 }
 </script>

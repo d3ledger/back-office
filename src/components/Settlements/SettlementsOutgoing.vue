@@ -1,8 +1,8 @@
 <template>
   <section>
     <el-table
-      :data="settlements"
       ref="table"
+      :data="settlements"
       class="settlements_table"
       @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
     >
@@ -11,7 +11,9 @@
           <div class="transaction_details">
             <el-row>
               <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
-              <el-col :span="6" class="transaction_details-amount">
+              <el-col
+                :span="6"
+                class="transaction_details-amount">
                 <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
                 <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
@@ -21,19 +23,25 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="Amount" min-width="200">
+      <el-table-column
+        label="Amount"
+        min-width="200">
         <template slot-scope="scope">
           {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
           {{ '→' }}
           {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
         </template>
       </el-table-column>
-      <el-table-column label="Counterparty" min-width="120">
+      <el-table-column
+        label="Counterparty"
+        min-width="120">
         <template slot-scope="scope">
           to {{ scope.row.from.to }}
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="120">
+      <el-table-column
+        label="Date"
+        width="120">
         <template slot-scope="scope">
           {{ formatDate(scope.row.from.date) }}
         </template>
@@ -54,8 +62,8 @@
       </el-table-column>
     </el-table>
     <el-dialog
-      title="Reject settlement?"
       :visible.sync="rejectionDialogVisible"
+      title="Reject settlement?"
       width="450px"
       center
     >
@@ -67,8 +75,8 @@
         <el-button
           :loading="isLoading"
           type="danger"
-          @click="onReject"
           class="fullwidth"
+          @click="onReject"
         >Reject</el-button>
       </div>
     </el-dialog>

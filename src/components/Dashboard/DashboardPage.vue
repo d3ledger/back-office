@@ -1,10 +1,14 @@
 <template>
-  <el-container v-if="isDashboardLoading" v-loading.fullscreen="isDashboardLoading" />
+  <el-container
+    v-loading.fullscreen="isDashboardLoading"
+    v-if="isDashboardLoading" />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
-          <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
+          <dashboard-portfolio
+            :price="portfolioPrice"
+            :chart-data="portfolioHistory"/>
         </el-col>
         <el-col :span="8">
           <dashboard-donut-chart :portfolio="portfolioPercent"/>
@@ -15,13 +19,15 @@
           <el-row>
             <el-card :body-style="{ padding: '0' }">
               <el-col :span="10">
-                <dashboard-table :portfolio="portfolioList" :dashboardChartHeight="dashboardChartHeight"/>
+                <dashboard-table
+                  :portfolio="portfolioList"
+                  :dashboard-chart-height="dashboardChartHeight"/>
               </el-col>
               <el-col :span="1">
-                <div class="vertical_devider"></div>
+                <div class="vertical_devider"/>
               </el-col>
               <el-col :span="14">
-                <dashboard-chart :dashboardChartHeight="dashboardChartHeight"/>
+                <dashboard-chart :dashboard-chart-height="dashboardChartHeight"/>
               </el-col>
             </el-card>
           </el-row>
@@ -47,7 +53,7 @@ import { lazyComponent } from '@router'
 import debounce from 'lodash/fp/debounce'
 
 export default {
-  name: 'dashboard-page',
+  name: 'DashboardPage',
   components: {
     DashboardPortfolio: lazyComponent('Dashboard/DashboardPortfolio'),
     DashboardDonutChart: lazyComponent('Dashboard/DashboardDonutChart'),
@@ -58,19 +64,6 @@ export default {
   data () {
     return {
       dashboardChartHeight: 0
-    }
-  },
-  created () {
-    this.$store.dispatch('loadDashboard')
-    window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
-    this.getDashboardChartHeight()
-  },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.getDashboardChartHeight)
-  },
-  methods: {
-    getDashboardChartHeight (event) {
-      this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }
   },
   computed: {
@@ -87,6 +80,19 @@ export default {
     },
     hasNoData () {
       return !this.hasNonEmptyWallets && this.wallets.length > 0
+    }
+  },
+  created () {
+    this.$store.dispatch('loadDashboard')
+    window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
+    this.getDashboardChartHeight()
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getDashboardChartHeight)
+  },
+  methods: {
+    getDashboardChartHeight (event) {
+      this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }
   }
 }

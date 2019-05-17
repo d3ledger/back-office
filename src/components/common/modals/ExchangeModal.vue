@@ -1,41 +1,43 @@
 <template>
   <el-dialog
+    :visible="exchangeDialogVisible"
     title="Exchange"
     width="450px"
     top="2vh"
-    :visible="exchangeDialogVisible"
-    @close="closeExchangeDialogWith()"
     center
+    @close="closeExchangeDialogWith()"
   >
     <el-form
       ref="exchangeForm"
       :model="exchangeForm"
       class="exchange_form"
     >
-      <el-form-item label="I send" prop="offer_amount" >
+      <el-form-item
+        label="I send"
+        prop="offer_amount" >
         <el-input
-          name="amount"
-          type="number"
           v-model="$v.exchangeForm.offer_amount.$model"
-          placeholder="0"
           :class="[
             _isValid($v.exchangeForm.offer_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.offer_amount) ? 'border_fail' : ''
           ]"
+          name="amount"
+          type="number"
+          placeholder="0"
         >
           <el-select
-            v-model="exchangeDialogOfferAsset"
-            @change="getOfferToRequestPrice()"
             slot="append"
+            v-model="exchangeDialogOfferAsset"
             placeholder="asset"
             style="width: 100px"
+            @change="getOfferToRequestPrice()"
           >
             <el-option
               v-for="wallet in assetsWithoutRequest"
               :key="wallet.id"
               :label="wallet.asset"
               :value="wallet.asset">
-                <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
+              <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
             </el-option>
           </el-select>
         </el-input>
@@ -46,35 +48,39 @@
       </el-form-item>
       <span class="form-item-text">
         Available balance:
-        <span v-if="exchangeDialogOfferAsset" class="form-item-text-amount">
+        <span
+          v-if="exchangeDialogOfferAsset"
+          class="form-item-text-amount">
           {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
         </span>
         <span v-else>...</span>
       </span>
-      <el-form-item label="I receive" prop="request_amount">
+      <el-form-item
+        label="I receive"
+        prop="request_amount">
         <el-input
-          name="amount"
-          type="number"
           v-model="$v.exchangeForm.request_amount.$model"
-          placeholder="0"
           :class="[
             _isValid($v.exchangeForm.request_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.request_amount) ? 'border_fail' : ''
           ]"
+          name="amount"
+          type="number"
+          placeholder="0"
         >
           <el-select
-            v-model="exchangeDialogRequestAsset"
-            @change="getOfferToRequestPrice()"
             slot="append"
+            v-model="exchangeDialogRequestAsset"
             placeholder="asset"
             style="width: 100px"
+            @change="getOfferToRequestPrice()"
           >
             <el-option
               v-for="wallet in assetsWithoutOffer"
               :key="wallet.id"
               :label="wallet.asset"
               :value="wallet.asset">
-                <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
+              <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
             </el-option>
           </el-select>
         </el-input>
@@ -85,34 +91,40 @@
       </el-form-item>
       <span class="form-item-text">
         Market price:
-        <span v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice" class="form-item-text-amount">
+        <span
+          v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
+          class="form-item-text-amount">
           1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
         </span>
         <span v-else>...</span>
       </span>
-      <el-form-item label="Counterparty" prop="to">
+      <el-form-item
+        label="Counterparty"
+        prop="to">
         <el-input
           v-model="$v.exchangeForm.to.$model"
-          placeholder="Account id"
           :class="[
             _isValid($v.exchangeForm.to) ? 'border_success' : '',
             _isError($v.exchangeForm.to) ? 'border_fail' : ''
           ]"
+          placeholder="Account id"
         />
         <span
           v-if="_isError($v.exchangeForm.to)"
           class="el-form-item__error"
         >{{ _showError($v.exchangeForm.to) }}</span>
       </el-form-item>
-      <el-form-item label="Additional information" prop="description">
+      <el-form-item
+        label="Additional information"
+        prop="description">
         <el-input
           v-model="$v.exchangeForm.description.$model"
-          placeholder="Description"
-          resize="none"
           :class="[
             _isValid($v.exchangeForm.description) ? 'border_success' : '',
             _isError($v.exchangeForm.description) ? 'border_fail' : ''
           ]"
+          placeholder="Description"
+          resize="none"
         />
         <span
           v-if="_isError($v.exchangeForm.description)"
@@ -121,10 +133,10 @@
       </el-form-item>
     </el-form>
     <el-button
-      class="dialog-form_buttons fullwidth action"
-      @click="onSubmitExchangeDialog()"
-      style="margin-top: 40px"
       :loading="isExchangeSending"
+      class="dialog-form_buttons fullwidth action"
+      style="margin-top: 40px"
+      @click="onSubmitExchangeDialog()"
     >
       EXCHANGE
     </el-button>
@@ -147,7 +159,7 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'exchange-modal',
+  name: 'ExchangeModal',
   mixins: [
     messageMixin,
     numberFormat,

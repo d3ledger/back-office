@@ -1,6 +1,11 @@
 <template>
-  <router-link class="card" :to="'/wallets/' + walletId">
-    <asset-icon :asset="asset" :size="24" style="margin-right: 20px" />
+  <router-link
+    :to="'/wallets/' + walletId"
+    class="card">
+    <asset-icon
+      :asset="asset"
+      :size="24"
+      style="margin-right: 20px" />
     <div class="info-container">
       <div class="label">{{ name }}</div>
       <div class="asset">{{ asset }}</div>
@@ -12,7 +17,7 @@
 import AssetIcon from '@/components/common/AssetIcon'
 
 export default {
-  name: 'wallet-menu-item',
+  name: 'WalletMenuItem',
   components: {
     AssetIcon
   },

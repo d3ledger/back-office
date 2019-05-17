@@ -14,10 +14,10 @@ import { encode as json2csv } from 'csv.js'
 import { fontLoader } from './font-util'
 
 pdfMake.vfs = fontLoader.vfs
-fontLoader.addFont({URL: 'fonts/Roboto-Regular.ttf', name: 'Roboto-Regular.ttf'})
-fontLoader.addFont({URL: 'fonts/Roboto-Italic.ttf', name: 'Roboto-Italic.ttf'})
-fontLoader.addFont({URL: 'fonts/Roboto-Medium.ttf', name: 'Roboto-Medium.ttf'})
-fontLoader.addFont({URL: 'fonts/Roboto-MediumItalic.ttf', name: 'Roboto-MediumItalic.ttf'})
+fontLoader.addFont({ URL: 'fonts/Roboto-Regular.ttf', name: 'Roboto-Regular.ttf' })
+fontLoader.addFont({ URL: 'fonts/Roboto-Italic.ttf', name: 'Roboto-Italic.ttf' })
+fontLoader.addFont({ URL: 'fonts/Roboto-Medium.ttf', name: 'Roboto-Medium.ttf' })
+fontLoader.addFont({ URL: 'fonts/Roboto-MediumItalic.ttf', name: 'Roboto-MediumItalic.ttf' })
 
 const debug = require('debug')('report-util')
 

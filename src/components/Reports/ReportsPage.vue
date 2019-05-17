@@ -1,5 +1,7 @@
 <template>
-  <el-container id="reports-page" v-if="wallets.length">
+  <el-container
+    v-if="wallets.length"
+    id="reports-page">
     <el-main>
       <el-row>
         <el-col
@@ -10,8 +12,14 @@
             <div class="header">
               <span>Reports</span>
               <div>
-                <el-button class="report_button" size="medium" type="primary" @click="reportFormVisible = true">
-                  <fa-icon class="report_button-icon" icon="file" />
+                <el-button
+                  class="report_button"
+                  size="medium"
+                  type="primary"
+                  @click="reportFormVisible = true">
+                  <fa-icon
+                    class="report_button-icon"
+                    icon="file" />
                   <span data-cy="getReport">
                     Reports
                   </span>
@@ -19,16 +27,23 @@
               </div>
             </div>
             <el-table
-              class="report_table"
               :data="previousMonthReports"
-              >
-              <el-table-column label="Date" min-width="100">
+              class="report_table"
+            >
+              <el-table-column
+                label="Date"
+                min-width="100">
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Wallet" prop="walletName" min-width="100"></el-table-column>
-              <el-table-column label="Download" width="225">
+              <el-table-column
+                label="Wallet"
+                prop="walletName"
+                min-width="100"/>
+              <el-table-column
+                label="Download"
+                width="225">
                 <template slot-scope="scope">
                   <div class="list_actions">
                     <el-button
@@ -37,7 +52,9 @@
                       type="primary"
                       @click="download(scope.row, 'pdf')"
                     >
-                      <fa-icon class="report_button-icon" icon="file-pdf" />
+                      <fa-icon
+                        class="report_button-icon"
+                        icon="file-pdf" />
                       PDF
                     </el-button>
                     <el-button
@@ -46,7 +63,9 @@
                       type="primary"
                       @click="download(scope.row, 'csv')"
                     >
-                      <fa-icon class="report_button-icon" icon="file-excel" />
+                      <fa-icon
+                        class="report_button-icon"
+                        icon="file-excel" />
                       CSV
                     </el-button>
                   </div>
@@ -78,18 +97,17 @@
               v-for="wallet in wallets"
               :key="wallet.name"
               :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-              :value="wallet.assetId">
-            </el-option>
+              :value="wallet.assetId"/>
           </el-select>
         </el-form-item>
         <el-form-item label="Date">
           <el-date-picker
-            style="width: 100%"
             v-model="date"
+            :picker-options="pickerOptions"
+            style="width: 100%"
             type="daterange"
             start-placeholder="Start date"
             end-placeholder="End date"
-            :picker-options="pickerOptions"
           />
         </el-form-item>
       </el-form>
@@ -97,11 +115,11 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-button
+            :loading="isPDFGenerating"
+            :disabled="isCSVGenerating"
             class="fullwidth black clickable"
             style="margin-top: 40px;"
             @click="downloadSeveral({ date }, 'pdf')"
-            :loading="isPDFGenerating"
-            :disabled="isCSVGenerating"
           >
             <fa-icon icon="download"/>
             PDF
@@ -110,11 +128,11 @@
 
         <el-col :span="12">
           <el-button
+            :loading="isCSVGenerating"
+            :disabled="isPDFGenerating"
             class="fullwidth black clickable"
             style="margin-top: 40px;"
             @click="downloadSeveral({ date, assets: selectedWallets }, 'csv')"
-            :loading="isCSVGenerating"
-            :disabled="isPDFGenerating"
           >
             <fa-icon icon="download"/>
             CSV
@@ -152,14 +170,14 @@ import cryptoCompareUtil from '@util/cryptoApi-axios-util'
 import { lazyComponent } from '@router'
 
 export default {
-  name: 'reports-page',
+  name: 'ReportsPage',
+  components: {
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   mixins: [
     dateFormat,
     numberFormat
   ],
-  components: {
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
-  },
   data () {
     return {
       reportFormVisible: false,
