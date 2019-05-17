@@ -19,6 +19,47 @@
                 label="Transfer fee">
                 <template slot-scope="scope">
                   {{ transferFee[scope.row.feeId] || 0 }}
+                  <el-button
+                    size="mini"
+                    @click="handleEdit(scope.row, FeeTypes.TRANSFER)">
+                    Edit
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="id"
+                label="Exchange fee">
+                <template slot-scope="scope">
+                  {{ exchangeFee[scope.row.feeId] || 0 }}
+                  <el-button
+                    size="mini"
+                    @click="handleEdit(scope.row, FeeTypes.EXCHANGE)">
+                    Edit
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="id"
+                label="Withdrawal fee">
+                <template slot-scope="scope">
+                  {{ withdrawalFee[scope.row.feeId] || 0 }}
+                  <el-button
+                    size="mini"
+                    @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)">
+                    Edit
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="id"
+                label="Custody fee">
+                <template slot-scope="scope">
+                  {{ custodyFee[scope.row.feeId] || 0 }}
+                  <el-button
+                    size="mini"
+                    @click="handleEdit(scope.row, FeeTypes.CUSTODY)">
+                    Edit
+                  </el-button>
                 </template>
               </el-table-column>
               <el-table-column
@@ -28,11 +69,6 @@
                     v-model="search"
                     size="mini"
                     placeholder="Type to search"/>
-                </template>
-                <template slot-scope="scope">
-                  <el-button
-                    size="mini"
-                    @click="handleEdit(scope.row)">Edit</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -54,7 +90,7 @@
       <div slot="footer" class="dialog-form_buttons-block">
         <el-button
           type="danger"
-          @click="setFee"
+          @click="editFee"
           class="dialog-form_buttons action"
           :loading="settingFee">
           Set
@@ -77,6 +113,7 @@ import currencySymbol from '@/components/mixins/currencySymbol'
 import {
   errorHandler
 } from '@/components/mixins/validation'
+import { FeeTypes } from '@/data/consts'
 // import { required } from 'vuelidate/lib/validators'
 
 export default {
@@ -92,47 +129,60 @@ export default {
       setFeeFormVisible: false,
       feeAmount: 0,
       assetToSet: null,
-      settingFee: false
+      settingFee: false,
+      feeType: '',
+      FeeTypes
     }
   },
   computed: {
     ...mapGetters([
       'availableAssets',
-      'transferFee'
+      'transferFee',
+      'custodyFee',
+      'accountCreationFee',
+      'exchangeFee',
+      'withdrawalFee'
     ])
   },
 
   beforeMount () {
-    this.getTransferFee()
+    console.log(FeeTypes)
+    this.getFee(FeeTypes.TRANSFER)
+    this.getFee(FeeTypes.CUSTODY)
+    this.getFee(FeeTypes.ACCOUNT_CREATION)
+    this.getFee(FeeTypes.EXCHANGE)
+    this.getFee(FeeTypes.WITHDRAWAL)
   },
 
   methods: {
     ...mapActions([
-      'setTransferFee',
-      'getTransferFee',
+      'setFee',
+      'getFee',
       'openApprovalDialog'
     ]),
 
-    handleEdit (asset) {
+    handleEdit (asset, feeType) {
       this.feeAmount = this.transferFee[asset.feeId] || 0
       this.assetToSet = asset
       this.setFeeFormVisible = true
+      this.feeType = feeType
     },
 
-    setFee () {
+    editFee () {
       this.settingFee = true
 
       this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
 
-          return this.setTransferFee({
+          return this.setFee({
             privateKeys,
             asset: this.assetToSet.feeId,
-            fee: this.feeAmount
+            fee: this.feeAmount,
+            feeType: this.feeType
           })
             .then(() => {
-              this.getTransferFee()
+              this.getFee(this.feeType)
               this.$message.success('Fee successfully setted')
             })
             .catch((err) => {

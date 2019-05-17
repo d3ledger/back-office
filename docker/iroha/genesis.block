@@ -473,12 +473,64 @@
                 "createAccount": {
                   "accountName": "transfer_billing",
                   "domainId": "d3",
-                  "publicKey": "1776d3cf1e73b0f361dd9287f8aa7d95f78bb6abe44784ce1cd173096084abd0"
+                  "publicKey": "0"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "custody_billing",
+                  "domainId": "d3",
+                  "publicKey": "1"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "account_creation_billing",
+                  "domainId": "d3",
+                  "publicKey": "2"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "exchange_billing",
+                  "domainId": "d3",
+                  "publicKey": "3"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "withdrawal_billing",
+                  "domainId": "d3",
+                  "publicKey": "4"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "transfer_billing@d3",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "custody_billing@d3",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "account_creation_billing@d3",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "exchange_billing@d3",
+                  "roleName": "btc_fee_rate_setter"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "withdrawal_billing@d3",
                   "roleName": "btc_fee_rate_setter"
                 }
               },

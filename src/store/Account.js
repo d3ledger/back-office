@@ -12,7 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes } from '@/data/consts'
+import { WalletTypes, FeeTypes } from '@/data/consts'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -52,8 +52,8 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'SET_TRANSFER_FEE',
-  'GET_TRANSFER_FEE'
+  'SET_FEE',
+  'GET_FEE'
 ])
 
 function initialState () {
@@ -73,7 +73,11 @@ function initialState () {
     connectionError: null,
     acceptSettlementLoading: false,
     rejectSettlementLoading: false,
-    transferFee: {}
+    transferFee: {},
+    custodyFee: {},
+    accountCreationFee: {},
+    exchangeFee: {},
+    withdrawalFee: {}
   }
 }
 
@@ -110,7 +114,7 @@ const getters = {
           return {
             id: `${t.name}$d3`,
             assetId: `${t.name}#d3`,
-            feeId: `${t.name}_d3`,
+            feeId: `${t.name.toLowerCase()}_d3`,
             domain: 'd3',
 
             name: t.name,
@@ -318,6 +322,22 @@ const getters = {
 
   transferFee (state) {
     return state.transferFee
+  },
+
+  custodyFee (state) {
+    return state.custodyFee
+  },
+
+  accountCreationFee (state) {
+    return state.accountCreationFee
+  },
+
+  exchangeFee (state) {
+    return state.exchangeFee
+  },
+
+  withdrawalFee (state) {
+    return state.withdrawalFee
   }
 }
 
@@ -620,19 +640,40 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SET_TRANSFER_FEE_SUCCESS] () {},
+  [types.SET_FEE_SUCCESS] () {},
 
-  [types.SET_TRANSFER_FEE_REQUEST] () {},
+  [types.SET_FEE_REQUEST] () {},
 
-  [types.SET_TRANSFER_FEE_FAILURE] () {},
+  [types.SET_FEE_FAILURE] () {},
 
-  [types.GET_TRANSFER_FEE_REQUEST] () {},
+  [types.GET_FEE_REQUEST] () {},
 
-  [types.GET_TRANSFER_FEE_SUCCESS] (state, response) {
-    state.transferFee = response['admin@notary']
+  [types.GET_FEE_SUCCESS] (state, { response, feeType }) {
+    switch (feeType) {
+      case FeeTypes.TRANSFER: {
+        state.transferFee = response['admin@notary'] || {}
+        return
+      }
+      case FeeTypes.CUSTODY: {
+        state.custodyFee = response['admin@notary'] || {}
+        return
+      }
+      case FeeTypes.ACCOUNT_CREATION: {
+        state.accountCreationFee = response['admin@notary'] || {}
+        return
+      }
+      case FeeTypes.EXCHANGE: {
+        state.exchangeFee = response['admin@notary'] || {}
+        return
+      }
+      case FeeTypes.WITHDRAWAL: {
+        state.withdrawalFee = response['admin@notary'] || {}
+      }
+    }
   },
 
-  [types.GET_TRANSFER_FEE_FAILURE] () {}
+  [types.GET_FEE_FAILURE] () {}
+
 }
 
 const actions = {
@@ -1059,39 +1100,42 @@ const actions = {
       })
   },
 
-  setTransferFee ({commit, state, dispatch, getters}, {privateKeys, asset, fee}) {
-    commit(types.SET_TRANSFER_FEE_REQUEST)
-    console.log(asset, fee, state.accountId, privateKeys, getters.irohaQuorum)
+  setFee ({commit, state, dispatch, getters}, {privateKeys, asset, fee, feeType}) {
+    commit(types.SET_FEE_REQUEST)
+
+    const accountId = `${feeType}@d3`
+
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId: 'transfer_billing@d3',
-      key: asset.toLowerCase(),
+      accountId,
+      key: asset,
       // eslint-disable-next-line
       value: fee
     })
       .then(() => {
         dispatch('updateAccount')
 
-        commit(types.SET_TRANSFER_FEE_SUCCESS)
+        commit(types.SET_FEE_SUCCESS)
       })
       .catch(err => {
-        commit(types.SET_TRANSFER_FEE_FAILURE)
+        commit(types.SET_FEE_FAILURE)
         throw err
       })
   },
 
-  getTransferFee ({commit, state, dispatch, getters}) {
-    commit(types.GET_TRANSFER_FEE_REQUEST)
+  getFee ({commit, state, dispatch, getters}, feeType) {
+    commit(types.GET_FEE_REQUEST)
+
+    const accountId = `${feeType}@d3`
 
     return irohaUtil.getAccountDetail({
-      accountId: 'transfer_billing@d3'
+      accountId
     })
-      .then((result) => {
+      .then((response) => {
         dispatch('updateAccount')
-
-        commit(types.GET_TRANSFER_FEE_SUCCESS, result)
+        commit(types.GET_FEE_SUCCESS, { response, feeType })
       })
       .catch(err => {
-        commit(types.GET_TRANSFER_FEE_FAILURE)
+        commit(types.GET_FEE_FAILURE)
         throw err
       })
   }

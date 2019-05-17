@@ -141,8 +141,8 @@ export default {
       form: {
         query: ''
       },
-      searchType: [SearchTypes.BLOCK_TYPE, SearchTypes.TRANSACTION_TYPE, SearchTypes.ACCOUNT_TYPE],
-      currentSearchType: SearchTypes.ACCOUNT_TYPE,
+      searchType: [SearchTypes.BLOCK, SearchTypes.TRANSACTION, SearchTypes.ACCOUNT],
+      currentSearchType: SearchTypes.ACCOUNT,
       dateFrom: '',
       dateTo: ''
     }
@@ -167,11 +167,11 @@ export default {
     },
     placeholder () {
       switch (this.currentSearchType) {
-        case SearchTypes.BLOCK_TYPE:
+        case SearchTypes.BLOCK:
           return 'Type a query, example "1"'
-        case SearchTypes.TRANSACTION_TYPE:
+        case SearchTypes.TRANSACTION:
           return 'Type a query, example "0x00000000000000000000"'
-        case SearchTypes.ACCOUNT_TYPE:
+        case SearchTypes.ACCOUNT:
           return 'Type a query, example "user@d3"'
         default:
           return 'Type a query'
@@ -188,13 +188,13 @@ export default {
     search () {
       if (this._isValid(this.$v.form.query)) {
         switch (this.currentSearchType) {
-          case SearchTypes.BLOCK_TYPE:
+          case SearchTypes.BLOCK:
             this.searchTransactionsByBlock({height: this.form.query})
             break
-          case SearchTypes.TRANSACTION_TYPE:
+          case SearchTypes.TRANSACTION:
             this.searchTransactionById({transactionId: this.form.query})
             break
-          case SearchTypes.ACCOUNT_TYPE:
+          case SearchTypes.ACCOUNT:
             this.searchTransactionsByAccountId({accountId: this.form.query})
             break
         }
