@@ -98,12 +98,12 @@ export const _amount = (wallet) => (amount) => {
 }
 
 export const _explorerQuery = (type) => (query) => {
-  if (type === SearchTypes.ACCOUNT_TYPE) {
+  if (type === SearchTypes.ACCOUNT) {
     return _user.nameDomain(query)
-  } else if (type === SearchTypes.BLOCK_TYPE) {
+  } else if (type === SearchTypes.BLOCK) {
     const parsed = parseInt(query)
     return Number.isInteger(parsed) && parsed.toString().length === query.length
-  } else if (type === SearchTypes.TRANSACTION_TYPE) {
+  } else if (type === SearchTypes.TRANSACTION) {
     return true
   }
   return true
