@@ -75,8 +75,9 @@
           <el-select
             slot="append"
             v-model="exchangeDialogRequestAsset"
-            placeholder="asset"
+            placeholder="Asset"
             style="width: 100px"
+            class="select_asset"
             @change="getOfferToRequestPrice()"
           >
             <el-option
@@ -312,4 +313,7 @@ export default {
 </script>
 
 <style scope>
+.exchange_form .select_asset {
+  padding-top: 0
+}
 </style>
