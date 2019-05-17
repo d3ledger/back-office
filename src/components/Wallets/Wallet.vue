@@ -374,7 +374,7 @@
           <el-pagination
             :pager-count="11"
             :page-size="10"
-            :total="paginationMeta.allTransactionsSize"
+            :total="allTransactionsSize"
             class="wallet-pagination"
             layout="prev, pager, next"
             @current-change="onNextPage"
@@ -691,6 +691,11 @@ export default {
     paginationMeta () {
       if (!this.wallet.assetId) return {}
       return this.getPaginationMetaByAssetId(this.wallet.assetId)
+    },
+
+    allTransactionsSize () {
+      if (!(this.paginationMeta).allTransactionsSize) return 1
+      return this.paginationMeta.allTransactionsSize
     },
 
     transactions () {
