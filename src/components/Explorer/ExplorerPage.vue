@@ -5,7 +5,8 @@
         <el-col
           :xs="24"
           :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }">
+          :xl="{ span: 16, offset: 4 }"
+        >
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Transaction explorer</span>
@@ -15,12 +16,14 @@
                 ref="form"
                 :model="form"
                 style="width: 100%"
-                @submit.native.prevent>
+                @submit.native.prevent
+              >
                 <el-row>
                   <el-col :span="24">
                     <el-form-item
                       label="Query"
-                      prop="query">
+                      prop="query"
+                    >
                       <el-input
                         v-model="$v.form.query.$model"
                         :placeholder="placeholder"
@@ -45,7 +48,8 @@
                     <el-form-item label="Search by">
                       <el-radio-group
                         v-model="currentSearchType"
-                        size="small">
+                        size="small"
+                      >
                         <el-radio
                           v-for="(value, index) in searchType"
                           :key="index"
@@ -71,7 +75,8 @@
                   </el-col>
                   <el-col
                     :span="12"
-                    :offset="1">
+                    :offset="1"
+                  >
                     <el-form-item label="Date to">
                       <el-date-picker
                         v-model="dateTo"
@@ -87,19 +92,22 @@
             <el-table
               v-loading="explorerLoading"
               :data="transactions"
-              class="transactions_table">
+              class="transactions_table"
+            >
               <el-table-column
                 label="Time"
                 min-width="175"
                 prop="createdTime"
-                sortable>
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ formatDateLong(scope.row.createdTime) }}
                 </template>
               </el-table-column>
               <el-table-column
                 label="From"
-                sortable>
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ scope.row.srcAccountId }}
                 </template>
@@ -107,22 +115,26 @@
               <el-table-column
                 label="To"
                 prop="destAccountId"
-                sortable/>
+                sortable
+              />
               <el-table-column
                 label="Amount"
                 prop="amount"
-                sortable/>
+                sortable
+              />
               <el-table-column
                 label="Asset"
                 prop="assetId"
-                sortable>
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ assetName(scope.row.assetId) }}
                 </template>
               </el-table-column>
               <el-table-column
                 label="Description"
-                prop="description"/>
+                prop="description"
+              />
             </el-table>
           </el-card>
         </el-col>

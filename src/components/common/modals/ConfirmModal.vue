@@ -35,7 +35,8 @@
         >
           <el-row
             type="flex"
-            justify="space-between">
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
                 v-model="key.hex.$model"
@@ -76,10 +77,12 @@
       >
         <el-row
           type="flex"
-          justify="center">
+          justify="center"
+        >
           <div
             :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''"
-            class="item__private-keys">
+            class="item__private-keys"
+          >
             {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
           </div>
         </el-row>
@@ -114,7 +117,8 @@
           <circle
             r="50"
             cx="56"
-            cy="56"/>
+            cy="56"
+          />
         </svg>
       </div>
     </span>

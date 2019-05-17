@@ -2,7 +2,8 @@
   <el-container class="column-fullheight">
     <el-header
       :style="{ height: '3.9rem' }"
-      class="header">
+      class="header"
+    >
       <el-row>
         <el-col
           :xs="24"
@@ -14,23 +15,28 @@
           <div style="display: flex;">
             <router-link
               class="navlink"
-              to="/settlements/history">History</router-link>
+              to="/settlements/history"
+            >History</router-link>
             <router-link
               class="navlink"
-              to="/settlements/incoming">Incoming</router-link>
+              to="/settlements/incoming"
+            >Incoming</router-link>
             <router-link
               class="navlink"
-              to="/settlements/outgoing">Outgoing</router-link>
+              to="/settlements/outgoing"
+            >Outgoing</router-link>
           </div>
           <div>
             <el-button
               class="exchange_button"
               size="medium"
               type="primary"
-              @click="openExchangeDialog()">
+              @click="openExchangeDialog()"
+            >
               <fa-icon
                 class="exchange_button-icon"
-                icon="exchange-alt" />
+                icon="exchange-alt"
+              />
               <span>
                 Exchange
               </span>
@@ -45,7 +51,8 @@
           :xs="24"
           :md="{ span: 20, offset: 2 }"
           :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }">
+          :xl="{ span: 16, offset: 4 }"
+        >
           <router-view />
         </el-col>
       </el-row>

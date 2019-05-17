@@ -3,7 +3,8 @@
     <div style="margin-top: 2.5rem">
       <img
         src="@/assets/logo.svg"
-        alt="D3">
+        alt="D3"
+      >
     </div>
     <span class="auth-welcome">Sign Up</span>
     <div class="auth-form-container">
@@ -15,10 +16,12 @@
       >
         <el-form-item
           label="Username"
-          prop="username">
+          prop="username"
+        >
           <el-row
             type="flex"
-            justify="space-between">
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
                 v-model="$v.form.username.$model"
@@ -65,7 +68,8 @@
               v-for="node in registrationIPs"
               :key="node.value"
               :label="node.label"
-              :value="node.value">
+              :value="node.value"
+            >
               <span class="option left">{{ node.label }}</span>
               <span class="option right">{{ node.value }}</span>
             </el-option>
@@ -94,7 +98,8 @@
         >
           <el-button
             data-cy="login"
-            class="auth_goto-container-button fullwidth">
+            class="auth_goto-container-button fullwidth"
+          >
             Log in
           </el-button>
         </router-link>
@@ -114,7 +119,8 @@
       </div>
       <span
         slot="footer"
-        class="dialog-footer">
+        class="dialog-footer"
+      >
         <el-button
           type="primary"
           class="black"

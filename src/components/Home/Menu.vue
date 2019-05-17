@@ -1,7 +1,8 @@
 <template class="menu">
   <div
     @mouseenter.passive="isCollapsed = false"
-    @mouseleave.passive="isCollapsed = true">
+    @mouseleave.passive="isCollapsed = true"
+  >
     <el-menu
       :router="true"
       :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
@@ -13,23 +14,28 @@
       <h1 class="logo">
         <img
           src="@/assets/logo-small.svg"
-          alt="D3">
+          alt="D3"
+        >
       </h1>
       <el-menu-item index="/">
         <SvgIcon
           icon-name="Chart"
-          icon-class="menu-icon"><ChartIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><ChartIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Dashboard</span>
+          class="title-left"
+        >Dashboard</span>
       </el-menu-item>
       <el-menu-item index="/wallets">
         <SvgIcon
           icon-name="Wallet"
-          icon-class="menu-icon"><WalletIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><WalletIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Wallets</span>
+          class="title-left"
+        >Wallets</span>
       </el-menu-item>
       <el-menu-item index="/settlements/history">
         <el-badge
@@ -40,27 +46,33 @@
         >
           <SvgIcon
             icon-name="Exchange"
-            icon-class="menu-icon"><ExchangeIcon/></SvgIcon>
+            icon-class="menu-icon"
+          ><ExchangeIcon/></SvgIcon>
         </el-badge>
         <SvgIcon
           v-else
           icon-name="Exchange"
-          icon-class="menu-icon"><ExchangeIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><ExchangeIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Exchange</span>
+          class="title-left"
+        >Exchange</span>
       </el-menu-item>
       <el-menu-item index="/reports">
         <SvgIcon
           icon-name="Report"
-          icon-class="menu-icon"><ReportIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><ReportIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Reports</span>
+          class="title-left"
+        >Reports</span>
       </el-menu-item>
       <el-menu-item
         v-if="quorum > 1"
-        index="/transactions">
+        index="/transactions"
+      >
         <el-badge
           v-if="allPendingTransactions.length"
           :value="allPendingTransactions.length"
@@ -69,44 +81,55 @@
         >
           <SvgIcon
             icon-name="Transaction"
-            icon-class="menu-icon"><TransactionsIcon/></SvgIcon>
+            icon-class="menu-icon"
+          ><TransactionsIcon/></SvgIcon>
         </el-badge>
         <SvgIcon
           v-else
           icon-name="Transaction"
-          icon-class="menu-icon"><TransactionsIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><TransactionsIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Transactions</span>
+          class="title-left"
+        >Transactions</span>
       </el-menu-item>
       <el-menu-item
         v-if="isAdmin"
-        index="/explorer">
+        index="/explorer"
+      >
         <SvgIcon
           icon-name="Explorer"
-          icon-class="menu-icon"><TransactionsIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><TransactionsIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Explorer</span>
+          class="title-left"
+        >Explorer</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon
           icon-name="Settings"
-          icon-class="menu-icon"><SettingsIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><SettingsIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Settings</span>
+          class="title-left"
+        >Settings</span>
       </el-menu-item>
       <el-menu-item
         class="bottom-icon"
         index="/logout"
-        @click="onLogout">
+        @click="onLogout"
+      >
         <SvgIcon
           icon-name="Logout"
-          icon-class="menu-icon"><LogoutIcon/></SvgIcon>
+          icon-class="menu-icon"
+        ><LogoutIcon/></SvgIcon>
         <span
           slot="title"
-          class="title-left">Logout</span>
+          class="title-left"
+        >Logout</span>
       </el-menu-item>
     </el-menu>
   </div>

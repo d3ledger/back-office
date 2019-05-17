@@ -7,22 +7,26 @@
             <div class="searchbar__prefix">
               <fa-icon
                 icon="search"
-                class="searchbar__icon" />
+                class="searchbar__icon"
+              />
             </div>
 
             <div class="searchbar__input">
               <el-input
                 v-model="filterInput"
-                placeholder="Search" />
+                placeholder="Search"
+              />
             </div>
 
             <div class="searchbar__sort">
               <el-dropdown
                 trigger="click"
-                @command="sort">
+                @command="sort"
+              >
                 <div
                   id="dashboard-sort-button"
-                  class="searchbar__sort-button">
+                  class="searchbar__sort-button"
+                >
                   <fa-icon
                     :icon="dashboardSortCriterion.icon"
                     class="searchbar__icon"
@@ -49,7 +53,8 @@
     <div class="card-content_body">
       <el-row
         justify="center"
-        class="table_header">
+        class="table_header"
+      >
         <div class="table_header-title currency">Currency</div>
         <div class="table_header-title text-left balance">Balance</div>
         <div class="table_header-title text-right changes">Changes</div>
@@ -57,14 +62,17 @@
       <el-row class="table_body">
         <div
           :style="{ height: `${dashboardChartHeight}px` }"
-          class="table_body-content">
+          class="table_body-content"
+        >
           <div
             v-for="(value, index) in sortedPortfolio"
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
-            :key="index">
+            :key="index"
+          >
             <div
               class="table_body-item_content"
-              @click="selectCrypto(value.asset)">
+              @click="selectCrypto(value.asset)"
+            >
               <div class="column text-format currency">
                 {{ value | formatName }}
               </div>

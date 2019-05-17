@@ -1,14 +1,16 @@
 <template>
   <el-container
     v-loading.fullscreen="isDashboardLoading"
-    v-if="isDashboardLoading" />
+    v-if="isDashboardLoading"
+  />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
           <dashboard-portfolio
             :price="portfolioPrice"
-            :chart-data="portfolioHistory"/>
+            :chart-data="portfolioHistory"
+          />
         </el-col>
         <el-col :span="8">
           <dashboard-donut-chart :portfolio="portfolioPercent"/>
@@ -21,7 +23,8 @@
               <el-col :span="10">
                 <dashboard-table
                   :portfolio="portfolioList"
-                  :dashboard-chart-height="dashboardChartHeight"/>
+                  :dashboard-chart-height="dashboardChartHeight"
+                />
               </el-col>
               <el-col :span="1">
                 <div class="vertical_devider"/>

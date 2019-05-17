@@ -14,7 +14,8 @@
             >
               <span
                 :style="{ backgroundColor: `#${item.color}` }"
-                class="list_crypto-content-color"/>
+                class="list_crypto-content-color"
+              />
               <p class="list_crypto-content-asset">
                 <span class="list_crypto-content-percent">{{ item.percent.toFixed(0) }}% </span>
                 <span class="list_crypto-content-token">{{ item.asset }}</span>
@@ -25,7 +26,8 @@
       </el-col>
       <el-col
         :span="8"
-        class="donut-chart">
+        class="donut-chart"
+      >
         <donut-chart :data="filterPortfolio"/>
       </el-col>
     </el-row>

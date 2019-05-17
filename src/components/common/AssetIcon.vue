@@ -3,15 +3,18 @@
     <img
       v-if="isSora"
       :style="{'height': size + 'px'}"
-      src="@/assets/icons/sora.png" >
+      src="@/assets/icons/sora.png"
+    >
     <i
       v-else-if="isIconPresent"
       :style="{'font-size': size + 'px'}"
-      :class="'cc ' + asset.toUpperCase()" />
+      :class="'cc ' + asset.toUpperCase()"
+    />
     <img
       v-else
       :style="{width: size+'px'}"
-      src="@/assets/icons/coins.svg" >
+      src="@/assets/icons/coins.svg"
+    >
   </div>
 </template>
 

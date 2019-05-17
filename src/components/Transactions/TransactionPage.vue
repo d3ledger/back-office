@@ -5,14 +5,16 @@
         <el-col
           :xs="24"
           :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }">
+          :xl="{ span: 16, offset: 4 }"
+        >
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Pending transactions</span>
             </div>
             <el-table
               :data="allPendingTransactions"
-              class="transactions_table">
+              class="transactions_table"
+            >
               <el-table-column type="expand">
                 <template slot-scope="scope">
                   <div class="transaction_details">
@@ -29,14 +31,16 @@
               </el-table-column>
               <el-table-column
                 label="Date"
-                width="110">
+                width="110"
+              >
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
                 </template>
               </el-table-column>
               <el-table-column
                 label="Amount"
-                min-width="60">
+                min-width="60"
+              >
                 <template slot-scope="scope">
                   {{ scope.row.from === 'you' ? '−' : '+' }}{{ Number(scope.row.amount) }}
                   {{ wallets.find(w => w.assetId === scope.row.assetId).asset }}
@@ -45,7 +49,8 @@
               <el-table-column
                 label="Address"
                 min-width="90"
-                show-overflow-tooltip>
+                show-overflow-tooltip
+              >
                 <template slot-scope="scope">
                   {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                 </template>
@@ -53,7 +58,8 @@
               <el-table-column
                 label="Description"
                 min-width="90"
-                show-overflow-tooltip>
+                show-overflow-tooltip
+              >
                 <template slot-scope="scope">
                   <div>
                     <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"/>
@@ -63,14 +69,16 @@
               </el-table-column>
               <el-table-column
                 label="Expire"
-                width="70">
+                width="70"
+              >
                 <template slot-scope="scope">
                   {{ calculateEstimatedTime(scope.row.date) }}
                 </template>
               </el-table-column>
               <el-table-column
                 label="Signs"
-                width="60">
+                width="60"
+              >
                 <template slot-scope="scope">
                   {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>

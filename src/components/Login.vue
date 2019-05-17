@@ -4,7 +4,8 @@
       <img
         src="@/assets/logo.svg"
         alt="D3"
-        @click="onShowVersion">
+        @click="onShowVersion"
+      >
     </div>
     <span class="auth-welcome">Welcome to D3</span>
     <div class="auth-form-container">
@@ -17,10 +18,12 @@
       >
         <el-form-item
           label="Private key"
-          prop="privateKey">
+          prop="privateKey"
+        >
           <el-row
             type="flex"
-            justify="space-between">
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
                 v-model="$v.form.privateKey.$model"
@@ -57,7 +60,8 @@
         </el-form-item>
         <el-form-item
           label="Username"
-          prop="username">
+          prop="username"
+        >
           <el-input
             v-model="$v.form.username.$model"
             :disabled="isLoading"
@@ -74,7 +78,8 @@
         </el-form-item>
         <el-form-item
           label="Node IP"
-          prop="nodeIp">
+          prop="nodeIp"
+        >
           <el-select
             v-model="$v.form.nodeIp.$model"
             :disabled="isLoading"
@@ -92,7 +97,8 @@
               v-for="node in nodeIPs"
               :key="node.value"
               :label="node.label"
-              :value="node.value">
+              :value="node.value"
+            >
               <span class="option left">{{ node.label }}</span>
               <span class="option right">{{ node.value }}</span>
             </el-option>
@@ -121,7 +127,8 @@
         >
           <el-button
             data-cy="signup"
-            class="auth_goto-container-button fullwidth">
+            class="auth_goto-container-button fullwidth"
+          >
             Sign up
           </el-button>
         </router-link>

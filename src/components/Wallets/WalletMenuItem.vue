@@ -1,11 +1,13 @@
 <template>
   <router-link
     :to="'/wallets/' + walletId"
-    class="card">
+    class="card"
+  >
     <asset-icon
       :asset="asset"
       :size="24"
-      style="margin-right: 20px" />
+      style="margin-right: 20px"
+    />
     <div class="info-container">
       <div class="label">{{ name }}</div>
       <div class="asset">{{ asset }}</div>

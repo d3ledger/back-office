@@ -4,19 +4,22 @@
       <el-col
         :xs="24"
         :lg="{ span: 22, offset: 1 }"
-        :xl="{ span: 20, offset: 2 }">
+        :xl="{ span: 20, offset: 2 }"
+      >
         <el-row :gutter="20">
           <el-col :span="12">
             <el-card
               :body-style="{ padding: '0' }"
-              class="card">
+              class="card"
+            >
               <div class="card_header">
                 <div class="card_header-title">
                   <div>{{ wallet.name }}</div>
                   <asset-icon
                     :asset="wallet.asset"
                     :size="17"
-                    style="color: black;"/>
+                    style="color: black;"
+                  />
                 </div>
               </div>
               <div class="top-left-card">
@@ -25,7 +28,8 @@
                     :content="`${ amountWithPrecision } ${ wallet.asset }`"
                     class="item"
                     effect="dark"
-                    placement="top-start">
+                    placement="top-start"
+                  >
                     <h2 class="text-overflow">{{ wallet.amount | fitAmount }} {{ wallet.asset }}</h2>
                   </el-tooltip>
                 </div>
@@ -34,47 +38,59 @@
                     v-if="accountExist"
                     role="button"
                     class="card_actions-button button"
-                    @click="receiveFormVisible = true">
+                    @click="receiveFormVisible = true"
+                  >
                     <fa-icon
                       class="card_actions-button-text"
-                      icon="angle-double-down" />
+                      icon="angle-double-down"
+                    />
                     <span
                       class="card_actions-button-text"
-                      data-cy="deposit">Deposit</span>
+                      data-cy="deposit"
+                    >Deposit</span>
                   </div>
                   <div
                     v-if="accountExist"
                     role="button"
                     class="card_actions-button button"
-                    @click="withdrawFormVisible = true">
+                    @click="withdrawFormVisible = true"
+                  >
                     <fa-icon
                       class="card_actions-button-text"
-                      icon="angle-double-up" />
+                      icon="angle-double-up"
+                    />
                     <span
                       class="card_actions-button-text"
-                      data-cy="withdraw">Withdraw</span>
+                      data-cy="withdraw"
+                    >Withdraw</span>
                   </div>
                   <div
                     role="button"
                     class="card_actions-button button"
-                    @click="transferFormVisible = true">
+                    @click="transferFormVisible = true"
+                  >
                     <fa-icon
                       class="card_actions-button-text"
-                      icon="arrow-right" />
+                      icon="arrow-right"
+                    />
                     <span
                       class="card_actions-button-text"
-                      data-cy="transfer">Transfer</span>
+                      data-cy="transfer"
+                    >Transfer</span>
                   </div>
                   <div
                     role="button"
                     class="card_actions-button button"
-                    @click="openExchangeDialog(wallet.asset)">
+                    @click="openExchangeDialog(wallet.asset)"
+                  >
                     <fa-icon
                       class="card_actions-button-text"
-                      icon="exchange-alt" />
+                      icon="exchange-alt"
+                    />
                     <span
                       class="card_actions-button-text"
-                      data-cy="exchange">Exchange</span>
+                      data-cy="exchange"
+                    >Exchange</span>
                   </div>
                 </div>
               </div>
@@ -83,7 +99,8 @@
           <el-col :span="12">
             <el-card
               :body-style="{ padding : '0' }"
-              class="card">
+              class="card"
+            >
               <div class="card_header-divided">
                 <div class="card_header-title">
                   <div class="card_header-name">Market</div>
@@ -102,7 +119,8 @@
 
               <div
                 v-loading="cryptoInfo.isLoading"
-                class="card-info">
+                class="card-info"
+              >
                 <el-row style="margin-bottom: 20px">
                   <el-col :span="9">
                     <p
@@ -187,7 +205,8 @@
       <el-col
         :xs="24"
         :lg="{ span: 22, offset: 1 }"
-        :xl="{ span: 20, offset: 2 }">
+        :xl="{ span: 20, offset: 2 }"
+      >
         <el-card :body-style="{ padding: '0' }">
           <div class="card_header">
             <div class="card_header-title">
@@ -195,7 +214,8 @@
               <el-button
                 size="medium"
                 type="primary"
-                @click="fetchWallet">Refresh</el-button>
+                @click="fetchWallet"
+              >Refresh</el-button>
             </div>
           </div>
           <el-table
@@ -273,7 +293,8 @@
             </el-table-column>
             <el-table-column
               label="Date"
-              width="130">
+              width="130"
+            >
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
                   {{ formatDate(scope.row.from.date) }}
@@ -285,7 +306,8 @@
             </el-table-column>
             <el-table-column
               label="Type"
-              width="130">
+              width="130"
+            >
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">EXCHANGE</span>
                 <span v-else-if="scope.row.to === 'notary'">WITHDRAWAL</span>
@@ -296,17 +318,20 @@
             <el-table-column
               label="Amount"
               width="130"
-              show-overflow-tooltip>
+              show-overflow-tooltip
+            >
               <template slot-scope="scope">
                 <span
                   v-if="scope.row.from.to"
-                  class="table_amount">
+                  class="table_amount"
+                >
                   <p>- {{ scope.row.from.amount | formatPrecision }} {{ assetName(scope.row.from.assetId) }} </p>
                   <p>+ {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}</p>
                 </span>
                 <span
                   v-else
-                  class="table_amount">
+                  class="table_amount"
+                >
                   {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }} {{ wallet.asset }}
                 </span>
               </template>
@@ -314,7 +339,8 @@
             <el-table-column
               label="Address"
               min-width="130"
-              show-overflow-tooltip>
+              show-overflow-tooltip
+            >
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">
                   {{ scope.row.from.to }}
@@ -331,7 +357,8 @@
               prop="message"
               label="Description"
               min-width="160"
-              show-overflow-tooltip>
+              show-overflow-tooltip
+            >
               <template slot-scope="scope">
                 <span class="wallets_table-message">
                   <p v-if="scope.row.from.to">
@@ -370,7 +397,8 @@
       >
         <el-form-item
           label="I send"
-          prop="amount">
+          prop="amount"
+        >
           <el-input
             v-model="$v.withdrawForm.amount.$model"
             :class="[
@@ -398,7 +426,8 @@
         </span>
         <el-form-item
           label="Address"
-          prop="wallet">
+          prop="wallet"
+        >
           <el-input
             v-if="!whiteListAddresses.length"
             v-model="$v.withdrawForm.wallet.$model"
@@ -422,7 +451,8 @@
               v-for="address in whiteListAddresses"
               :key="address"
               :label="address"
-              :value="address"/>
+              :value="address"
+            />
           </el-select>
           <span
             v-if="_isError($v.withdrawForm.wallet)"
@@ -453,7 +483,8 @@
           <p>Scan QR code or send your {{ wallet.asset }} to</p>
           <p><span
             data-cy="deposit-address"
-            class="monospace">{{ walletAddress }}</span></p>
+            class="monospace"
+          >{{ walletAddress }}</span></p>
         </div>
         <qrcode-vue
           :value="walletAddress"
@@ -476,7 +507,8 @@
       >
         <el-form-item
           label="I send"
-          prop="amount">
+          prop="amount"
+        >
           <el-input
             v-model="$v.transferForm.amount.$model"
             :class="[
@@ -504,7 +536,8 @@
         </span>
         <el-form-item
           label="Counterparty"
-          prop="to">
+          prop="to"
+        >
           <el-input
             v-model="$v.transferForm.to.$model"
             :class="[
@@ -520,7 +553,8 @@
         </el-form-item>
         <el-form-item
           label="Additional information"
-          prop="description">
+          prop="description"
+        >
           <el-input
             v-model="$v.transferForm.description.$model"
             :class="[

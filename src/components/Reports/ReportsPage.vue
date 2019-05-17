@@ -1,13 +1,15 @@
 <template>
   <el-container
     v-if="wallets.length"
-    id="reports-page">
+    id="reports-page"
+  >
     <el-main>
       <el-row>
         <el-col
           :xs="24"
           :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }">
+          :xl="{ span: 16, offset: 4 }"
+        >
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Reports</span>
@@ -16,10 +18,12 @@
                   class="report_button"
                   size="medium"
                   type="primary"
-                  @click="reportFormVisible = true">
+                  @click="reportFormVisible = true"
+                >
                   <fa-icon
                     class="report_button-icon"
-                    icon="file" />
+                    icon="file"
+                  />
                   <span data-cy="getReport">
                     Reports
                   </span>
@@ -32,7 +36,8 @@
             >
               <el-table-column
                 label="Date"
-                min-width="100">
+                min-width="100"
+              >
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date[0], 'MMM D, YYYY') }} - {{ formatDateWith(scope.row.date[1], 'MMM D, YYYY') }}
                 </template>
@@ -40,10 +45,12 @@
               <el-table-column
                 label="Wallet"
                 prop="walletName"
-                min-width="100"/>
+                min-width="100"
+              />
               <el-table-column
                 label="Download"
-                width="225">
+                width="225"
+              >
                 <template slot-scope="scope">
                   <div class="list_actions">
                     <el-button
@@ -54,7 +61,8 @@
                     >
                       <fa-icon
                         class="report_button-icon"
-                        icon="file-pdf" />
+                        icon="file-pdf"
+                      />
                       PDF
                     </el-button>
                     <el-button
@@ -65,7 +73,8 @@
                     >
                       <fa-icon
                         class="report_button-icon"
-                        icon="file-excel" />
+                        icon="file-excel"
+                      />
                       CSV
                     </el-button>
                   </div>
@@ -97,7 +106,8 @@
               v-for="wallet in wallets"
               :key="wallet.name"
               :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-              :value="wallet.assetId"/>
+              :value="wallet.assetId"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="Date">

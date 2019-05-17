@@ -14,7 +14,8 @@
     >
       <el-form-item
         label="I send"
-        prop="offer_amount" >
+        prop="offer_amount"
+      >
         <el-input
           v-model="$v.exchangeForm.offer_amount.$model"
           :class="[
@@ -36,7 +37,8 @@
               v-for="wallet in assetsWithoutRequest"
               :key="wallet.id"
               :label="wallet.asset"
-              :value="wallet.asset">
+              :value="wallet.asset"
+            >
               <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
             </el-option>
           </el-select>
@@ -50,14 +52,16 @@
         Available balance:
         <span
           v-if="exchangeDialogOfferAsset"
-          class="form-item-text-amount">
+          class="form-item-text-amount"
+        >
           {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
         </span>
         <span v-else>...</span>
       </span>
       <el-form-item
         label="I receive"
-        prop="request_amount">
+        prop="request_amount"
+      >
         <el-input
           v-model="$v.exchangeForm.request_amount.$model"
           :class="[
@@ -79,7 +83,8 @@
               v-for="wallet in assetsWithoutOffer"
               :key="wallet.id"
               :label="wallet.asset"
-              :value="wallet.asset">
+              :value="wallet.asset"
+            >
               <span style="float: left">{{ `${wallet.name} (${wallet.asset})` }}</span>
             </el-option>
           </el-select>
@@ -93,14 +98,16 @@
         Market price:
         <span
           v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
-          class="form-item-text-amount">
+          class="form-item-text-amount"
+        >
           1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
         </span>
         <span v-else>...</span>
       </span>
       <el-form-item
         label="Counterparty"
-        prop="to">
+        prop="to"
+      >
         <el-input
           v-model="$v.exchangeForm.to.$model"
           :class="[
@@ -116,7 +123,8 @@
       </el-form-item>
       <el-form-item
         label="Additional information"
-        prop="description">
+        prop="description"
+      >
         <el-input
           v-model="$v.exchangeForm.description.$model"
           :class="[

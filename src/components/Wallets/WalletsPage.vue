@@ -2,27 +2,32 @@
   <el-container v-if="wallets.length">
     <el-aside
       class="column-fullheight wallets-menu"
-      width="280px">
+      width="280px"
+    >
       <div class="searchbar">
         <div class="searchbar__prefix">
           <fa-icon
             icon="search"
-            class="searchbar__icon" />
+            class="searchbar__icon"
+          />
         </div>
 
         <div class="searchbar__input">
           <el-input
             v-model="search"
-            placeholder="Search" />
+            placeholder="Search"
+          />
         </div>
 
         <div class="searchbar__sort">
           <el-dropdown
             trigger="click"
-            @command="sort">
+            @command="sort"
+          >
             <div
               id="wallets-sort-button"
-              class="searchbar__sort-button">
+              class="searchbar__sort-button"
+            >
               <fa-icon
                 :icon="currentCriterion.icon"
                 class="searchbar__icon"

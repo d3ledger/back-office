@@ -13,7 +13,8 @@
               <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
               <el-col
                 :span="6"
-                class="transaction_details-amount">
+                class="transaction_details-amount"
+              >
                 <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
                 <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
@@ -25,7 +26,8 @@
       </el-table-column>
       <el-table-column
         label="Amount"
-        min-width="200">
+        min-width="200"
+      >
         <template slot-scope="scope">
           {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
           {{ '→' }}
@@ -34,14 +36,16 @@
       </el-table-column>
       <el-table-column
         label="Counterparty"
-        min-width="120">
+        min-width="120"
+      >
         <template slot-scope="scope">
           to {{ scope.row.from.to }}
         </template>
       </el-table-column>
       <el-table-column
         label="Date"
-        width="120">
+        width="120"
+      >
         <template slot-scope="scope">
           {{ formatDate(scope.row.from.date) }}
         </template>

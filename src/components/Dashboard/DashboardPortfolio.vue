@@ -2,26 +2,31 @@
   <el-row class="portfolio_left">
     <el-card
       :body-style="{ padding: 0 }"
-      class="card">
+      class="card"
+    >
       <el-col
         :span="9"
-        class="portfolio_card-padding">
+        class="portfolio_card-padding"
+      >
         <div class="portfolio_header">
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
           <el-tooltip
             :content="`current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`"
-            placement="top-start">
+            placement="top-start"
+          >
             <p
               class="portfolio_current-price_value"
-              justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+              justify="center"
+            >{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
           <el-tooltip
             :content="`${getDiffMessage}: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`"
-            placement="top-start">
+            placement="top-start"
+          >
             <p :class="classTrend(price.diff)">
               {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{ price.percent | formatPercent }})
             </p>
@@ -49,7 +54,8 @@
         <line-chart-portfolio
           v-loading="portfolioHistoryIsLoading"
           :data="chartData"
-          :filter="portfolioFilter" />
+          :filter="portfolioFilter"
+        />
       </el-col>
     </el-card>
   </el-row>
