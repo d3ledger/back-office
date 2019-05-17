@@ -428,17 +428,7 @@
           label="Address"
           prop="wallet"
         >
-          <el-input
-            v-if="!whiteListAddresses.length"
-            v-model="$v.withdrawForm.wallet.$model"
-            :class="[
-              _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
-              _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
-            ]"
-            placeholder="withdrawal address"
-          />
           <el-select
-            v-else
             v-model="$v.withdrawForm.wallet.$model"
             :class="[
               'withdraw-wallet_select',
@@ -699,7 +689,7 @@ export default {
     },
 
     paginationMeta () {
-      if (!this.wallet) return []
+      if (!this.wallet.assetId) return {}
       return this.getPaginationMetaByAssetId(this.wallet.assetId)
     },
 
