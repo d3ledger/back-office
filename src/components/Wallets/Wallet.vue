@@ -694,7 +694,7 @@ export default {
     },
 
     allTransactionsSize () {
-      if (!(this.paginationMeta).allTransactionsSize) return 1
+      if (!this.paginationMeta) return 1
       return this.paginationMeta.allTransactionsSize
     },
 
