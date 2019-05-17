@@ -13,7 +13,7 @@
         </div>
         <div class="portfolio_current-price">
           <el-tooltip
-            :content="`current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`"
+            :content="`Current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`"
             placement="top-start"
           >
             <p

@@ -191,7 +191,7 @@ const mutations = {
         percent: toZero(100 - ((amountPrevDay * 100) / amountToday))
       })
     })
-    state.assetList = currencies
+    state.assetList = [...currencies]
   },
 
   [types.GET_PRICE_BY_FILTER_REQUEST] (state) {
