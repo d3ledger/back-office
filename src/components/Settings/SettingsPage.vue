@@ -85,10 +85,6 @@
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
                       >
-                        <fa-icon
-                          class="action_button-icon"
-                          icon="plus"
-                        />
                         Register in BTC network
                       </el-button>
                       <div
@@ -103,10 +99,6 @@
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
                       >
-                        <fa-icon
-                          class="action_button-icon"
-                          icon="plus"
-                        />
                         Register in ETH network
                       </el-button>
                       <div
@@ -514,16 +506,22 @@
       title="Add new white address"
       width="450px"
       center
+      @closed="onCloseWhiteAddressForm"
     >
-      <el-form
-        ref="newWhiteAddressForm"
-        :model="whitelistForm"
-        class="quorum_form"
-      >
-        <el-form-item>
-          <el-input v-model="whitelistForm.address"/>
-        </el-form-item>
-      </el-form>
+      <div class="approval_form-desc">
+        <el-form
+          ref="newWhiteAddressForm"
+          :model="whitelistForm"
+          class="withdraw_form"
+        >
+          <el-form-item
+            label="Address"
+            prop="address"
+          >
+            <el-input v-model="whitelistForm.address"/>
+          </el-form-item>
+        </el-form>
+      </div>
       <div
         slot="footer"
         class="dialog-form_buttons-block"
@@ -826,6 +824,10 @@ export default {
           this.addressToRemove = null
         })
     },
+
+    onCloseWhiteAddressForm () {
+      this.$refs.newWhiteAddressForm.resetFields()
+    },
     onClickDownload () {
       const filename = `${this.fileData.username}.priv`
       const blob = new Blob(
@@ -855,22 +857,30 @@ export default {
     onCopyKeyError (e) {
       this.$message.error('Failed to copy texts')
     },
+
+    // TODO: Back-end do not require key anymore
     onAddNetwork (network) {
-      this.openApprovalDialog().then(privateKeys => {
-        if (!privateKeys) return
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
 
-        this.registering = true
-        this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
+          this.registering = true
+          this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
 
-        return this.addNetwork({ privateKeys }).then(() => {
-          this.$message.success(`You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
-          this.updateAccount()
-        }).catch((err) => {
-          this.$_showRegistrationError(err.message, err.response)
+          return this.addNetwork({ privateKeys })
+            .then(() => {
+              this.$message.success(
+                `You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`
+              )
+              this.updateAccount()
+            })
+            .catch((err) => {
+              this.$_showRegistrationError(err.message, err.response)
+            })
         })
-      }).finally(() => {
-        this.registering = true
-      })
+        .finally(() => {
+          this.registering = false
+        })
     },
     updateActiveTab (id) {
       this.activeTab = id
