@@ -101,7 +101,7 @@
           v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
           class="form-item-text-amount"
         >
-          1 {{ exchangeDialogOfferAsset }} ≈ {{ exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
+          {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
         </span>
         <span v-else>...</span>
       </span>
