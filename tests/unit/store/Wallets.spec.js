@@ -164,7 +164,26 @@ describe('Wallet store', () => {
       const state = { cryptoInfo: { isLoading: true } }
       const err = new Error()
       const expectedState = {
-        cryptoInfo: { isLoading: false },
+        cryptoInfo: {
+          current: {
+            fiat: 0,
+            fiat_change: 0,
+            crypto: 0,
+            crypto_change: 0
+          },
+          market: {
+            cap: {
+              fiat: 0,
+              crypto: 0
+            },
+            volume: {
+              fiat: 0,
+              crypto: 0
+            },
+            supply: 0
+          },
+          isLoading: false
+        },
         connectionError: err
       }
       mutations[types.GET_CRYPTO_FULL_DATA_FAILURE](state, err)

@@ -37,7 +37,8 @@ describe('Dashboard store', () => {
           assetsFullPrice: {
             diff: 555,
             value: 555,
-            percent: 555
+            percent: 555,
+            time: 555
           },
           assetsPercentage: [{}, {}, {}],
           assetsHistory: [{}, {}, {}],
@@ -57,7 +58,8 @@ describe('Dashboard store', () => {
           assetsFullPrice: {
             diff: 0,
             value: 0,
-            percent: 0
+            percent: 0,
+            time: 0
           },
           assetsPercentage: [],
           assetsHistory: [],
@@ -85,16 +87,19 @@ describe('Dashboard store', () => {
       const state = {
         portfolio: {
           assetsHistory: [{
-            sum: prevDay
+            sum: prevDay,
+            time: 1
           }, {
-            sum: today
+            sum: today,
+            time: 2
           }]
         }
       }
       const assetsFullPrice = {
         value: today.toFixed(2),
         diff: (today - prevDay).toFixed(2),
-        percent: (100 - ((prevDay * 100) / today)).toFixed(2)
+        percent: (100 - ((prevDay * 100) / today)).toFixed(2),
+        time: 2
       }
       mutations[types.GET_PORTFOLIO_FULL_PRICE](state)
 
@@ -298,7 +303,8 @@ describe('Dashboard store', () => {
         expect(commit.args).to.deep.equal([
           [types.SELECT_PORTFOLIO_FILTER, filter],
           [types.GET_PORTFOLIO_HISTORY_REQUEST],
-          [types.GET_PORTFOLIO_HISTORY_SUCCESS, response]
+          [types.GET_PORTFOLIO_HISTORY_SUCCESS, response],
+          [types.GET_PORTFOLIO_FULL_PRICE]
         ])
       })
     })

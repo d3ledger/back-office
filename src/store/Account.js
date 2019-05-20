@@ -12,7 +12,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes } from '@/data/enums'
+import { WalletTypes } from '@/data/consts'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -34,6 +34,7 @@ const types = flow(
   'GET_ACCOUNT_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_ASSET_TRANSACTIONS_NP',
   'GET_ACCOUNT_ASSETS',
+  'GET_ACCOUNT_ROLES',
   'GET_ALL_ASSET_TRANSACTIONS',
   'GET_ACCOUNT_SIGNATORIES',
   'GET_ALL_UNSIGNED_TRANSACTIONS',
@@ -47,7 +48,10 @@ const types = flow(
   'SIGN_PENDING',
   'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
-  'GET_ACCOUNT_LIMITS'
+  'GET_ACCOUNT_LIMITS',
+  'SUBSCRIBE_PUSH_NOTIFICATIONS',
+  'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
+  'SET_WHITELIST'
 ])
 
 function initialState () {
@@ -59,10 +63,10 @@ function initialState () {
     accountQuorum: 0,
     accountSignatories: [],
     accountLimits: [],
+    accountRoles: [],
     assetTransactions: {},
     rawUnsignedTransactions: [],
     rawTransactions: [],
-    rawPendingTransactions: null,
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
@@ -95,6 +99,47 @@ const getters = {
     })
   },
 
+  availableAssets (state) {
+    return ASSETS
+      .map(t => {
+        const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
+        if (isERC20) {
+          return {
+            id: `${t.name}$d3`,
+            assetId: `${t.name}#d3`,
+            domain: 'd3',
+
+            name: t.name,
+            asset: t.asset
+          }
+        } else {
+          const name = t.name.toLowerCase()
+          let domain = ''
+          switch (t.asset) {
+            case 'ETH':
+              domain = 'ethereum'
+              break
+            case 'BTC':
+              domain = 'bitcoin'
+              break
+            case 'XOR':
+              domain = 'sora'
+              break
+            default:
+              throw new Error('Undefined asset! Please check availableAssets method!')
+          }
+          return {
+            id: `${name}$${domain}`,
+            assetId: `${name}#${domain}`,
+            domain: domain,
+
+            name: t.name,
+            asset: t.asset
+          }
+        }
+      })
+  },
+
   getTransactionsByAssetId: (state) => (assetId) => {
     const resolvedSettlements = getters.resolvedSettlements(state)
     return state.assetTransactions[assetId] ? getTransferAssetsFrom(
@@ -115,8 +160,8 @@ const getters = {
   },
 
   allPendingTransactions: (state) => {
-    let pendingTransactionsCopy = cloneDeep(state.rawPendingTransactions)
-    return pendingTransactionsCopy ? getTransferAssetsFrom(
+    let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
+    return !Array.isArray(pendingTransactionsCopy) ? getTransferAssetsFrom(
       pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
     ).filter(tx => tx.from === 'you') : []
@@ -183,17 +228,61 @@ const getters = {
     return getters.wallets.some(w => w.domain === 'bitcoin')
   },
 
-  withdrawWalletAddresses (state) {
+  ethWhiteListAddresses (state, getters) {
     const wallet = find('eth_whitelist', state.accountInfo)
-    return wallet ? wallet.eth_whitelist.split(',').map(w => w.trim()) : []
+    const whitelist = wallet ? JSON.parse(wallet.eth_whitelist) : []
+
+    if (whitelist.length > 0 && getters.ethWhiteListAddressesAll.length === 0) {
+      return whitelist
+    }
+
+    return getters.ethWhiteListAddressesAll
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
+      .map(item => item[0])
+  },
+
+  ethWhiteListAddressesAll (state) {
+    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].eth_whitelist : null
+    if (brvsWhitelist) {
+      const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
+      return Object.entries(brvsWhitelistParsed)
+    }
+
+    return []
+  },
+
+  btcWhiteListAddresses (state, getters) {
+    return getters.btcWhiteListAddressesAll
+      .filter(item => parseInt(item[1]) * 1000 < Date.now())
+      .map(item => item[0])
+  },
+
+  btcWhiteListAddressesAll (state) {
+    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].btc_whitelist : null
+    if (brvsWhitelist) {
+      const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
+      return Object.entries(brvsWhitelistParsed)
+    } else {
+      const wallet = find('btc_whitelist', state.accountInfo)
+      return wallet ? JSON.parse(wallet.btc_whitelist) : []
+    }
   },
 
   accountQuorum (state) {
-    return state.accountQuorum
+    const quorum = find('user_quorum', state.accountInfo)
+    return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
+  },
+
+  irohaQuorum (state, getters) {
+    return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : getters.accountQuorum
   },
 
   accountSignatories (state) {
-    return state.accountSignatories
+    if (state.accountInfo['brvs@brvs']) {
+      return state.accountSignatories.filter((item, key) => key % 2 === 1)
+    } else {
+      return state.accountSignatories
+    }
   },
 
   accountLimits (state) {
@@ -210,6 +299,15 @@ const getters = {
 
   accountId (state) {
     return state.accountId
+  },
+
+  accountRoles (state) {
+    return state.accountRoles
+  },
+
+  subscribed (state) {
+    const subscription = find('push_subscription', state.accountInfo)
+    return subscription && subscription.push_subscription.length > 0
   }
 }
 
@@ -358,16 +456,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.GET_PENDING_TRANSACTIONS_REQUEST] (state) {},
-
-  [types.GET_PENDING_TRANSACTIONS_SUCCESS] (state, transactions) {
-    state.rawPendingTransactions = transactions
-  },
-
-  [types.GET_PENDING_TRANSACTIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
   [types.TRANSFER_ASSET_REQUEST] (state) {},
 
   [types.TRANSFER_ASSET_SUCCESS] (state) {},
@@ -401,7 +489,7 @@ const mutations = {
   },
 
   [types.ACCEPT_SETTLEMENT_FAILURE] (state, err) {
-    state.acceptSettlementLoading = true
+    state.acceptSettlementLoading = false
     handleError(state, err)
   },
 
@@ -486,6 +574,48 @@ const mutations = {
 
   [types.GET_ACCOUNT_LIMITS_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.GET_ACCOUNT_ROLES_REQUEST] (state) {},
+
+  [types.GET_ACCOUNT_ROLES_SUCCESS] (state, response) {
+    state.accountRoles = response.array[1]
+  },
+
+  [types.GET_ACCOUNT_ROLES_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST] (state) {},
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) {},
+
+  [types.SUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST] (state) {},
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) { },
+
+  [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SET_ETH_WHITELIST_REQUEST] (state) {},
+
+  [types.SET_ETH_WHITELIST_SUCCESS] (state) { },
+
+  [types.SET_ETH_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.SET_BTC_WHITELIST_REQUEST] (state) {},
+
+  [types.SET_BTC_WHITELIST_SUCCESS] (state) { },
+
+  [types.SET_BTC_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -494,12 +624,12 @@ const actions = {
     commit(types.SET_NOTARY_IP, ip)
   },
 
-  signup ({ commit }, { username, whitelist }) {
+  signup ({ commit }, { username }) {
     commit(types.SIGNUP_REQUEST)
 
     const { publicKey, privateKey } = irohaUtil.generateKeypair()
 
-    return notaryUtil.signup(username, whitelist, publicKey)
+    return notaryUtil.signup(username, publicKey)
       .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
       .then(() => ({ username, privateKey }))
       .catch(err => {
@@ -672,21 +802,10 @@ const actions = {
       })
   },
 
-  getPendingTransactions ({ commit }) {
-    commit(types.GET_PENDING_TRANSACTIONS_REQUEST)
-
-    return irohaUtil.getRawPendingTransactions()
-      .then(transactions => commit(types.GET_PENDING_TRANSACTIONS_SUCCESS, transactions))
-      .catch(err => {
-        commit(types.GET_PENDING_TRANSACTIONS_FAILURE, err)
-        throw err
-      })
-  },
-
-  transferAsset ({ commit, state }, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, state.accountQuorum, {
+    return irohaUtil.transferAsset(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
       assetId,
@@ -705,7 +824,7 @@ const actions = {
   signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
     commit(types.SIGN_PENDING_REQUEST)
 
-    return irohaUtil.signPendingTransaction(privateKeys, state.rawPendingTransactions.getTransactionsList()[txStoreId])
+    return irohaUtil.signPendingTransaction(privateKeys, state.rawUnsignedTransactions.getTransactionsList()[txStoreId])
       .then(() => {
         commit(types.SIGN_PENDING_SUCCESS)
       })
@@ -716,7 +835,7 @@ const actions = {
   },
 
   createSettlement (
-    { commit, state },
+    { commit, state, getters },
     { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
@@ -724,12 +843,12 @@ const actions = {
     return irohaUtil.createSettlement(
       privateKeys,
       state.accountId,
-      state.accountQuorum,
+      getters.irohaQuorum,
       offerAssetId,
       offerAmount,
       description,
       to,
-      1,
+      2,
       requestAssetId,
       requestAmount
     )
@@ -755,10 +874,10 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
+  rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(state.accountQuorum)
+    const fake = new Array(getters.accountQuorum)
       .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
@@ -770,12 +889,12 @@ const actions = {
       })
   },
 
-  addSignatory ({ commit, state }, privateKeys) {
+  addSignatory ({ commit, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
     const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
-    return irohaUtil.addSignatory(privateKeys, state.accountQuorum, {
+    return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -787,9 +906,9 @@ const actions = {
       })
   },
 
-  removeSignatory ({ commit, state }, { privateKeys, publicKey }) {
+  removeSignatory ({ commit, state, getters }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
-    return irohaUtil.removeSignatory(privateKeys, state.accountQuorum, {
+    return irohaUtil.removeSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
@@ -812,9 +931,9 @@ const actions = {
       })
   },
 
-  editAccountQuorum ({ commit, state }, { privateKeys, quorum }) {
+  editAccountQuorum ({ commit, state, getters }, { privateKeys, quorum }) {
     commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, state.accountQuorum, {
+    return irohaUtil.setAccountQuorum(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       quorum
     })
@@ -830,7 +949,9 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then((account) => commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account))
+      .then((account) => {
+        commit(types.GET_ACCOUNT_QUORUM_SUCCESS, account)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_QUORUM_FAILURE, err)
         throw err
@@ -842,9 +963,82 @@ const actions = {
     return irohaUtil.getAccount({
       accountId: state.accountId
     })
-      .then(({ jsonData }) => commit(types.GET_ACCOUNT_LIMITS_SUCCESS, jsonData))
+      .then((account) => {
+        commit(types.GET_ACCOUNT_LIMITS_SUCCESS, account.jsonData)
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_LIMITS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAccountRoles ({ commit, state }) {
+    commit(types.GET_ACCOUNT_ROLES_REQUEST)
+    return irohaUtil.getRawAccount({
+      accountId: state.accountId
+    })
+      .then((response) => {
+        commit(types.GET_ACCOUNT_ROLES_SUCCESS, response)
+      })
+      .catch(err => {
+        commit(types.GET_ACCOUNT_ROLES_FAILURE, err)
+        throw err
+      })
+  },
+
+  subscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys, settings }) {
+    commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `push_subscription`,
+      // eslint-disable-next-line
+      value: JSON.stringify(settings).replace(/"/g, '\\\"')
+    })
+      .then(() => {
+        commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
+  },
+
+  unsubscribePushNotifications ({ commit, state, dispatch, getters }, { privateKeys }) {
+    commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `push_subscription`,
+      value: ''
+    })
+      .then(() => {
+        commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
+  },
+
+  setWhiteList ({ commit, state, dispatch, getters }, { privateKeys, whitelist, type }) {
+    const key = type === WalletTypes.ETH ? 'eth_whitelist' : 'btc_whitelist'
+
+    commit(types.SET_WHITELIST_REQUEST)
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key,
+      // eslint-disable-next-line
+      value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
+    })
+      .then(() => {
+        dispatch('updateAccount')
+
+        commit(types.SET_WHITELIST_SUCCESS)
+      })
+      .catch(err => {
+        commit(types.SET_WHITELIST_FAILURE)
         throw err
       })
   }

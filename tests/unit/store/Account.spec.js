@@ -105,11 +105,11 @@ describe('Account store', () => {
         accountInfo: randomObject(),
         accountLimits: [randomObject()],
         accountQuorum: randomAmountRng(),
+        accountRoles: [randomObject()],
         accountSignatories: [randomObject()],
         assetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
-        rawPendingTransactions: [randomObject()],
         assets: randomObject(),
         connectionError: new Error()
       }
@@ -121,11 +121,11 @@ describe('Account store', () => {
         accountInfo: {},
         accountLimits: [],
         accountQuorum: 0,
+        accountRoles: [],
         accountSignatories: [],
         assetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
-        rawPendingTransactions: null,
         assets: [],
         connectionError: null,
         acceptSettlementLoading: false,
@@ -368,7 +368,7 @@ describe('Account store', () => {
           amount: randomAmount()
         }
 
-        actions.transferAsset({ commit, state }, params)
+        actions.transferAsset({ commit, state, getters }, params)
           .then(() => {
             expect(commit.args).to.deep.equal([
               [types.TRANSFER_ASSET_REQUEST],

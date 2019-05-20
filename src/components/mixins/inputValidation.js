@@ -1,6 +1,7 @@
 import gt from 'lodash/fp/gt'
 import lte from 'lodash/fp/lte'
 import { derivePublicKey } from 'ed25519.js'
+import irohaUtil from '@util/iroha'
 
 const privateKey = {
   pattern: /^[A-Fa-f0-9]{64}$/,
@@ -97,6 +98,21 @@ function checkNodeIp (canRegister) {
   }
 }
 
+function checkAccountId (accountId) {
+  return async function validator (rule, value, callback, source, options) {
+    const errors = []
+    let account
+    try {
+      account = await irohaUtil.getAccount({accountId})
+    } catch (e) {}
+
+    if (!value) errors.push('Please input username')
+    else if (!/^[a-z_0-9]{1,32}@[a-z_0-9]{1,9}$/.test(value)) errors.push('Username should match [a-z_0-9]{1,32}@[a-z_0-9]{1,9}')
+    else if (!account) errors.push('Destination user doesn\'t exist')
+    callback(errors)
+  }
+}
+
 function generateRules (form) {
   let rules = {}
   Object.keys(form).forEach(key => {
@@ -117,6 +133,9 @@ function generateRules (form) {
     } else if (validationRule.pattern === 'nodeIp') {
       const nodeIpRule = [{ validator: checkNodeIp(validationRule.canRegister) }]
       rules[key] = nodeIpRule
+    } else if (validationRule.pattern === 'checkAccountId') {
+      const accountIdRule = [{ validator: checkAccountId(validationRule.accountId) }]
+      rules[key] = accountIdRule
     } else {
       rules[key] = set[validationRule]
     }

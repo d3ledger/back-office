@@ -1,4 +1,5 @@
 import '@babel/polyfill'
+import '../theme/index.css'
 
 import Vue from 'vue'
 import App from './App.vue'
@@ -86,6 +87,10 @@ import 'echarts/lib/component/legendScroll'
 import 'echarts/lib/component/dataZoom'
 
 import VueClipboard from 'vue-clipboard2'
+
+import Vuelidate from 'vuelidate'
+
+Vue.use(Vuelidate)
 
 VueClipboard.config.autoSetContainer = true
 Vue.use(VueClipboard)

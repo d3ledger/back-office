@@ -59,6 +59,12 @@
       "asset": "ICN",
       "amount": "1501.4",
       "precision": 18
+    },
+    {
+      "name": "Sora",
+      "asset": "XOR",
+      "amount": "18321.332",
+      "precision": 18
     }
   ]
 }
