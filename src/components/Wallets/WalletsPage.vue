@@ -2,7 +2,7 @@
   <el-container v-if="wallets.length">
     <el-aside
       class="column-fullheight wallets-menu"
-      width="280px"
+      width="250px"
     >
       <div class="searchbar">
         <div class="searchbar__prefix">

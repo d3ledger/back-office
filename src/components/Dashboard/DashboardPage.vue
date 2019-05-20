@@ -103,7 +103,7 @@ export default {
 
 <style scoped>
 .card_margin-bottom {
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
 }
 .portfolio_card-padding {
   padding-right: 10px;
