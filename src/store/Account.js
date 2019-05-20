@@ -255,10 +255,9 @@ const getters = {
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
-    } else {
-      const wallet = find('eth_whitelist', state.accountInfo)
-      return wallet ? JSON.parse(wallet.eth_whitelist) : []
     }
+
+    return []
   },
 
   btcWhiteListAddresses (state, getters) {
