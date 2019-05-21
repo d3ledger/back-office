@@ -8,7 +8,7 @@
               <span>Fee setting</span>
             </div>
             <el-table
-              :data="availableAssets.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+              :data="availableAssets"
               style="width: 100%">
               <el-table-column
                 label="Name"
@@ -60,15 +60,6 @@
                     @click="handleEdit(scope.row, FeeTypes.CUSTODY)">
                     Edit
                   </el-button>
-                </template>
-              </el-table-column>
-              <el-table-column
-                align="right">
-                <template slot="header">
-                  <el-input
-                    v-model="search"
-                    size="mini"
-                    placeholder="Type to search"/>
                 </template>
               </el-table-column>
             </el-table>
@@ -125,7 +116,6 @@ export default {
   ],
   data () {
     return {
-      search: '',
       setFeeFormVisible: false,
       feeAmount: 0,
       assetToSet: null,
@@ -145,8 +135,7 @@ export default {
     ])
   },
 
-  beforeMount () {
-    console.log(FeeTypes)
+  created () {
     this.getFee(FeeTypes.TRANSFER)
     this.getFee(FeeTypes.CUSTODY)
     this.getFee(FeeTypes.ACCOUNT_CREATION)
