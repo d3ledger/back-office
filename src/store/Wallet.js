@@ -14,7 +14,8 @@ const types = flow(
   map(x => [x, x]),
   fromPairs
 )([
-  'GET_CRYPTO_FULL_DATA'
+  'GET_CRYPTO_FULL_DATA',
+  'GET_BILLING_DATA'
 ])
 
 function initialState () {
@@ -24,7 +25,8 @@ function initialState () {
         fiat: 0,
         fiat_change: 0,
         crypto: 0,
-        crypto_change: 0
+        crypto_change: 0,
+        fee: 0
       },
       market: {
         cap: {
@@ -162,6 +164,21 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
+        throw err
+      })
+  },
+
+  getBillingData ({commit}, {asset, domain}) {
+    commit(types.GET_BILLING_DATA_REQUEST)
+
+    return Promise.resolve()
+      .then((result) => {
+        commit(types.GET_BILLING_DATA_SUCCESS, {
+          result
+        })
+      })
+      .catch(err => {
+        commit(types.GET_BILLING_DATA_FAILURE, err)
         throw err
       })
   }
