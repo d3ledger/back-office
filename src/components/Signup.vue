@@ -83,6 +83,24 @@
             class="el-form-item__error"
           >{{ _showError($v.form.nodeIp) }}</span>
         </el-form-item>
+        <el-form-item label=" ">
+          <el-checkbox v-model="form.requireKey" label="Generate new pair key" border class="fullwidth checkbox_key"></el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-if="!form.requireKey"
+          label="Public key"
+          prop="publicKey"
+        >
+          <el-input
+            name="Public key"
+            v-model="$v.form.username.$model"
+            :disabled="isLoading"
+            :class="[
+              _isValid($v.form.username) ? 'border_success' : '',
+              _isError($v.form.username) ? 'border_fail' : ''
+            ]"
+          />
+        </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
             :loading="isLoading"
@@ -178,7 +196,8 @@ export default {
       predefinedDomain: 'd3',
       form: {
         username: '',
-        nodeIp: ''
+        nodeIp: '',
+        requireKey: true
       },
       dialogVisible: false,
       dialog: {
@@ -325,5 +344,40 @@ export default {
     float: right;
     font-size: 0.8rem;
     color: #8492a6;
+  }
+
+  .checkbox_key {
+    color: rgba(255, 255, 255, 0.4);
+    background-color: #363636;
+    color: rgba(255, 255, 255, 0.8);
+    border: solid 1px rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    height: 4.5rem;
+    padding-left: 1.2rem;
+    padding-top: 1.2rem;
+    line-height: 2;
+    font-size: 1rem;
+  }
+
+  .checkbox_key >>> .el-checkbox__label {
+    font-size: 1rem;
+  }
+
+  .checkbox_key.is-checked {
+    border-color: unset;
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__label {
+    font-size: 1rem;
+    color: #ffffff;
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__inner {
+    background-color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__inner::after {
+    border-color: black;
   }
 </style>
