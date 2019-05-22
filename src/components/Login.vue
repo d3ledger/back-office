@@ -1,33 +1,42 @@
 <template>
   <el-container class="auth-container">
     <div style="margin-top: 2.5rem">
-      <img src="@/assets/logo.svg" alt="D3" @click="onShowVersion"/>
+      <img
+        src="@/assets/logo.svg"
+        alt="D3"
+        @click="onShowVersion"
+      >
     </div>
     <span class="auth-welcome">Welcome to D3</span>
     <div class="auth-form-container">
       <el-form
-        @keyup.enter.native="onSubmit"
-        class="auth-form"
         ref="form"
         :model="form"
+        class="auth-form"
         label-position="top"
+        @keyup.enter.native="onSubmit"
       >
-        <el-form-item label="Private key" prop="privateKey">
-          <el-row type="flex" justify="space-between">
+        <el-form-item
+          label="Private key"
+          prop="privateKey"
+        >
+          <el-row
+            type="flex"
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
-                name="privateKey"
                 v-model="$v.form.privateKey.$model"
                 :disabled="isLoading"
                 :class="[
                   _isValid($v.form.privateKey) ? 'border_success' : '',
                   _isError($v.form.privateKey) ? 'border_fail' : ''
                 ]"
+                name="privateKey"
               />
             </el-col>
 
             <el-upload
-              action=""
               :auto-upload="false"
               :show-file-list="false"
               :on-change="onFileChosen"
@@ -37,6 +46,7 @@
                 _isValid($v.form.privateKey) ? 'border_success' : '',
                 _isError($v.form.privateKey) ? 'border_fail' : ''
               ]"
+              action=""
             >
               <el-button>
                 <fa-icon icon="upload" />
@@ -48,40 +58,47 @@
             class="el-form-item__error"
           >{{ _showError($v.form.privateKey) }}</span>
         </el-form-item>
-        <el-form-item label="Username" prop="username">
+        <el-form-item
+          label="Username"
+          prop="username"
+        >
           <el-input
-            name="username"
             v-model="$v.form.username.$model"
             :disabled="isLoading"
             :class="[
               _isValid($v.form.username) ? 'border_success' : '',
               _isError($v.form.username) ? 'border_fail' : ''
             ]"
+            name="username"
           />
           <span
             v-if="_isError($v.form.username)"
             class="el-form-item__error"
           >{{ _showError($v.form.username) }}</span>
         </el-form-item>
-        <el-form-item label="Node IP" prop="nodeIp">
+        <el-form-item
+          label="Node IP"
+          prop="nodeIp"
+        >
           <el-select
             v-model="$v.form.nodeIp.$model"
             :disabled="isLoading"
-            style="width: 100%;"
-            filterable
-            allow-create
-            popper-class="black-form_select-dropdown"
             :class="[
               'auth-form_select',
               _isValid($v.form.nodeIp) ? 'border_success' : '',
               _isError($v.form.nodeIp) ? 'border_fail' : ''
             ]"
+            style="width: 100%;"
+            filterable
+            allow-create
+            popper-class="black-form_select-dropdown"
           >
             <el-option
               v-for="node in nodeIPs"
               :key="node.value"
               :label="node.label"
-              :value="node.value">
+              :value="node.value"
+            >
               <span class="option left">{{ node.label }}</span>
               <span class="option right">{{ node.value }}</span>
             </el-option>
@@ -93,11 +110,11 @@
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
+            :loading="isLoading"
             data-cy="login"
             class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
-            :loading="isLoading"
           >
             Log in
           </el-button>
@@ -108,7 +125,10 @@
         <router-link
           to="/signup"
         >
-          <el-button data-cy="signup" class="auth_goto-container-button fullwidth">
+          <el-button
+            data-cy="signup"
+            class="auth_goto-container-button fullwidth"
+          >
             Sign up
           </el-button>
         </router-link>
@@ -130,7 +150,7 @@ import {
 import { required } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'login',
+  name: 'Login',
   mixins: [
     messageMixin,
     errorHandler
@@ -165,15 +185,19 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters([
+      'nodeIPs'
+    ])
+  },
+
   created () {
     const nodeIp = this.$store.state.Account.nodeIp
     this.form.nodeIp = nodeIp || this.nodeIPs[0].value
   },
 
-  computed: {
-    ...mapGetters([
-      'nodeIPs'
-    ])
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   },
 
   methods: {
@@ -240,10 +264,6 @@ export default {
       this.countToShowVersion = 0
       this.versionTimeout = null
     }
-  },
-
-  mounted () {
-    document.documentElement.style.setProperty('--show-loading', 'none')
   }
 }
 </script>

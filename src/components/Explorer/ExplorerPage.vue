@@ -2,29 +2,37 @@
   <el-container>
     <el-main>
       <el-row>
-        <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }"
+        >
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Transaction explorer</span>
             </div>
             <div class="search">
               <el-form
-                style="width: 100%"
-                :model="form"
                 ref="form"
-                @submit.native.prevent>
+                :model="form"
+                style="width: 100%"
+                @submit.native.prevent
+              >
                 <el-row>
                   <el-col :span="24">
-                    <el-form-item label="Query" prop="query">
+                    <el-form-item
+                      label="Query"
+                      prop="query"
+                    >
                       <el-input
-                        name="query"
                         v-model="$v.form.query.$model"
-                        @input="search()"
                         :placeholder="placeholder"
                         :class="[
                           _isValid($v.form.query) ? 'border_success' : '',
                           _isError($v.form.query) ? 'border_fail' : ''
                         ]"
+                        name="query"
+                        @input="search()"
                       />
                       <span
                         v-if="_isError($v.form.query)"
@@ -38,7 +46,10 @@
                 <el-row>
                   <el-col :span="12">
                     <el-form-item label="Search by">
-                      <el-radio-group v-model="currentSearchType" size="small">
+                      <el-radio-group
+                        v-model="currentSearchType"
+                        size="small"
+                      >
                         <el-radio
                           v-for="(value, index) in searchType"
                           :key="index"
@@ -55,18 +66,21 @@
                   <el-col :span="11">
                     <el-form-item label="Date from">
                       <el-date-picker
-                        style="width: 100%"
                         v-model="dateFrom"
+                        style="width: 100%"
                         type="datetime"
                         placeholder="Date from"
                       />
                     </el-form-item>
                   </el-col>
-                  <el-col :span="12" :offset="1">
+                  <el-col
+                    :span="12"
+                    :offset="1"
+                  >
                     <el-form-item label="Date to">
                       <el-date-picker
-                        style="width: 100%"
                         v-model="dateTo"
+                        style="width: 100%"
                         type="datetime"
                         placeholder="Date to"
                       />
@@ -76,30 +90,51 @@
               </el-form>
             </div>
             <el-table
-              class="transactions_table"
+              v-loading="explorerLoading"
               :data="transactions"
-              v-loading="explorerLoading">
-              <el-table-column label="Time" min-width="175" prop="createdTime" sortable>
+              class="transactions_table"
+            >
+              <el-table-column
+                label="Time"
+                min-width="175"
+                prop="createdTime"
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ formatDateLong(scope.row.createdTime) }}
                 </template>
               </el-table-column>
-              <el-table-column label="From" sortable>
+              <el-table-column
+                label="From"
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ scope.row.srcAccountId }}
                 </template>
               </el-table-column>
-              <el-table-column label="To" prop="destAccountId" sortable>
-              </el-table-column>
-              <el-table-column label="Amount" prop="amount" sortable>
-              </el-table-column>
-              <el-table-column label="Asset" prop="assetId" sortable>
+              <el-table-column
+                label="To"
+                prop="destAccountId"
+                sortable
+              />
+              <el-table-column
+                label="Amount"
+                prop="amount"
+                sortable
+              />
+              <el-table-column
+                label="Asset"
+                prop="assetId"
+                sortable
+              >
                 <template slot-scope="scope">
                   {{ assetName(scope.row.assetId) }}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" prop="description">
-              </el-table-column>
+              <el-table-column
+                label="Description"
+                prop="description"
+              />
             </el-table>
           </el-card>
         </el-col>
@@ -120,7 +155,7 @@ import { required } from 'vuelidate/lib/validators'
 import { SearchTypes } from '@/data/consts'
 
 export default {
-  name: 'explorer-page',
+  name: 'ExplorerPage',
   mixins: [
     dateFormat,
     currencySymbol,
@@ -189,13 +224,13 @@ export default {
       if (this._isValid(this.$v.form.query)) {
         switch (this.currentSearchType) {
           case SearchTypes.BLOCK_TYPE:
-            this.searchTransactionsByBlock({height: this.form.query})
+            this.searchTransactionsByBlock({ height: this.form.query })
             break
           case SearchTypes.TRANSACTION_TYPE:
-            this.searchTransactionById({transactionId: this.form.query})
+            this.searchTransactionById({ transactionId: this.form.query })
             break
           case SearchTypes.ACCOUNT_TYPE:
-            this.searchTransactionsByAccountId({accountId: this.form.query})
+            this.searchTransactionsByAccountId({ accountId: this.form.query })
             break
         }
       }

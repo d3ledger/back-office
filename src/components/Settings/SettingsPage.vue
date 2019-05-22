@@ -6,9 +6,12 @@
           :xs="12"
           :lg="{ span: 9, offset: 3 }"
           :xl="{ span: 8, offset: 4 }"
-          class="left_column fullheight">
+          class="left_column fullheight"
+        >
           <el-card
-            :body-style="{ padding: '0' }" class="fullheight">
+            :body-style="{ padding: '0' }"
+            class="fullheight"
+          >
             <div class="header">
               <span>Settings</span>
             </div>
@@ -21,7 +24,10 @@
                   <el-row class="currencies_list">
                     <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
                     <el-col>
-                      <el-radio-group v-model="currentFiat" size="small">
+                      <el-radio-group
+                        v-model="currentFiat"
+                        size="small"
+                      >
                         <el-radio
                           v-for="(value, index) in settingsFiatCurrencies"
                           :key="index"
@@ -35,7 +41,10 @@
                   <el-row class="currencies_list">
                     <p class="list-title">Wallets (Market)</p>
                     <el-col>
-                      <el-radio-group v-model="currentCrypto" size="small">
+                      <el-radio-group
+                        v-model="currentCrypto"
+                        size="small"
+                      >
                         <el-radio
                           v-for="(value, index) in settingsCryptoCurrencies"
                           :key="index"
@@ -55,8 +64,10 @@
                 <div>
                   <el-row>
                     <el-col>
-                      <el-switch v-model="notifications" @change="switchNotifications">
-                      </el-switch>
+                      <el-switch
+                        v-model="notifications"
+                        @change="switchNotifications"
+                      />
                     </el-col>
                   </el-row>
                 </div>
@@ -70,29 +81,36 @@
                     <el-col>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
+                        :loading="registering"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.BTC)"
-                        :loading="registering"
                       >
-                        <fa-icon class="action_button-icon" icon="plus" />
                         Register in BTC network
                       </el-button>
-                      <div v-else-if="!walletType.includes(WalletTypes.BTC)" class="list-title">
+                      <div
+                        v-else-if="!walletType.includes(WalletTypes.BTC)"
+                        class="list-title"
+                      >
                         There is no free BTC relays now
                       </div>
                       <el-button
                         v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
+                        :loading="registering"
                         class="action_button content_width"
                         @click="onAddNetwork(WalletTypes.ETH)"
-                        :loading="registering"
                       >
-                        <fa-icon class="action_button-icon" icon="plus" />
                         Register in ETH network
                       </el-button>
-                      <div v-else-if="!walletType.includes(WalletTypes.ETH)" class="list-title">
+                      <div
+                        v-else-if="!walletType.includes(WalletTypes.ETH)"
+                        class="list-title"
+                      >
                         There is no free ETH relays now
                       </div>
-                      <span class="list-title" v-if="walletType.length === 2">
+                      <span
+                        v-if="walletType.length === 2"
+                        class="list-title"
+                      >
                         You already added all networks
                       </span>
                     </el-col>
@@ -108,8 +126,8 @@
                     <el-col>
                       <el-select
                         id="timezone_select"
-                        class="full-width_select"
                         v-model="currentZone"
+                        class="full-width_select"
                         filterable
                         placeholder="Select"
                       >
@@ -118,7 +136,7 @@
                           :key="index"
                           :label="zone"
                           :value="zone"
-                        ></el-option>
+                        />
                       </el-select>
                     </el-col>
                   </el-row>
@@ -134,7 +152,8 @@
           class="right_column fullheight"
         >
           <el-card
-            :body-style="{ padding: '0' }">
+            :body-style="{ padding: '0' }"
+          >
             <div class="header_only">
               <span class="header_btn-title">
                 Quorum: <b> {{ accountQuorum }} / {{ accountSignatories.length }}</b>
@@ -142,38 +161,62 @@
               <el-button
                 data-cy="editQuorum"
                 class="action_button"
-                @click="quorumFormVisible = true">
-                <fa-icon class="action_button-icon" icon="pencil-alt" /> Edit
+                @click="quorumFormVisible = true"
+              >
+                <fa-icon
+                  class="action_button-icon"
+                  icon="pencil-alt"
+                /> Edit
               </el-button>
             </div>
           </el-card>
           <el-card
-            class="settings-card"
             :body-style="{ padding: '0' }"
+            class="settings-card"
           >
             <div class="header_btn">
-              <span class="header_btn-title pointed" @click="updateActiveTab(1)">
+              <span
+                class="header_btn-title pointed"
+                @click="updateActiveTab(1)"
+              >
                 <span class="header_btn-icon_block">
                   <fa-icon
-                    class="header_btn-icon"
                     :icon="activeTab === 1 ? 'angle-down' : 'angle-right'"
+                    class="header_btn-icon"
                   />
                 </span>
                 Public keys
               </span>
-              <el-button class="action_button" data-cy="addPublicKey" @click="addKeyFormVisible = true">
-                <fa-icon class="action_button-icon" icon="plus" /> Add
+              <el-button
+                class="action_button"
+                data-cy="addPublicKey"
+                @click="addKeyFormVisible = true"
+              >
+                <fa-icon
+                  class="action_button-icon"
+                  icon="plus"
+                /> Add
               </el-button>
             </div>
             <div v-if="activeTab === 1">
-              <div class="settings-item" data-cy="accountSignatories">
+              <div
+                class="settings-item"
+                data-cy="accountSignatories"
+              >
                 <template v-for="(pubKey, index) in accountSignatories">
-                  <div class="settings-item_row" :key="index">
-                    <span @click="() => doCopy(pubKey)" class="settings-item_row-key text-overflow pointed">{{ pubKey }}</span>
+                  <div
+                    :key="index"
+                    class="settings-item_row"
+                  >
+                    <span
+                      class="settings-item_row-key text-overflow pointed"
+                      @click="() => doCopy(pubKey)"
+                    >{{ pubKey }}</span>
                     <el-button
                       data-cy="removeSignatory"
                       class="settings-item_row-delete"
-                      @click="removeKeyFormVisible = true; keyToRemove = pubKey">
+                      @click="removeKeyFormVisible = true; keyToRemove = pubKey"
+                    >
                       <fa-icon icon="trash-alt"/>
                     </el-button>
                   </div>
@@ -182,15 +225,18 @@
             </div>
           </el-card>
           <el-card
-            class="settings-card"
             :body-style="{ padding: '0' }"
+            class="settings-card"
           >
             <div class="header_btn">
-              <span class="header_btn-title pointed" @click="updateActiveTab(2)">
+              <span
+                class="header_btn-title pointed"
+                @click="updateActiveTab(2)"
+              >
                 <span class="header_btn-icon_block">
                   <fa-icon
-                    class="header_btn-icon"
                     :icon="activeTab === 2 ? 'angle-down' : 'angle-right'"
+                    class="header_btn-icon"
                   />
                 </span>
                 Ethereum white list
@@ -198,8 +244,12 @@
               <el-button
                 class="action_button"
                 data-cy="addEthWhiteAddress"
-                @click="addingType = WalletTypes.ETH; addWhiteAddressFormVisible = true">
-                <fa-icon class="action_button-icon" icon="plus" /> Add
+                @click="addingType = WalletTypes.ETH; addWhiteAddressFormVisible = true"
+              >
+                <fa-icon
+                  class="action_button-icon"
+                  icon="plus"
+                /> Add
               </el-button>
             </div>
             <div v-if="activeTab === 2">
@@ -207,17 +257,28 @@
                 <template v-for="(address, index) in ethWhiteListAddressesAll">
                   <div
                     v-if="ethWhiteListAddressesAll.length"
+                    :key="index"
                     class="settings-item_row"
-                    :key="index">
+                  >
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000)}`" placement="top">
-                        <el-tag class="pending" v-if="address[1] * 1000 > Date.now()" type="info">Pending</el-tag>
+                      <el-tooltip
+                        :content="`Pending until ${formatDate(address[1] * 1000)}`"
+                        class="item"
+                        effect="dark"
+                        placement="top"
+                      >
+                        <el-tag
+                          v-if="address[1] * 1000 > Date.now()"
+                          class="pending"
+                          type="info"
+                        >Pending</el-tag>
                       </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
                         class="settings-item_row-delete"
-                        @click="removingType = WalletTypes.ETH; removeAddressFormVisible = true; addressToRemove = address[0]">
+                        @click="removingType = WalletTypes.ETH; removeAddressFormVisible = true; addressToRemove = address[0]"
+                      >
                         <fa-icon icon="trash-alt"/>
                       </el-button>
                     </div>
@@ -225,22 +286,26 @@
                 </template>
                 <div
                   v-if="!ethWhiteListAddressesAll.length"
-                  class="settings-item_row">
+                  class="settings-item_row"
+                >
                   <span class="settings-item_row-key">You can withdraw to any address</span>
                 </div>
               </div>
             </div>
           </el-card>
           <el-card
-            class="settings-card"
             :body-style="{ padding: '0' }"
+            class="settings-card"
           >
             <div class="header_btn">
-              <span class="header_btn-title pointed" @click="updateActiveTab(3)">
+              <span
+                class="header_btn-title pointed"
+                @click="updateActiveTab(3)"
+              >
                 <span class="header_btn-icon_block">
                   <fa-icon
-                    class="header_btn-icon"
                     :icon="activeTab === 3 ? 'angle-down' : 'angle-right'"
+                    class="header_btn-icon"
                   />
                 </span>
                 Bitcoin white list
@@ -248,8 +313,12 @@
               <el-button
                 class="action_button"
                 data-cy="addEthWhiteAddress"
-                @click="addingType = WalletTypes.BTC; addWhiteAddressFormVisible = true">
-                <fa-icon class="action_button-icon" icon="plus" /> Add
+                @click="addingType = WalletTypes.BTC; addWhiteAddressFormVisible = true"
+              >
+                <fa-icon
+                  class="action_button-icon"
+                  icon="plus"
+                /> Add
               </el-button>
             </div>
             <div v-if="activeTab === 3">
@@ -257,17 +326,28 @@
                 <template v-for="(address, index) in btcWhiteListAddressesAll">
                   <div
                     v-if="btcWhiteListAddressesAll.length"
+                    :key="index"
                     class="settings-item_row"
-                    :key="index">
+                  >
                     <span class="settings-item_row-key text-overflow">{{ address[0] }}</span>
                     <div>
-                      <el-tooltip class="item" effect="dark" :content="`Pending until ${formatDate(address[1] * 1000)}`" placement="top">
-                        <el-tag class="pending" v-if="address[1] * 1000 > Date.now()" type="info">Pending</el-tag>
+                      <el-tooltip
+                        :content="`Pending until ${formatDate(address[1] * 1000)}`"
+                        class="item"
+                        effect="dark"
+                        placement="top"
+                      >
+                        <el-tag
+                          v-if="address[1] * 1000 > Date.now()"
+                          class="pending"
+                          type="info"
+                        >Pending</el-tag>
                       </el-tooltip>
                       <el-button
                         data-cy="removeAddress"
                         class="settings-item_row-delete"
-                        @click="removingType = WalletTypes.BTC; removeAddressFormVisible = true; addressToRemove = address[0]">
+                        @click="removingType = WalletTypes.BTC; removeAddressFormVisible = true; addressToRemove = address[0]"
+                      >
                         <fa-icon icon="trash-alt"/>
                       </el-button>
                     </div>
@@ -275,32 +355,48 @@
                 </template>
                 <div
                   v-if="!btcWhiteListAddressesAll.length"
-                  class="settings-item_row">
+                  class="settings-item_row"
+                >
                   <span class="settings-item_row-key">You can withdraw to any address</span>
                 </div>
               </div>
             </div>
           </el-card>
-          <WalletLimitsCard :activeTab="activeTab" :updateActiveTab="updateActiveTab" />
+          <WalletLimitsCard
+            :active-tab="activeTab"
+            :update-active-tab="updateActiveTab"
+          />
         </el-col>
       </el-row>
     </el-main>
     <el-dialog
-      title="Edit Quorum"
       :visible.sync="quorumFormVisible"
+      title="Edit Quorum"
       width="450px"
-      center>
-      <el-form ref="editQuorumForm" class="quorum_form" :model="quorumForm">
+      center
+    >
+      <el-form
+        ref="editQuorumForm"
+        :model="quorumForm"
+        class="quorum_form"
+      >
         <el-form-item>
-          <el-input-number v-model="quorumForm.amount" :min="1" :max="accountSignatories.length"></el-input-number>
+          <el-input-number
+            v-model="quorumForm.amount"
+            :min="1"
+            :max="accountSignatories.length"
+          />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
-          @click="updateQuorum"
-          class="dialog-form_buttons action"
           :disabled="quorumForm.amount > accountSignatories.length"
           :loading="quorumUpdating"
+          class="dialog-form_buttons action"
+          @click="updateQuorum"
         >
           Update
         </el-button>
@@ -313,20 +409,25 @@
       </div>
     </el-dialog>
     <el-dialog
+      :visible.sync="addKeyFormVisible"
       data-cy="addPublicKeyDialog"
       title="Public key"
-      :visible.sync="addKeyFormVisible"
       width="450px"
-      center>
+      center
+    >
       <div class="approval_form-desc">
         Are you sure want to add new public key?
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
+          :loading="addingNewKey"
           type="danger"
-          @click="addPublicKey"
           class="dialog-form_buttons action"
-          :loading="addingNewKey">Add
+          @click="addPublicKey"
+        >Add
         </el-button>
         <el-button
           class="dialog-form_buttons close"
@@ -337,20 +438,25 @@
       </div>
     </el-dialog>
     <el-dialog
+      :visible.sync="removeKeyFormVisible"
       data-cy="removePublicKeyDialog"
       title="Public key"
-      :visible.sync="removeKeyFormVisible"
       width="450px"
-      center>
+      center
+    >
       <div class="approval_form-desc">
         Are you sure want to remove <b class="key_representation">{{ keyToRemove }}</b> public key?
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
-          @click="removePublicKey"
+          :loading="removingKey"
           class="dialog-form_buttons action"
           type="danger"
-          :loading="removingKey">Remove
+          @click="removePublicKey"
+        >Remove
         </el-button>
         <el-button
           class="dialog-form_buttons close"
@@ -361,17 +467,21 @@
       </div>
     </el-dialog>
     <el-dialog
-      data-cy="downloadPrivateKeyDialog"
-      title="Private key"
       :visible.sync="downloadKeyVisible"
       :close-on-click-modal="false"
       :show-close="false"
+      data-cy="downloadPrivateKeyDialog"
+      title="Private key"
       width="450px"
-      center>
+      center
+    >
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
           class="dialog-form_buttons action"
           data-cy="buttonDownload"
@@ -381,31 +491,47 @@
           Download
         </el-button>
         <el-button
-          class="dialog-form_buttons close"
           :disabled="!downloaded"
+          class="dialog-form_buttons close"
           data-cy="buttonConfirm"
-          @click="downloadKeyVisible = false">
+          @click="downloadKeyVisible = false"
+        >
           Confirm
         </el-button>
       </div>
     </el-dialog>
     <el-dialog
+      :visible.sync="addWhiteAddressFormVisible"
       data-cy="addWhiteAddressDialog"
       title="Add new white address"
-      :visible.sync="addWhiteAddressFormVisible"
       width="450px"
-      center>
-      <el-form ref="newWhiteAddressForm" class="quorum_form" :model="whitelistForm">
-        <el-form-item>
-          <el-input v-model="whitelistForm.address"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-form_buttons-block">
+      center
+      @closed="onCloseWhiteAddressForm"
+    >
+      <div class="approval_form-desc">
+        <el-form
+          ref="newWhiteAddressForm"
+          :model="whitelistForm"
+          class="withdraw_form"
+        >
+          <el-form-item
+            label="Address"
+            prop="address"
+          >
+            <el-input v-model="whitelistForm.address"/>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
+          :loading="addingNewAddress"
           type="danger"
-          @click="addWhiteAddress"
           class="dialog-form_buttons action"
-          :loading="addingNewAddress">Add
+          @click="addWhiteAddress"
+        >Add
         </el-button>
         <el-button
           class="dialog-form_buttons close"
@@ -416,20 +542,25 @@
       </div>
     </el-dialog>
     <el-dialog
+      :visible.sync="removeAddressFormVisible"
       data-cy="removeAddressForm"
       title="Remove white address"
-      :visible.sync="removeAddressFormVisible"
       width="450px"
-      center>
+      center
+    >
       <div class="approval_form-desc">
         Are you sure want to remove <b class="key_representation">{{ addressToRemove }}</b> address from whitelist?
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
-          @click="removeWhiteAddress"
+          :loading="removingAddress"
           class="dialog-form_buttons action"
           type="danger"
-          :loading="removingAddress">Remove
+          @click="removeWhiteAddress"
+        >Remove
         </el-button>
         <el-button
           class="dialog-form_buttons close"
@@ -452,10 +583,22 @@ import { lazyComponent } from '@router'
 import pushUtil from '@util/push-util'
 
 export default {
-  name: 'settings-page',
+  name: 'SettingsPage',
   components: {
     WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard')
   },
+  filters: {
+    substrKey (key) {
+      if (key.length > 57) {
+        return key.substr(0, 57) + '...'
+      }
+      return key
+    }
+  },
+  mixins: [
+    dateFormat,
+    messageMixin
+  ],
   data () {
     return {
       activeTab: 1,
@@ -486,18 +629,6 @@ export default {
         address: ''
       }
     }
-  },
-  mixins: [
-    dateFormat,
-    messageMixin
-  ],
-  created () {
-    this.getSignatories()
-    this.getAccountLimits()
-    this.getFreeEthRelaysNumber()
-    this.getFreeBtcRelaysNumber()
-
-    this.notifications = this.subscribed
   },
   computed: {
     ...mapGetters([
@@ -538,6 +669,14 @@ export default {
         this.$store.dispatch('updateSettingsViewTime', value)
       }
     }
+  },
+  created () {
+    this.getSignatories()
+    this.getAccountLimits()
+    this.getFreeEthRelaysNumber()
+    this.getFreeBtcRelaysNumber()
+
+    this.notifications = this.subscribed
   },
   methods: {
     ...mapActions([
@@ -685,6 +824,10 @@ export default {
           this.addressToRemove = null
         })
     },
+
+    onCloseWhiteAddressForm () {
+      this.$refs.newWhiteAddressForm.resetFields()
+    },
     onClickDownload () {
       const filename = `${this.fileData.username}.priv`
       const blob = new Blob(
@@ -714,22 +857,30 @@ export default {
     onCopyKeyError (e) {
       this.$message.error('Failed to copy texts')
     },
+
+    // TODO: Back-end do not require key anymore
     onAddNetwork (network) {
-      this.openApprovalDialog().then(privateKeys => {
-        if (!privateKeys) return
+      this.openApprovalDialog()
+        .then(privateKeys => {
+          if (!privateKeys) return
 
-        this.registering = true
-        this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
+          this.registering = true
+          this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
 
-        return this.addNetwork({ privateKeys }).then(() => {
-          this.$message.success(`You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`)
-          this.updateAccount()
-        }).catch((err) => {
-          this.$_showRegistrationError(err.message, err.response)
+          return this.addNetwork({ privateKeys })
+            .then(() => {
+              this.$message.success(
+                `You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`
+              )
+              this.updateAccount()
+            })
+            .catch((err) => {
+              this.$_showRegistrationError(err.message, err.response)
+            })
         })
-      }).finally(() => {
-        this.registering = true
-      })
+        .finally(() => {
+          this.registering = false
+        })
     },
     updateActiveTab (id) {
       this.activeTab = id
@@ -756,14 +907,6 @@ export default {
       } else {
         this.unsubscribe()
       }
-    }
-  },
-  filters: {
-    substrKey (key) {
-      if (key.length > 57) {
-        return key.substr(0, 57) + '...'
-      }
-      return key
     }
   }
 }

@@ -1,18 +1,33 @@
 <template>
   <el-container v-if="wallets.length">
-    <el-aside class="column-fullheight wallets-menu" width="280px">
+    <el-aside
+      class="column-fullheight wallets-menu"
+      width="280px"
+    >
       <div class="searchbar">
         <div class="searchbar__prefix">
-          <fa-icon icon="search" class="searchbar__icon" />
+          <fa-icon
+            icon="search"
+            class="searchbar__icon"
+          />
         </div>
 
         <div class="searchbar__input">
-          <el-input placeholder="Search" v-model="search" />
+          <el-input
+            v-model="search"
+            placeholder="Search"
+          />
         </div>
 
         <div class="searchbar__sort">
-          <el-dropdown trigger="click" @command="sort">
-            <div id="wallets-sort-button" class="searchbar__sort-button">
+          <el-dropdown
+            trigger="click"
+            @command="sort"
+          >
+            <div
+              id="wallets-sort-button"
+              class="searchbar__sort-button"
+            >
               <fa-icon
                 :icon="currentCriterion.icon"
                 class="searchbar__icon"
@@ -37,13 +52,13 @@
       <wallet-menu-item
         v-for="wallet in sortedWallets"
         :key="wallet.id"
-        :walletId="wallet.id"
+        :wallet-id="wallet.id"
         :name="wallet.name"
         :asset="wallet.asset"
       />
     </el-aside>
     <el-main class="column-fullheight wallet">
-      <router-view :key="$route.params.walletId"></router-view>
+      <router-view :key="$route.params.walletId"/>
     </el-main>
   </el-container>
   <el-container v-else>
@@ -57,7 +72,7 @@ import { lazyComponent } from '@router'
 import sortBy from 'lodash/fp/sortBy'
 
 export default {
-  name: 'wallets-page',
+  name: 'WalletsPage',
   components: {
     WalletMenuItem: lazyComponent('Wallets/WalletMenuItem'),
     NoAssetsCard: lazyComponent('common/NoAssetsCard')
@@ -130,11 +145,9 @@ export default {
   },
 
   created () {
-    Promise.all([
-      this.loadWalletsSortCriterion(),
-      this.getAccountAssets(),
-      this.getAllAssetsTransactions()
-    ])
+    this.loadWalletsSortCriterion()
+    this.getAccountAssets()
+    this.getAllAssetsTransactions()
 
     if (!this.currentCriterion) this.sort(this.criterions[0])
   },

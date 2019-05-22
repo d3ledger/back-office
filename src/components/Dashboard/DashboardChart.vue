@@ -7,19 +7,30 @@
             {{ portfolioChart.crypto }}
           </p>
         </el-col>
-        <el-col :span="10" class="card-content_header-filters">
+        <el-col
+          :span="10"
+          class="card-content_header-filters"
+        >
           <div
             v-for="(value, index) in daysLabels"
             :key="index"
             :class="[portfolioChart.filter !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
-            @click="selectLabel(value)">
+            @click="selectLabel(value)"
+          >
             <p class="chart_time-filter_value">{{ value }}</p>
           </div>
         </el-col>
       </el-row>
     </div>
-    <div class="card-content_body" v-loading="portfolioChart.isLoading" :style="{ height: `${dashboardChartHeight + 30}px` }">
-      <line-chart-table :data="portfolioChart.data" :filter="portfolioChart.filter"/>
+    <div
+      v-loading="portfolioChart.isLoading"
+      :style="{ height: `${dashboardChartHeight + 30}px` }"
+      class="card-content_body"
+    >
+      <line-chart-table
+        :data="portfolioChart.data"
+        :filter="portfolioChart.filter"
+      />
     </div>
   </div>
 </template>

@@ -2,20 +2,25 @@
   <el-container>
     <el-main>
       <el-row>
-        <el-col :xs="24" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
+        <el-col
+          :xs="24"
+          :lg="{ span: 18, offset: 3 }"
+          :xl="{ span: 16, offset: 4 }"
+        >
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Pending transactions</span>
             </div>
             <el-table
+              :data="allPendingTransactions"
               class="transactions_table"
-              :data="allPendingTransactions">
+            >
               <el-table-column type="expand">
                 <template slot-scope="scope">
                   <div class="transaction_details">
                     <p>
                       {{ scope.row.from }} transfered {{ scope.row.amount }}
-                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset}} to {{ scope.row.to }}
+                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset }} to {{ scope.row.to }}
                     </p>
                     <div>
                       <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
@@ -24,36 +29,56 @@
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Date" width="110">
+              <el-table-column
+                label="Date"
+                width="110"
+              >
                 <template slot-scope="scope">
                   {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
                 </template>
               </el-table-column>
-              <el-table-column label="Amount" min-width="60">
+              <el-table-column
+                label="Amount"
+                min-width="60"
+              >
                 <template slot-scope="scope">
-                  {{ scope.row.from === 'you' ? '−' : '+' }}{{Number(scope.row.amount) }}
-                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset}}
+                  {{ scope.row.from === 'you' ? '−' : '+' }}{{ Number(scope.row.amount) }}
+                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset }}
                 </template>
               </el-table-column>
-              <el-table-column label="Address" min-width="90" show-overflow-tooltip>
+              <el-table-column
+                label="Address"
+                min-width="90"
+                show-overflow-tooltip
+              >
                 <template slot-scope="scope">
                   {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                 </template>
               </el-table-column>
-              <el-table-column label="Description" min-width="90" show-overflow-tooltip>
+              <el-table-column
+                label="Description"
+                min-width="90"
+                show-overflow-tooltip
+              >
                 <template slot-scope="scope">
                   <div>
-                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"></div>
+                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"/>
                     <div v-else>{{ scope.row.message }}</div>
                   </div>
                 </template>
               </el-table-column>
-              <el-table-column label="Expire" width="70">
+              <el-table-column
+                label="Expire"
+                width="70"
+              >
                 <template slot-scope="scope">
                   {{ calculateEstimatedTime(scope.row.date) }}
                 </template>
               </el-table-column>
-              <el-table-column label="Signs" width="60">
+              <el-table-column
+                label="Signs"
+                width="60"
+              >
                 <template slot-scope="scope">
                   {{ scope.row.signatures.length }} / {{ accountQuorum }}
                 </template>
@@ -62,10 +87,10 @@
                 <template slot-scope="scope">
                   <div class="transaction_action">
                     <el-button
-                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
                       size="medium"
                       type="primary"
                       plain
+                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
                     >
                       Add signatures
                     </el-button>
@@ -87,7 +112,7 @@ import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
 
 export default {
-  name: 'transaction-page',
+  name: 'TransactionPage',
   mixins: [
     dateFormat,
     messageMixin

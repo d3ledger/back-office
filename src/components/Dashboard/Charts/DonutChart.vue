@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: 'donut-chart',
+  name: 'DonutChart',
   props: {
     data: {
       type: Array,

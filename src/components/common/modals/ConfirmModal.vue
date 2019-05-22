@@ -1,18 +1,18 @@
 <template>
   <el-dialog
     id="approval-dialog"
+    :visible="approvalDialogVisible"
     title="Confirm the transaction"
     width="450px"
-    :visible="approvalDialogVisible"
-    @close="closeApprovalDialogWith()"
     center
+    @close="closeApprovalDialogWith()"
   >
     <el-form
+      v-show="!isWaitFormVisible"
       ref="approvalForm"
       class="approval_form"
       label-position="top"
       @validate="updateNumberOfValidKeys"
-      v-show="!isWaitFormVisible"
     >
       <el-form-item class="approval_form-item-clearm">
         <el-row class="approval_form-desc">
@@ -22,32 +22,33 @@
               You need to enter at least {{ approvalDialogMinAmountKeys }} key.
             </span>
           </p>
-          <p v-if="approvalDialogSignatures.length">This transaction already has {{approvalDialogSignatures.length}} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
+          <p v-if="approvalDialogSignatures.length">This transaction already has {{ approvalDialogSignatures.length }} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
         </el-row>
       </el-form-item>
 
       <template v-for="(key, index) in $v.approvalForm.privateKeys.$each.$iter">
         <el-form-item
-          label="Private key"
           :key="index"
           :prop="`privateKeys.${index}.hex`"
+          label="Private key"
           class="approval_form-item-clearm"
         >
-          <el-row type="flex" justify="space-between">
+          <el-row
+            type="flex"
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
                 v-model="key.hex.$model"
-                @blur="checkPrivateKey(index)"
-                @input="checkPrivateKey(index)"
                 :class="[
                   _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
                   _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
                 ]"
+                @blur="checkPrivateKey(index)"
+                @input="checkPrivateKey(index)"
               />
             </el-col>
             <el-upload
-              class="approval_form-upload"
-              action=""
               :auto-upload="false"
               :show-file-list="false"
               :on-change="(f, l) => onFileChosen(f, l, key, index)"
@@ -55,6 +56,8 @@
                 _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
                 _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
               ]"
+              class="approval_form-upload"
+              action=""
             >
               <el-button>
                 <fa-icon icon="upload" />
@@ -69,26 +72,32 @@
       </template>
 
       <el-form-item
-        class="approval_form-counter"
         v-if="accountQuorum > 1"
+        class="approval_form-counter"
       >
-        <el-row type="flex" justify="center">
-          <div class="item__private-keys" :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''">
+        <el-row
+          type="flex"
+          justify="center"
+        >
+          <div
+            :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''"
+            class="item__private-keys"
+          >
             {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
           </div>
         </el-row>
       </el-form-item>
     </el-form>
     <div
+      v-show="!isWaitFormVisible"
       slot="footer"
       class="dialog-form_buttons-block"
-      v-show="!isWaitFormVisible"
     >
       <el-button
         id="confirm-approval-form"
+        :disabled="disableConfig()"
         class="dialog-form_buttons action"
         @click="beforeSubmitApprovalDialog()"
-        :disabled="disableConfig()"
       >
         Confirm
       </el-button>
@@ -105,19 +114,23 @@
           {{ timeToReject }}
         </div>
         <svg>
-          <circle r="50" cx="56" cy="56"></circle>
+          <circle
+            r="50"
+            cx="56"
+            cy="56"
+          />
         </svg>
       </div>
     </span>
     <div
+      v-show="isWaitFormVisible"
       slot="footer"
       class="dialog-form_buttons-block"
-      v-show="isWaitFormVisible"
     >
       <el-button
+        :disabled="timeToReject <= 0"
         class="dialog-form_buttons close fullwidth"
         @click="closeApprovalDialogWith()"
-        :disabled="timeToReject <= 0"
       >
         Cancel
       </el-button>
@@ -131,7 +144,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'confirm-modal',
+  name: 'ConfirmModal',
   mixins: [
     errorHandler
   ],

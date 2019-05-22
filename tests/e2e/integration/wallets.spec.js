@@ -73,7 +73,7 @@ describe('Test wallets page without white list', () => {
     })
   })
 
-  describe('Test withdraw modal', () => {
+  describe.skip('Test withdraw modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=withdraw]').click()
       cy.get('div.el-dialog').eq(0).should('be.visible')

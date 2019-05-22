@@ -1,29 +1,39 @@
 <template>
   <span>
     <el-card
-      class="settings-card"
       :body-style="{ padding: '0' }"
+      class="settings-card"
     >
       <div class="header_btn">
-        <span class="header_btn-title pointed" @click="updateActiveTab(4)">
+        <span
+          class="header_btn-title pointed"
+          @click="updateActiveTab(4)"
+        >
           <span class="header_btn-icon_block">
             <fa-icon
-              class="header_btn-icon"
               :icon="activeTab === 4 ? 'angle-down' : 'angle-right'"
+              class="header_btn-icon"
             />
           </span>
           Wallet limits
         </span>
-        <el-button class="action_button" data-cy="addWalletLimit" @click="addWalletLimitDialogVisible = true">
-          <fa-icon class="action_button-icon" icon="plus" /> Add
+        <el-button
+          class="action_button"
+          data-cy="addWalletLimit"
+          @click="addWalletLimitDialogVisible = true"
+        >
+          <fa-icon
+            class="action_button-icon"
+            icon="plus"
+          /> Add
         </el-button>
       </div>
       <div v-if="activeTab === 4">
         <div class="settings-item">
           <template v-for="(limit, index) in accountLimits">
             <div
-              class="settings-item_row"
               :key="index"
+              class="settings-item_row"
             >
               <span
                 class="settings-item_row-key pointed"
@@ -44,8 +54,8 @@
             </div>
           </template>
           <div
-            class="settings-item_row"
             v-if="!accountLimits.length"
+            class="settings-item_row"
           >
             <span class="settings-item_row-key">You don't have any limits</span>
           </div>
@@ -53,50 +63,73 @@
       </div>
     </el-card>
     <el-dialog
-      data-cy="addWalletLimit"
-      title="Add wallet limit"
       :visible.sync="addWalletLimitDialogVisible"
       :show-close="false"
-      @closed="onCloseModal"
+      data-cy="addWalletLimit"
+      title="Add wallet limit"
       width="450px"
       center
+      @closed="onCloseModal"
     >
       <div class="approval_form-desc">
-        <el-form class="dialog-form" :model="limitForm" ref="limitForm" >
-          <el-form-item label="Wallets" prop="assetId">
-            <el-select v-model="limitForm.assetId" class="fullwidth">
+        <el-form
+          ref="limitForm"
+          :model="limitForm"
+          class="dialog-form"
+        >
+          <el-form-item
+            label="Wallets"
+            prop="assetId"
+          >
+            <el-select
+              v-model="limitForm.assetId"
+              class="fullwidth"
+            >
               <el-option
                 v-for="wallet in wallets"
                 :key="wallet.name"
                 :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-                :value="wallet.assetId">
-              </el-option>
+                :value="wallet.assetId"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item label="Time" prop="label">
+          <el-form-item
+            label="Time"
+            prop="label"
+          >
             <el-select
-              placeholder="Select period"
               v-model="limitForm.label"
+              placeholder="Select period"
               class="fullwidth"
             >
               <el-option
                 v-for="(timelimit, index) in timelimits"
                 :key="index"
                 :label="timelimit.label"
-                :value="timelimit.label">
-              </el-option>
+                :value="timelimit.label"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item label="Limit" prop="amount">
-            <el-input type="number" v-model="limitForm.amount" placeholder="0"/>
+          <el-form-item
+            label="Limit"
+            prop="amount"
+          >
+            <el-input
+              v-model="limitForm.amount"
+              type="number"
+              placeholder="0"
+            />
           </el-form-item>
         </el-form>
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
+          :loading="addingNewLimit"
           class="dialog-form_buttons action"
           @click="onAddAssetLimit"
-          :loading="addingNewLimit"
         >
           Create
         </el-button>
@@ -109,45 +142,62 @@
       </div>
     </el-dialog>
     <el-dialog
-      data-cy="editWalletLimit"
-      title="Edit wallet limit"
       :visible.sync="editWalletLimitDialogVisible"
       :show-close="false"
+      data-cy="editWalletLimit"
+      title="Edit wallet limit"
       width="450px"
       center
     >
       <div class="approval_form-desc">
-        <el-form class="dialog-form" :model="editLimitForm">
+        <el-form
+          :model="editLimitForm"
+          class="dialog-form"
+        >
           <el-form-item label="Wallets">
-            <el-select v-model="editLimitForm.assetId" class="fullwidth" disabled>
+            <el-select
+              v-model="editLimitForm.assetId"
+              class="fullwidth"
+              disabled
+            >
               <el-option
                 v-for="wallet in wallets"
                 :key="wallet.name"
                 :label="`${wallet.name} (${wallet.asset.toUpperCase()})`"
-                :value="wallet.assetId">
-              </el-option>
+                :value="wallet.assetId"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="Time">
-            <el-select v-model="editLimitForm.label" class="fullwidth">
+            <el-select
+              v-model="editLimitForm.label"
+              class="fullwidth"
+            >
               <el-option
                 v-for="(timelimit, index) in timelimits"
                 :key="index"
                 :label="timelimit.label"
-                :value="timelimit.label">
-              </el-option>
+                :value="timelimit.label"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="Limit">
-            <el-input type="number" v-model="editLimitForm.amount" placeholder="0"/>
+            <el-input
+              v-model="editLimitForm.amount"
+              type="number"
+              placeholder="0"
+            />
           </el-form-item>
         </el-form>
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
+          :loading="editingLimit"
           class="dialog-form_buttons action"
           @click="onEditAssetLimit"
-          :loading="editingLimit"
         >
           Update
         </el-button>
@@ -160,20 +210,28 @@
       </div>
     </el-dialog>
     <el-dialog
+      :visible.sync="removeAssetLimitVisible"
       data-cy="removeLimitDialog"
       title="Asset limit"
-      :visible.sync="removeAssetLimitVisible"
       width="450px"
-      center>
-      <div class="approval_form-desc" v-if="limitToRemove.wallet">
+      center
+    >
+      <div
+        v-if="limitToRemove.wallet"
+        class="approval_form-desc"
+      >
         Are you sure want to remove limit for <b>{{ limitToRemove.wallet.name }} ({{ limitToRemove.wallet.asset }})</b> ?
       </div>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
-          @click="onRemoveAssetLimit"
+          :loading="removingLimit"
           class="dialog-form_buttons action"
           type="danger"
-          :loading="removingLimit">Remove
+          @click="onRemoveAssetLimit"
+        >Remove
         </el-button>
         <el-button
           class="dialog-form_buttons close"
@@ -190,7 +248,7 @@
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'wallet-limits-card',
+  name: 'WalletLimitsCard',
   props: {
     activeTab: {
       type: Number,

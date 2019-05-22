@@ -21,6 +21,10 @@ export default {
     }
   },
 
+  created () {
+    this.loadConfiguration()
+  },
+
   methods: {
     ...mapActions([
       'loadConfiguration'
@@ -28,10 +32,6 @@ export default {
     showConnectionErrorMessage: debounce(function () {
       this.$message.error(`connection error: Please check IP address OR your internet connection`)
     }, 1000)
-  },
-
-  created () {
-    this.loadConfiguration()
   }
 }
 </script>
