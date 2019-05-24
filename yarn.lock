@@ -6226,10 +6226,10 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@^0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.5.tgz#360f8a395bc8dc1d8b95e145e5c4fdca9c134bdc"
-  integrity sha512-HOm9tEkvOtgv9ms7H7ixuz/yjkhvL91h/5wNjS+afz7r1+mMO31oLLZtsv5uPk1UTp2LoEZxq7t7KBik1UKWkA==
+iroha-helpers@^0.6.11:
+  version "0.6.11"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.11.tgz#9337b6a328a7fbad2559f309176c869c6fe4e984"
+  integrity sha512-Fqw3YnTbL4hsNDuP0BvD5YOH7IwMgV0HXlzORKyUXxb/MEoOAEoAKZg3lmk0KurSbZ5yQHds1gcgjb5naKSDrA==
   dependencies:
     "@improbable-eng/grpc-web" "^0.9.1"
     buffer "^5.2.1"
@@ -6238,6 +6238,9 @@ iroha-helpers@^0.6.5:
     grpc-web-client "^0.7.0"
     js-sha3 "^0.8.0"
     lodash.clonedeep "^4.5.0"
+    lodash.flow "^3.5.0"
+    lodash.isequal "^4.5.0"
+    lodash.isplainobject "^4.0.6"
 
 is-absolute-url@^2.0.0:
   version "2.1.0"
@@ -7260,6 +7263,11 @@ lodash.flattendeep@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.flattendeep/-/lodash.flattendeep-4.4.0.tgz#fb030917f86a3134e5bc9bec0d69e0013ddfedb2"
 
+lodash.flow@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.flow/-/lodash.flow-3.5.0.tgz#87bf40292b8cf83e4e8ce1a3ae4209e20071675a"
+  integrity sha1-h79AKSuM+D5OjOGjrkIJ4gBxZ1o=
+
 lodash.get@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
@@ -7274,12 +7282,22 @@ lodash.isarray@^3.0.0:
   resolved "https://registry.yarnpkg.com/lodash.isarray/-/lodash.isarray-3.0.4.tgz#79e4eb88c36a8122af86f844aa9bcd851b5fbb55"
   integrity sha1-eeTriMNqgSKvhvhEqpvNhRtfu1U=
 
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
+
 lodash.isobject@~2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash.isobject/-/lodash.isobject-2.4.1.tgz#5a2e47fe69953f1ee631a7eba1fe64d2d06558f5"
   integrity sha1-Wi5H/mmVPx7mMafrof5k0tBlWPU=
   dependencies:
     lodash._objecttypes "~2.4.1"
+
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+  integrity sha1-fFJqUtibRcRcxpC4gWO+BJf1UMs=
 
 lodash.keys@^3.0.0:
   version "3.1.2"

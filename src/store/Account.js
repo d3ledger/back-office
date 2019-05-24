@@ -77,6 +77,8 @@ function initialState () {
 const state = initialState()
 
 const getters = {
+  // TODO: Need to update this function due to all avaliable token already safed in iroha
+  // TODO: Create more effective way to handle custom tokens
   wallets (state) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
@@ -89,12 +91,12 @@ const getters = {
         assetId: a.assetId,
         domain: a.assetId.split('#')[1],
 
-        name: ASSET.name,
-        asset: ASSET.asset,
-        color: ASSET.color,
+        name: ASSET ? ASSET.name : a.assetId.split('#')[1],
+        asset: ASSET ? ASSET.asset : a.assetId.split('#')[0],
+        color: ASSET ? ASSET.color : '#434343',
 
         amount: a.balance,
-        precision: ASSET.precision
+        precision: ASSET ? ASSET.precision : 10
       }
     })
   },
