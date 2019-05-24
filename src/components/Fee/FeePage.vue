@@ -9,66 +9,77 @@
             </div>
             <el-table
               :data="availableAssets.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-              style="width: 100%">
+              style="width: 100%"
+            >
               <el-table-column
                 label="Name"
-                prop="name">
-              </el-table-column>
+                prop="name"
+              />
               <el-table-column
                 prop="id"
-                label="Transfer fee">
+                label="Transfer fee"
+              >
                 <template slot-scope="scope">
                   {{ transferFee[scope.row.feeId] || 0 }}
                   <el-button
                     size="mini"
-                    @click="handleEdit(scope.row, FeeTypes.TRANSFER)">
+                    @click="handleEdit(scope.row, FeeTypes.TRANSFER)"
+                  >
                     Edit
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="id"
-                label="Exchange fee">
+                label="Exchange fee"
+              >
                 <template slot-scope="scope">
                   {{ exchangeFee[scope.row.feeId] || 0 }}
                   <el-button
                     size="mini"
-                    @click="handleEdit(scope.row, FeeTypes.EXCHANGE)">
+                    @click="handleEdit(scope.row, FeeTypes.EXCHANGE)"
+                  >
                     Edit
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="id"
-                label="Withdrawal fee">
+                label="Withdrawal fee"
+              >
                 <template slot-scope="scope">
                   {{ withdrawalFee[scope.row.feeId] || 0 }}
                   <el-button
                     size="mini"
-                    @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)">
+                    @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)"
+                  >
                     Edit
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="id"
-                label="Custody fee">
+                label="Custody fee"
+              >
                 <template slot-scope="scope">
                   {{ custodyFee[scope.row.feeId] || 0 }}
                   <el-button
                     size="mini"
-                    @click="handleEdit(scope.row, FeeTypes.CUSTODY)">
+                    @click="handleEdit(scope.row, FeeTypes.CUSTODY)"
+                  >
                     Edit
                   </el-button>
                 </template>
               </el-table-column>
               <el-table-column
-                align="right">
+                align="right"
+              >
                 <template slot="header">
                   <el-input
                     v-model="search"
                     size="mini"
-                    placeholder="Type to search"/>
+                    placeholder="Type to search"
+                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -77,22 +88,31 @@
       </el-row>
     </el-main>
     <el-dialog
+      :visible.sync="setFeeFormVisible"
       data-cy="setFeeDialog"
       title="Set fee amount"
-      :visible.sync="setFeeFormVisible"
       width="450px"
-      center>
+      center
+    >
       <el-form class="quorum_form">
         <el-form-item>
-          <el-input v-model="feeAmount" type="number" min="0"></el-input>
+          <el-input
+            v-model="feeAmount"
+            type="number"
+            min="0"
+          />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-form_buttons-block">
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
         <el-button
+          :loading="settingFee"
           type="danger"
-          @click="editFee"
           class="dialog-form_buttons action"
-          :loading="settingFee">
+          @click="editFee"
+        >
           Set
         </el-button>
         <el-button
@@ -117,7 +137,7 @@ import { FeeTypes } from '@/data/consts'
 // import { required } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'explorer-page',
+  name: 'ExplorerPage',
   mixins: [
     dateFormat,
     currencySymbol,
