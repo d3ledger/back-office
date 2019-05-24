@@ -5,6 +5,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import feeUtil from '@util/fee-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -81,7 +82,10 @@ const mutations = {
       historicalDataCrypto,
       volumeData,
       priceData,
-      currencies
+      currencies,
+      transferFeeData,
+      withdrawalFeeData,
+      exchangeFeeData
     }
   ) {
     // process priceData
@@ -118,7 +122,12 @@ const mutations = {
         fiat: priceFiat,
         fiat_change: changeFiat,
         crypto: priceCrypto,
-        crypto_change: changePctCrypto
+        crypto_change: changePctCrypto,
+        fee: {
+          transfer: transferFeeData ? transferFeeData.billing.feeFraction : 0,
+          withdrawal: withdrawalFeeData ? withdrawalFeeData.billing.feeFraction : 0,
+          exchange: exchangeFeeData ? exchangeFeeData.billing.feeFraction : 0
+        }
       },
       market: {
         cap: {
@@ -151,34 +160,25 @@ const actions = {
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
       cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
-      cryptoCompareUtil.loadFullData(asset, currencies)
+      cryptoCompareUtil.loadFullData(asset, currencies),
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'TRANSFER'),
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'WITHDRAWAL'),
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'EXCHANGE')
     ])
-      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
+      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData, transferFeeData, withdrawalFeeData, exchangeFeeData]) => {
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
           historicalDataFiat,
           historicalDataCrypto,
           volumeData,
           priceData,
-          currencies
+          currencies,
+          transferFeeData,
+          withdrawalFeeData,
+          exchangeFeeData
         })
       })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
-        throw err
-      })
-  },
-
-  getBillingData ({commit}, {asset, domain}) {
-    commit(types.GET_BILLING_DATA_REQUEST)
-
-    return Promise.resolve()
-      .then((result) => {
-        commit(types.GET_BILLING_DATA_SUCCESS, {
-          result
-        })
-      })
-      .catch(err => {
-        commit(types.GET_BILLING_DATA_FAILURE, err)
         throw err
       })
   }

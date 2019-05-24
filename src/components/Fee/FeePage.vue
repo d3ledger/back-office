@@ -166,7 +166,6 @@ export default {
   },
 
   beforeMount () {
-    console.log(FeeTypes)
     this.getFee(FeeTypes.TRANSFER)
     this.getFee(FeeTypes.CUSTODY)
     this.getFee(FeeTypes.ACCOUNT_CREATION)

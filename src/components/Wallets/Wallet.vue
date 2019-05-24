@@ -790,6 +790,7 @@ export default {
             to: notaryAccount,
             description: this.withdrawForm.wallet,
             amount: this.withdrawForm.amount.toString()
+            // fee: this.cryptoInfo.fee.withdrawal
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -826,6 +827,7 @@ export default {
             to: this.transferForm.to,
             description: this.transferForm.description,
             amount: this.transferForm.amount
+            // fee: this.cryptoInfo.fee.transfer
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum

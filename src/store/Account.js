@@ -179,7 +179,7 @@ const getters = {
           return {
             id: `${t.name}$d3`,
             assetId: `${t.name}#d3`,
-            feeId: `${t.name.toLowerCase()}_d3`,
+            feeId: `${t.name.toLowerCase()}__d3`,
             domain: 'd3',
 
             name: t.name,
@@ -204,7 +204,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
-            feeId: `${name}_${domain}`,
+            feeId: `${name}__${domain}`,
             domain: domain,
 
             name: t.name,
@@ -964,7 +964,7 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
     return irohaUtil.transferAsset(privateKeys, getters.irohaQuorum, {
@@ -972,7 +972,8 @@ const actions = {
       destAccountId: to,
       assetId,
       description,
-      amount
+      amount,
+      fee
     })
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
