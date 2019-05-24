@@ -84,7 +84,12 @@
           >{{ _showError($v.form.nodeIp) }}</span>
         </el-form-item>
         <el-form-item label=" ">
-          <el-checkbox v-model="form.requireKey" label="Generate new pair key" border class="fullwidth checkbox_key"></el-checkbox>
+          <el-checkbox
+            v-model="form.requireKey"
+            label="Generate new pair key"
+            border
+            class="fullwidth checkbox_key"
+          />
         </el-form-item>
         <el-form-item
           v-if="!form.requireKey"
@@ -92,13 +97,13 @@
           prop="publicKey"
         >
           <el-input
-            name="Public key"
             v-model="$v.form.publicKey.$model"
             :disabled="isLoading"
             :class="[
               _isValid($v.form.username) ? 'border_success' : '',
               _isError($v.form.username) ? 'border_fail' : ''
             ]"
+            name="Public key"
           />
         </el-form-item>
         <el-form-item class="auth-button-container">
