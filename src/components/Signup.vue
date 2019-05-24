@@ -85,26 +85,58 @@
         </el-form-item>
         <el-form-item label=" ">
           <el-checkbox
-            v-model="form.requireKey"
+            v-model="form.isNewKeyRequired"
+            :class="[
+              'fullwidth checkbox_key',
+              _isValid($v.form.username) && _isValid($v.form.nodeIp) ? 'border_success' : '',
+              _isError($v.form.username) && _isError($v.form.nodeIp) ? 'border_fail' : ''
+            ]"
             label="Generate new pair key"
             border
-            class="fullwidth checkbox_key"
           />
         </el-form-item>
         <el-form-item
-          v-if="!form.requireKey"
+          v-if="!form.isNewKeyRequired"
           label="Public key"
           prop="publicKey"
         >
-          <el-input
-            v-model="$v.form.publicKey.$model"
-            :disabled="isLoading"
-            :class="[
-              _isValid($v.form.username) ? 'border_success' : '',
-              _isError($v.form.username) ? 'border_fail' : ''
-            ]"
-            name="Public key"
-          />
+          <el-row
+            type="flex"
+            justify="space-between"
+          >
+            <el-col :span="20">
+              <el-input
+                v-model="$v.form.publicKey.$model"
+                :disabled="isLoading"
+                :class="[
+                  _isValid($v.form.publicKey) ? 'border_success' : '',
+                  _isError($v.form.publicKey) ? 'border_fail' : ''
+                ]"
+                name="publicKey"
+              />
+            </el-col>
+
+            <el-upload
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="onFileChosen"
+              :disabled="isLoading"
+              :class="[
+                'auth-form_upload',
+                _isValid($v.form.publicKey) ? 'border_success' : '',
+                _isError($v.form.publicKey) ? 'border_fail' : ''
+              ]"
+              action=""
+            >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+          <span
+            v-if="_isError($v.form.publicKey)"
+            class="el-form-item__error"
+          >{{ _showError($v.form.publicKey) }}</span>
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
@@ -174,8 +206,8 @@ import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 
-import { _nodeIp, _user, errorHandler } from '@/components/mixins/validation'
-import { required } from 'vuelidate/lib/validators'
+import { _nodeIp, _user, _keyPattern, errorHandler } from '@/components/mixins/validation'
+import { required, requiredIf } from 'vuelidate/lib/validators'
 
 export default {
   name: 'Signup',
@@ -193,11 +225,12 @@ export default {
         required,
         _nodeIp
       },
-      requireKey: {
+      isNewKeyRequired: {
         required
       },
       publicKey: {
-        required
+        required: requiredIf(form => !form.isNewKeyRequired),
+        _keyPattern
       }
     }
   },
@@ -208,7 +241,7 @@ export default {
       form: {
         username: '',
         nodeIp: '',
-        requireKey: true,
+        isNewKeyRequired: true,
         publicKey: ''
       },
       dialogVisible: false,
@@ -243,7 +276,8 @@ export default {
   methods: {
     ...mapActions([
       'setNotaryIp',
-      'signup'
+      'signup',
+      'signupWithKey'
     ]),
 
     onSubmit () {
@@ -252,6 +286,23 @@ export default {
       this.isLoading = true
 
       this.selectNotaryIp()
+
+      if (!this.form.isNewKeyRequired) {
+        this.signupWithKey({
+          username: this.form.username,
+          publicKey: this.form.publicKey
+        })
+          .then(() => {
+            this.$message.success('Success! Registration completed!')
+            this.$router.push('/login')
+          })
+          .catch(err => {
+            console.error(err)
+            this.$_showRegistrationError(err.message, err.response)
+          })
+
+        return
+      }
 
       this.signup({
         username: this.form.username
@@ -289,6 +340,17 @@ export default {
 
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
+    },
+
+    onFileChosen (file, fileList) {
+      const reader = new FileReader()
+
+      reader.onload = (ev) => {
+        this.form.publicKey = (ev.target.result || '').trim()
+        this.$v.$touch()
+      }
+
+      reader.readAsText(file.raw)
     }
   }
 }
@@ -376,7 +438,7 @@ export default {
   }
 
   .checkbox_key.is-checked {
-    border-color: unset;
+    border-color: rgba(255, 255, 255, 0.4);
   }
 
   .checkbox_key.is-checked >>> .el-checkbox__label {

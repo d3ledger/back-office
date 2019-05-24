@@ -748,6 +748,16 @@ const actions = {
       })
   },
 
+  signupWithKey ({ commit }, { username, publicKey }) {
+    commit(types.SIGNUP_REQUEST)
+    return notaryUtil.signup(username, publicKey)
+      .then(() => commit(types.SIGNUP_SUCCESS))
+      .catch(err => {
+        commit(types.SIGNUP_FAILURE, err)
+        throw err
+      })
+  },
+
   addNetwork ({ commit, state }, { privateKeys }) {
     commit(types.SIGNUP_REQUEST)
     const username = state.accountId.split('@')[0]
