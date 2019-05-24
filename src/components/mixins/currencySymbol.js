@@ -13,7 +13,7 @@ const currencySymbol = {
       const asset = ASSETS.find(a => {
         return a.name.toLowerCase() === assetName || a.asset.toLowerCase() === assetName
       })
-      return asset.asset
+      return asset ? asset.asset : assetName
     }
   },
   computed: {

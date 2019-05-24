@@ -279,13 +279,13 @@ export default {
           if (!privateKeys) return
           this.isExchangeSending = true
           const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
-          const requestAsset = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
+          const requestAsset = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
           return this.createSettlement({
             privateKeys,
             to: s.to,
-            offerAssetId: offerAsset,
+            offerAssetId: offerAsset.toLowerCase(),
             offerAmount: s.offer_amount,
-            requestAssetId: requestAsset,
+            requestAssetId: requestAsset.toLowerCase(),
             requestAmount: s.request_amount,
             description: s.description
           })

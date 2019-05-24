@@ -177,15 +177,15 @@ const getters = {
     ) : []
   },
 
-  incomingSettlements () {
+  incomingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return pair.to.signatures.length > 0
+      return (pair.from.txId === 1) && (pair.from.from === state.accountId)
     })
   },
 
-  outgoingSettlements () {
+  outgoingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return pair.from.signatures.length > 0
+      return (pair.from.txId === 0) && (pair.from.from === state.accountId)
     })
   },
 
@@ -874,7 +874,7 @@ const actions = {
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.ACCEPT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    return irohaUtil.acceptSettlement(privateKeys, batch)
+    return irohaUtil.acceptSettlement(privateKeys, batch, state.accountId)
       .then(() => {
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
@@ -887,7 +887,7 @@ const actions = {
   rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(getters.accountQuorum)
+    const fake = new Array(getters.irohaQuorum)
       .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
