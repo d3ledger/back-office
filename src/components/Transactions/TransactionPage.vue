@@ -2,11 +2,7 @@
   <el-container>
     <el-main>
       <el-row>
-        <el-col
-          :xs="24"
-          :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }"
-        >
+        <el-col :span="24">
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
               <span>Pending transactions</span>

@@ -136,7 +136,7 @@ export default {
 
 <style scoped>
 .portfolio_left {
-  margin-right: 20px;
+  margin-right: 0.5rem;
 }
 .card {
   height: 12rem;

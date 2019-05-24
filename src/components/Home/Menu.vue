@@ -1,12 +1,8 @@
 <template class="menu">
-  <div
-    @mouseenter.passive="isCollapsed = false"
-    @mouseleave.passive="isCollapsed = true"
-  >
+  <div>
     <el-menu
       :router="true"
-      :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
-      :default-active="currentActiveMenu"
+      class="el-side-menu"
       text-color="#a2a2a2"
       background-color="#1e1e1e"
       active-text-color="#000"
@@ -210,6 +206,8 @@ export default {
   height: 62px;
   background-color: #e43c34;
   margin-bottom: 100px;
+  display: flex;
+  justify-content: center;
 }
 .logo img {
   height: 62px;

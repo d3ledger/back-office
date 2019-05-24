@@ -6,10 +6,7 @@
     >
       <el-row>
         <el-col
-          :xs="24"
-          :md="{ span: 20, offset: 2 }"
-          :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }"
+          :span="24"
           style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
         >
           <div style="display: flex;">
@@ -47,12 +44,7 @@
     </el-header>
     <el-main>
       <el-row>
-        <el-col
-          :xs="24"
-          :md="{ span: 20, offset: 2 }"
-          :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }"
-        >
+        <el-col :span="24">
           <router-view />
         </el-col>
       </el-row>

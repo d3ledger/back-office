@@ -1,12 +1,8 @@
 <template>
   <div v-if="wallet.assetId">
-    <el-row style="margin-bottom: 20px">
-      <el-col
-        :xs="24"
-        :lg="{ span: 22, offset: 1 }"
-        :xl="{ span: 20, offset: 2 }"
-      >
-        <el-row :gutter="20">
+    <el-row style="margin-bottom: 0.5rem">
+      <el-col :span="24">
+        <el-row :gutter="8">
           <el-col :span="12">
             <el-card
               :body-style="{ padding: '0' }"
@@ -202,11 +198,7 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col
-        :xs="24"
-        :lg="{ span: 22, offset: 1 }"
-        :xl="{ span: 20, offset: 2 }"
-      >
+      <el-col :span="24">
         <el-card :body-style="{ padding: '0' }">
           <div class="card_header">
             <div class="card_header-title">

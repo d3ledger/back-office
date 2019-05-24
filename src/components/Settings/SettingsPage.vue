@@ -1,11 +1,9 @@
 <template>
   <el-container class="fullheight">
     <el-main class="fullheight">
-      <el-row class="fullheight">
+      <el-row class="container_flex fullheight">
         <el-col
-          :xs="12"
-          :lg="{ span: 9, offset: 3 }"
-          :xl="{ span: 8, offset: 4 }"
+          :span="12"
           class="left_column fullheight"
         >
           <el-card
@@ -146,9 +144,7 @@
           </el-card>
         </el-col>
         <el-col
-          :xs="12"
-          :lg="{ span: 9 }"
-          :xl="{ span: 8 }"
+          :span="12"
           class="right_column fullheight"
         >
           <el-card
@@ -913,8 +909,16 @@ export default {
 </script>
 
 <style scoped>
+.container_flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left_column {
+  margin-right: 0.5rem;
+}
+
 .right_column {
-  margin-left: 0.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -1053,7 +1057,7 @@ export default {
 }
 .settings-item_row {
   padding: 0 1.5rem;
-  height: 3rem;
+  height: 3.05rem;
   display: flex;
   justify-content: space-between;
   border-top: 1px solid #efefef;
