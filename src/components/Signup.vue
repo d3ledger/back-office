@@ -93,7 +93,7 @@
         >
           <el-input
             name="Public key"
-            v-model="$v.form.username.$model"
+            v-model="$v.form.publicKey.$model"
             :disabled="isLoading"
             :class="[
               _isValid($v.form.username) ? 'border_success' : '',
@@ -187,6 +187,12 @@ export default {
       nodeIp: {
         required,
         _nodeIp
+      },
+      requireKey: {
+        required
+      },
+      publicKey: {
+        required
       }
     }
   },
@@ -197,7 +203,8 @@ export default {
       form: {
         username: '',
         nodeIp: '',
-        requireKey: true
+        requireKey: true,
+        publicKey: ''
       },
       dialogVisible: false,
       dialog: {
