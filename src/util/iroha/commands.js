@@ -79,8 +79,8 @@ function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DE
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[indexOfUnsigned], privateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'COMMITED',
-    'COMMITED'
+    'COMMITTED',
+    'COMMITTED'
   ])
 }
 
