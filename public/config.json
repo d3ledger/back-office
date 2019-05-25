@@ -22,8 +22,8 @@
     }
   },
   "services": {
-    "report-service": {
-      "value": "localhost:8080"
+    "data-collector-service": {
+      "value": "localhost:8087"
     }
   }
 }
