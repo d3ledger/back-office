@@ -254,8 +254,8 @@ describe('Test wallets page without white list', () => {
       cy.get('div.el-dialog').eq(2)
         .find('.el-dialog__body > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(4).should('be.visible')
-      cy.get('i.el-dialog__close').eq(4).click()
+      cy.get('#approval-dialog').should('be.visible')
+      cy.get('#approval-dialog i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
