@@ -4,7 +4,6 @@ import axios from 'axios'
 const PROTOCOL = location.protocol
 
 const getAllAssets = (url) => {
-  console.log(url)
   return axios({
     url: '/iroha/asset/getAll',
     baseURL: `${PROTOCOL}//${url}`
