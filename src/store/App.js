@@ -56,7 +56,8 @@ function initialState () {
     nodeIPs: [],
     registrationIPs: [],
     btcRegistrationIp: null,
-    ethRegistrationIp: null
+    ethRegistrationIp: null,
+    services: null
   }
 }
 
@@ -150,6 +151,8 @@ const mutations = {
 
     state.btcRegistrationIp = config.relays.BTC.value
     state.ethRegistrationIp = config.relays.ETH.value
+
+    state.services = config.services
   },
   [types.LOAD_CONFIGURATION_FILE_FAILURE] (state, err) {
     handleError(state, err)
@@ -314,6 +317,9 @@ const getters = {
   },
   ethRegistrationIp (state) {
     return state.ethRegistrationIp
+  },
+  servicesIPs (state) {
+    return state.services
   }
 }
 
