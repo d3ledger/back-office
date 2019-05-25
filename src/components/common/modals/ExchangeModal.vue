@@ -29,7 +29,7 @@
           <el-select
             slot="append"
             v-model="exchangeDialogOfferAsset"
-            placeholder="asset"
+            placeholder="Asset"
             style="width: 100px"
             @change="getOfferToRequestPrice()"
           >
