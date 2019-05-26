@@ -15,6 +15,25 @@ import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@ut
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
 
+/* eslint-disable */
+
+if (!Array.prototype.flat) {
+  Array.prototype.flat = function (depth) {
+    var flattend = [];
+    (function flat(array, depth) {
+      for (let el of array) {
+        if (Array.isArray(el) && depth > 0) {
+          flat(el, depth - 1);
+        } else {
+          flattend.push(el);
+        }
+      }
+    })(this, Math.floor(depth) || 1);
+    return flattend;
+  };
+}
+/* eslint-enable */
+
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
 
@@ -208,7 +227,7 @@ const getters = {
       }
     })
 
-    return [...avaliable, ...customAssets.flat()]
+    return [...avaliable, ...customAssets.flat()].filter(item => item !== undefined)
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
