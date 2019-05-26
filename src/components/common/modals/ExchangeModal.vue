@@ -29,7 +29,7 @@
           <el-select
             slot="append"
             v-model="exchangeDialogOfferAsset"
-            placeholder="asset"
+            placeholder="Asset"
             style="width: 100px"
             @change="getOfferToRequestPrice()"
           >
@@ -227,7 +227,7 @@ export default {
     },
 
     assetsWithoutRequest () {
-      return this.wallets.filter(a => a.asset !== this.exchangeDialogRequestAsset)
+      return this.availableAssets.filter(a => a.asset !== this.exchangeDialogRequestAsset)
     },
 
     exchangeDialogOfferAsset: {
@@ -279,13 +279,13 @@ export default {
           if (!privateKeys) return
           this.isExchangeSending = true
           const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
-          const requestAsset = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
+          const requestAsset = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
           return this.createSettlement({
             privateKeys,
             to: s.to,
-            offerAssetId: offerAsset,
+            offerAssetId: offerAsset.toLowerCase(),
             offerAmount: s.offer_amount,
-            requestAssetId: requestAsset,
+            requestAssetId: requestAsset.toLowerCase(),
             requestAmount: s.request_amount,
             description: s.description
           })

@@ -63,7 +63,7 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   return sendTransactions(batchArray, txClient, timeoutLimit)
 }
 
-function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   if (!batchArray.length) return
 
   let txClient = newCommandService()
@@ -71,20 +71,16 @@ function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
     .findIndex(tx => {
-      return !tx.signaturesList.length
+      return tx.payload.reducedPayload.creatorAccountId === accountId
     })
 
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
+  if (indexOfUnsigned === -1) throw new Error('Undefined tx to sign')
 
-  batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[indexOfUnsigned], privateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'COMMITED',
-    'COMMITED'
+    'COMMITTED',
+    'COMMITTED'
   ])
 }
 
@@ -93,19 +89,11 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
   let txClient = newCommandService()
 
-  const indexOfUnsigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
+  const signedBatchArray = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
 
-  batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'ENOUGH_SIGNATURES_COLLECTED',
-    'STATEFUL_VALIDATION_FAILED'
+  return sendTransactions(signedBatchArray, txClient, timeoutLimit, [
+    'REJECTED',
+    'REJECTED'
   ])
 }
 

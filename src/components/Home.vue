@@ -32,6 +32,7 @@ export default {
     this.getAllUnsignedTransactions()
     this.loadSettings()
     this.getAccountRoles()
+    this.getCustomAssets()
   },
 
   mounted () {
@@ -42,7 +43,8 @@ export default {
     ...mapActions([
       'getAllUnsignedTransactions',
       'loadSettings',
-      'getAccountRoles'
+      'getAccountRoles',
+      'getCustomAssets'
     ])
   }
 }

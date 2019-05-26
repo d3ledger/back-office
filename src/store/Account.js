@@ -10,12 +10,40 @@ import flatten from 'lodash/fp/flatten'
 import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
+import collectorUtil from '@util/collector-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
 
+/* eslint-disable */
+
+if (!Array.prototype.flat) {
+  Array.prototype.flat = function (depth) {
+    var flattend = [];
+    (function flat(array, depth) {
+      for (let el of array) {
+        if (Array.isArray(el) && depth > 0) {
+          flat(el, depth - 1);
+        } else {
+          flattend.push(el);
+        }
+      }
+    })(this, Math.floor(depth) || 1);
+    return flattend;
+  };
+}
+/* eslint-enable */
+
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
+
+// TODO: Need to create file where we can store such variables
+const DOMAIN_KEY = {
+  security: 'securities',
+  currency: 'currencies',
+  utility: 'utilityAssets',
+  private: 'privateAssets'
+}
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -51,7 +79,8 @@ const types = flow(
   'GET_ACCOUNT_LIMITS',
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
-  'SET_WHITELIST'
+  'SET_WHITELIST',
+  'GET_CUSTOM_ASSETS'
 ])
 
 function initialState () {
@@ -70,37 +99,72 @@ function initialState () {
     assets: [],
     connectionError: null,
     acceptSettlementLoading: false,
-    rejectSettlementLoading: false
+    rejectSettlementLoading: false,
+
+    customAssets: {}
   }
 }
 
 const state = initialState()
 
 const getters = {
-  wallets (state) {
+  // TODO: Need to update this function due to all avaliable token already safed in iroha
+  // TODO: Create more effective way to handle custom tokens
+  wallets (state, getters) {
     return state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
-      const assetName = a.assetId.split('#')[0].toLowerCase()
+      const assetParts = a.assetId.split('#')
+      const assetName = assetParts[0].toLowerCase()
+
+      const wallet = {
+        id: a.assetId.replace(/#/g, '$'),
+        assetId: a.assetId,
+        domain: assetParts[1],
+        amount: a.balance
+      }
+
       const ASSET = ASSETS.find(d =>
         d.name.toLowerCase() === assetName || d.asset.toLowerCase() === assetName)
 
-      return {
-        id: a.assetId.replace(/#/g, '$'),
-        assetId: a.assetId,
-        domain: a.assetId.split('#')[1],
+      if (ASSET) {
+        return {
+          ...wallet,
+          name: ASSET.name,
+          asset: ASSET.asset,
+          color: ASSET.color,
+          precision: ASSET.precision
+        }
+      }
 
-        name: ASSET.name,
-        asset: ASSET.asset,
-        color: ASSET.color,
+      const DOMAIN_ASSETS = getters.getCustomAssetsByDomain(
+        assetParts[1]
+      )
 
-        amount: a.balance,
-        precision: ASSET.precision
+      if (DOMAIN_ASSETS) {
+        const customAssetName = Object.keys(DOMAIN_ASSETS)
+          .find(key => DOMAIN_ASSETS[key] === assetParts[0])
+
+        return {
+          ...wallet,
+          name: customAssetName,
+          asset: assetParts[0],
+          color: '#434343',
+          precision: 5
+        }
       }
     })
   },
 
-  availableAssets (state) {
-    return ASSETS
+  getCustomAssetsByDomain: (state) => (domain) => {
+    return state.customAssets[DOMAIN_KEY[domain]]
+  },
+
+  getCustomAssets (state) {
+    return state.customAssets
+  },
+
+  availableAssets (state, getters) {
+    const avaliable = ASSETS
       .map(t => {
         const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
         if (isERC20) {
@@ -138,6 +202,32 @@ const getters = {
           }
         }
       })
+
+    const customAssets = [
+      'security',
+      'currency',
+      'utility',
+      'private'
+    ].map(domain => {
+      const DOMAIN_ASSETS = getters.getCustomAssetsByDomain(
+        domain
+      )
+
+      if (DOMAIN_ASSETS) {
+        return Object.keys(DOMAIN_ASSETS)
+          .map(key => {
+            return {
+              id: `${DOMAIN_ASSETS[key]}$${domain}`,
+              assetId: `${DOMAIN_ASSETS[key]}#${domain}`,
+              domain: domain,
+              name: key,
+              asset: DOMAIN_ASSETS[key]
+            }
+          })
+      }
+    })
+
+    return [...avaliable, ...customAssets.flat()].filter(item => item !== undefined)
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
@@ -175,15 +265,15 @@ const getters = {
     ) : []
   },
 
-  incomingSettlements () {
+  incomingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return pair.to.signatures.length > 0
+      return (pair.from.txId === 1) && (pair.from.from === state.accountId)
     })
   },
 
-  outgoingSettlements () {
+  outgoingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return pair.from.signatures.length > 0
+      return (pair.from.txId === 0) && (pair.from.from === state.accountId)
     })
   },
 
@@ -624,6 +714,14 @@ const mutations = {
 
   [types.SET_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.GET_CUSTOM_ASSETS_REQUEST] (state) {},
+  [types.GET_CUSTOM_ASSETS_SUCCESS] (state, { errorCode, message, ...domains }) {
+    Vue.set(state, 'customAssets', domains)
+  },
+  [types.GET_CUSTOM_ASSETS_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -872,7 +970,7 @@ const actions = {
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
     commit(types.ACCEPT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    return irohaUtil.acceptSettlement(privateKeys, batch)
+    return irohaUtil.acceptSettlement(privateKeys, batch, state.accountId)
       .then(() => {
         commit(types.ACCEPT_SETTLEMENT_SUCCESS)
       })
@@ -885,7 +983,7 @@ const actions = {
   rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(getters.accountQuorum)
+    const fake = new Array(getters.irohaQuorum)
       .fill('1234567890123456789012345678901234567890123456789012345678901234')
     return irohaUtil.rejectSettlement(fake, batch)
       .then(() => {
@@ -1047,6 +1145,17 @@ const actions = {
       })
       .catch(err => {
         commit(types.SET_WHITELIST_FAILURE)
+        throw err
+      })
+  },
+
+  getCustomAssets ({ commit, getters }) {
+    commit(types.GET_CUSTOM_ASSETS_REQUEST)
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service']
+    return collectorUtil.getAllAssets(dataCollectorUrl.value)
+      .then(res => commit(types.GET_CUSTOM_ASSETS_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_CUSTOM_ASSETS_FAILURE, err)
         throw err
       })
   }

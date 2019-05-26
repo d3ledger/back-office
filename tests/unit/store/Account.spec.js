@@ -111,7 +111,8 @@ describe('Account store', () => {
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
         assets: randomObject(),
-        connectionError: new Error()
+        connectionError: new Error(),
+        customAssets: randomObject()
       }
 
       const expectedState = {
@@ -129,7 +130,8 @@ describe('Account store', () => {
         assets: [],
         connectionError: null,
         acceptSettlementLoading: false,
-        rejectSettlementLoading: false
+        rejectSettlementLoading: false,
+        customAssets: {}
       }
 
       mutations[types.RESET](state)
