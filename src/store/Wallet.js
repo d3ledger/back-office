@@ -151,7 +151,7 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { filter, asset }) {
+  getCryptoFullData ({ commit, getters }, { filter, asset, billingId }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
 
     const currencies = getters.settingsView
@@ -161,9 +161,9 @@ const actions = {
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
       cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
       cryptoCompareUtil.loadFullData(asset, currencies),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'TRANSFER'),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'WITHDRAWAL'),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', 'xor__sora', 'EXCHANGE')
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'TRANSFER'),
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'WITHDRAWAL'),
+      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'EXCHANGE')
     ])
       .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData, transferFeeData, withdrawalFeeData, exchangeFeeData]) => {
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {

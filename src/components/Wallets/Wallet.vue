@@ -770,7 +770,8 @@ export default {
     updateMarketCard () {
       return this.getCryptoFullData({
         filter: this.selectedMarketPeriod,
-        asset: this.wallet.asset
+        asset: this.wallet.asset,
+        billingId: this.wallet.billingId
       })
     },
 

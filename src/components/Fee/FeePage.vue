@@ -20,7 +20,7 @@
                 label="Transfer fee"
               >
                 <template slot-scope="scope">
-                  {{ transferFee[scope.row.feeId] || 0 }}
+                  {{ transferFee[scope.row.billingId] || 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.TRANSFER)"
@@ -34,7 +34,7 @@
                 label="Exchange fee"
               >
                 <template slot-scope="scope">
-                  {{ exchangeFee[scope.row.feeId] || 0 }}
+                  {{ exchangeFee[scope.row.billingId] || 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.EXCHANGE)"
@@ -48,7 +48,7 @@
                 label="Withdrawal fee"
               >
                 <template slot-scope="scope">
-                  {{ withdrawalFee[scope.row.feeId] || 0 }}
+                  {{ withdrawalFee[scope.row.billingId] || 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)"
@@ -62,7 +62,7 @@
                 label="Custody fee"
               >
                 <template slot-scope="scope">
-                  {{ custodyFee[scope.row.feeId] || 0 }}
+                  {{ custodyFee[scope.row.billingId] || 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.CUSTODY)"
@@ -181,7 +181,7 @@ export default {
     ]),
 
     handleEdit (asset, feeType) {
-      this.feeAmount = this.transferFee[asset.feeId] || 0
+      this.feeAmount = this.transferFee[asset.billingId] || 0
       this.assetToSet = asset
       this.setFeeFormVisible = true
       this.feeType = feeType
@@ -196,9 +196,9 @@ export default {
 
           return this.setFee({
             privateKeys,
-            asset: this.assetToSet.feeId,
-            fee: this.feeAmount,
-            feeType: this.feeType
+            asset: this.assetToSet.billingId,
+            amount: this.feeAmount,
+            type: this.feeType
           })
             .then(() => {
               this.getFee(this.feeType)

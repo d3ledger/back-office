@@ -128,7 +128,8 @@ const getters = {
         id: a.assetId.replace(/#/g, '$'),
         assetId: a.assetId,
         domain: assetParts[1],
-        amount: a.balance
+        amount: a.balance,
+        billingId: a.assetId.replace(/#/g, '__')
       }
 
       const ASSET = ASSETS.find(d =>
@@ -179,7 +180,7 @@ const getters = {
           return {
             id: `${t.name}$d3`,
             assetId: `${t.name}#d3`,
-            feeId: `${t.name.toLowerCase()}__d3`,
+            billingId: `${t.name.toLowerCase()}__d3`,
             domain: 'd3',
 
             name: t.name,
@@ -204,7 +205,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
-            feeId: `${name}__${domain}`,
+            billingId: `${name}__${domain}`,
             domain: domain,
 
             name: t.name,
@@ -1217,16 +1218,16 @@ const actions = {
       })
   },
 
-  setFee ({commit, state, dispatch, getters}, {privateKeys, asset, fee, feeType}) {
+  setFee ({ commit, state, dispatch, getters }, { privateKeys, asset, amount, type }) {
     commit(types.SET_FEE_REQUEST)
 
-    const accountId = `${feeType}@d3`
+    const accountId = `${type}@d3`
 
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId,
       key: asset,
       // eslint-disable-next-line
-      value: fee
+      value: amount
     })
       .then(() => {
         dispatch('updateAccount')
@@ -1239,17 +1240,17 @@ const actions = {
       })
   },
 
-  getFee ({commit, state, dispatch, getters}, feeType) {
+  getFee ({ commit, state, dispatch, getters }, type) {
     commit(types.GET_FEE_REQUEST)
 
-    const accountId = `${feeType}@d3`
+    const accountId = `${type}@d3`
 
     return irohaUtil.getAccountDetail({
       accountId
     })
-      .then((response) => {
+      .then(response => {
         dispatch('updateAccount')
-        commit(types.GET_FEE_SUCCESS, { response, feeType })
+        commit(types.GET_FEE_SUCCESS, { response, type })
       })
       .catch(err => {
         commit(types.GET_FEE_FAILURE)
