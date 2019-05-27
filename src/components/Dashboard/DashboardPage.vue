@@ -41,7 +41,15 @@
   <el-container v-else-if="hasNoData">
     <el-main class="column-fullheight card-wrapper flex-direction-row">
       <el-card class="card">
-        There is no data about current portfolio. Please, check your internet connection or report to administrator.
+        <p
+          style="
+            text-align: center;
+            font-weight: 600;
+          "
+        >
+          Welcome to D3
+        </p>
+        <p>There is no data about your current portfolio yet</p>
       </el-card>
     </el-main>
   </el-container>
