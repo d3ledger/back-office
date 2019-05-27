@@ -6192,10 +6192,10 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@^0.6.11:
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.11.tgz#9337b6a328a7fbad2559f309176c869c6fe4e984"
-  integrity sha512-Fqw3YnTbL4hsNDuP0BvD5YOH7IwMgV0HXlzORKyUXxb/MEoOAEoAKZg3lmk0KurSbZ5yQHds1gcgjb5naKSDrA==
+iroha-helpers@^0.6.13:
+  version "0.6.13"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.13.tgz#e448039e4bd5fe3d826139fef7239327bc21a39e"
+  integrity sha512-ZPMXcVP71jIaYa1oLrsXMEdZM4gIykFAwxyK+mnGul1bAuhaJWH5fwY5xYaiALAI1TSrWSrcwK8JF+1swxt6rg==
   dependencies:
     "@improbable-eng/grpc-web" "^0.9.1"
     buffer "^5.2.1"
