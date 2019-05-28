@@ -101,8 +101,7 @@ export const _explorerQuery = (type) => (query) => {
   if (type === SearchTypes.ACCOUNT) {
     return _user.nameDomain(query)
   } else if (type === SearchTypes.BLOCK) {
-    const parsed = parseInt(query)
-    return Number.isInteger(parsed) && parsed.toString().length === query.length
+    return Number.isInteger(Number(query))
   } else if (type === SearchTypes.TRANSACTION) {
     return true
   }

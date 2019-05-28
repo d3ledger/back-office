@@ -125,7 +125,7 @@ import {
 import { FeeTypes } from '@/data/consts'
 
 export default {
-  name: 'ExplorerPage',
+  name: 'FeePage',
   mixins: [
     dateFormat,
     currencySymbol,
@@ -152,7 +152,7 @@ export default {
     ])
   },
 
-  beforeMount () {
+  created () {
     this.getFee(FeeTypes.TRANSFER)
     this.getFee(FeeTypes.CUSTODY)
     this.getFee(FeeTypes.ACCOUNT_CREATION)
