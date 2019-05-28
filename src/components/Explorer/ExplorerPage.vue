@@ -220,13 +220,13 @@ export default {
       if (this._isValid(this.$v.form.query)) {
         switch (this.currentSearchType) {
           case SearchTypes.BLOCK:
-            this.searchTransactionsByBlock({height: this.form.query})
+            this.searchTransactionsByBlock({ height: this.form.query })
             break
           case SearchTypes.TRANSACTION:
-            this.searchTransactionById({transactionId: this.form.query})
+            this.searchTransactionById({ transactionId: this.form.query })
             break
           case SearchTypes.ACCOUNT:
-            this.searchTransactionsByAccountId({accountId: this.form.query})
+            this.searchTransactionsByAccountId({ accountId: this.form.query })
             break
         }
       }

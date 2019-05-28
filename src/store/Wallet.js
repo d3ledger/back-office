@@ -83,9 +83,8 @@ const mutations = {
       volumeData,
       priceData,
       currencies,
-      transferFeeData,
-      withdrawalFeeData,
-      exchangeFeeData
+      billingData,
+      asset
     }
   ) {
     // process priceData
@@ -124,9 +123,9 @@ const mutations = {
         crypto: priceCrypto,
         crypto_change: changePctCrypto,
         fee: {
-          transfer: transferFeeData ? transferFeeData.billing.feeFraction : 0,
-          withdrawal: withdrawalFeeData ? withdrawalFeeData.billing.feeFraction : 0,
-          exchange: exchangeFeeData ? exchangeFeeData.billing.feeFraction : 0
+          transfer: billingData && billingData.transfer.d3[asset] ? billingData.transfer.d3[asset].feeFraction : 0,
+          withdrawal: billingData && billingData.withdrawal.d3[asset] ? billingData.withdrawal.d3[asset].feeFraction : 0,
+          exchange: billingData && billingData.exchange.d3[asset] ? billingData.exchange.d3[asset].feeFraction : 0
         }
       },
       market: {
@@ -155,26 +154,24 @@ const actions = {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
 
     const currencies = getters.settingsView
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service']
 
     return Promise.all([
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
       cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
       cryptoCompareUtil.loadFullData(asset, currencies),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'TRANSFER'),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'WITHDRAWAL'),
-      feeUtil.getBillingData(getters.dataCollectorIp, 'd3', billingId, 'EXCHANGE')
+      feeUtil.getFullBillingData(dataCollectorUrl)
     ])
-      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData, transferFeeData, withdrawalFeeData, exchangeFeeData]) => {
+      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData, billingData]) => {
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
           historicalDataFiat,
           historicalDataCrypto,
           volumeData,
           priceData,
           currencies,
-          transferFeeData,
-          withdrawalFeeData,
-          exchangeFeeData
+          billingData,
+          asset
         })
       })
       .catch(err => {

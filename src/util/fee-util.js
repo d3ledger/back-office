@@ -2,6 +2,14 @@ import axios from 'axios'
 
 const PROTOCOL = location.protocol
 
+const getFullBillingData = (url) => {
+  return axios({
+    baseURL: `${PROTOCOL}//${url}`,
+    url: `/cache/get/billing`
+  })
+    .then(({ data }) => data)
+}
+
 const getBillingData = (url, domain, asset, billingType) => {
   return axios({
     baseURL: `${PROTOCOL}//${url}`,
@@ -11,5 +19,6 @@ const getBillingData = (url, domain, asset, billingType) => {
 }
 
 export default {
-  getBillingData
+  getBillingData,
+  getFullBillingData
 }

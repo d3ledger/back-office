@@ -104,8 +104,14 @@
         >Explorer</span>
       </el-menu-item>
       <el-menu-item index="/fee">
-        <SvgIcon iconName="Explorer" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
-        <span class="title-left" slot="title">Fee</span>
+        <SvgIcon
+          icon-name="FeePage"
+          icon-class="menu-icon"
+        ><TransactionsIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Fee</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon

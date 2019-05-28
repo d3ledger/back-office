@@ -416,6 +416,12 @@
             {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
           </span>
         </span>
+        <span class="form-item-text">
+          Withdrawal fee:
+          <span class="form-item-text-amount">
+            {{ withdrawForm.amount * wallet.fee.withdrawal | formatPrecision }} {{ wallet.asset }}
+          </span>
+        </span>
         <el-form-item
           label="Address"
           prop="wallet"
@@ -516,6 +522,13 @@
             {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
           </span>
         </span>
+        <span class="form-item-text">
+          Transfer fee:
+          <span class="form-item-text-amount">
+            {{ transferForm.amount * wallet.fee.transfer | formatPrecision }} {{ wallet.asset }}
+          </span>
+        </span>
+
         <el-form-item
           label="Counterparty"
           prop="to"
