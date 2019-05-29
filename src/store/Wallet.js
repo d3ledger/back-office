@@ -5,7 +5,6 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/cryptoApi-axios-util'
-import feeUtil from '@util/fee-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -26,8 +25,7 @@ function initialState () {
         fiat: 0,
         fiat_change: 0,
         crypto: 0,
-        crypto_change: 0,
-        fee: 0
+        crypto_change: 0
       },
       market: {
         cap: {
@@ -82,9 +80,7 @@ const mutations = {
       historicalDataCrypto,
       volumeData,
       priceData,
-      currencies,
-      billingData,
-      asset
+      currencies
     }
   ) {
     // process priceData
@@ -121,12 +117,7 @@ const mutations = {
         fiat: priceFiat,
         fiat_change: changeFiat,
         crypto: priceCrypto,
-        crypto_change: changePctCrypto,
-        fee: {
-          transfer: billingData && billingData.transfer.d3[asset] ? billingData.transfer.d3[asset].feeFraction : 0,
-          withdrawal: billingData && billingData.withdrawal.d3[asset] ? billingData.withdrawal.d3[asset].feeFraction : 0,
-          exchange: billingData && billingData.exchange.d3[asset] ? billingData.exchange.d3[asset].feeFraction : 0
-        }
+        crypto_change: changePctCrypto
       },
       market: {
         cap: {
@@ -150,28 +141,24 @@ const mutations = {
 }
 
 const actions = {
-  getCryptoFullData ({ commit, getters }, { filter, asset, billingId }) {
+  getCryptoFullData ({ commit, getters }, { filter, asset }) {
     commit(types.GET_CRYPTO_FULL_DATA_REQUEST)
 
     const currencies = getters.settingsView
-    const dataCollectorUrl = getters.servicesIPs['data-collector-service']
 
     return Promise.all([
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
       cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
-      cryptoCompareUtil.loadFullData(asset, currencies),
-      feeUtil.getFullBillingData(dataCollectorUrl)
+      cryptoCompareUtil.loadFullData(asset, currencies)
     ])
-      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData, billingData]) => {
+      .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {
         commit(types.GET_CRYPTO_FULL_DATA_SUCCESS, {
           historicalDataFiat,
           historicalDataCrypto,
           volumeData,
           priceData,
-          currencies,
-          billingData,
-          asset
+          currencies
         })
       })
       .catch(err => {

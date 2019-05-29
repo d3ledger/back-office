@@ -13,7 +13,8 @@ import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
-import { WalletTypes, FeeTypes } from '@/data/consts'
+import { WalletTypes } from '@/data/consts'
+import billingUtil from '@util/billing-util'
 
 /* eslint-disable */
 
@@ -82,7 +83,7 @@ const types = flow(
   'SET_WHITELIST',
   'GET_CUSTOM_ASSETS',
   'SET_FEE',
-  'GET_FEE'
+  'GET_FULL_BILLING_DATA'
 ])
 
 function initialState () {
@@ -187,7 +188,7 @@ const getters = {
             asset: t.asset
           }
         } else {
-          const name = t.name.toLowerCase()
+          let name = t.name.toLowerCase()
           let domain = ''
           switch (t.asset) {
             case 'ETH':
@@ -205,7 +206,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
-            billingId: `${name}__${domain}`,
+            billingId: `${t.asset.toLowerCase()}__${domain}`,
             domain: domain,
 
             name: t.name,
@@ -737,33 +738,17 @@ const mutations = {
 
   [types.SET_FEE_FAILURE] () {},
 
-  [types.GET_FEE_REQUEST] () {},
+  [types.GET_FULL_BILLING_DATA_REQUEST] () {},
 
-  [types.GET_FEE_SUCCESS] (state, { response, feeType }) {
-    switch (feeType) {
-      case FeeTypes.TRANSFER: {
-        state.transferFee = response['admin@notary'] || {}
-        return
-      }
-      case FeeTypes.CUSTODY: {
-        state.custodyFee = response['admin@notary'] || {}
-        return
-      }
-      case FeeTypes.ACCOUNT_CREATION: {
-        state.accountCreationFee = response['admin@notary'] || {}
-        return
-      }
-      case FeeTypes.EXCHANGE: {
-        state.exchangeFee = response['admin@notary'] || {}
-        return
-      }
-      case FeeTypes.WITHDRAWAL: {
-        state.withdrawalFee = response['admin@notary'] || {}
-      }
-    }
+  [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
+    state.transferFee = response.transfer.d3 || {}
+    state.custodyFee = response.custody.d3 || {}
+    state.accountCreationFee = response.accountCreation.d3 || {}
+    state.exchangeFee = response.exchange.d3 || {}
+    state.withdrawalFee = response.withdrawal.d3 || {}
   },
 
-  [types.GET_FEE_FAILURE] () {},
+  [types.GET_FULL_BILLING_DATA_FAILURE] () {},
 
   [types.SET_WHITELIST_REQUEST] (state) {},
 
@@ -965,18 +950,20 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee, feeType }) {
     commit(types.TRANSFER_ASSET_REQUEST)
 
-    return irohaUtil.transferAsset(privateKeys, getters.irohaQuorum, {
+    return irohaUtil.transferAssetWithFee(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
       assetId,
       description,
       amount,
-      fee
+      fee,
+      feeType
     })
-      .then(() => {
+      .then((result) => {
+        console.log(result)
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
       .catch(err => {
@@ -1230,8 +1217,6 @@ const actions = {
       value: amount
     })
       .then(() => {
-        dispatch('updateAccount')
-
         commit(types.SET_FEE_SUCCESS)
       })
       .catch(err => {
@@ -1240,20 +1225,16 @@ const actions = {
       })
   },
 
-  getFee ({ commit, state, dispatch, getters }, type) {
-    commit(types.GET_FEE_REQUEST)
+  getFullBillingData ({ commit, getters }) {
+    commit(types.GET_FULL_BILLING_DATA_REQUEST)
 
-    const accountId = `${type}@d3`
-
-    return irohaUtil.getAccountDetail({
-      accountId
-    })
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
+    return billingUtil.getFullBillingData(dataCollectorUrl)
       .then(response => {
-        dispatch('updateAccount')
-        commit(types.GET_FEE_SUCCESS, { response, type })
+        commit(types.GET_FULL_BILLING_DATA_SUCCESS, { response })
       })
       .catch(err => {
-        commit(types.GET_FEE_FAILURE)
+        commit(types.GET_FULL_BILLING_DATA_FAILURE)
         throw err
       })
   }

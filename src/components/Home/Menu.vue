@@ -103,16 +103,6 @@
           class="title-left"
         >Explorer</span>
       </el-menu-item>
-      <el-menu-item index="/fee">
-        <SvgIcon
-          icon-name="FeePage"
-          icon-class="menu-icon"
-        ><TransactionsIcon/></SvgIcon>
-        <span
-          slot="title"
-          class="title-left"
-        >Fee</span>
-      </el-menu-item>
       <el-menu-item
         v-if="isAdmin"
         index="/fee"

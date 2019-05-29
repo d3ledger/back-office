@@ -20,7 +20,7 @@
                 label="Transfer fee"
               >
                 <template slot-scope="scope">
-                  {{ transferFee[scope.row.billingId] || 0 }}
+                  {{ transferFee[scope.row.assetId] ? transferFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.TRANSFER)"
@@ -34,7 +34,7 @@
                 label="Exchange fee"
               >
                 <template slot-scope="scope">
-                  {{ exchangeFee[scope.row.billingId] || 0 }}
+                  {{ exchangeFee[scope.row.assetId] ? exchangeFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.EXCHANGE)"
@@ -48,7 +48,7 @@
                 label="Withdrawal fee"
               >
                 <template slot-scope="scope">
-                  {{ withdrawalFee[scope.row.billingId] || 0 }}
+                  {{ withdrawalFee[scope.row.assetId] ? withdrawalFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)"
@@ -62,7 +62,7 @@
                 label="Custody fee"
               >
                 <template slot-scope="scope">
-                  {{ custodyFee[scope.row.billingId] || 0 }}
+                  {{ custodyFee[scope.row.assetId] ? custodyFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.CUSTODY)"
@@ -153,17 +153,13 @@ export default {
   },
 
   created () {
-    this.getFee(FeeTypes.TRANSFER)
-    this.getFee(FeeTypes.CUSTODY)
-    this.getFee(FeeTypes.ACCOUNT_CREATION)
-    this.getFee(FeeTypes.EXCHANGE)
-    this.getFee(FeeTypes.WITHDRAWAL)
+    this.getFullBillingData()
   },
 
   methods: {
     ...mapActions([
       'setFee',
-      'getFee',
+      'getFullBillingData',
       'openApprovalDialog'
     ]),
 
@@ -188,7 +184,7 @@ export default {
             type: this.feeType
           })
             .then(() => {
-              this.getFee(this.feeType)
+              this.getFullBillingData()
               this.$message.success('Fee successfully setted')
             })
             .catch((err) => {
