@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 // https://github.com/bpampuch/pdfmake/issues/1374
 
 function fetchFont (fontURL) {
