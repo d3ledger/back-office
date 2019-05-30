@@ -158,6 +158,7 @@ import { mapGetters, mapActions } from 'vuex'
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
+import { FeeTypes } from '@/data/consts'
 
 import {
   _user,
@@ -212,13 +213,15 @@ export default {
       isExchangeSending: false
     }
   },
+
   computed: {
     ...mapGetters([
       'wallets',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum',
-      'availableAssets'
+      'availableAssets',
+      'exchangeFee'
     ]),
 
     assetsWithoutOffer () {
@@ -250,14 +253,28 @@ export default {
 
     numberOfSettlements () {
       return this.$store.getters.incomingSettlements.length
+    },
+
+    currentOfferFee () {
+      return this.exchangeFee[this.exchangeDialogOfferAsset] ? this.exchangeFee[this.exchangeDialogOfferAsset].feeFraction : 0
+    },
+
+    currentRequestFee () {
+      return this.exchangeFee[this.exchangeDialogRequestAsset] ? this.exchangeFee[this.exchangeDialogRequestAsset].feeFraction : 0
     }
   },
+
+  created () {
+    this.getFullBillingData()
+  },
+
   methods: {
     ...mapActions([
       'openApprovalDialog',
       'closeExchangeDialog',
       'getOfferToRequestPrice',
-      'createSettlement'
+      'createSettlement',
+      'getFullBillingData'
     ]),
 
     closeExchangeDialogWith () {
@@ -287,7 +304,10 @@ export default {
             offerAmount: s.offer_amount,
             requestAssetId: requestAsset.toLowerCase(),
             requestAmount: s.request_amount,
-            description: s.description
+            description: s.description,
+            FeeType: FeeTypes.EXCHANGE,
+            senderFee: this.currentOfferFee,
+            recieverFee: this.currentRequestFee
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum

@@ -751,7 +751,6 @@ export default {
     },
 
     currentTransferFee () {
-      console.log(this.transferFee, this.wallet.assetId)
       return this.transferFee[this.wallet.assetId] ? this.transferFee[this.wallet.assetId].feeFraction : 0
     },
 

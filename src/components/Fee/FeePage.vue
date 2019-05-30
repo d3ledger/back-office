@@ -20,7 +20,7 @@
                 label="Transfer fee"
               >
                 <template slot-scope="scope">
-                  {{ transferFee[scope.row.assetId] ? transferFee[scope.row.assetId].feeFraction : 0 }}
+                  {{ transferFee[scope.row.asset] ? transferFee[scope.row.asset].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.TRANSFER)"

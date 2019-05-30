@@ -181,7 +181,7 @@ const getters = {
           return {
             id: `${t.name}$d3`,
             assetId: `${t.name}#d3`,
-            billingId: `${t.name.toLowerCase()}__d3`,
+            billingId: `${t.name}__d3`,
             domain: 'd3',
 
             name: t.name,
@@ -206,7 +206,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
-            billingId: `${t.asset.toLowerCase()}__${domain}`,
+            billingId: `${name}__${domain}`,
             domain: domain,
 
             name: t.name,
@@ -233,7 +233,8 @@ const getters = {
               assetId: `${DOMAIN_ASSETS[key]}#${domain}`,
               domain: domain,
               name: key,
-              asset: DOMAIN_ASSETS[key]
+              asset: DOMAIN_ASSETS[key],
+              billingId: `${DOMAIN_ASSETS[key]}__${domain}`
             }
           })
       }
@@ -952,7 +953,7 @@ const actions = {
 
   transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee, feeType }) {
     commit(types.TRANSFER_ASSET_REQUEST)
-
+    console.log(1)
     return irohaUtil.transferAssetWithFee(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
@@ -962,8 +963,7 @@ const actions = {
       fee,
       feeType
     })
-      .then((result) => {
-        console.log(result)
+      .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
       })
       .catch(err => {
@@ -987,7 +987,7 @@ const actions = {
 
   createSettlement (
     { commit, state, getters },
-    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '', feeType, senderFee, recieverFee }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
@@ -1001,7 +1001,10 @@ const actions = {
       to,
       2,
       requestAssetId,
-      requestAmount
+      requestAmount,
+      feeType,
+      senderFee,
+      recieverFee
     )
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
