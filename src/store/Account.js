@@ -957,7 +957,6 @@ const actions = {
 
   transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee, feeType }) {
     commit(types.TRANSFER_ASSET_REQUEST)
-    console.log(1)
     return irohaUtil.transferAssetWithFee(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
