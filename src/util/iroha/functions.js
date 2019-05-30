@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { cryptoHelper } from 'iroha-helpers'
 import { getAccount } from './queries'
 import { cache } from './util'
