@@ -6,11 +6,38 @@ import axios from 'axios'
 
 const API_URL = process.env.VUE_APP_CRYPTO_API_URL || 'https://min-api.cryptocompare.com/'
 
-let axiosAPI = axios.create({
-  baseURL: API_URL
-})
+class CryptoService {
+  constructor (url) {
+    const service = axios.create({
+      baseURL: url
+    })
+    this.service = service
+  }
 
-const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
+  // API always response with 200 status, so catch can not handle it
+  checkForErrors (response) {
+    const data = response.data
+    const error = 'Error'
+    if (data.Response === error) {
+      return Promise.reject(
+        new Error(
+          data.Message
+        )
+      )
+    }
+    return response
+  }
+
+  get (path, params) {
+    return this.service.get(path, params)
+      .then(this.checkForErrors)
+      .then(response => response.data)
+  }
+}
+
+const CRYPTO_SERVICE = new CryptoService(API_URL)
+
+const loadHistoryByLabels = (currencies, settings, options = {}) => {
   const currentFiat = settings.fiat
   const dateFilter = {
     'ALL': {
@@ -41,7 +68,7 @@ const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
   const search = dateFilter[options.filter]
   const endpoint = 'data/' + (search ? search.url : 'histoday')
   const history = currencies.map(crypto => {
-    return axios
+    return CRYPTO_SERVICE
       .get(endpoint, {
         params: {
           fsym: crypto.asset,
@@ -52,15 +79,18 @@ const loadHistoryByLabels = axios => (currencies, settings, options = {}) => {
       })
   })
   return Promise.all(history)
-    .then(h => h.map(({ data }, index) => {
+    .then(h => h.map((response, index) => {
       return {
-        data: data.Data,
+        data: response.Data,
         asset: currencies[index].asset
       }
     }))
+    .catch(err => {
+      throw err
+    })
 }
 
-const loadPriceByFilter = axios => ({ crypto, filter, to }, settings) => {
+const loadPriceByFilter = ({ crypto, filter, to }, settings) => {
   const fsym = crypto
   const tsym = to || settings.fiat
   const dateFilter = {
@@ -90,7 +120,7 @@ const loadPriceByFilter = axios => ({ crypto, filter, to }, settings) => {
     }
   }
   const search = dateFilter[filter]
-  return axios
+  return CRYPTO_SERVICE
     .get(`data/${search.url}`, {
       params: {
         fsym,
@@ -98,11 +128,9 @@ const loadPriceByFilter = axios => ({ crypto, filter, to }, settings) => {
         limit: search.time
       }
     })
-    .then(({ data }) => data)
-    .catch(error => ({ error }))
 }
 
-const loadVolumeByFilter = axios => ({ crypto, filter }) => {
+const loadVolumeByFilter = ({ crypto, filter }) => {
   const dateFilter = {
     'ALL': {
       url: 'histoday',
@@ -130,47 +158,41 @@ const loadVolumeByFilter = axios => ({ crypto, filter }) => {
     }
   }
   const search = dateFilter[filter]
-  return axios
+  return CRYPTO_SERVICE
     .get(`data/exchange/${search.url}`, {
       params: {
         tsym: crypto,
         limit: search.time
       }
     })
-    .then(({ data }) => data)
-    .catch(error => ({ error }))
 }
 
-const loadFullData = axios => (asset, currencies) => {
+const loadFullData = (asset, currencies) => {
   const currentFiat = currencies.fiat
   const currentCrypto = currencies.crypto
-  return axios
+  return CRYPTO_SERVICE
     .get('data/pricemultifull', {
       params: {
         fsyms: asset,
         tsyms: `${currentFiat},${currentCrypto}`
       }
     })
-    .then(({ data }) => data)
-    .catch(error => ({ error }))
 }
 
-const loadPriceForAssets = axios => (assets) => {
-  return axios
+const loadPriceForAssets = (assets) => {
+  return CRYPTO_SERVICE
     .get('data/price', {
       params: {
         fsym: assets.from,
         tsyms: assets.to
       }
     })
-    .then(({ data }) => data)
-    .catch(error => ({ error }))
 }
 
 export default {
-  loadHistoryByLabels: loadHistoryByLabels(axiosAPI),
-  loadPriceByFilter: loadPriceByFilter(axiosAPI),
-  loadVolumeByFilter: loadVolumeByFilter(axiosAPI),
-  loadFullData: loadFullData(axiosAPI),
-  loadPriceForAssets: loadPriceForAssets(axiosAPI)
+  loadHistoryByLabels,
+  loadPriceByFilter,
+  loadVolumeByFilter,
+  loadFullData,
+  loadPriceForAssets
 }

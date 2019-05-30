@@ -16,7 +16,7 @@ describe('Wallet store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = WalletInjector({
-      '@util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
+      '@util/crypto-util': require('../../../src/util/crypto-util')
     }).default)
   })
 
