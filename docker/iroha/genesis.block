@@ -469,6 +469,15 @@
                   "roleName": "btc_fee_rate_setter"
                 }
               },
+                            {
+                "createRole": {
+                  "roleName": "billing",
+                  "permissions": [
+                    "can_transfer",
+                    "can_receive"
+                  ]
+                }
+              },
               {
                 "createAccount": {
                   "accountName": "transfer_billing",
@@ -507,37 +516,31 @@
               {
                 "appendRole": {
                   "accountId": "transfer_billing@d3",
-                  "roleName": "btc_fee_rate_setter"
+                  "roleName": "billing"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "custody_billing@d3",
-                  "roleName": "btc_fee_rate_setter"
+                  "roleName": "billing"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "account_creation_billing@d3",
-                  "roleName": "btc_fee_rate_setter"
+                  "roleName": "billing"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "exchange_billing@d3",
-                  "roleName": "btc_fee_rate_setter"
+                  "roleName": "billing"
                 }
               },
               {
                 "appendRole": {
                   "accountId": "withdrawal_billing@d3",
-                  "roleName": "btc_fee_rate_setter"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "withdrawal@notary",
-                  "roleName": "withdrawal"
+                  "roleName": "billing"
                 }
               },
               {

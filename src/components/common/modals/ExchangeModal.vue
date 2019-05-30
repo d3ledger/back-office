@@ -260,11 +260,13 @@ export default {
     },
 
     currentOfferFee () {
-      return this.exchangeFee[this.exchangeDialogOfferAsset] ? this.exchangeFee[this.exchangeDialogOfferAsset].feeFraction : 0
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      return this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
     },
 
     currentRequestFee () {
-      return this.exchangeFee[this.exchangeDialogRequestAsset] ? this.exchangeFee[this.exchangeDialogRequestAsset].feeFraction : 0
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      return this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
     }
   },
 
