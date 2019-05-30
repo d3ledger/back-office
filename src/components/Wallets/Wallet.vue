@@ -414,17 +414,19 @@
             class="el-form-item__error"
           >{{ _showError($v.withdrawForm.amount) }}</span>
         </el-form-item>
-        <div class="form-item-text">
-          Available balance:
-          <span class="form-item-text-amount">
-            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
-          </span>
-        </div>
-        <div class="form-item-text">
-          Withdrawal fee:
-          <span class="form-item-text-amount">
-            {{ withdrawForm.amount * currentWithdrawalFee | formatPrecision }} {{ wallet.asset }}
-          </span>
+        <div>
+          <div class="form-item-text">
+            Available balance:
+            <span class="form-item-text-amount">
+              {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+          <div class="form-item-text">
+            Withdrawal fee:
+            <span class="form-item-text-amount">
+              {{ withdrawForm.amount * currentWithdrawalFee | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
         </div>
         <el-form-item
           label="Address"
@@ -520,17 +522,19 @@
             class="el-form-item__error"
           >{{ _showError($v.transferForm.amount) }}</span>
         </el-form-item>
-        <div class="form-item-text">
-          Available balance:
-          <span class="form-item-text-amount">
-            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
-          </span>
-        </div>
-        <div class="form-item-text">
-          Transfer fee:
-          <span class="form-item-text-amount">
-            {{ transferForm.amount * currentTransferFee | formatPrecision }} {{ wallet.asset }}
-          </span>
+        <div>
+          <div class="form-item-text">
+            Available balance:
+            <span class="form-item-text-amount">
+              {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+          <div class="form-item-text">
+            Transfer fee:
+            <span class="form-item-text-amount">
+              {{ transferForm.amount * currentTransferFee | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
         </div>
         <el-form-item
           label="Counterparty"

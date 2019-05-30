@@ -52,16 +52,28 @@
           class="el-form-item__error"
         >{{ _showError($v.exchangeForm.offer_amount) }}</span>
       </el-form-item>
-      <span class="form-item-text">
-        Available balance:
-        <span
-          v-if="exchangeDialogOfferAsset"
-          class="form-item-text-amount"
-        >
-          {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
-        </span>
-        <span v-else>...</span>
-      </span>
+      <div>
+        <div class="form-item-text">
+          Available balance:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+        <div class="form-item-text">
+          Offer fee:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ exchangeForm.offer_amount * currentOfferFee | formatPrecision }} {{ exchangeDialogOfferAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+      </div>
       <el-form-item
         label="I receive"
         prop="request_amount"
@@ -99,16 +111,29 @@
           class="el-form-item__error"
         >{{ _showError($v.exchangeForm.request_amount) }}</span>
       </el-form-item>
-      <span class="form-item-text">
-        Market price:
-        <span
-          v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
-          class="form-item-text-amount"
-        >
-          {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
-        </span>
-        <span v-else>...</span>
-      </span>
+      <div>
+        <div class="form-item-text">
+          Market price:
+          <span
+            v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
+            class="form-item-text-amount"
+          >
+            {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+        <div class="form-item-text">
+          Request fee:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ exchangeForm.request_amount * currentRequestFee | formatPrecision }} {{ exchangeDialogRequestAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+      </div>
+
       <el-form-item
         label="Counterparty"
         prop="to"
