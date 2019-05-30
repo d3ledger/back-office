@@ -34,7 +34,7 @@ const message = {
       })
     },
     $_showRegistrationError (message, response) {
-      let responseText = response ? response.data : ''
+      let responseText = response ? response.data.message : ''
       if (responseText.includes('no free')) {
         message = 'No free address to register'
       }
