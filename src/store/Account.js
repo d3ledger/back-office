@@ -255,13 +255,13 @@ const getters = {
 
   incomingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId === 1) && (pair.from.from === state.accountId)
+      return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
     })
   },
 
   outgoingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId === 0) && (pair.from.from === state.accountId)
+      return (pair.from.txId % 2 === 0) && (pair.from.from === state.accountId)
     })
   },
 
