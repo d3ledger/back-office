@@ -93,12 +93,9 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
   let txClient = newCommandService()
 
-  const signedBatchArray = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
+  batchArray.forEach(b => signWithArrayOfKeys(b, privateKeys))
 
-  return sendTransactions(signedBatchArray, txClient, timeoutLimit, [
-    'REJECTED',
-    'REJECTED'
-  ])
+  return sendTransactions(batchArray, txClient, timeoutLimit, [])
 }
 
 const createAccount = (privateKeys, quorum, {
