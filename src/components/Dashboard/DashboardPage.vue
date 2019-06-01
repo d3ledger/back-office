@@ -107,8 +107,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'loadDashboard',
-      'getAccountAssets'
+      'loadDashboard'
     ]),
     getDashboardChartHeight (event) {
       this.dashboardChartHeight = document.documentElement.clientHeight - 350
