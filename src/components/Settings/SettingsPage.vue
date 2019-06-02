@@ -19,132 +19,9 @@
             </div>
             <div class="settings">
               <CurrencyItem />
-              <!-- <el-row class="settings_item">
-                <div class="settings_item-header">
-                  <span class="settings_item-header-title">Currency</span>
-                </div>
-                <div>
-                  <el-row class="currencies_list">
-                    <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
-                    <el-col>
-                      <el-radio-group
-                        v-model="currentFiat"
-                        size="small"
-                      >
-                        <el-radio
-                          v-for="(value, index) in settingsFiatCurrencies"
-                          :key="index"
-                          :label="value"
-                          class="currencies_list-select"
-                          border
-                        >{{ value }}</el-radio>
-                      </el-radio-group>
-                    </el-col>
-                  </el-row>
-                  <el-row class="currencies_list">
-                    <p class="list-title">Wallets (Market)</p>
-                    <el-col>
-                      <el-radio-group
-                        v-model="currentCrypto"
-                        size="small"
-                      >
-                        <el-radio
-                          v-for="(value, index) in settingsCryptoCurrencies"
-                          :key="index"
-                          :label="value"
-                          class="currencies_list-select"
-                          border
-                        >{{ value }}</el-radio>
-                      </el-radio-group>
-                    </el-col>
-                  </el-row>
-                </div>
-              </el-row> -->
-              <el-row class="settings_item">
-                <div class="settings_item-header">
-                  <span class="settings_item-header-title">Notifications</span>
-                </div>
-                <div>
-                  <el-row>
-                    <el-col>
-                      <el-switch
-                        v-model="notifications"
-                        @change="switchNotifications"
-                      />
-                    </el-col>
-                  </el-row>
-                </div>
-              </el-row>
-              <el-row class="settings_item">
-                <div class="settings_item-header">
-                  <span class="settings_item-header-title">Add network</span>
-                </div>
-                <div>
-                  <el-row>
-                    <el-col>
-                      <el-button
-                        v-if="!walletType.includes(WalletTypes.BTC) && freeBtcRelaysNumber > 0"
-                        :loading="registering"
-                        class="action_button content_width"
-                        @click="onAddNetwork(WalletTypes.BTC)"
-                      >
-                        Register in BTC network
-                      </el-button>
-                      <div
-                        v-else-if="!walletType.includes(WalletTypes.BTC)"
-                        class="list-title"
-                      >
-                        There is no free BTC relays now
-                      </div>
-                      <el-button
-                        v-if="!walletType.includes(WalletTypes.ETH) && freeEthRelaysNumber > 0"
-                        :loading="registering"
-                        class="action_button content_width"
-                        @click="onAddNetwork(WalletTypes.ETH)"
-                      >
-                        Register in ETH network
-                      </el-button>
-                      <div
-                        v-else-if="!walletType.includes(WalletTypes.ETH)"
-                        class="list-title"
-                      >
-                        There is no free ETH relays now
-                      </div>
-                      <span
-                        v-if="walletType.length === 2"
-                        class="list-title"
-                      >
-                        You already added all networks
-                      </span>
-                    </el-col>
-                  </el-row>
-                </div>
-              </el-row>
-              <el-row class="settings_item">
-                <div class="settings_item-header">
-                  <span class="settings_item-header-title">Time zone</span>
-                </div>
-                <div>
-                  <el-row>
-                    <el-col>
-                      <el-select
-                        id="timezone_select"
-                        v-model="currentZone"
-                        class="full-width_select"
-                        filterable
-                        placeholder="Select"
-                      >
-                        <el-option
-                          v-for="(zone, index) in timezones"
-                          :key="index"
-                          :label="zone"
-                          :value="zone"
-                        />
-                      </el-select>
-                    </el-col>
-                  </el-row>
-                </div>
-              </el-row>
+              <NotificationsItem :open-approval-dialog="openApprovalDialog" />
+              <NetworkItem :open-approval-dialog="openApprovalDialog" />
+              <TimeZoneItem />
             </div>
           </el-card>
         </el-col>
@@ -579,15 +456,17 @@ import FileSaver from 'file-saver'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
-import { WalletTypes } from '@/data/consts'
 import { lazyComponent } from '@router'
-import pushUtil from '@util/push-util'
+import { WalletTypes } from '@/data/consts'
 
 export default {
   name: 'SettingsPage',
   components: {
     WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard'),
-    CurrencyItem: lazyComponent('Settings/components/Leftside/CurrencyItem')
+    CurrencyItem: lazyComponent('Settings/components/Leftside/CurrencyItem'),
+    NotificationsItem: lazyComponent('Settings/components/Leftside/NotificationsItem'),
+    NetworkItem: lazyComponent('Settings/components/Leftside/NetworkItem'),
+    TimeZoneItem: lazyComponent('Settings/components/Leftside/TimeZoneItem')
   },
   filters: {
     substrKey (key) {
@@ -617,9 +496,6 @@ export default {
       keyToRemove: null,
       removingKey: false,
       quorumUpdating: false,
-      WalletTypes,
-      notifications: false,
-      registering: false,
       addWhiteAddressFormVisible: false,
       addingNewAddress: false,
       removingAddress: false,
@@ -638,29 +514,13 @@ export default {
       'btcWhiteListAddressesAll',
       'accountQuorum',
       'accountSignatories',
-      'walletType',
-      'freeEthRelaysNumber',
-      'freeBtcRelaysNumber',
-      'subscribed',
       'btcRegistrationIp',
       'ethRegistrationIp'
-    ]),
-    currentZone: {
-      get () {
-        return this.$store.getters.settingsView.timezone
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewTime', value)
-      }
-    }
+    ])
   },
   created () {
     this.getSignatories()
     this.getAccountLimits()
-    this.getFreeEthRelaysNumber()
-    this.getFreeBtcRelaysNumber()
-
-    this.notifications = this.subscribed
   },
   methods: {
     ...mapActions([
@@ -670,14 +530,7 @@ export default {
       'removeSignatory',
       'editAccountQuorum',
       'getAccountQuorum',
-      'setNotaryIp',
-      'addNetwork',
       'getAccountLimits',
-      'updateAccount',
-      'getFreeEthRelaysNumber',
-      'getFreeBtcRelaysNumber',
-      'subscribePushNotifications',
-      'unsubscribePushNotifications',
       'setWhiteList'
     ]),
     addPublicKey () {
@@ -841,56 +694,8 @@ export default {
     onCopyKeyError (e) {
       this.$message.error('Failed to copy texts')
     },
-
-    // TODO: Back-end do not require key anymore
-    onAddNetwork (network) {
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          this.registering = true
-          this.setNotaryIp({ ip: network === WalletTypes.BTC ? this.btcRegistrationIp : this.ethRegistrationIp })
-
-          return this.addNetwork({ privateKeys })
-            .then(() => {
-              this.$message.success(
-                `You successfully registered in ${network === WalletTypes.BTC ? 'BTC' : 'ETH'} network!`
-              )
-              this.updateAccount()
-            })
-            .catch((err) => {
-              this.$_showRegistrationError(err.message, err.response)
-            })
-        })
-        .finally(() => {
-          this.registering = false
-        })
-    },
     updateActiveTab (id) {
       this.activeTab = id
-    },
-    subscribe (settings) {
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          this.subscribePushNotifications({ privateKeys, settings })
-        })
-    },
-    unsubscribe () {
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          this.unsubscribePushNotifications({ privateKeys })
-        })
-    },
-    switchNotifications (value) {
-      if (value) {
-        pushUtil.initialiseState(this.subscribe.bind(this))
-      } else {
-        this.unsubscribe()
-      }
     }
   }
 }
@@ -917,10 +722,6 @@ export default {
 
 .settings {
   padding: 0 1.5rem;
-}
-
-.full-width_select {
-  width: 100%;
 }
 
 .address_list {

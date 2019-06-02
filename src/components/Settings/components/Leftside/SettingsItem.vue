@@ -24,7 +24,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style>
 .settings_item {
   margin-bottom: 20px;
 }
@@ -35,5 +35,20 @@ export default {
 .settings_item-header-title {
   font-size: 1rem;
   font-weight: 300;
+}
+
+.currencies_list {
+  margin-bottom: 10px;
+}
+
+.currencies_list-select.el-radio {
+  width: 5rem;
+  height: 2.5rem;
+  font-size: 1.1rem;
+}
+
+.list-title {
+  font-size: 0.8rem;
+  margin-bottom: 6px;
 }
 </style>

@@ -81,19 +81,5 @@ export default {
 }
 </script>
 
-<style scope>
-.currencies_list {
-  margin-bottom: 10px;
-}
-
-.list-title {
-  font-size: 0.8rem;
-  margin-bottom: 6px;
-}
-
-.currencies_list-select.el-radio {
-  width: 5rem;
-  height: 2.5rem;
-  font-size: 1.1rem;
-}
+<style scoped>
 </style>
