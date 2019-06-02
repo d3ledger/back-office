@@ -18,7 +18,8 @@
               <span>Settings</span>
             </div>
             <div class="settings">
-              <el-row class="settings_item">
+              <CurrencyItem />
+              <!-- <el-row class="settings_item">
                 <div class="settings_item-header">
                   <span class="settings_item-header-title">Currency</span>
                 </div>
@@ -58,7 +59,7 @@
                     </el-col>
                   </el-row>
                 </div>
-              </el-row>
+              </el-row> -->
               <el-row class="settings_item">
                 <div class="settings_item-header">
                   <span class="settings_item-header-title">Notifications</span>
@@ -585,7 +586,8 @@ import pushUtil from '@util/push-util'
 export default {
   name: 'SettingsPage',
   components: {
-    WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard')
+    WalletLimitsCard: lazyComponent('Settings/components/WalletLimitsCard'),
+    CurrencyItem: lazyComponent('Settings/components/Leftside/CurrencyItem')
   },
   filters: {
     substrKey (key) {
@@ -632,8 +634,6 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'settingsFiatCurrencies',
-      'settingsCryptoCurrencies',
       'ethWhiteListAddressesAll',
       'btcWhiteListAddressesAll',
       'accountQuorum',
@@ -645,22 +645,6 @@ export default {
       'btcRegistrationIp',
       'ethRegistrationIp'
     ]),
-    currentFiat: {
-      get () {
-        return this.$store.getters.settingsView.fiat
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewFiat', value)
-      }
-    },
-    currentCrypto: {
-      get () {
-        return this.$store.getters.settingsView.crypto
-      },
-      set (value) {
-        this.$store.dispatch('updateSettingsViewCrypto', value)
-      }
-    },
     currentZone: {
       get () {
         return this.$store.getters.settingsView.timezone
@@ -933,42 +917,6 @@ export default {
 
 .settings {
   padding: 0 1.5rem;
-}
-
-.settings_item {
-  margin-bottom: 20px;
-}
-
-.row_sub-header {
-  margin-bottom: 10px;
-}
-
-.row_sub-header > .header_small {
-  font-size: 0.8rem;
-}
-
-.settings_item-header {
-  margin-bottom: 15px;
-}
-
-.settings_item-header-title {
-  font-size: 1rem;
-  font-weight: 300;
-}
-
-.currencies_list {
-  margin-bottom: 10px;
-}
-
-.list-title {
-  font-size: 0.8rem;
-  margin-bottom: 6px;
-}
-
-.currencies_list-select {
-  width: 5rem;
-  height: 2.5rem;
-  font-size: 1.1rem;
 }
 
 .full-width_select {
