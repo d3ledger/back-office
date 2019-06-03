@@ -183,16 +183,15 @@ const getters = {
         const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
         if (isERC20) {
           return {
-            id: `${t.name}$d3`,
-            assetId: `${t.name}#d3`,
-            billingId: `${t.name}__d3`,
+            id: `${t.name.toLowerCase()}$d3`,
+            assetId: `${t.asset.toLowerCase()}#d3`,
+            billingId: `${t.asset.toLowerCase()}__d3`,
             domain: 'd3',
 
             name: t.name,
             asset: t.asset
           }
         } else {
-          let name = t.name.toLowerCase()
           let domain = ''
           switch (t.asset) {
             case 'ETH':
@@ -208,9 +207,9 @@ const getters = {
               throw new Error('Undefined asset! Please check availableAssets method!')
           }
           return {
-            id: `${name}$${domain}`,
-            assetId: `${name}#${domain}`,
-            billingId: `${name}__${domain}`,
+            id: `${t.name.toLowerCase()}$${domain}`,
+            assetId: `${t.asset.toLowerCase()}#${domain}`,
+            billingId: `${t.asset.toLowerCase()}__${domain}`,
             domain: domain,
 
             name: t.name,
