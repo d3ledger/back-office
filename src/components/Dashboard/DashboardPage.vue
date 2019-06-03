@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import debounce from 'lodash/fp/debounce'
 
@@ -98,7 +98,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('loadDashboard')
+    this.loadDashboard()
     window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
     this.getDashboardChartHeight()
   },
@@ -106,6 +106,9 @@ export default {
     window.removeEventListener('resize', this.getDashboardChartHeight)
   },
   methods: {
+    ...mapActions([
+      'loadDashboard'
+    ]),
     getDashboardChartHeight (event) {
       this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }

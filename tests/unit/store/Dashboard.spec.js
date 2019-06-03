@@ -16,7 +16,7 @@ describe('Dashboard store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = DashboardInjector({
-      '@util/cryptoApi-axios-util': require('@util/cryptoApi-axios-util')
+      '@util/crypto-util': require('@util/crypto-util')
     }).default)
   })
 

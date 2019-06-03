@@ -231,7 +231,8 @@ export default {
     },
 
     assetsWithoutRequest () {
-      return this.availableAssets.filter(a => a.asset !== this.exchangeDialogRequestAsset)
+      return this.wallets
+        .filter(a => a.asset !== this.exchangeDialogRequestAsset)
     },
 
     exchangeDialogOfferAsset: {

@@ -13,7 +13,7 @@ const getAllAssets = (url) => {
     baseURL: `${PROTOCOL}//${url}`
   })
     .then(({ data }) => data)
-    .catch(err => console.error(err))
+    .catch(err => err)
 }
 
 export default {

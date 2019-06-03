@@ -19,25 +19,6 @@ import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@ut
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
 
-/* eslint-disable */
-
-if (!Array.prototype.flat) {
-  Array.prototype.flat = function (depth) {
-    var flattend = [];
-    (function flat(array, depth) {
-      for (let el of array) {
-        if (Array.isArray(el) && depth > 0) {
-          flat(el, depth - 1);
-        } else {
-          flattend.push(el);
-        }
-      }
-    })(this, Math.floor(depth) || 1);
-    return flattend;
-  };
-}
-/* eslint-enable */
-
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
 
@@ -115,7 +96,7 @@ const getters = {
   // TODO: Need to update this function due to all avaliable token already safed in iroha
   // TODO: Create more effective way to handle custom tokens
   wallets (state, getters) {
-    return state.assets.map(a => {
+    const wallets = state.assets.map(a => {
       // TODO: it is to get asset's properties (e.g. color) which cannot be fetched from API.
       const assetParts = a.assetId.split('#')
       const assetName = assetParts[0].toLowerCase()
@@ -157,6 +138,8 @@ const getters = {
         }
       }
     })
+
+    return wallets.filter(Boolean)
   },
 
   getCustomAssetsByDomain: (state) => (domain) => {
@@ -231,7 +214,8 @@ const getters = {
       }
     })
 
-    return [...avaliable, ...customAssets.flat()].filter(item => item !== undefined)
+    return [...avaliable, ...flatten(customAssets)]
+      .filter(Boolean)
   },
 
   getTransactionsByAssetId: (state) => (assetId) => {
@@ -271,13 +255,13 @@ const getters = {
 
   incomingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId === 1) && (pair.from.from === state.accountId)
+      return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
     })
   },
 
   outgoingSettlements (state) {
     return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId === 0) && (pair.from.from === state.accountId)
+      return (pair.from.txId % 2 === 0) && (pair.from.from === state.accountId)
     })
   },
 
@@ -997,9 +981,8 @@ const actions = {
   rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const fake = new Array(getters.irohaQuorum)
-      .fill('1234567890123456789012345678901234567890123456789012345678901234')
-    return irohaUtil.rejectSettlement(fake, batch)
+    const fakePrivateKeys = [...new Array(21)].map(() => irohaUtil.generateKeypair().privateKey)
+    return irohaUtil.rejectSettlement(fakePrivateKeys, batch)
       .then(() => {
         commit(types.REJECT_SETTLEMENT_SUCCESS)
       })

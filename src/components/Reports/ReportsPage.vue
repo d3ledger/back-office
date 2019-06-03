@@ -176,7 +176,7 @@ import isAfter from 'date-fns/is_after'
 import endOfToday from 'date-fns/end_of_today'
 import isWithinRange from 'date-fns/is_within_range'
 import addDays from 'date-fns/add_days'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/crypto-util'
 import { lazyComponent } from '@router'
 
 export default {

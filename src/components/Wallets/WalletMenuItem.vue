@@ -30,15 +30,18 @@ export default {
   props: {
     walletId: {
       type: String,
-      required: true
+      required: true,
+      default: 'ASSET$DOMAIN'
     },
     name: {
       type: String,
-      required: true
+      required: true,
+      default: 'NAME'
     },
     asset: {
       type: String,
-      required: true
+      required: true,
+      default: 'ASSET'
     }
   }
 }

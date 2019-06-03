@@ -35,7 +35,9 @@ function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = D
 
   let txClient = newCommandService()
 
-  return sendTransactions([txToSend], txClient, timeoutLimit)
+  return sendTransactions([txToSend], txClient, timeoutLimit, [
+    'COMMITTED'
+  ])
 }
 
 /**
@@ -64,7 +66,9 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
-  return sendTransactions(batchArray, txClient, timeoutLimit)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'MST_PENDING'
+  ])
 }
 
 function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
@@ -83,7 +87,6 @@ function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DE
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[indexOfUnsigned], privateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'COMMITTED',
     'COMMITTED'
   ])
 }
@@ -93,10 +96,9 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
   let txClient = newCommandService()
 
-  const signedBatchArray = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
+  const batch = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
 
-  return sendTransactions(signedBatchArray, txClient, timeoutLimit, [
-    'REJECTED',
+  return sendTransactions(batch, txClient, timeoutLimit, [
     'REJECTED'
   ])
 }

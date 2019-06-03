@@ -11,7 +11,7 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import last from 'lodash/fp/last'
 import nth from 'lodash/fp/nth'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/crypto-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
