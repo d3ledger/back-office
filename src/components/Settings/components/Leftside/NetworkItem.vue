@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <SettingsItem
     title="Network"
@@ -71,8 +75,9 @@ export default {
     ...mapGetters({
       accountWalletType: 'walletType',
       freeEthRelaysNumber: 'freeEthRelaysNumber',
-      freeBtcRelaysNumber: 'freeBtcRelaysNumber'
-
+      freeBtcRelaysNumber: 'freeBtcRelaysNumber',
+      btcRegistrationIp: 'btcRegistrationIp',
+      ethRegistrationIp: 'ethRegistrationIp'
     })
   },
   created () {

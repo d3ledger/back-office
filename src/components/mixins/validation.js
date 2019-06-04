@@ -20,6 +20,8 @@ const errorMessages = {
   _nodeIp: 'Please provide correct IP address',
 
   _address: 'Please provide correct address',
+  _btcAddress: 'Please provide correct BTC address',
+  _ethAddress: 'Please provide correct ETH address',
 
   _asset: 'Please select asset',
   _amount: 'Please provide correct amount',
@@ -79,9 +81,11 @@ export const _user = {
 }
 
 export const _wallet = {
+  btcAddress: (address) => /^[123][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address),
+  ethAddress: (address) => /^0x[a-fA-F0-9]{40}$/.test(address),
   address: (address) => {
-    const validateBTC = /^[123][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address)
-    const validateETH = /^0x[a-fA-F0-9]{40}$/.test(address)
+    const validateBTC = _wallet.btcAddress(address)
+    const validateETH = _wallet.ethAddress(address)
     if (!validateBTC && !validateETH) return false
     return true
   },
