@@ -242,7 +242,6 @@ export default {
     if (this.walletType === this.WalletTypes.ETH) {
       this.walletTitle = ETHEREUM_TITLE
       this.whiteListAddressesAll = this.ethWhiteListAddressesAll
-      console.log(this.whiteListAddressesAll, this.ethWhiteListAddressesAll)
     } else {
       this.walletTitle = BITCOIN_TITLE
       this.whiteListAddressesAll = this.btcWhiteListAddressesAll
