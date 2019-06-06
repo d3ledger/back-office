@@ -16,7 +16,7 @@ describe('Wallet store', () => {
 
   beforeEach(() => {
     ({ types, mutations, actions, getters } = WalletInjector({
-      '@util/cryptoApi-axios-util': require('../../../src/util/cryptoApi-axios-util')
+      '@util/crypto-util': require('../../../src/util/crypto-util')
     }).default)
   })
 
@@ -194,15 +194,14 @@ describe('Wallet store', () => {
   describe('Actions', () => {
     describe('getCryptoFullData', () => {
       it('should call mutations in correct order', async () => {
-        const assets = ['BTC', 'ETH']
-        const fiats = ['USD', 'EUR']
+        const crypto = randomArrayElement(['BTC', 'ETH', 'XRP'])
+        const fiat = randomArrayElement(['USD', 'EUR'])
         const filter = '1D'
-        const asset = randomArrayElement(assets)
-        const fiat = randomArrayElement(fiats)
+        const asset = randomArrayElement(['DGD', 'BTM', 'EOS'])
         const getters = {
           settingsView: {
             fiat,
-            crypto: asset
+            crypto
           }
         }
         const commit = sinon.spy()

@@ -3,7 +3,10 @@
   SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <el-container class="column-fullheight">
+  <el-container
+    v-if="wallets.length"
+    class="column-fullheight"
+  >
     <el-header
       :style="{ height: '3.9rem' }"
       class="header"
@@ -54,14 +57,27 @@
       </el-row>
     </el-main>
   </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { lazyComponent } from '@router'
 
 export default {
+  components: {
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   data () {
     return {}
+  },
+
+  computed: {
+    ...mapGetters([
+      'wallets'
+    ])
   },
 
   methods: {
