@@ -176,6 +176,7 @@ const getters = {
               domain = 'bitcoin'
               break
             case 'XOR':
+              name = t.asset.toLowerCase()
               domain = 'sora'
               break
             default:
