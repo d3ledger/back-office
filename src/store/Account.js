@@ -164,13 +164,15 @@ const getters = {
             asset: t.asset
           }
         } else {
-          const name = t.name.toLowerCase()
+          let name = t.name.toLowerCase()
           let domain = ''
           switch (t.asset) {
             case 'ETH':
               domain = 'ethereum'
               break
             case 'BTC':
+              // This is because in our system name of Bitcoin is BTC 🤪
+              name = t.asset.toLowerCase()
               domain = 'bitcoin'
               break
             case 'XOR':
