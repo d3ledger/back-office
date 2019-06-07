@@ -469,7 +469,7 @@
                   "roleName": "btc_fee_rate_setter"
                 }
               },
-                            {
+              {
                 "createRole": {
                   "roleName": "billing",
                   "permissions": [

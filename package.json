@@ -10,6 +10,7 @@
     "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "init-fake-tokens": "node scripts/setup",
+    "init-tokens": "node scripts/setup-assets-wrapper",
     "start-iroha": "docker-compose -f docker/docker-compose-dev.yaml up"
   },
   "dependencies": {

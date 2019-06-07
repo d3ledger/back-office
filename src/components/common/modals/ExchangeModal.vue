@@ -291,8 +291,8 @@ export default {
     },
 
     currentRequestFee () {
-      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
-      return this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset)
+      return wallet && this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
     }
   },
 
