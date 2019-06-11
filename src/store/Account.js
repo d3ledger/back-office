@@ -175,24 +175,28 @@ const getters = {
             asset: t.asset
           }
         } else {
+          let name = t.name.toLowerCase()
           let domain = ''
           switch (t.asset) {
             case 'ETH':
               domain = 'ethereum'
               break
             case 'BTC':
+              // This is because in our system name of Bitcoin is BTC 🤪
+              name = t.asset.toLowerCase()
               domain = 'bitcoin'
               break
             case 'XOR':
+              name = t.asset.toLowerCase()
               domain = 'sora'
               break
             default:
               throw new Error('Undefined asset! Please check availableAssets method!')
           }
           return {
-            id: `${t.name.toLowerCase()}$${domain}`,
-            assetId: `${t.asset.toLowerCase()}#${domain}`,
-            billingId: `${t.asset.toLowerCase()}__${domain}`,
+            id: `${name}$${domain}`,
+            assetId: `${name}#${domain}`,
+            billingId: `${name}__${domain}`,
             domain: domain,
 
             name: t.name,
