@@ -15,6 +15,7 @@ import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
+import billingReportUtil from '@util/billing-report-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
@@ -65,7 +66,10 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'GET_CUSTOM_ASSETS'
+  'GET_CUSTOM_ASSETS',
+  'GET_CUSTODY_BILLING_REPORT',
+  'GET_TRANSFER_BILLING_REPORT',
+  'GET_EXCHANGE_BILLING_REPORT'
 ])
 
 function initialState () {
@@ -85,6 +89,9 @@ function initialState () {
     connectionError: null,
     acceptSettlementLoading: false,
     rejectSettlementLoading: false,
+    custodyBillingReport: [],
+    transferBillingReport: [],
+    exchangeBillingReport: [],
 
     customAssets: {}
   }
@@ -389,6 +396,18 @@ const getters = {
   subscribed (state) {
     const subscription = find('push_subscription', state.accountInfo)
     return subscription && subscription.push_subscription.length > 0
+  },
+
+  custodyBillingReport (state) {
+    return state.custodyBillingReport
+  },
+
+  transferBillingReport (state) {
+    return state.transferBillingReport
+  },
+
+  exchangeBillingReport (state) {
+    return state.exchangeBillingReport
   }
 }
 
@@ -704,6 +723,36 @@ const mutations = {
   [types.SET_WHITELIST_SUCCESS] (state) {},
 
   [types.SET_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_CUSTODY_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_CUSTODY_BILLING_REPORT_SUCCESS] (state, result) {
+    state.custodyBillingReport = Object.entries(result.accounts.assetCustody)
+  },
+
+  [types.GET_CUSTODY_BILLING_REPORT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_TRANSFER_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_TRANSFER_BILLING_REPORT_SUCCESS] (state, result) {
+    state.transferBillingReport = result
+  },
+
+  [types.GET_TRANSFER_BILLING_REPORT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_EXCHANGE_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_EXCHANGE_BILLING_REPORT_SUCCESS] (state, result) {
+    state.exchangeBillingReport = result
+  },
+
+  [types.GET_EXCHANGE_BILLING_REPORT_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -1145,6 +1194,39 @@ const actions = {
       })
       .catch(err => {
         commit(types.SET_WHITELIST_FAILURE)
+        throw err
+      })
+  },
+
+  getCustodyBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_CUSTODY_BILLING_REPORT_REQUEST)
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getCustodyUserReport(reportServiceUrl.value, params)
+      .then(res => commit(types.GET_CUSTODY_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_CUSTODY_BILLING_REPORT_FAILURE, err)
+        throw err
+      })
+  },
+
+  getTransferBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_TRANSFER_BILLING_REPORT_REQUEST)
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getTransferUserReport(reportServiceUrl.value, params)
+      .then(res => commit(types.GET_TRANSFER_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_TRANSFER_BILLING_REPORT_FAILURE, err)
+        throw err
+      })
+  },
+
+  getExchangeBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_EXCHANGE_BILLING_REPORT_REQUEST)
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getExchangeUserReport(reportServiceUrl.value, params)
+      .then(res => commit(types.GET_EXCHANGE_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_EXCHANGE_BILLING_REPORT_FAILURE, err)
         throw err
       })
   },
