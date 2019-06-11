@@ -20,7 +20,7 @@
       <el-button
         class="action_button"
         data-cy="addEthWhiteAddress"
-        @click="addWhiteAddressFormVisible = true"
+        @click="addAddressFormVisible = true"
       >
         <fa-icon
           class="action_button-icon"
@@ -70,7 +70,7 @@
         </div>
       </div>
       <el-dialog
-        :visible.sync="addWhiteAddressFormVisible"
+        :visible.sync="addAddressFormVisible"
         data-cy="addWhiteAddressDialog"
         title="Add new white address"
         width="450px"
@@ -113,7 +113,7 @@
           </el-button>
           <el-button
             class="dialog-form_buttons close"
-            @click="addWhiteAddressFormVisible = false"
+            @click="addAddressFormVisible = false"
           >
             Cancel
           </el-button>
@@ -211,7 +211,7 @@ export default {
 
       walletTitle: '',
 
-      addWhiteAddressFormVisible: false,
+      addAddressFormVisible: false,
       addingNewAddress: false,
 
       removeAddressFormVisible: false,
@@ -238,7 +238,7 @@ export default {
       return `btc${address}`
     }
   },
-  created () {
+  beforeUpdate () {
     if (this.walletType === this.WalletTypes.ETH) {
       this.walletTitle = ETHEREUM_TITLE
       this.whiteListAddressesAll = this.ethWhiteListAddressesAll
@@ -279,7 +279,7 @@ export default {
             })
         })
         .finally(() => {
-          this.addWhiteAddressFormVisible = false
+          this.addAddressFormVisible = false
           this.addingNewAddress = false
           this.whitelistForm = {
             address: ''
@@ -289,8 +289,8 @@ export default {
     removeWhiteAddress () {
       const whitelist = [
         ...this.whiteListAddressesAll
-          .filter(item => item[0] !== this.addressToRemove),
-        this.whitelistForm.address
+          .filter(item => item[0] !== this.addressToRemove)
+          .map(item => item[0])
       ]
 
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -311,7 +311,7 @@ export default {
             })
         })
         .finally(() => {
-          this.removeWhiteAddressFormVisible = false
+          this.removeAddressFormVisible = false
           this.removingAddress = false
           this.addressToRemove = null
         })

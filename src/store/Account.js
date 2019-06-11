@@ -319,8 +319,9 @@ const getters = {
     }
 
     return getters.ethWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 < Date.now())
-      .map(item => item[0])
+      .filter(([address, _]) => address.length)
+      .filter(([_, time]) => parseInt(time) * 1000 < Date.now())
+      .map(([address, _]) => address)
   },
 
   ethWhiteListAddressesAll (state) {
@@ -335,8 +336,9 @@ const getters = {
 
   btcWhiteListAddresses (state, getters) {
     return getters.btcWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 < Date.now())
-      .map(item => item[0])
+      .filter(([address, _]) => address.length)
+      .filter(([_, time]) => parseInt(time) * 1000 < Date.now())
+      .map(([address, _]) => address)
   },
 
   btcWhiteListAddressesAll (state) {
@@ -681,22 +683,6 @@ const mutations = {
   [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_SUCCESS] (state) { },
 
   [types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.SET_ETH_WHITELIST_REQUEST] (state) {},
-
-  [types.SET_ETH_WHITELIST_SUCCESS] (state) { },
-
-  [types.SET_ETH_WHITELIST_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.SET_BTC_WHITELIST_REQUEST] (state) {},
-
-  [types.SET_BTC_WHITELIST_SUCCESS] (state) { },
-
-  [types.SET_BTC_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
   },
 
