@@ -25,8 +25,7 @@ const types = flow(
   fromPairs
 )([
   'ADD_ASSET_LIMIT',
-  'REMOVE_ASSET_LIMIT',
-  'SET_TRANSFER_FEE'
+  'REMOVE_ASSET_LIMIT'
 ])
 
 function initialState () {
@@ -90,13 +89,7 @@ const mutations = {
 
   [types.REMOVE_ASSET_LIMIT_REQUEST] () {},
 
-  [types.REMOVE_ASSET_LIMIT_FAILURE] () {},
-
-  [types.SET_TRANSFER_FEE_SUCCESS] () {},
-
-  [types.SET_TRANSFER_FEE_REQUEST] () {},
-
-  [types.SET_TRANSFER_FEE_FAILURE] () {}
+  [types.REMOVE_ASSET_LIMIT_FAILURE] () {}
 }
 
 const actions = {
