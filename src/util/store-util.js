@@ -14,6 +14,7 @@ import values from 'lodash/fp/values'
 import map from 'lodash/fp/map'
 import chunk from 'lodash/fp/chunk'
 import cloneDeep from 'lodash/fp/cloneDeep'
+import { FeeTypes } from '@/data/consts'
 
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
 
@@ -113,6 +114,7 @@ export function getSettlementsFrom (transactions, accountId) {
           description,
           assetId
         } = c.transferAsset
+        if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) return
 
         const tx = {
           txId: txIndex,

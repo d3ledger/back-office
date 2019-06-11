@@ -57,18 +57,37 @@ function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = D
  * @param {Number} senderFee
  * @param {Number} recieverFee
  */
-function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, timeoutLimit = DEFAULT_TIMEOUT_LIMIT, feeType, senderFee, recieverFee) {
+function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, feeType, senderFee = 0, receiverFee = 0, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   let txClient = newCommandService()
   const feeAccountId = `${feeType}@d3`
-  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
+
+  let senderTx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'transferAsset',
+    { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount }
+  )
   if (senderFee > 0) {
-    senderTx = txHelper.addCommand(senderTx, 'transferAsset', { srcAccountId: senderAccountId, destAccountId: feeAccountId, senderAssetId, description, amount: (Number(senderAmount) * senderFee).toString() })
+    const amount = (Number(senderAmount) * senderFee).toString()
+    senderTx = txHelper.addCommand(
+      senderTx,
+      'transferAsset',
+      { srcAccountId: senderAccountId, destAccountId: feeAccountId, assetId: senderAssetId, description, amount }
+    )
   }
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, quorum: senderQuorum })
 
-  let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
-  if (recieverFee > 0) {
-    receiverTx = txHelper.addCommand(receiverTx, 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: feeAccountId, receiverAssetId, description, amount: (Number(receiverAmount) * recieverFee).toString() })
+  let receiverTx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'transferAsset',
+    { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount }
+  )
+  if (receiverFee > 0) {
+    const amount = (Number(receiverAmount) * receiverFee).toString()
+    receiverTx = txHelper.addCommand(
+      receiverTx,
+      'transferAsset',
+      { srcAccountId: receiverAccountId, destAccountId: feeAccountId, assetId: receiverAssetId, description, amount }
+    )
   }
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
 

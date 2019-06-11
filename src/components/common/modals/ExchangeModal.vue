@@ -337,7 +337,7 @@ export default {
             requestAssetId: requestAsset.toLowerCase(),
             requestAmount: s.request_amount,
             description: s.description,
-            FeeType: FeeTypes.EXCHANGE,
+            feeType: FeeTypes.EXCHANGE,
             senderFee: this.currentOfferFee,
             recieverFee: this.currentRequestFee
           })
