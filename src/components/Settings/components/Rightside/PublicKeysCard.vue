@@ -44,6 +44,7 @@
                 @click="() => doCopy(pubKey)"
               >{{ pubKey }}</span>
               <el-button
+                v-show="accountSignatories.length !== 1"
                 data-cy="removeSignatory"
                 class="settings-item_row-delete"
                 @click="removeKeyFormVisible = true; keyToRemove = pubKey"
@@ -224,7 +225,7 @@ export default {
         })
     },
     removePublicKey () {
-      if (this.accountSignatories.length <= this.accountQuorum) {
+      if (this.accountSignatories.length === 1) {
         this.$message.error('Amount of public keys can\'t be smaller than quorum')
         return
       }

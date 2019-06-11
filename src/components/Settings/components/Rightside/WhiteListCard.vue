@@ -328,9 +328,6 @@ export default {
 </script>
 
 <style scoped>
-.approval_form-desc .key_representation {
-  word-break: break-all;
-}
 
 .dialog-form >>> .el-input__inner {
   font-weight: 700;

@@ -65,7 +65,8 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'GET_CUSTOM_ASSETS'
+  'GET_CUSTOM_ASSETS',
+  'ADD_NETWORK'
 ])
 
 function initialState () {
@@ -713,7 +714,11 @@ const mutations = {
   },
   [types.GET_CUSTOM_ASSETS_FAILURE] (state, err) {
     handleError(state, err)
-  }
+  },
+
+  [types.ADD_NETWORK_REQUEST] (state) {},
+  [types.ADD_NETWORK_SUCCESS] (state) {},
+  [types.ADD_NETWORK_FAILURE] (state) {}
 }
 
 const actions = {
@@ -745,17 +750,14 @@ const actions = {
       })
   },
 
-  addNetwork ({ commit, state }, { privateKeys }) {
-    commit(types.SIGNUP_REQUEST)
+  addNetwork ({ commit, state }) {
+    commit(types.ADD_NETWORK_REQUEST)
     const username = state.accountId.split('@')[0]
-    const privateKey = privateKeys[0]
-    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
 
-    return notaryUtil.signup(username, [], publicKey)
-      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
-      .then(() => ({ username, privateKey }))
+    return notaryUtil.signup(username, '')
+      .then(() => commit(types.ADD_NETWORK_SUCCESS))
       .catch(err => {
-        commit(types.SIGNUP_FAILURE, err)
+        commit(types.ADD_NETWORK_FAILURE, err)
         throw err
       })
   },
@@ -995,7 +997,7 @@ const actions = {
       })
   },
 
-  addSignatory ({ commit, state, getters }, privateKeys) {
+  addSignatory ({ commit, dispatch, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
@@ -1004,7 +1006,10 @@ const actions = {
       accountId: state.accountId,
       publicKey
     })
-      .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(async () => {
+        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS)
+        await dispatch('updateAccount')
+      })
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
         commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
@@ -1138,13 +1143,12 @@ const actions = {
       // eslint-disable-next-line
       value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
     })
-      .then(() => {
-        dispatch('updateAccount')
-
+      .then(async () => {
         commit(types.SET_WHITELIST_SUCCESS)
+        await dispatch('updateAccount')
       })
       .catch(err => {
-        commit(types.SET_WHITELIST_FAILURE)
+        commit(types.SET_WHITELIST_FAILURE, err)
         throw err
       })
   },
