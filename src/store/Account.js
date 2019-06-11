@@ -456,9 +456,9 @@ const mutations = {
   [types.UPDATE_ACCOUNT_REQUEST] (state) {},
 
   [types.UPDATE_ACCOUNT_SUCCESS] (state, { account }) {
-    state.accountId = account.accountId
-    state.accountInfo = JSON.parse(account.jsonData)
-    state.accountQuorum = account.quorum
+    Vue.set(state, 'accountId', account.accountId)
+    Vue.set(state, 'accountInfo', JSON.parse(account.jsonData))
+    Vue.set(state, 'accountQuorum', account.quorum)
   },
 
   [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
@@ -1017,13 +1017,16 @@ const actions = {
       })
   },
 
-  removeSignatory ({ commit, state, getters }, { privateKeys, publicKey }) {
+  removeSignatory ({ commit, dispatch, state, getters }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
     return irohaUtil.removeSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
-      .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(async () => {
+        commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS)
+        await dispatch('updateAccount')
+      })
       .catch(err => {
         commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
         throw err

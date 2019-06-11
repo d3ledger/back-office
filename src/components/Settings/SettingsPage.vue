@@ -15,12 +15,21 @@
 
 <script>
 import { lazyComponent } from '@router'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SettingsPage',
   components: {
     SettingsLeftSide: lazyComponent('Settings/SettingsLeftSide'),
     SettingsRightSide: lazyComponent('Settings/SettingsRightSide')
+  },
+  created () {
+    this.updateAccount()
+  },
+  methods: {
+    ...mapActions([
+      'updateAccount'
+    ])
   }
 }
 </script>
