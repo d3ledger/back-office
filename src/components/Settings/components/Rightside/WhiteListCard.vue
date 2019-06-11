@@ -238,14 +238,11 @@ export default {
       return `btc${address}`
     }
   },
+  created () {
+    this.setupWhiteListCard()
+  },
   beforeUpdate () {
-    if (this.walletType === this.WalletTypes.ETH) {
-      this.walletTitle = ETHEREUM_TITLE
-      this.whiteListAddressesAll = this.ethWhiteListAddressesAll
-    } else {
-      this.walletTitle = BITCOIN_TITLE
-      this.whiteListAddressesAll = this.btcWhiteListAddressesAll
-    }
+    this.setupWhiteListCard()
   },
   methods: {
     ...mapActions([
@@ -321,6 +318,16 @@ export default {
       if (this.$refs.newWhiteAddressForm) {
         this.$v.$reset()
         this.$refs.newWhiteAddressForm.resetFields()
+      }
+    },
+
+    setupWhiteListCard () {
+      if (this.walletType === this.WalletTypes.ETH) {
+        this.walletTitle = ETHEREUM_TITLE
+        this.whiteListAddressesAll = this.ethWhiteListAddressesAll
+      } else {
+        this.walletTitle = BITCOIN_TITLE
+        this.whiteListAddressesAll = this.btcWhiteListAddressesAll
       }
     }
   }
