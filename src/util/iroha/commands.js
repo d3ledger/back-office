@@ -99,7 +99,8 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   const batch = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
 
   return sendTransactions(batch, txClient, timeoutLimit, [
-    'REJECTED'
+    'REJECTED',
+    'STATEFUL_VALIDATION_FAILED'
   ])
 }
 
