@@ -252,9 +252,18 @@ export default {
       this.$v.whitelistForm.$touch()
       if (this.$v.whitelistForm.$invalid) return
 
+      const oldAddresses = this.whiteListAddressesAll
+        .map(item => item[0])
+
+      if (oldAddresses.includes(this.whitelistForm.address)) {
+        this.$message.error(
+          `This address already in ${this.walletTitle.toLowerCase()} white list`
+        )
+        return
+      }
+
       const whitelist = [
-        ...this.whiteListAddressesAll
-          .map(item => item[0]),
+        ...oldAddresses,
         this.whitelistForm.address
       ]
 
