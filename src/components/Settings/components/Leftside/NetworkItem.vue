@@ -108,6 +108,9 @@ export default {
         .catch((err) => {
           this.$_showRegistrationError(err.message, err.response)
         })
+        .finally(() => {
+          this.isRegistering = false
+        })
     }
   }
 }
