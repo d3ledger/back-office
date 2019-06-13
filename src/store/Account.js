@@ -65,7 +65,8 @@ const types = flow(
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
-  'GET_CUSTOM_ASSETS'
+  'GET_CUSTOM_ASSETS',
+  'ADD_NETWORK'
 ])
 
 function initialState () {
@@ -318,8 +319,9 @@ const getters = {
     }
 
     return getters.ethWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 < Date.now())
-      .map(item => item[0])
+      .filter(([address, _]) => address.length)
+      .filter(([_, time]) => parseInt(time) * 1000 < Date.now())
+      .map(([address, _]) => address)
   },
 
   ethWhiteListAddressesAll (state) {
@@ -334,8 +336,9 @@ const getters = {
 
   btcWhiteListAddresses (state, getters) {
     return getters.btcWhiteListAddressesAll
-      .filter(item => parseInt(item[1]) * 1000 < Date.now())
-      .map(item => item[0])
+      .filter(([address, _]) => address.length)
+      .filter(([_, time]) => parseInt(time) * 1000 < Date.now())
+      .map(([address, _]) => address)
   },
 
   btcWhiteListAddressesAll (state) {
@@ -455,9 +458,9 @@ const mutations = {
   [types.UPDATE_ACCOUNT_REQUEST] (state) {},
 
   [types.UPDATE_ACCOUNT_SUCCESS] (state, { account }) {
-    state.accountId = account.accountId
-    state.accountInfo = JSON.parse(account.jsonData)
-    state.accountQuorum = account.quorum
+    Vue.set(state, 'accountId', account.accountId)
+    Vue.set(state, 'accountInfo', JSON.parse(account.jsonData))
+    Vue.set(state, 'accountQuorum', account.quorum)
   },
 
   [types.UPDATE_ACCOUNT_FAILURE] (state, err) {
@@ -683,22 +686,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SET_ETH_WHITELIST_REQUEST] (state) {},
-
-  [types.SET_ETH_WHITELIST_SUCCESS] (state) { },
-
-  [types.SET_ETH_WHITELIST_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
-  [types.SET_BTC_WHITELIST_REQUEST] (state) {},
-
-  [types.SET_BTC_WHITELIST_SUCCESS] (state) { },
-
-  [types.SET_BTC_WHITELIST_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
   [types.SET_WHITELIST_REQUEST] (state) {},
 
   [types.SET_WHITELIST_SUCCESS] (state) {},
@@ -713,7 +700,11 @@ const mutations = {
   },
   [types.GET_CUSTOM_ASSETS_FAILURE] (state, err) {
     handleError(state, err)
-  }
+  },
+
+  [types.ADD_NETWORK_REQUEST] (state) {},
+  [types.ADD_NETWORK_SUCCESS] (state) {},
+  [types.ADD_NETWORK_FAILURE] (state) {}
 }
 
 const actions = {
@@ -745,17 +736,14 @@ const actions = {
       })
   },
 
-  addNetwork ({ commit, state }, { privateKeys }) {
-    commit(types.SIGNUP_REQUEST)
+  addNetwork ({ commit, state }) {
+    commit(types.ADD_NETWORK_REQUEST)
     const username = state.accountId.split('@')[0]
-    const privateKey = privateKeys[0]
-    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
 
-    return notaryUtil.signup(username, [], publicKey)
-      .then(() => commit(types.SIGNUP_SUCCESS, { username, publicKey, privateKey }))
-      .then(() => ({ username, privateKey }))
+    return notaryUtil.signup(username, '')
+      .then(() => commit(types.ADD_NETWORK_SUCCESS))
       .catch(err => {
-        commit(types.SIGNUP_FAILURE, err)
+        commit(types.ADD_NETWORK_FAILURE, err)
         throw err
       })
   },
@@ -995,7 +983,7 @@ const actions = {
       })
   },
 
-  addSignatory ({ commit, state, getters }, privateKeys) {
+  addSignatory ({ commit, dispatch, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
@@ -1004,7 +992,10 @@ const actions = {
       accountId: state.accountId,
       publicKey
     })
-      .then(() => commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(async () => {
+        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS)
+        await dispatch('updateAccount')
+      })
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
         commit(types.ADD_ACCOUNT_SIGNATORY_FAILURE, err)
@@ -1012,13 +1003,16 @@ const actions = {
       })
   },
 
-  removeSignatory ({ commit, state, getters }, { privateKeys, publicKey }) {
+  removeSignatory ({ commit, dispatch, state, getters }, { privateKeys, publicKey }) {
     commit(types.REMOVE_ACCOUNT_SIGNATORY_REQUEST)
     return irohaUtil.removeSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
     })
-      .then(() => commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS))
+      .then(async () => {
+        commit(types.REMOVE_ACCOUNT_SIGNATORY_SUCCESS)
+        await dispatch('updateAccount')
+      })
       .catch(err => {
         commit(types.REMOVE_ACCOUNT_SIGNATORY_FAILURE, err)
         throw err
@@ -1138,13 +1132,12 @@ const actions = {
       // eslint-disable-next-line
       value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
     })
-      .then(() => {
-        dispatch('updateAccount')
-
+      .then(async () => {
         commit(types.SET_WHITELIST_SUCCESS)
+        await dispatch('updateAccount')
       })
       .catch(err => {
-        commit(types.SET_WHITELIST_FAILURE)
+        commit(types.SET_WHITELIST_FAILURE, err)
         throw err
       })
   },
