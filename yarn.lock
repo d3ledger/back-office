@@ -6389,10 +6389,10 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@0.6.18:
-  version "0.6.18"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.18.tgz#fccab8deedf32876a902dcddc5124600c91afc03"
-  integrity sha512-ykN3NHZlKSLWWZvAJ3AJGfWR2Gj1NTj/D83WwVpv4NocXSYVJXK527IqIRDQW/4f7KDvXj/dVCE/KRTYaCKeSg==
+iroha-helpers@0.6.18-beta.0:
+  version "0.6.18-beta.0"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.18-beta.0.tgz#8302f28a621b8459a2346774fd531d498ee18612"
+  integrity sha512-c0apBjNZgWzWkgxQsMzYC7MtyFboX5yzFSEHEXXGjrtWHvjqfTV0ORWa642mlr1WbAvUUuht4NOJ9czqC8itew==
   dependencies:
     "@improbable-eng/grpc-web" "^0.9.1"
     babel-preset-minify "^0.5.0"
