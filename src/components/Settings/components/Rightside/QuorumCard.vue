@@ -110,7 +110,7 @@ export default {
           this.quorumUpdating = true
           return this.editAccountQuorum({
             privateKeys,
-            quorum: this.quorumForm.amount
+            quorum: this.quorumForm.amount * 2
           })
             .then(() => {
               this.$message.success('Quorum successfully updated')
