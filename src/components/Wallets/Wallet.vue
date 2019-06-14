@@ -414,12 +414,20 @@
             class="el-form-item__error"
           >{{ _showError($v.withdrawForm.amount) }}</span>
         </el-form-item>
-        <span class="form-item-text">
-          Available balance:
-          <span class="form-item-text-amount">
-            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
-          </span>
-        </span>
+        <div>
+          <div class="form-item-text">
+            Available balance:
+            <span class="form-item-text-amount">
+              {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+          <div class="form-item-text">
+            Withdrawal fee:
+            <span class="form-item-text-amount">
+              {{ withdrawForm.amount * currentWithdrawalFee | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+        </div>
         <el-form-item
           label="Address"
           prop="wallet"
@@ -514,12 +522,20 @@
             class="el-form-item__error"
           >{{ _showError($v.transferForm.amount) }}</span>
         </el-form-item>
-        <span class="form-item-text">
-          Available balance:
-          <span class="form-item-text-amount">
-            {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
-          </span>
-        </span>
+        <div>
+          <div class="form-item-text">
+            Available balance:
+            <span class="form-item-text-amount">
+              {{ wallet.amount | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+          <div class="form-item-text">
+            Transfer fee:
+            <span class="form-item-text-amount">
+              {{ transferForm.amount * currentTransferFee | formatPrecision }} {{ wallet.asset }}
+            </span>
+          </div>
+        </div>
         <el-form-item
           label="Counterparty"
           prop="to"
@@ -590,6 +606,7 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
+import { FeeTypes } from '@/data/consts'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -675,7 +692,9 @@ export default {
       'getTransactionsByAssetId',
       'accountQuorum',
       'wallets',
-      'getPaginationMetaByAssetId'
+      'getPaginationMetaByAssetId',
+      'transferFee',
+      'withdrawalFee'
     ]),
 
     wallet () {
@@ -737,6 +756,14 @@ export default {
 
     whiteListAddresses () {
       return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWhiteListAddresses : this.ethWhiteListAddresses
+    },
+
+    currentTransferFee () {
+      return this.transferFee[this.wallet.assetId] ? this.transferFee[this.wallet.assetId].feeFraction : 0
+    },
+
+    currentWithdrawalFee () {
+      return this.withdrawalFee[this.wallet.assetId] ? this.withdrawalFee[this.wallet.assetId].feeFraction : 0
     }
   },
 
@@ -747,6 +774,7 @@ export default {
   created () {
     if (this.wallet.assetId) {
       this.fetchWallet()
+      this.getFullBillingData()
     }
   },
 
@@ -758,7 +786,8 @@ export default {
       'getAccountAssetTransactions',
       'getAccountAssetTransactionsNextPage',
       'getCryptoFullData',
-      'transferAsset'
+      'transferAsset',
+      'getFullBillingData'
     ]),
 
     fetchWallet () {
@@ -774,7 +803,8 @@ export default {
     updateMarketCard () {
       return this.getCryptoFullData({
         filter: this.selectedMarketPeriod,
-        asset: this.wallet.asset
+        asset: this.wallet.asset,
+        billingId: this.wallet.billingId
       })
     },
 
@@ -788,12 +818,14 @@ export default {
           this.isSending = true
           const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
-          return this.transferAsset({
+          return this.transferAssetWithFee({
             privateKeys,
             assetId: this.wallet.assetId,
             to: notaryAccount,
             description: this.withdrawForm.wallet,
-            amount: this.withdrawForm.amount.toString()
+            amount: this.withdrawForm.amount.toString(),
+            fee: this.currentWithdrawalFee,
+            feeType: FeeTypes.WITHDRAWAL
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
@@ -829,7 +861,9 @@ export default {
             assetId: this.wallet.assetId,
             to: this.transferForm.to,
             description: this.transferForm.description,
-            amount: this.transferForm.amount
+            amount: this.transferForm.amount,
+            fee: this.currentTransferFee,
+            feeType: FeeTypes.TRANSFER
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum

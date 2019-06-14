@@ -76,6 +76,11 @@ const defaultRouter = new Router({
           component: lazyComponent('Explorer/ExplorerPage')
         },
         {
+          path: 'fee',
+          name: 'fee',
+          component: lazyComponent('Fee/FeePage')
+        },
+        {
           path: 'settings',
           name: 'settings',
           component: lazyComponent('Settings/SettingsPage')

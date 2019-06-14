@@ -8,7 +8,15 @@ export const WalletTypes = Object.freeze({
 })
 
 export const SearchTypes = Object.freeze({
-  BLOCK_TYPE: 'Block',
-  TRANSACTION_TYPE: 'Transaction',
-  ACCOUNT_TYPE: 'Account'
+  BLOCK: 'Block',
+  TRANSACTION: 'Transaction',
+  ACCOUNT: 'Account'
+})
+
+export const FeeTypes = Object.freeze({
+  TRANSFER: 'transfer_billing',
+  CUSTODY: 'custody_billing',
+  ACCOUNT_CREATION: 'account_creation_billing',
+  EXCHANGE: 'exchange_billing',
+  WITHDRAWAL: 'withdrawal_billing'
 })

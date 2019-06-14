@@ -12,7 +12,7 @@
               <span>Fee setting</span>
             </div>
             <el-table
-              :data="availableAssets.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+              :data="availableAssets"
               style="width: 100%"
             >
               <el-table-column
@@ -24,7 +24,7 @@
                 label="Transfer fee"
               >
                 <template slot-scope="scope">
-                  {{ transferFee[scope.row.feeId] || 0 }}
+                  {{ transferFee[scope.row.assetId] ? transferFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.TRANSFER)"
@@ -38,7 +38,7 @@
                 label="Exchange fee"
               >
                 <template slot-scope="scope">
-                  {{ exchangeFee[scope.row.feeId] || 0 }}
+                  {{ exchangeFee[scope.row.assetId] ? exchangeFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.EXCHANGE)"
@@ -52,7 +52,7 @@
                 label="Withdrawal fee"
               >
                 <template slot-scope="scope">
-                  {{ withdrawalFee[scope.row.feeId] || 0 }}
+                  {{ withdrawalFee[scope.row.assetId] ? withdrawalFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.WITHDRAWAL)"
@@ -66,24 +66,13 @@
                 label="Custody fee"
               >
                 <template slot-scope="scope">
-                  {{ custodyFee[scope.row.feeId] || 0 }}
+                  {{ custodyFee[scope.row.assetId] ? custodyFee[scope.row.assetId].feeFraction : 0 }}
                   <el-button
                     size="mini"
                     @click="handleEdit(scope.row, FeeTypes.CUSTODY)"
                   >
                     Edit
                   </el-button>
-                </template>
-              </el-table-column>
-              <el-table-column
-                align="right"
-              >
-                <template slot="header">
-                  <el-input
-                    v-model="search"
-                    size="mini"
-                    placeholder="Type to search"
-                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -138,10 +127,9 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { FeeTypes } from '@/data/consts'
-// import { required } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'ExplorerPage',
+  name: 'FeePage',
   mixins: [
     dateFormat,
     currencySymbol,
@@ -149,7 +137,6 @@ export default {
   ],
   data () {
     return {
-      search: '',
       setFeeFormVisible: false,
       feeAmount: 0,
       assetToSet: null,
@@ -169,24 +156,19 @@ export default {
     ])
   },
 
-  beforeMount () {
-    console.log(FeeTypes)
-    this.getFee(FeeTypes.TRANSFER)
-    this.getFee(FeeTypes.CUSTODY)
-    this.getFee(FeeTypes.ACCOUNT_CREATION)
-    this.getFee(FeeTypes.EXCHANGE)
-    this.getFee(FeeTypes.WITHDRAWAL)
+  created () {
+    this.getFullBillingData()
   },
 
   methods: {
     ...mapActions([
       'setFee',
-      'getFee',
+      'getFullBillingData',
       'openApprovalDialog'
     ]),
 
     handleEdit (asset, feeType) {
-      this.feeAmount = this.transferFee[asset.feeId] || 0
+      this.feeAmount = this.transferFee[asset.assetId] || 0
       this.assetToSet = asset
       this.setFeeFormVisible = true
       this.feeType = feeType
@@ -201,12 +183,12 @@ export default {
 
           return this.setFee({
             privateKeys,
-            asset: this.assetToSet.feeId,
-            fee: this.feeAmount,
-            feeType: this.feeType
+            asset: this.assetToSet.billingId,
+            amount: this.feeAmount,
+            type: this.feeType
           })
             .then(() => {
-              this.getFee(this.feeType)
+              this.getFullBillingData()
               this.$message.success('Fee successfully setted')
             })
             .catch((err) => {

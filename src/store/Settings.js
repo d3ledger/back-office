@@ -125,7 +125,7 @@ const actions = {
       totalAmountInterval: 0
     }
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId: getters.accountId,
+      accountId: state.accountId,
       key: `limit_${_assetId}`,
       // Iroha don't allow quotes in strings
       // eslint-disable-next-line
@@ -141,7 +141,7 @@ const actions = {
     commit(types.REMOVE_ASSET_LIMIT_REQUEST)
     const _assetId = limit.assetId.replace('#', '_')
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId: getters.accountId,
+      accountId: state.accountId,
       key: `limit_${_assetId}`,
       value: ''
     })
