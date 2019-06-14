@@ -739,7 +739,7 @@ const mutations = {
   [types.GET_TRANSFER_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_TRANSFER_BILLING_REPORT_SUCCESS] (state, result) {
-    state.transferBillingReport = result.data.transfers.map(item => {
+    state.transferBillingReport = result.transfers.map(item => {
       let data = {}
       data.fromAccount = item.transfer.srcAccountId
       data.toAccount = item.transfer.destAccountId
@@ -757,7 +757,7 @@ const mutations = {
   [types.GET_EXCHANGE_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_EXCHANGE_BILLING_REPORT_SUCCESS] (state, result) {
-    state.exchangeBillingReport = result.data.batches.map(item => {
+    state.exchangeBillingReport = result.batches.map(item => {
       const data = {}
       data.offerAccount = item.transactions[0].creatorId
       data.offerFee = item.transactions[0].commands[0].amount

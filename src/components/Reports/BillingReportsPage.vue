@@ -161,7 +161,9 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getCustodyBillingReport'
+      'getCustodyBillingReport',
+      'getTransferBillingReport',
+      'getExchangeBillingReport'
     ]),
     updateReports () {
       this.updateCustodyReport()
@@ -192,7 +194,7 @@ export default {
       params.from = date[0].getTime()
       params.to = date[1].getTime()
 
-      this.transferBillingReport({ params }).then(() => {})
+      this.getTransferBillingReport({ params }).then(() => {})
     },
     updateExhcangeReport () {
       const { date, ...params } = this.reportForm
@@ -205,7 +207,7 @@ export default {
       params.from = date[0].getTime()
       params.to = date[1].getTime()
 
-      this.exchangeBillingReport({ params }).then(() => {})
+      this.getExchangeBillingReport({ params }).then(() => {})
     }
   }
 }
