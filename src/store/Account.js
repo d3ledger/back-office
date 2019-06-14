@@ -729,7 +729,7 @@ const mutations = {
   [types.GET_CUSTODY_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_CUSTODY_BILLING_REPORT_SUCCESS] (state, result) {
-    state.custodyBillingReport = Object.entries(result.accounts.assetCustody)
+    state.custodyBillingReport = Object.entries(result.accounts[0].assetCustody)
   },
 
   [types.GET_CUSTODY_BILLING_REPORT_FAILURE] (state, err) {
@@ -739,7 +739,15 @@ const mutations = {
   [types.GET_TRANSFER_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_TRANSFER_BILLING_REPORT_SUCCESS] (state, result) {
-    state.transferBillingReport = result
+    state.transferBillingReport = result.data.transfers.map(item => {
+      let data = {}
+      data.fromAccount = item.transfer.srcAccountId
+      data.toAccount = item.transfer.destAccountId
+      data.asset = item.transfer.assetId
+      data.amount = item.transfer.amount
+      data.fee = item.fee.amount
+      return data
+    })
   },
 
   [types.GET_TRANSFER_BILLING_REPORT_FAILURE] (state, err) {
@@ -749,7 +757,18 @@ const mutations = {
   [types.GET_EXCHANGE_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_EXCHANGE_BILLING_REPORT_SUCCESS] (state, result) {
-    state.exchangeBillingReport = result
+    state.exchangeBillingReport = result.data.batches.map(item => {
+      const data = {}
+      data.offerAccount = item.transactions[0].creatorId
+      data.offerFee = item.transactions[0].commands[0].amount
+      data.offerAmount = item.transactions[0].commands[1].amount
+      data.offerAsset = item.transactions[0].commands[1].assetId
+      data.requestAccount = item.transactions[0].commands[1].destAccountId
+      data.requestFee = item.transactions[1].commands[0].amount
+      data.requestAmount = item.transactions[1].commands[1].amount
+      data.requestAsset = item.transactions[1].commands[1].assetId
+      return data
+    })
   },
 
   [types.GET_EXCHANGE_BILLING_REPORT_FAILURE] (state, err) {
@@ -1200,6 +1219,7 @@ const actions = {
 
   getCustodyBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_CUSTODY_BILLING_REPORT_REQUEST)
+    params = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
     return billingReportUtil.getCustodyUserReport(reportServiceUrl.value, params)
       .then(res => commit(types.GET_CUSTODY_BILLING_REPORT_SUCCESS, res))
@@ -1211,6 +1231,7 @@ const actions = {
 
   getTransferBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_TRANSFER_BILLING_REPORT_REQUEST)
+    params = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
     return billingReportUtil.getTransferUserReport(reportServiceUrl.value, params)
       .then(res => commit(types.GET_TRANSFER_BILLING_REPORT_SUCCESS, res))
@@ -1222,6 +1243,7 @@ const actions = {
 
   getExchangeBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_EXCHANGE_BILLING_REPORT_REQUEST)
+    params = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
     return billingReportUtil.getExchangeUserReport(reportServiceUrl.value, params)
       .then(res => commit(types.GET_EXCHANGE_BILLING_REPORT_SUCCESS, res))

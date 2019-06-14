@@ -77,7 +77,9 @@ import {
   Switch,
   Badge,
   Pagination,
-  Checkbox
+  Checkbox,
+  Tabs,
+  TabPane
 } from 'element-ui'
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
@@ -133,6 +135,8 @@ Vue.use(Tooltip)
 Vue.use(Switch)
 Vue.use(Badge)
 Vue.use(Pagination)
+Vue.use(Tabs)
+Vue.use(TabPane)
 Vue.use(Loading.directive)
 Vue.use(Checkbox)
 const MsgBox = MessageBox

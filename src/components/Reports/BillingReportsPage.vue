@@ -31,7 +31,7 @@
                         start-placeholder="Start date"
                         end-placeholder="End date"
                         class="dialog_date"
-                        @change="updateCustodyReport()"
+                        @change="updateReports()"
                       />
                     </el-form-item>
                   </el-col>
@@ -39,21 +39,91 @@
               </el-form>
             </div>
             <el-row>
-              <el-table
-                :data="reportByAsset"
-                class="report_table"
-              >
-                <el-table-column
-                  prop="0"
-                  label="Asset"
-                  min-width="180"
-                />
-                <el-table-column
-                  prop="1"
-                  label="Fee amount"
-                  min-width="180"
-                />
-              </el-table>
+              <el-tabs type="card">
+                <el-tab-pane label="Custody">
+                  <el-table
+                    :data="custodyBillingReport"
+                    class="report_table"
+                  >
+                    <el-table-column
+                      prop="0"
+                      label="Asset"
+                      min-width="180"
+                    />
+                    <el-table-column
+                      prop="1"
+                      label="Fee amount"
+                      min-width="180"
+                    />
+                  </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="Transfer">
+                  <el-table
+                    :data="transferBillingReport"
+                    class="report_table"
+                  >
+                    <el-table-column
+                      prop="fromAccount"
+                      label="Source account"
+                    />
+                    <el-table-column
+                      prop="toAccount"
+                      label="Destination account"
+                    />
+                    <el-table-column
+                      prop="amount"
+                      label="Amount"
+                    />
+                    <el-table-column
+                      prop="fee"
+                      label="Fee amount"
+                    />
+                    <el-table-column
+                      prop="asset"
+                      label="Asset"
+                    />
+                  </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="Exchange">
+                  <el-table
+                    :data="exchangeBillingReport"
+                    class="report_table"
+                  >
+                    <el-table-column
+                      prop="offerAccount"
+                      label="Offeraccount"
+                    />
+                    <el-table-column
+                      prop="offerAmount"
+                      label="Offer amount"
+                    />
+                    <el-table-column
+                      prop="offerFee"
+                      label="Offer fee"
+                    />
+                    <el-table-column
+                      prop="Offer asset"
+                      label="Account"
+                    />
+                    <el-table-column
+                      prop="requestAccount"
+                      label="Request account"
+                    />
+                    <el-table-column
+                      prop="requestAmount"
+                      label="request amount"
+                    />
+                    <el-table-column
+                      prop="requestFee"
+                      label="Request fee"
+                    />
+                    <el-table-column
+                      prop="requestAsset"
+                      label="Request asset"
+                    />
+                  </el-table>
+                </el-tab-pane>
+              </el-tabs>
             </el-row>
           </el-card>
         </el-col>
@@ -93,13 +163,13 @@ export default {
     ...mapActions([
       'getCustodyBillingReport'
     ]),
+    updateReports () {
+      this.updateCustodyReport()
+      this.updateTransferReport()
+      this.updateExhcangeReport()
+    },
     updateCustodyReport () {
       const { date, ...params } = this.reportForm
-
-      if (params.domain.length === 0) {
-        this.$message.error('Please provide correct domain!')
-        return
-      }
 
       if (date.length < 2) {
         this.$message.error('Please select correct date!')
@@ -110,6 +180,32 @@ export default {
       params.to = date[1].getTime()
 
       this.getCustodyBillingReport({ params }).then(() => {})
+    },
+    updateTransferReport () {
+      const { date, ...params } = this.reportForm
+
+      if (date.length < 2) {
+        this.$message.error('Please select correct date!')
+        return
+      }
+
+      params.from = date[0].getTime()
+      params.to = date[1].getTime()
+
+      this.transferBillingReport({ params }).then(() => {})
+    },
+    updateExhcangeReport () {
+      const { date, ...params } = this.reportForm
+
+      if (date.length < 2) {
+        this.$message.error('Please select correct date!')
+        return
+      }
+
+      params.from = date[0].getTime()
+      params.to = date[1].getTime()
+
+      this.exchangeBillingReport({ params }).then(() => {})
     }
   }
 }

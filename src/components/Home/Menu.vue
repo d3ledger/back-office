@@ -69,6 +69,16 @@
           class="title-left"
         >Reports</span>
       </el-menu-item>
+      <el-menu-item index="/billing-reports">
+        <SvgIcon
+          icon-name="Report"
+          icon-class="menu-icon"
+        ><ReportIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Billing</span>
+      </el-menu-item>
       <el-menu-item
         v-if="quorum > 1"
         index="/transactions"
