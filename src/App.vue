@@ -371,4 +371,8 @@ button.el-dialog__headerbtn {
 .circular circle {
   stroke: #f56c6c;
 }
+
+.approval_form-desc .key_representation {
+  word-break: break-all;
+}
 </style>
