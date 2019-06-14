@@ -13,6 +13,8 @@ import last from 'lodash/fp/last'
 import nth from 'lodash/fp/nth'
 import cryptoCompareUtil from '@util/crypto-util'
 
+const WALLETS_JSON = require('@/data/wallets.json')
+
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
   concat([
@@ -277,9 +279,22 @@ const actions = {
     commit(types.SELECT_PORTFOLIO_FILTER, filter)
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
 
-    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets, getters.settingsView, { filter })
+    /**
+     * expectedAssets - It is an asset list of assets that works correctly with API
+     * correctWalletsForApi - It is an wallets list with good assets
+     */
+    const expectedAssets = [
+      ...WALLETS_JSON.wallets
+        .filter(w => w.asset !== 'XOR')
+        .map(w => w.asset),
+      'ETH',
+      'BTC'
+    ]
+    const correctWalletsForApi = getters.wallets.filter(w => expectedAssets.includes(w.asset))
+
+    await cryptoCompareUtil.loadHistoryByLabels(correctWalletsForApi, getters.settingsView, { filter })
       .then(history => {
-        commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
+        commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, correctWalletsForApi))
         commit(types.GET_PORTFOLIO_FULL_PRICE)
       })
       .catch(err => {
