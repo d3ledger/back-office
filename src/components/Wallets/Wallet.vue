@@ -633,11 +633,17 @@ export default {
     errorHandler
   ],
   validations () {
+    const withdrawalWallet = { ...this.wallet }
+    withdrawalWallet.amount *= 1 + this.currentWithdrawalFee
+
+    const transferWallet = { ...this.wallet }
+    transferWallet.amount *= 1 + this.currentTransferFee
+
     return {
       withdrawForm: {
         amount: {
           required,
-          _amount: _amount(this.wallet, this.wallet.assetId)
+          _amount: _amount(withdrawalWallet, this.wallet.assetId)
         },
         wallet: {
           required,
@@ -652,7 +658,7 @@ export default {
         },
         amount: {
           required,
-          _amount: _amount(this.wallet, this.wallet.assetId)
+          _amount: _amount(transferWallet, this.wallet.assetId)
         },
         description: {
           maxLength: maxLength(64)
