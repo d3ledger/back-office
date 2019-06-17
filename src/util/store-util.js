@@ -114,23 +114,26 @@ export function getSettlementsFrom (transactions, accountId) {
           description,
           assetId
         } = c.transferAsset
-        if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) return
+        if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
+          commands[txIndex - 1].fee = amount
+        } else {
+          const tx = {
+            txId: txIndex,
+            from: srcAccountId,
+            to: destAccountId,
+            amount: amount,
+            fee: 0,
+            date: createdTime,
+            message: description,
+            signatures,
+            assetId,
+            batch
+          }
 
-        const tx = {
-          txId: txIndex,
-          from: srcAccountId,
-          to: destAccountId,
-          amount: amount,
-          date: createdTime,
-          message: description,
-          signatures,
-          assetId,
-          batch
+          txIndex += 1
+
+          commands.push(tx)
         }
-
-        txIndex += 1
-
-        commands.push(tx)
       })
       if (commands.length > 1) return
       return commands[0]
