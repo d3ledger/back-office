@@ -633,11 +633,8 @@ export default {
     errorHandler
   ],
   validations () {
-    const withdrawalWallet = { ...this.wallet }
-    withdrawalWallet.amount *= 1 + this.currentWithdrawalFee
-
-    const transferWallet = { ...this.wallet }
-    transferWallet.amount *= 1 + this.currentTransferFee
+    const withdrawalWallet = { ...this.wallet, fee: this.currentWithdrawalFee }
+    const transferWallet = { ...this.wallet, fee: this.currentTransferFee }
 
     return {
       withdrawForm: {

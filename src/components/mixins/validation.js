@@ -100,7 +100,7 @@ export const _amount = (wallet) => (amount) => {
   else if (!/^(?![0.]+$)\d+(\.\d+)?$/.test(amount)) return false
   else if (amount !== null && gt(getPrecision(amount))(wallet.precision)) return false
   else if (amount !== null && amount.length === 0) return false
-  else if (gt(Number(amount))(Number(wallet.amount))) return false
+  else if (gt(Number(amount))(Number(wallet.amount) - (Number(wallet.fee) * Number(amount)))) return false
   else if (lte(Number(amount))(0)) return false
   return true
 }
