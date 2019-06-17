@@ -207,7 +207,7 @@ export default {
   validations () {
     const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
     const { amount, precision } = wallet || { amount: 0, precision: 0 }
-    const offerAmount = { amount: amount * (1 + this.currentOfferFee), precision }
+    const offerAmount = { amount: amount, fee: this.currentOfferFee, precision }
     const requestAmount = { amount: Number.MAX_SAFE_INTEGER, precision }
     return {
       exchangeForm: {
