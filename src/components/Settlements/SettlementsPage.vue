@@ -4,7 +4,6 @@
 -->
 <template>
   <el-container
-    v-if="wallets.length"
     class="column-fullheight"
   >
     <el-header
@@ -56,9 +55,6 @@
         </el-col>
       </el-row>
     </el-main>
-  </el-container>
-  <el-container v-else>
-    <no-assets-card />
   </el-container>
 </template>
 

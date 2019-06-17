@@ -105,6 +105,7 @@ export function getSettlementsFrom (transactions, accountId) {
       const { commandsList, createdTime } = tr.payload.reducedPayload
       const batch = tr.payload.batch
       const signatures = tr.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
+      let fee = 0
       commandsList.forEach(c => {
         if (!c.transferAsset) return
         const {
@@ -115,21 +116,21 @@ export function getSettlementsFrom (transactions, accountId) {
           assetId
         } = c.transferAsset
         if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
-          commands[txIndex - 1].fee = amount
+          fee = amount
         } else {
           const tx = {
             txId: txIndex,
             from: srcAccountId,
             to: destAccountId,
             amount: amount,
-            fee: 0,
             date: createdTime,
             message: description,
             signatures,
             assetId,
+            fee,
             batch
           }
-
+          fee = 0
           txIndex += 1
 
           commands.push(tx)
