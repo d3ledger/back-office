@@ -194,7 +194,8 @@ const actions = {
   closeApprovalDialog ({ commit }, privateKeys) {
     commit(types.APPROVAL_DIALOG_CLOSE, privateKeys)
   },
-  openExchangeDialog ({ commit }, offerAsset) {
+  openExchangeDialog ({ commit, dispatch }, offerAsset) {
+    dispatch('getFullBillingData')
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
   },
   closeExchangeDialog ({ commit }) {

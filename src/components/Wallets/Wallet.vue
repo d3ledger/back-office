@@ -53,7 +53,7 @@
                     v-if="accountExist"
                     role="button"
                     class="card_actions-button button"
-                    @click="withdrawFormVisible = true"
+                    @click="withdrawFormVisible = true; getFullBillingData()"
                   >
                     <fa-icon
                       class="card_actions-button-text"
@@ -67,7 +67,7 @@
                   <div
                     role="button"
                     class="card_actions-button button"
-                    @click="transferFormVisible = true"
+                    @click="transferFormVisible = true; getFullBillingData()"
                   >
                     <fa-icon
                       class="card_actions-button-text"
