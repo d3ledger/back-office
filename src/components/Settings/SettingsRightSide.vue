@@ -34,6 +34,10 @@
       :update-active-tab="updateActiveTab"
       :open-approval-dialog="openApprovalDialog"
     />
+    <CustomTxCard
+      :active-tab="activeTab"
+      :update-active-tab="updateActiveTab"
+    />
   </el-col>
 </template>
 
@@ -43,13 +47,16 @@ import { lazyComponent } from '@router'
 
 import { WalletTypes } from '@/data/consts'
 
+const settingsRightSidePath = 'Settings/components/Rightside'
+
 export default {
   name: 'SettingsRightSide',
   components: {
-    WalletLimitsCard: lazyComponent('Settings/components/Rightside/WalletLimitsCard'),
-    QuorumCard: lazyComponent('Settings/components/Rightside/QuorumCard'),
-    PublicKeysCard: lazyComponent('Settings/components/Rightside/PublicKeysCard'),
-    WhiteListCard: lazyComponent('Settings/components/Rightside/WhiteListCard')
+    WalletLimitsCard: lazyComponent(`${settingsRightSidePath}/WalletLimitsCard`),
+    QuorumCard: lazyComponent(`${settingsRightSidePath}/QuorumCard`),
+    PublicKeysCard: lazyComponent(`${settingsRightSidePath}/PublicKeysCard`),
+    WhiteListCard: lazyComponent(`${settingsRightSidePath}/WhiteListCard`),
+    CustomTxCard: lazyComponent(`${settingsRightSidePath}/CustomTxCard`)
   },
   data () {
     return {
