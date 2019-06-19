@@ -34,6 +34,7 @@
             class="transaction-uploader"
             action=""
             list-type="picture"
+            accept=".bin"
           >
             <i class="el-icon-plus image-uploader-icon"/>
             <div class="message">Drop transaction here or <b>click to upload</b></div>
@@ -75,7 +76,15 @@ export default {
   methods: {
     ...mapActions([]),
     onTransactionChosen (file, fileList) {
-      console.log(file)
+      const reader = new FileReader()
+      let tx
+
+      reader.onload = (ev) => {
+        tx = (ev.target.result || '').trim()
+        console.log(tx)
+      }
+
+      reader.readAsText(file.raw)
     }
   }
 }
