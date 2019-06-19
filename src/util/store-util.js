@@ -26,6 +26,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
     const batch = t.payload.batch
     const { commandsList, createdTime } = t.payload.reducedPayload
     const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
+    let fee = 0
 
     commandsList.forEach(c => {
       if (!c.transferAsset) return
@@ -38,28 +39,36 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         assetId
       } = c.transferAsset
 
-      const tx = {
-        from: match(srcAccountId)
-          .on(x => x === accountId, () => 'you')
-          .on(x => x === notaryAccount, () => 'notary')
-          .otherwise(x => x),
-        to: match(destAccountId)
-          .on(x => x === accountId, () => 'you')
-          .on(x => x === notaryAccount, () => 'notary')
-          .otherwise(x => x),
-        amount: amount,
-        date: createdTime,
-        message: description,
-        batch,
-        signatures,
-        id: idx,
-        assetId
-      }
-      const settlement = findSettlementByBatch(tx, settlements)
-      if (settlement) {
-        transformed.push(settlement)
+      if (destAccountId === `${FeeTypes.TRANSFER}@d3`) {
+        if (srcAccountId === accountId) {
+          fee = amount
+        }
       } else {
-        transformed.push(tx)
+        const tx = {
+          from: match(srcAccountId)
+            .on(x => x === accountId, () => 'you')
+            .on(x => x === notaryAccount, () => 'notary')
+            .otherwise(x => x),
+          to: match(destAccountId)
+            .on(x => x === accountId, () => 'you')
+            .on(x => x === notaryAccount, () => 'notary')
+            .otherwise(x => x),
+          amount: amount,
+          date: createdTime,
+          message: description,
+          batch,
+          signatures,
+          id: idx,
+          assetId,
+          fee
+        }
+        fee = 0
+        const settlement = findSettlementByBatch(tx, settlements)
+        if (settlement) {
+          transformed.push(settlement)
+        } else {
+          transformed.push(tx)
+        }
       }
     })
   })

@@ -241,6 +241,10 @@
                           <span class="transaction_details-title">Amount incoming:</span>
                           {{ scope.row.to.amount | formatPrecision }} {{ assetName(scope.row.to.assetId) }}
                         </p>
+                        <p v-if="scope.row.from.fee">
+                          <span class="transaction_details-title">Fee:</span>
+                          - {{ scope.row.from.fee }} {{ assetName(scope.row.from.assetId) }}
+                        </p>
                         <p>
                           <span class="transaction_details-title">Address:</span>
                           {{ scope.row.from.to }}
@@ -266,7 +270,7 @@
                         </p>
                         <p>
                           <span class="transaction_details-title">Amount:</span>
-                          {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }}
+                          {{ scope.row.from === 'you' ? '−' : '+' }} {{ scope.row.amount | formatPrecision }} {{ assetName(scope.row.assetId) }}
                         </p>
                         <p>
                           <span class="transaction_details-title">Address:</span>
@@ -276,6 +280,10 @@
                           <span v-else>
                             {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                           </span>
+                        </p>
+                        <p v-if="scope.row.fee">
+                          <span class="transaction_details-title">Fee:</span>
+                          - {{ scope.row.fee }} {{ assetName(scope.row.assetId) }}
                         </p>
                         <p v-if="scope.row.message.length && scope.row.to !== 'notary' && scope.row.from !== 'notary'">
                           <span class="transaction_details-title">Desciption:</span>
