@@ -1,10 +1,14 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import Vue from 'vue'
 import map from 'lodash/fp/map'
 import flatMap from 'lodash/fp/flatMap'
 import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/crypto-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -107,7 +111,7 @@ const mutations = {
 
     // process volumeData
     const volumeCrypto = volumeData.Data
-      .filter(({ volume }) => Number.isFinite(volume))
+      .filter(({ volume }) => Number.isFinite(volume) && volume < Number.MAX_SAFE_INTEGER)
       .reduce((sum, { volume }) => sum + volume, 0)
     const volumeFiat = priceFiat * volumeCrypto
 
@@ -134,7 +138,7 @@ const mutations = {
   },
 
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
-    Vue.set(state.cryptoInfo, 'isLoading', false)
+    Vue.set(state, 'cryptoInfo', initialState().cryptoInfo)
     handleError(state, err)
   }
 }
@@ -148,7 +152,7 @@ const actions = {
     return Promise.all([
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.fiat }, currencies),
       cryptoCompareUtil.loadPriceByFilter({ filter, crypto: asset, to: currencies.crypto }, currencies),
-      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset }),
+      cryptoCompareUtil.loadVolumeByFilter({ filter, crypto: asset, to: currencies.fiat }),
       cryptoCompareUtil.loadFullData(asset, currencies)
     ])
       .then(([historicalDataFiat, historicalDataCrypto, volumeData, priceData]) => {

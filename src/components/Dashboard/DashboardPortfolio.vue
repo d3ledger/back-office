@@ -1,25 +1,44 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <el-row class="portfolio_left">
-    <el-card class="card" :body-style="{ padding: 0 }">
-      <el-col class="portfolio_card-padding" :span="9">
+    <el-card
+      :body-style="{ padding: 0 }"
+      class="card"
+    >
+      <el-col
+        :span="9"
+        class="portfolio_card-padding"
+      >
         <div class="portfolio_header">
           <p class="portfolio_header-title">My Portfolio</p>
         </div>
         <div class="portfolio_current-price">
-          <el-tooltip :content="`current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`" placement="top-start">
-            <p class="portfolio_current-price_value" justify="center">{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+          <el-tooltip
+            :content="`Current price: ${formatNumberLongMethod(price.value)} ${currencySymbol}`"
+            placement="top-start"
+          >
+            <p
+              class="portfolio_current-price_value"
+              justify="center"
+            >{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
-          <el-tooltip :content="`difference from the previous day: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`" placement="top-start">
+          <el-tooltip
+            :content="`${getDiffMessage}: ${formatNumberLongMethod(price.diff)} ${currencySymbol}`"
+            placement="top-start"
+          >
             <p :class="classTrend(price.diff)">
-              {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{price.percent | formatPercent }})
+              {{ price.diff | formatNumberShort }} {{ currencySymbol }} ({{ price.percent | formatPercent }})
             </p>
           </el-tooltip>
         </div>
       </el-col>
       <el-col :span="1">
-        <div class="vertical_devider"></div>
+        <div class="vertical_devider"/>
       </el-col>
       <el-col :span="15">
         <div class="chart_header">
@@ -35,27 +54,33 @@
             </div>
           </div>
         </div>
-        <div class="chart_header-divider"></div>
-        <line-chart-portfolio :data="chartData" :filter="portfolioFilter" v-loading="portfolioHistoryIsLoading" />
+        <div class="chart_header-divider"/>
+        <line-chart-portfolio
+          v-loading="portfolioHistoryIsLoading"
+          :data="chartData"
+          :filter="portfolioFilter"
+        />
       </el-col>
     </el-card>
   </el-row>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
+import dateFormat from '@/components/mixins/dateFormat'
 
 export default {
-  name: 'dashboard-portfolio',
+  name: 'DashboardPortfolio',
   components: {
     LineChartPortfolio: lazyComponent('Dashboard/Charts/LineChartPortfolio')
   },
   mixins: [
     numberFormat,
-    currencySymbol
+    currencySymbol,
+    dateFormat
   ],
   props: {
     price: {
@@ -77,9 +102,24 @@ export default {
     ...mapGetters([
       'portfolioFilter',
       'portfolioHistoryIsLoading'
-    ])
+    ]),
+    getDiffMessage () {
+      switch (this.portfolioFilter) {
+        case '1H': return 'Last minute change'
+        case '1D': return 'Last hour change'
+        case '1W':
+        case '1M':
+        case '1Y': return 'Last day change'
+        default: return 'Difference from the last period'
+      }
+    }
+
   },
   methods: {
+    ...mapActions([
+      'getPortfolioHistory'
+    ]),
+
     classTrend (value) {
       let className = 'neutraltrend'
       if (value > 0) className = 'uptrend'
@@ -88,7 +128,7 @@ export default {
     },
 
     selectLabel (label) {
-      this.$store.dispatch('getPortfolioHistory', { filter: label })
+      this.getPortfolioHistory({ filter: label })
     },
 
     formatNumberLongMethod (value) {
@@ -100,7 +140,7 @@ export default {
 
 <style scoped>
 .portfolio_left {
-  margin-right: 20px;
+  margin-right: 0.5rem;
 }
 .card {
   height: 12rem;

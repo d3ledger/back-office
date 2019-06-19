@@ -105,13 +105,14 @@ describe('Account store', () => {
         accountInfo: randomObject(),
         accountLimits: [randomObject()],
         accountQuorum: randomAmountRng(),
+        accountRoles: [randomObject()],
         accountSignatories: [randomObject()],
         assetTransactions: randomObject(),
         rawUnsignedTransactions: [randomObject()],
         rawTransactions: [randomObject()],
-        rawPendingTransactions: [randomObject()],
         assets: randomObject(),
-        connectionError: new Error()
+        connectionError: new Error(),
+        customAssets: randomObject()
       }
 
       const expectedState = {
@@ -121,15 +122,16 @@ describe('Account store', () => {
         accountInfo: {},
         accountLimits: [],
         accountQuorum: 0,
+        accountRoles: [],
         accountSignatories: [],
         assetTransactions: {},
         rawUnsignedTransactions: [],
         rawTransactions: [],
-        rawPendingTransactions: null,
         assets: [],
         connectionError: null,
         acceptSettlementLoading: false,
-        rejectSettlementLoading: false
+        rejectSettlementLoading: false,
+        customAssets: {}
       }
 
       mutations[types.RESET](state)
@@ -368,7 +370,7 @@ describe('Account store', () => {
           amount: randomAmount()
         }
 
-        actions.transferAsset({ commit, state }, params)
+        actions.transferAsset({ commit, state, getters }, params)
           .then(() => {
             expect(commit.args).to.deep.equal([
               [types.TRANSFER_ASSET_REQUEST],

@@ -1,15 +1,19 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import axios from 'axios'
-import { ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
 
-let axiosNotary = axios.create({
-  baseURL: ETH_NOTARY_URL
+const PROTOCOL = location.protocol
+
+const axiosNotaryRegistration = axios.create({
+  baseURL: ''
 })
 
-const signup = axios => (name, whitelist, publicKey) => {
+const signup = axios => (name, publicKey) => {
   // Unfortunately, server awaits for formData, and it is the only way to provide it.
   let postData = new FormData()
   postData.append('name', name)
-  postData.append('whitelist', whitelist)
   postData.append('pubkey', publicKey)
 
   return axios
@@ -17,22 +21,19 @@ const signup = axios => (name, whitelist, publicKey) => {
     .then(({ data }) => ({ response: data }))
 }
 
-const getFreeEthRelaysNumber = () => {
-  return axios
-    .get(`${ETH_NOTARY_URL}/free-addresses/number`)
-    .then(({ data }) => data)
-}
-
-const getFreeBtcRelaysNumber = () => {
-  return axios
-    .get(`${BTC_NOTARY_URL}/free-addresses/number`)
+const getFreeRelaysNumber = (url) => {
+  return axios({
+    url: '/free-addresses/number',
+    baseURL: `${PROTOCOL}//${url}`
+  })
     .then(({ data }) => data)
 }
 
 export default {
-  get baseURL () { return axiosNotary.defaults.baseURL },
-  set baseURL (baseURL) { axiosNotary.defaults.baseURL = baseURL },
-  signup: signup(axiosNotary),
-  getFreeEthRelaysNumber,
-  getFreeBtcRelaysNumber
+  get baseURL () { return axiosNotaryRegistration.defaults.baseURL },
+  set baseURL (baseURL) {
+    axiosNotaryRegistration.defaults.baseURL = `${PROTOCOL}//${baseURL}`
+  },
+  signup: signup(axiosNotaryRegistration),
+  getFreeRelaysNumber
 }

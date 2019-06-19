@@ -1,7 +1,11 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <el-table
-    :data="settlements"
     ref="table"
+    :data="settlements"
     class="settlements_table"
     @row-dblclick="(row) => this.$refs.table.toggleRowExpansion(row)"
   >
@@ -10,7 +14,10 @@
         <div class="transaction_details">
           <el-row>
             <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
-            <el-col :span="6" class="transaction_details-amount">
+            <el-col
+              :span="6"
+              class="transaction_details-amount"
+            >
               <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
               <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
             </el-col>
@@ -20,27 +27,35 @@
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Amount" min-width="200">
-        <template slot-scope="scope">
-          {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
-          {{ '→' }}
-          {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
-        </template>
+    <el-table-column
+      label="Amount"
+      min-width="200"
+    >
+      <template slot-scope="scope">
+        {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
+        {{ '→' }}
+        {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
+      </template>
     </el-table-column>
-    <el-table-column label="Counterparty" min-width="120">
+    <el-table-column
+      label="Counterparty"
+      min-width="120"
+    >
       <template slot-scope="scope">
         <div>
           {{ scope.row.from.to }}
         </div>
       </template>
     </el-table-column>
-    <el-table-column label="Date" width="120">
+    <el-table-column
+      label="Date"
+      width="120"
+    >
       <template slot-scope="scope">
         {{ formatDate(scope.row.from.date) }}
       </template>
     </el-table-column>
-    <el-table-column width="200">
-    </el-table-column>
+    <el-table-column width="200"/>
   </el-table>
 </template>
 

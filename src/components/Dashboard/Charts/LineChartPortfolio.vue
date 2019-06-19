@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div class="echarts">
     <ECharts
@@ -16,7 +20,12 @@ import numberFormat from '@/components/mixins/numberFormat'
 import debounce from 'lodash/fp/debounce'
 
 export default {
-  name: 'line-chart-portfolio',
+  name: 'LineChartPortfolio',
+  mixins: [
+    currencySymbol,
+    dateFormat,
+    numberFormat
+  ],
   props: {
     data: {
       type: Array,
@@ -27,11 +36,6 @@ export default {
       required: true
     }
   },
-  mixins: [
-    currencySymbol,
-    dateFormat,
-    numberFormat
-  ],
   data () {
     const fontFamily = "'IBM Plex Sans', sans-serif"
 

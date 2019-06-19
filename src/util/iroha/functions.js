@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { cryptoHelper } from 'iroha-helpers'
 import { getAccount } from './queries'
 import { cache } from './util'
@@ -22,7 +26,8 @@ function login (username, privateKey, nodeIp) {
   cache.key = privateKey
   cache.nodeIp = nodeIp
 
-  setItem('iroha-wallet:nodeIp', nodeIp)
+  const url = new URL(nodeIp)
+  setItem('d3-app:nodeIp', url.host)
 
   return getAccount({
     accountId: username
@@ -46,11 +51,11 @@ function logout () {
 }
 
 function getStoredNodeIp () {
-  return getItem('iroha-wallet:nodeIp') || ''
+  return getItem('d3-app:nodeIp') || ''
 }
 
 function clearStorage () {
-  removeItem('iroha-wallet:nodeIp')
+  removeItem('d3-app:nodeIp')
 }
 
 function isLoggedIn () {

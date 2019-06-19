@@ -1,12 +1,17 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import Vue from 'vue'
 import map from 'lodash/fp/map'
 import flatMap from 'lodash/fp/flatMap'
 import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/crypto-util'
 import { getParsedItem, setStringifyItem } from '@util/storage-util'
 import notaryUtil from '@util/notary-util'
+import configUtil from '@util/config-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -27,7 +32,9 @@ const types = flow(
 )([
   'GET_OFFER_TO_REQUEST_PRICE',
   'GET_FREE_ETH_RELAYS',
-  'GET_FREE_BTC_RELAYS'
+  'GET_FREE_BTC_RELAYS',
+
+  'LOAD_CONFIGURATION_FILE'
 ])
 
 function initialState () {
@@ -49,7 +56,12 @@ function initialState () {
     walletsSortCriterion: null,
     dashboardSortCriterion: null,
     freeEthRelaysNumber: 0,
-    freeBtcRelaysNumber: 0
+    freeBtcRelaysNumber: 0,
+    nodeIPs: [],
+    registrationIPs: [],
+    btcRegistrationIp: null,
+    ethRegistrationIp: null,
+    services: null
   }
 }
 
@@ -134,6 +146,20 @@ const mutations = {
 
   [types.GET_FREE_BTC_RELAYS_FAILURE] (state, err) {
     handleError(state, err)
+  },
+
+  [types.LOAD_CONFIGURATION_FILE_REQUEST] (state) {},
+  [types.LOAD_CONFIGURATION_FILE_SUCCESS] (state, config) {
+    state.nodeIPs = config.nodes
+    state.registrationIPs = config.registrations
+
+    state.btcRegistrationIp = config.relays.BTC.value
+    state.ethRegistrationIp = config.relays.ETH.value
+
+    state.services = config.services
+  },
+  [types.LOAD_CONFIGURATION_FILE_FAILURE] (state, err) {
+    handleError(state, err)
   }
 }
 
@@ -212,10 +238,10 @@ const actions = {
     commit(types.UPDATE_DASHBOARD_SORT_CRITERION, criterion)
   },
 
-  getFreeEthRelaysNumber ({ commit }) {
+  getFreeEthRelaysNumber ({ commit, state }) {
     commit(types.GET_FREE_ETH_RELAYS_REQUEST)
 
-    return notaryUtil.getFreeEthRelaysNumber()
+    return notaryUtil.getFreeRelaysNumber(state.ethRegistrationIp)
       .then(relays => {
         commit(types.GET_FREE_ETH_RELAYS_SUCCESS, relays)
       })
@@ -225,15 +251,26 @@ const actions = {
       })
   },
 
-  getFreeBtcRelaysNumber ({ commit }) {
+  getFreeBtcRelaysNumber ({ commit, state }) {
     commit(types.GET_FREE_BTC_RELAYS_REQUEST)
 
-    return notaryUtil.getFreeBtcRelaysNumber()
+    return notaryUtil.getFreeRelaysNumber(state.btcRegistrationIp)
       .then(relays => {
         commit(types.GET_FREE_BTC_RELAYS_SUCCESS, relays)
       })
       .catch(err => {
         commit(types.GET_FREE_BTC_RELAYS_FAILURE, err)
+        throw err
+      })
+  },
+
+  loadConfiguration ({ commit }) {
+    commit(types.LOAD_CONFIGURATION_FILE_REQUEST)
+
+    return configUtil.getConfiguration()
+      .then(config => commit(types.LOAD_CONFIGURATION_FILE_SUCCESS, config))
+      .catch(err => {
+        commit(types.LOAD_CONFIGURATION_FILE_FAILURE)
         throw err
       })
   }
@@ -272,6 +309,21 @@ const getters = {
   },
   freeBtcRelaysNumber (state) {
     return state.freeBtcRelaysNumber
+  },
+  nodeIPs (state) {
+    return state.nodeIPs
+  },
+  registrationIPs (state) {
+    return state.registrationIPs
+  },
+  btcRegistrationIp (state) {
+    return state.btcRegistrationIp
+  },
+  ethRegistrationIp (state) {
+    return state.ethRegistrationIp
+  },
+  servicesIPs (state) {
+    return state.services
   }
 }
 

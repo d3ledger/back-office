@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import Vue from 'vue'
 import map from 'lodash/fp/map'
 import flatMap from 'lodash/fp/flatMap'
@@ -7,7 +11,9 @@ import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import last from 'lodash/fp/last'
 import nth from 'lodash/fp/nth'
-import cryptoCompareUtil from '@util/cryptoApi-axios-util'
+import cryptoCompareUtil from '@util/crypto-util'
+
+const WALLETS_JSON = require('@/data/wallets.json')
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -67,7 +73,8 @@ function initialState () {
       assetsFullPrice: {
         diff: 0,
         value: 0,
-        percent: 0
+        percent: 0,
+        time: 0
       },
       assetsPercentage: [],
       assetsHistory: [],
@@ -136,13 +143,25 @@ const mutations = {
   },
 
   [types.GET_PORTFOLIO_FULL_PRICE] (state) {
-    const today = last(state.portfolio.assetsHistory).sum
+    const today = last(state.portfolio.assetsHistory)
     const prevDay = nth(-2)(state.portfolio.assetsHistory).sum
-    Vue.set(state.portfolio, 'assetsFullPrice', {
-      value: today.toFixed(2),
-      diff: (today - prevDay).toFixed(2),
-      percent: (100 - ((prevDay * 100) / today)).toFixed(2)
-    })
+    const current = state.portfolio.assetsFullPrice || initialState().portfolio.assetsFullPrice
+
+    if (current.time <= today.time) {
+      Vue.set(state.portfolio, 'assetsFullPrice', {
+        value: today.sum.toFixed(2),
+        diff: (today.sum - prevDay).toFixed(2),
+        percent: (100 - ((prevDay * 100) / today.sum)).toFixed(2),
+        time: today.time
+      })
+    } else {
+      Vue.set(state.portfolio, 'assetsFullPrice', {
+        value: current.value,
+        diff: (current.value - prevDay).toFixed(2),
+        percent: (100 - ((prevDay * 100) / current.value)).toFixed(2),
+        time: current.time
+      })
+    }
   },
 
   [types.GET_PORTFOLIO_PRICE_PERCENTAGE] (state, wallets) {
@@ -178,7 +197,7 @@ const mutations = {
         percent: toZero(100 - ((amountPrevDay * 100) / amountToday))
       })
     })
-    state.assetList = currencies
+    state.assetList = [...currencies]
   },
 
   [types.GET_PRICE_BY_FILTER_REQUEST] (state) {
@@ -244,9 +263,9 @@ const actions = {
 
         await dispatch('getPortfolioHistory', { filter: getters.portfolioFilter })
 
-        commit('GET_PORTFOLIO_FULL_PRICE')
-        commit('GET_PORTFOLIO_PRICE_PERCENTAGE', getters.wallets)
-        commit('GET_PORTFOLIO_PRICE_LIST', getters.wallets)
+        commit(types.GET_PORTFOLIO_FULL_PRICE)
+        commit(types.GET_PORTFOLIO_PRICE_PERCENTAGE, getters.wallets)
+        commit(types.GET_PORTFOLIO_PRICE_LIST, getters.wallets)
 
         await dispatch('getPriceByFilter', getters.portfolioChart)
       })
@@ -260,9 +279,23 @@ const actions = {
     commit(types.SELECT_PORTFOLIO_FILTER, filter)
     commit(types.GET_PORTFOLIO_HISTORY_REQUEST)
 
-    await cryptoCompareUtil.loadHistoryByLabels(getters.wallets, getters.settingsView, { filter })
+    /**
+     * expectedAssets - It is an asset list of assets that works correctly with API
+     * correctWalletsForApi - It is an wallets list with good assets
+     */
+    const expectedAssets = [
+      ...WALLETS_JSON.wallets
+        .filter(w => w.asset !== 'XOR')
+        .map(w => w.asset),
+      'ETH',
+      'BTC'
+    ]
+    const correctWalletsForApi = getters.wallets.filter(w => expectedAssets.includes(w.asset))
+
+    await cryptoCompareUtil.loadHistoryByLabels(correctWalletsForApi, getters.settingsView, { filter })
       .then(history => {
-        commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, getters.wallets))
+        commit(types.GET_PORTFOLIO_HISTORY_SUCCESS, convertData(history, correctWalletsForApi))
+        commit(types.GET_PORTFOLIO_FULL_PRICE)
       })
       .catch(err => {
         commit(types.GET_PORTFOLIO_HISTORY_FAILURE, err)
@@ -270,7 +303,10 @@ const actions = {
       })
   },
   async getPriceByFilter ({ commit, getters }, data) {
-    const wallets = getters.wallets.filter(w => Number(w.amount) !== 0)
+    const wallets = getters.wallets
+      .filter(w => Number(w.amount) !== 0)
+      .filter(w => getters.portfolioList.find(p => p.asset === w.asset))
+
     const crypto = (wallets.length && !data.crypto) ? getters.portfolioChart.crypto || wallets[0].asset : data.crypto
     if (crypto) {
       commit(types.SELECT_CHART_CRYPTO, crypto)

@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div class="echarts">
     <ECharts
@@ -15,7 +19,11 @@ import dateFormat from '@/components/mixins/dateFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
-  name: 'line-chart-table',
+  name: 'LineChartTable',
+  mixins: [
+    currencySymbol,
+    dateFormat
+  ],
   props: {
     data: {
       type: Array,
@@ -26,10 +34,6 @@ export default {
       required: true
     }
   },
-  mixins: [
-    currencySymbol,
-    dateFormat
-  ],
   data () {
     const fontFamily = "'IBM Plex Sans', sans-serif"
 
@@ -184,7 +188,18 @@ export default {
       const maxValue = Math.max.apply(null, this.data.map(i => i.high))
       const WIDTH_PER_DIGIT = 10
       const OFFSET = 10
-      const yAxisWidth = OFFSET + (maxValue.toFixed(0).length + 1) * WIDTH_PER_DIGIT
+      let digits
+      if (maxValue > 10) {
+        digits = maxValue.toFixed(0).length
+      } else if (maxValue > 4) {
+        digits = maxValue.toFixed(1).length
+      } else if (maxValue > 0.2) {
+        digits = maxValue.toFixed(2).length
+      } else {
+        digits = maxValue.toFixed(3).length
+      }
+
+      const yAxisWidth = OFFSET + digits * WIDTH_PER_DIGIT
       chartInstance.setOption({
         grid: {
           left: yAxisWidth,

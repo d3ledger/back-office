@@ -1,6 +1,17 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
-  <router-link class="card" :to="'/wallets/' + walletId">
-    <asset-icon :asset="asset" :size="24" style="margin-right: 20px" />
+  <router-link
+    :to="'/wallets/' + walletId"
+    class="card"
+  >
+    <asset-icon
+      :asset="asset"
+      :size="24"
+      style="margin-right: 20px"
+    />
     <div class="info-container">
       <div class="label">{{ name }}</div>
       <div class="asset">{{ asset }}</div>
@@ -12,22 +23,25 @@
 import AssetIcon from '@/components/common/AssetIcon'
 
 export default {
-  name: 'wallet-menu-item',
+  name: 'WalletMenuItem',
   components: {
     AssetIcon
   },
   props: {
     walletId: {
       type: String,
-      required: true
+      required: true,
+      default: 'ASSET$DOMAIN'
     },
     name: {
       type: String,
-      required: true
+      required: true,
+      default: 'NAME'
     },
     asset: {
       type: String,
-      required: true
+      required: true,
+      default: 'ASSET'
     }
   }
 }

@@ -1,0 +1,29 @@
+{
+  "nodes": [{
+    "value": "localhost:8081",
+    "label": "Local Node 1"
+  }, {
+    "value": "localhost:8082",
+    "label": "Local Node 2"
+  }, {
+    "value": "localhost:8083",
+    "label": "Local Node 3"
+  }],
+  "registrations": [{
+    "value": "localhost:8085",
+    "label": "Notary registration"
+  }],
+  "relays": {
+    "ETH": {
+      "value": "localhost:8083"
+    },
+    "BTC": {
+      "value": "localhost:8086"
+    }
+  },
+  "services": {
+    "data-collector-service": {
+      "value": "localhost:8087"
+    }
+  }
+}

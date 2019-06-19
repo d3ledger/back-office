@@ -1,92 +1,150 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <el-container class="auth-container">
     <div style="margin-top: 2.5rem">
-      <img src="@/assets/logo.svg" alt="D3"/>
+      <img
+        src="@/assets/logo.svg"
+        alt="D3"
+      >
     </div>
     <span class="auth-welcome">Sign Up</span>
     <div class="auth-form-container">
-      <el-form class="auth-form" ref="form" :model="form" :rules="rules" label-position="top">
-        <el-form-item label="Username" prop="username">
-          <el-row type="flex" justify="space-between">
+      <el-form
+        ref="form"
+        :model="form"
+        class="auth-form"
+        label-position="top"
+      >
+        <el-form-item
+          label="Username"
+          prop="username"
+        >
+          <el-row
+            type="flex"
+            justify="space-between"
+          >
             <el-col :span="20">
               <el-input
+                v-model="$v.form.username.$model"
+                :disabled="isLoading"
+                :class="[
+                  _isValid($v.form.username) ? 'border_success' : '',
+                  _isError($v.form.username) ? 'border_fail' : ''
+                ]"
                 name="username"
-                v-model="form.username"
-                :disabled="isLoading"
               />
             </el-col>
-            <div class="auth-form_tag">d3</div>
+            <div
+              :class="[
+                'auth-form_tag',
+                _isValid($v.form.username) ? 'border_success' : '',
+                _isError($v.form.username) ? 'border_fail' : ''
+              ]"
+            >d3</div>
           </el-row>
-        </el-form-item>
-        <el-form-item label="Whitelist address" prop="newAddress" ref="newAddress">
-          <el-row type="flex" justify="space-between">
-            <el-col :span="20">
-              <el-input
-                name="newAddress"
-                v-model="form.newAddress"
-              />
-            </el-col>
-            <div class="auth-form_upload">
-              <el-button
-                @click="onClickAddAddressToWhiteList"
-                :disabled="isLoading"
-                data-cy="add-whitelist"
-              >
-                <span>
-                  ADD
-                </span>
-              </el-button>
-            </div>
-          </el-row>
+          <span
+            v-if="_isError($v.form.username)"
+            class="el-form-item__error"
+          >{{ _showError($v.form.username) }}</span>
         </el-form-item>
         <el-form-item
           label="Registration IP"
           prop="nodeIp"
         >
           <el-select
-            v-model="form.nodeIp"
-            class="auth-form_select"
+            v-model="$v.form.nodeIp.$model"
             :disabled="isLoading"
+            :class="[
+              'auth-form_select',
+              _isValid($v.form.nodeIp) ? 'border_success' : '',
+              _isError($v.form.nodeIp) ? 'border_fail' : ''
+            ]"
             style="width: 100%;"
             filterable
             allow-create
-            @change="selectNotaryIp"
             popper-class="black-form_select-dropdown"
+            @change="selectNotaryIp"
           >
             <el-option
               v-for="node in registrationIPs"
               :key="node.value"
               :label="node.label"
-              :value="node.value">
+              :value="node.value"
+            >
               <span class="option left">{{ node.label }}</span>
               <span class="option right">{{ node.value }}</span>
             </el-option>
           </el-select>
+          <span
+            v-if="_isError($v.form.nodeIp)"
+            class="el-form-item__error"
+          >{{ _showError($v.form.nodeIp) }}</span>
+        </el-form-item>
+        <el-form-item label=" ">
+          <el-checkbox
+            v-model="form.isNewKeyRequired"
+            :class="[
+              'fullwidth checkbox_key',
+              _isValid($v.form.username) && _isValid($v.form.nodeIp) ? 'border_success' : '',
+              _isError($v.form.username) && _isError($v.form.nodeIp) ? 'border_fail' : ''
+            ]"
+            label="Generate new pair key"
+            border
+          />
         </el-form-item>
         <el-form-item
-          class="auth_whitelist"
-          v-if="form.whitelist.length"
+          v-if="!form.isNewKeyRequired"
+          label="Public key"
+          prop="publicKey"
         >
-          <el-tag
-            v-for="(item, idx) in form.whitelist"
-            :key="item"
-            size="small"
-            class="auth_whitelist-tag"
-            closable
-            @close="() => onClickRemoveItemFromWitelist(idx)"
+          <el-row
+            type="flex"
+            justify="space-between"
           >
-            <span>
-              {{ item }}
-            </span>
-          </el-tag>
+            <el-col :span="20">
+              <el-input
+                v-model="$v.form.publicKey.$model"
+                :disabled="isLoading"
+                :class="[
+                  _isValid($v.form.publicKey) ? 'border_success' : '',
+                  _isError($v.form.publicKey) ? 'border_fail' : ''
+                ]"
+                name="publicKey"
+              />
+            </el-col>
+
+            <el-upload
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="onFileChosen"
+              :disabled="isLoading"
+              :class="[
+                'auth-form_upload',
+                _isValid($v.form.publicKey) ? 'border_success' : '',
+                _isError($v.form.publicKey) ? 'border_fail' : ''
+              ]"
+              action=""
+            >
+              <el-button>
+                <fa-icon icon="upload" />
+              </el-button>
+            </el-upload>
+          </el-row>
+          <span
+            v-if="_isError($v.form.publicKey)"
+            class="el-form-item__error"
+          >{{ _showError($v.form.publicKey) }}</span>
         </el-form-item>
         <el-form-item class="auth-button-container">
           <el-button
+            :loading="isLoading"
             data-cy="signup"
             class="auth-button fullwidth black"
             type="primary"
             @click="onSubmit"
-            :loading="isLoading"
           >
             Sign Up
           </el-button>
@@ -97,25 +155,31 @@
         <router-link
           to="/login"
         >
-          <el-button data-cy="login" class="auth_goto-container-button fullwidth">
+          <el-button
+            data-cy="login"
+            class="auth_goto-container-button fullwidth"
+          >
             Log in
           </el-button>
         </router-link>
       </div>
     </div>
     <el-dialog
-      title="Private key"
       :visible.sync="dialogVisible"
       :before-close="onCloseDialog"
       :close-on-click-modal="false"
       :show-close="false"
+      title="Private key"
       width="400px"
       center
     >
       <div class="dialog-content">
         <span>Download your private key and keep it secret!</span>
       </div>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button
           type="primary"
           class="black"
@@ -126,9 +190,9 @@
         </el-button>
 
         <el-button
+          :disabled="!downloaded"
           type="default"
           @click="onCloseDialog"
-          :disabled="!downloaded"
         >
           Confirm
         </el-button>
@@ -140,30 +204,45 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import FileSaver from 'file-saver'
-import inputValidation from '@/components/mixins/inputValidation'
 import messageMixin from '@/components/mixins/message'
-import { registrationIPs, ETH_NOTARY_URL, BTC_NOTARY_URL } from '@/data/urls'
+
+import { _nodeIp, _user, _keyPattern, errorHandler } from '@/components/mixins/validation'
+import { required, requiredIf } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'signup',
+  name: 'Signup',
   mixins: [
     messageMixin,
-    inputValidation({
-      username: 'name',
-      newAddress: 'walletAddress',
-      nodeIp: 'nodeIp'
-    })
+    errorHandler
   ],
+  validations: {
+    form: {
+      username: {
+        required,
+        _userName: _user.name
+      },
+      nodeIp: {
+        required,
+        _nodeIp
+      },
+      isNewKeyRequired: {
+        required
+      },
+      publicKey: {
+        required: requiredIf(form => !form.isNewKeyRequired),
+        _keyPattern
+      }
+    }
+  },
   data () {
     return {
-      registrationIPs,
       isLoading: false,
       predefinedDomain: 'd3',
       form: {
         username: '',
-        newAddress: '',
-        whitelist: [],
-        nodeIp: registrationIPs[0].value
+        nodeIp: '',
+        isNewKeyRequired: true,
+        publicKey: ''
       },
       dialogVisible: false,
       dialog: {
@@ -174,59 +253,72 @@ export default {
     }
   },
 
-  beforeMount () {
-    this.updateWhiteListValidationRules()
-    this.getFreeBtcRelaysNumber()
-    this.getFreeEthRelaysNumber()
-  },
-
-  created () {
-  },
-
   computed: {
     ...mapGetters([
       'freeEthRelaysNumber',
-      'freeBtcRelaysNumber'
+      'freeBtcRelaysNumber',
+      'registrationIPs'
     ])
+  },
+
+  created () {
+    this.form.nodeIp = this.registrationIPs[0].value || ''
+  },
+
+  beforeMount () {
+    this.selectNotaryIp()
+  },
+
+  mounted () {
+    document.documentElement.style.setProperty('--show-loading', 'none')
   },
 
   methods: {
     ...mapActions([
       'setNotaryIp',
       'signup',
-      'getFreeEthRelaysNumber',
-      'getFreeBtcRelaysNumber'
+      'signupWithKey'
     ]),
 
     onSubmit () {
-      this.updateFreeRelaysRule()
-      this.$refs['newAddress'].clearValidate()
-      this.$refs['form'].validateField('nodeIp', (nodeIpErrorMessage) => {
-        if (nodeIpErrorMessage) return false
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+      this.isLoading = true
 
-        this.$refs['form'].validateField('username', (usernameErrorMessage) => {
-          if (usernameErrorMessage) return false
+      this.selectNotaryIp()
 
-          this.isLoading = true
-
-          this.signup({
-            username: this.form.username,
-            whitelist: this.form.whitelist
-          })
-            .then(({ username, privateKey }) => {
-              this.dialog.username = username
-              this.dialog.privateKey = privateKey
-              this.dialogVisible = true
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showRegistrationError(err.message, err.response)
-            })
-            .finally(() => {
-              this.isLoading = false
-            })
+      if (!this.form.isNewKeyRequired) {
+        this.signupWithKey({
+          username: this.form.username,
+          publicKey: this.form.publicKey
         })
+          .then(() => {
+            this.$message.success('Success! Registration completed!')
+            this.$router.push('/login')
+          })
+          .catch(err => {
+            console.error(err)
+            this.$_showRegistrationError(err.message, err.response)
+          })
+
+        return
+      }
+
+      this.signup({
+        username: this.form.username
       })
+        .then(({ username, privateKey }) => {
+          this.dialog.username = username
+          this.dialog.privateKey = privateKey
+          this.dialogVisible = true
+        })
+        .catch(err => {
+          console.error(err)
+          this.$_showRegistrationError(err.message, err.response)
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
 
     onCloseDialog () {
@@ -246,46 +338,19 @@ export default {
       this.downloaded = true
     },
 
-    onClickAddAddressToWhiteList () {
-      this.$refs['form'].validateField('newAddress', (errorMessage) => {
-        if (errorMessage) return
-
-        this.form.whitelist.push(this.form.newAddress)
-        this.$refs['newAddress'].resetField()
-
-        this.updateWhiteListValidationRules()
-      })
-    },
-
-    onClickRemoveItemFromWitelist (index) {
-      this.form.whitelist.splice(index, 1)
-
-      /*
-        Update validation rules + re-validate inserted field
-      */
-      this.updateWhiteListValidationRules()
-      this.$refs['form'].validateField('newAddress')
-    },
-
-    updateWhiteListValidationRules () {
-      this._refreshRules({
-        newAddress: { pattern: 'walletAddress', wallets: this.form.whitelist },
-        nodeIp: { pattern: 'nodeIp' }
-      })
-    },
-
     selectNotaryIp () {
       this.setNotaryIp({ ip: this.form.nodeIp })
-      this.updateFreeRelaysRule()
     },
 
-    updateFreeRelaysRule () {
-      const canRegister = ((this.form.nodeIp === ETH_NOTARY_URL) && this.freeEthRelaysNumber > 0) ||
-        ((this.form.nodeIp === BTC_NOTARY_URL) && this.freeBtcRelaysNumber > 0)
+    onFileChosen (file, fileList) {
+      const reader = new FileReader()
 
-      this._refreshRules({
-        nodeIp: { pattern: 'nodeIp', canRegister }
-      })
+      reader.onload = (ev) => {
+        this.form.publicKey = (ev.target.result || '').trim()
+        this.$v.$touch()
+      }
+
+      reader.readAsText(file.raw)
     }
   }
 }
@@ -339,16 +404,6 @@ export default {
     align-items: center;
   }
 
-  /*
-    ElementUI renders .el-form-item__label without a data attribute,
-    so scoped styles doesn't work for it. The `>>>` combinator solves this problem.
-    https://vue-loader.vuejs.org/en/features/scoped-css.html
-  */
-
-  .auth-form >>> .el-form-item__label::before {
-    display: none;
-  }
-
   .el-tag {
     margin-right: 1rem;
   }
@@ -363,5 +418,40 @@ export default {
     float: right;
     font-size: 0.8rem;
     color: #8492a6;
+  }
+
+  .checkbox_key {
+    color: rgba(255, 255, 255, 0.4);
+    background-color: #363636;
+    color: rgba(255, 255, 255, 0.8);
+    border: solid 1px rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    height: 4.5rem;
+    padding-left: 1.2rem;
+    padding-top: 1.2rem;
+    line-height: 2;
+    font-size: 1rem;
+  }
+
+  .checkbox_key >>> .el-checkbox__label {
+    font-size: 1rem;
+  }
+
+  .checkbox_key.is-checked {
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__label {
+    font-size: 1rem;
+    color: #ffffff;
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__inner {
+    background-color: #ffffff;
+    border-color: #ffffff;
+  }
+
+  .checkbox_key.is-checked >>> .el-checkbox__inner::after {
+    border-color: black;
   }
 </style>

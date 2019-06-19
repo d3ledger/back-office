@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div class="echarts">
     <ECharts
@@ -10,7 +14,7 @@
 
 <script>
 export default {
-  name: 'donut-chart',
+  name: 'DonutChart',
   props: {
     data: {
       type: Array,

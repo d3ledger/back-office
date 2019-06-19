@@ -1,3 +1,6 @@
+def tag = ["master":"latest", "develop":"develop" ]
+def scmVars
+
 pipeline {
   environment {
     DOCKER_NETWORK = ''
@@ -13,7 +16,7 @@ pipeline {
       agent { label 'master' }
       steps {
         script {
-          def scmVars = checkout scm
+          scmVars = checkout scm
           // need this for develop->master PR cases
           // CHANGE_BRANCH is not defined if this is a branch build
           try {
@@ -26,12 +29,17 @@ pipeline {
           }
         }
       }
+      post {
+        cleanup {
+          cleanWs()
+        }
+      }
     }
     stage('Tests (unit, e2e)') {
       agent { label 'd3-build-agent' }
       steps {
         script {
-            def scmVars = checkout scm
+            scmVars = checkout scm
             DOCKER_NETWORK = "${scmVars.CHANGE_ID}-${scmVars.GIT_COMMIT}-${BUILD_NUMBER}"
             writeFile file: ".env", text: "SUBNET=${DOCKER_NETWORK}"
             sh(returnStdout: true, script: "docker-compose -f docker/docker-compose.yaml pull")
@@ -83,13 +91,35 @@ pipeline {
         }
         cleanup {
           sh "mkdir build-logs"
-          sh """
+          sh """#!/bin/bash
             while read -r LINE; do \
               docker logs \$(echo \$LINE | cut -d ' ' -f1) | gzip -6 > build-logs/\$(echo \$LINE | cut -d ' ' -f2).log.gz; \
             done < <(docker ps --filter "network=d3-${DOCKER_NETWORK}" --format "{{.ID}} {{.Names}}")
           """
           archiveArtifacts artifacts: 'build-logs/*.log.gz'
           sh "docker-compose -f docker/docker-compose.yaml down"
+          cleanWs()
+        }
+      }
+    }
+    stage('Build') {
+      when {
+        beforeAgent true
+        expression { return (scmVars.GIT_BRANCH in tag || scmVars.TAG_NAME) }
+      }
+      agent { label 'd3-build-agent' }
+      steps {
+        script {
+          scmVars = checkout scm
+          docker_tag = scmVars.TAG_NAME ? scmVars.TAG_NAME : tag[scmVars.GIT_BRANCH]
+          def iC = docker.build("nexus.iroha.tech:19002/d3-deploy/back-office:${tag[scmVars.GIT_BRANCH]}")
+          docker.withRegistry('https://nexus.iroha.tech:19002', 'nexus-d3-docker') {
+            iC.push()
+          }
+        }
+      }
+      post {
+        cleanup {
           cleanWs()
         }
       }

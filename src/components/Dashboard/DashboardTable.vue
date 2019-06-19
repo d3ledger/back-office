@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div class="card-content shadow">
     <div class="card-content_header">
@@ -5,16 +9,28 @@
         <el-col :span="24">
           <div class="searchbar">
             <div class="searchbar__prefix">
-              <fa-icon icon="search" class="searchbar__icon" />
+              <fa-icon
+                icon="search"
+                class="searchbar__icon"
+              />
             </div>
 
             <div class="searchbar__input">
-              <el-input placeholder="Search" v-model="filterInput" />
+              <el-input
+                v-model="filterInput"
+                placeholder="Search"
+              />
             </div>
 
             <div class="searchbar__sort">
-              <el-dropdown trigger="click" @command="sort">
-                <div id="dashboard-sort-button" class="searchbar__sort-button">
+              <el-dropdown
+                trigger="click"
+                @command="sort"
+              >
+                <div
+                  id="dashboard-sort-button"
+                  class="searchbar__sort-button"
+                >
                   <fa-icon
                     :icon="dashboardSortCriterion.icon"
                     class="searchbar__icon"
@@ -39,17 +55,28 @@
       </el-row>
     </div>
     <div class="card-content_body">
-      <el-row justify="center" class="table_header">
+      <el-row
+        justify="center"
+        class="table_header"
+      >
         <div class="table_header-title currency">Currency</div>
         <div class="table_header-title text-left balance">Balance</div>
         <div class="table_header-title text-right changes">Changes</div>
       </el-row>
       <el-row class="table_body">
-        <div class="table_body-content" :style="{ height: `${dashboardChartHeight}px` }">
+        <div
+          :style="{ height: `${dashboardChartHeight}px` }"
+          class="table_body-content"
+        >
           <div
+            v-for="(value, index) in sortedPortfolio"
             :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
-            v-for="(value, index) in sortedPortfolio" :key="index">
-            <div class="table_body-item_content" @click="selectCrypto(value.asset)">
+            :key="index"
+          >
+            <div
+              class="table_body-item_content"
+              @click="selectCrypto(value.asset)"
+            >
               <div class="column text-format currency">
                 {{ value | formatName }}
               </div>
@@ -58,7 +85,7 @@
               </div>
               <div class="column text-right changes">
                 <span :class="classTrend(value.diff)">
-                  {{ value.diff | formatNumberShort }} {{ currencySymbol }} ({{value.percent | formatPercent }})
+                  {{ value.diff | formatNumberShort }} {{ currencySymbol }} ({{ value.percent | formatPercent }})
                 </span>
               </div>
             </div>
@@ -77,19 +104,10 @@ import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 
 export default {
-  data () {
-    return {
-      filterInput: '',
-      criterions: [
-        { name: 'alphabetical (asc)', icon: 'sort-alpha-up', key: 'name', desc: false },
-        { name: 'alphabetical (desc)', icon: 'sort-alpha-down', key: 'name', desc: true },
-        { name: 'balance amount (asc)', icon: 'sort-amount-up', key: 'price', desc: false, numeric: true },
-        { name: 'balance amount (desc)', icon: 'sort-amount-down', key: 'price', desc: true, numeric: true },
-        { name: 'price change (asc)', icon: 'sort-numeric-up', key: 'diff', desc: false, numeric: true },
-        { name: 'price change (desc)', icon: 'sort-numeric-down', key: 'diff', desc: true, numeric: true },
-        { name: 'percent change (asc)', icon: 'sort-numeric-up', key: 'percent', desc: false, numeric: true },
-        { name: 'percent change (desc)', icon: 'sort-numeric-down', key: 'percent', desc: true, numeric: true }
-      ]
+  filters: {
+    formatName (crypto) {
+      if (!crypto) return null
+      return `${crypto.name} (${crypto.asset})`
     }
   },
   mixins: [
@@ -104,6 +122,21 @@ export default {
     dashboardChartHeight: {
       type: Number,
       required: true
+    }
+  },
+  data () {
+    return {
+      filterInput: '',
+      criterions: [
+        { name: 'alphabetical (asc)', icon: 'sort-alpha-up', key: 'name', desc: false },
+        { name: 'alphabetical (desc)', icon: 'sort-alpha-down', key: 'name', desc: true },
+        { name: 'balance amount (asc)', icon: 'sort-amount-up', key: 'price', desc: false, numeric: true },
+        { name: 'balance amount (desc)', icon: 'sort-amount-down', key: 'price', desc: true, numeric: true },
+        { name: 'price change (asc)', icon: 'sort-numeric-up', key: 'diff', desc: false, numeric: true },
+        { name: 'price change (desc)', icon: 'sort-numeric-down', key: 'diff', desc: true, numeric: true },
+        { name: 'percent change (asc)', icon: 'sort-numeric-up', key: 'percent', desc: false, numeric: true },
+        { name: 'percent change (desc)', icon: 'sort-numeric-down', key: 'percent', desc: true, numeric: true }
+      ]
     }
   },
   computed: {
@@ -123,12 +156,6 @@ export default {
       const { numeric, key, desc } = this.dashboardSortCriterion
       const sorted = sortBy(x => numeric ? parseFloat(x[key]) : x[key])(this.filteredPortfolio)
       return desc ? sorted.reverse() : sorted
-    }
-  },
-  filters: {
-    formatName (crypto) {
-      if (!crypto) return null
-      return `${crypto.name} (${crypto.asset})`
     }
   },
   created () {

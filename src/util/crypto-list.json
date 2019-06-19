@@ -70,5 +70,11 @@
     "asset": "ETH",
     "color": "627EEA",
     "precision": 18
+  },
+  {
+    "name": "Sora",
+    "asset": "XOR",
+    "color": "FF0000",
+    "precision": 18
   }
 ]
