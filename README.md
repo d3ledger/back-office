@@ -20,8 +20,8 @@ $ yarn
 **IMPORTANT** in our application we use `yarn` for dependency management if you do not have it, you should install it - [Installation | Yarn](https://yarnpkg.com/en/docs/install)
 
 #### ENV
-1. `VUE_APP_ETH_NOTARY_URL=http://127.0.0.1:8083` - Used to connect to notary etherium registration service, provide IP of notary. Use this ENV when going to run or build application
-1. `VUE_APP_BTC_NOTARY_URL=http://127.0.0.1:8084` - Used to connect to notary bitcoin registration service, provide IP of notary. Use this ENV when going to run or build application
+1. `registration.json` - contains urls of nodes with registration services.
+2. `nodes.json` - contains urls of iroha nodes.
 2. `CYPRESS_IROHA=http://127.0.0.1:8081` - Used to run e2e tests, provide IP of gRPC IROHA.
 3. `CYPRESS_baseUrl=http://127.0.0.1:8080` - Can be used in e2e tests, provide IP of D3 application
 
@@ -35,11 +35,17 @@ $ yarn serve
 ```
 This will serve application with hot reload.
 
+To run Iroha
+``` bash
+$ yarn start-iroha
+```
+
 ### How to build
 To build application for deployment
 ``` bash
 $ yarn build
 ```
+When application will finish building, you will have the directory `dist` that need to place on the server. Also the `dist` will contains 2 files - `registration.json` and `nodes.json`. They can be replaced with another files that provides new urls.
 
 If you are run out of memory while building application you can try another command, but it requires at least **4GB** of RAM
 ``` bash

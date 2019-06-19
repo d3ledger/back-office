@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import map from 'lodash/fp/map'
 import flatten from 'lodash/fp/flatten'
 import sortedUniq from 'lodash/fp/sortedUniq'
@@ -21,6 +25,11 @@ const convertTime = (date, zone) => {
 
 const dateFormat = {
   methods: {
+    formatTime (date) {
+      const timeZoneLabel = this.$store.getters.settingsView.timezone
+      const time = convertTime(date, timeZoneLabel)
+      return format(time, 'HH:mm:ss')
+    },
     formatDate (date) {
       const timeZoneLabel = this.$store.getters.settingsView.timezone
       const time = convertTime(date, timeZoneLabel)

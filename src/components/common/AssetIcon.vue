@@ -1,14 +1,31 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div>
-    <i v-if="isIconPresent" :style="{'font-size': size + 'px'}" :class="'cc ' + asset.toUpperCase()" />
-    <img v-else src="@/assets/icons/coins.svg" :style="{width: size+'px'}" />
+    <img
+      v-if="isSora"
+      :style="{'height': size + 'px'}"
+      src="@/assets/icons/sora.png"
+    >
+    <i
+      v-else-if="isIconPresent"
+      :style="{'font-size': size + 'px'}"
+      :class="'cc ' + asset.toUpperCase()"
+    />
+    <img
+      v-else
+      :style="{width: size+'px'}"
+      src="@/assets/icons/coins.svg"
+    >
   </div>
 </template>
 
 <script>
 // TODO: Find better solution to show icons of assets
 export default {
-  name: 'asset-icon',
+  name: 'AssetIcon',
 
   props: {
     asset: {
@@ -217,7 +234,12 @@ export default {
   },
 
   computed: {
-    isIconPresent: function () { return this.coinNames.includes(this.asset.toUpperCase()) }
+    isIconPresent () {
+      return this.coinNames.includes(this.asset.toUpperCase())
+    },
+    isSora () {
+      return this.asset.toUpperCase() === 'XOR'
+    }
   }
 }
 </script>

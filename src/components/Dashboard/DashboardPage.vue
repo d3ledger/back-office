@@ -1,10 +1,20 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
-  <el-container v-if="isDashboardLoading" v-loading.fullscreen="isDashboardLoading" />
+  <el-container
+    v-loading.fullscreen="isDashboardLoading"
+    v-if="isDashboardLoading"
+  />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
       <el-row class="card_margin-bottom">
         <el-col :span="16">
-          <dashboard-portfolio :price="portfolioPrice" :chartData="portfolioHistory"/>
+          <dashboard-portfolio
+            :price="portfolioPrice"
+            :chart-data="portfolioHistory"
+          />
         </el-col>
         <el-col :span="8">
           <dashboard-donut-chart :portfolio="portfolioPercent"/>
@@ -15,18 +25,36 @@
           <el-row>
             <el-card :body-style="{ padding: '0' }">
               <el-col :span="10">
-                <dashboard-table :portfolio="portfolioList" :dashboardChartHeight="dashboardChartHeight"/>
+                <dashboard-table
+                  :portfolio="portfolioList"
+                  :dashboard-chart-height="dashboardChartHeight"
+                />
               </el-col>
               <el-col :span="1">
-                <div class="vertical_devider"></div>
+                <div class="vertical_devider"/>
               </el-col>
               <el-col :span="14">
-                <dashboard-chart :dashboardChartHeight="dashboardChartHeight"/>
+                <dashboard-chart :dashboard-chart-height="dashboardChartHeight"/>
               </el-col>
             </el-card>
           </el-row>
         </el-col>
       </el-row>
+    </el-main>
+  </el-container>
+  <el-container v-else-if="hasNoData">
+    <el-main class="column-fullheight card-wrapper flex-direction-row">
+      <el-card class="card">
+        <p
+          style="
+            text-align: center;
+            font-weight: 600;
+          "
+        >
+          Welcome to D3
+        </p>
+        <p>There is no data about your current portfolio yet</p>
+      </el-card>
     </el-main>
   </el-container>
   <el-container v-else>
@@ -35,12 +63,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import debounce from 'lodash/fp/debounce'
 
 export default {
-  name: 'dashboard-page',
+  name: 'DashboardPage',
   components: {
     DashboardPortfolio: lazyComponent('Dashboard/DashboardPortfolio'),
     DashboardDonutChart: lazyComponent('Dashboard/DashboardDonutChart'),
@@ -51,19 +79,6 @@ export default {
   data () {
     return {
       dashboardChartHeight: 0
-    }
-  },
-  created () {
-    this.$store.dispatch('loadDashboard')
-    window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
-    this.getDashboardChartHeight()
-  },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.getDashboardChartHeight)
-  },
-  methods: {
-    getDashboardChartHeight (event) {
-      this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }
   },
   computed: {
@@ -77,6 +92,25 @@ export default {
     ]),
     hasNonEmptyWallets () {
       return this.portfolioList.length && (this.portfolioList.length > this.portfolioList.filter(t => t.price === 0).length)
+    },
+    hasNoData () {
+      return !this.hasNonEmptyWallets && this.wallets.length > 0
+    }
+  },
+  created () {
+    this.loadDashboard()
+    window.addEventListener('resize', debounce(500)(this.getDashboardChartHeight))
+    this.getDashboardChartHeight()
+  },
+  beforeDestroy () {
+    window.removeEventListener('resize', this.getDashboardChartHeight)
+  },
+  methods: {
+    ...mapActions([
+      'loadDashboard'
+    ]),
+    getDashboardChartHeight (event) {
+      this.dashboardChartHeight = document.documentElement.clientHeight - 350
     }
   }
 }
@@ -84,7 +118,7 @@ export default {
 
 <style scoped>
 .card_margin-bottom {
-  margin-bottom: 20px;
+  margin-bottom: 0.5rem;
 }
 .portfolio_card-padding {
   padding-right: 10px;
@@ -95,5 +129,13 @@ export default {
   width: 2px;
   background: #f5f5f5;
   position: absolute;
+}
+.card-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card {
+  max-width: 600px;
 }
 </style>

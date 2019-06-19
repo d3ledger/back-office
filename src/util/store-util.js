@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import flow from 'lodash/fp/flow'
 import isEmpty from 'lodash/fp/isEmpty'
 import isEqual from 'lodash/fp/isEqual'
@@ -91,6 +95,8 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
 // TODO: think about to use hashMap
 export function getSettlementsFrom (transactions, accountId) {
   if (isEmpty(transactions)) return []
+  let txIndex = 0
+
   const settlements = flow([
     filter(tr => tr.payload.batch),
     map(tr => {
@@ -109,6 +115,7 @@ export function getSettlementsFrom (transactions, accountId) {
         } = c.transferAsset
 
         const tx = {
+          txId: txIndex,
           from: srcAccountId,
           to: destAccountId,
           amount: amount,
@@ -118,6 +125,9 @@ export function getSettlementsFrom (transactions, accountId) {
           assetId,
           batch
         }
+
+        txIndex += 1
+
         commands.push(tx)
       })
       if (commands.length > 1) return

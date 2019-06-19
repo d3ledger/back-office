@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import NOTIFICATIONS from '@/data/notifications'
 
 const getErrorMessage = (error) => {
@@ -30,7 +34,7 @@ const message = {
       })
     },
     $_showRegistrationError (message, response) {
-      let responseText = response ? response.data : ''
+      let responseText = response ? response.data.message : ''
       if (responseText.includes('no free')) {
         message = 'No free address to register'
       }

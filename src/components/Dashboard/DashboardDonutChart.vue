@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <el-card class="card">
     <el-row>
@@ -7,13 +11,15 @@
         </div>
         <div class="list_crypto">
           <div class="list_crypto-content">
-            <div v-for="(item, index) in filterPortfolio"
+            <div
+              v-for="(item, index) in filterPortfolio"
               :key="index"
               class="list_crypto-content-item"
-              >
-              <span class="list_crypto-content-color"
-                :style="{ backgroundColor: `#${item.color}` }">
-              </span>
+            >
+              <span
+                :style="{ backgroundColor: `#${item.color}` }"
+                class="list_crypto-content-color"
+              />
               <p class="list_crypto-content-asset">
                 <span class="list_crypto-content-percent">{{ item.percent.toFixed(0) }}% </span>
                 <span class="list_crypto-content-token">{{ item.asset }}</span>
@@ -22,7 +28,10 @@
           </div>
         </div>
       </el-col>
-      <el-col class="donut-chart" :span="8">
+      <el-col
+        :span="8"
+        class="donut-chart"
+      >
         <donut-chart :data="filterPortfolio"/>
       </el-col>
     </el-row>
@@ -33,14 +42,15 @@
 import { lazyComponent } from '@router'
 
 export default {
-  name: 'dashboard-donut-chart',
+  name: 'DashboardDonutChart',
   components: {
     DonutChart: lazyComponent('Dashboard/Charts/DonutChart')
   },
   props: {
     portfolio: {
       type: Array,
-      requires: true
+      requires: true,
+      default: () => []
     }
   },
   data () {
@@ -83,6 +93,10 @@ export default {
   font-size: 0.9rem;
 }
 
+.list_crypto {
+  width: 210px;
+}
+
 .list_crypto-content {
   display: flex;
   flex-wrap: wrap;
@@ -91,8 +105,8 @@ export default {
 }
 
 .list_crypto-content .list_crypto-content-item {
-  min-width: 86px;
-  margin-right: 20px;
+  min-width: 90px;
+  margin-right: 15px;
   margin-bottom: 15px;
 }
 
@@ -112,7 +126,8 @@ export default {
 
 .list_crypto-content-percent {
   font-weight: 600;
-  min-width: 50px;
+  min-width: 33px;
+  display: inline-block;
 }
 
 .donut-chart {

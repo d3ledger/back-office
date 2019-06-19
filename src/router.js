@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import Vue from 'vue'
 import Router from 'vue-router'
 import irohaUtil from '@util/iroha'
@@ -60,6 +64,11 @@ const defaultRouter = new Router({
           path: 'transactions',
           name: 'transactions',
           component: lazyComponent('Transactions/TransactionPage')
+        },
+        {
+          path: 'explorer',
+          name: 'explorer',
+          component: lazyComponent('Explorer/ExplorerPage')
         },
         {
           path: 'settings',

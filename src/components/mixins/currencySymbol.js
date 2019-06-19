@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 const ASSETS = require('@util/crypto-list.json')
 
 const symbols = {
@@ -13,7 +17,7 @@ const currencySymbol = {
       const asset = ASSETS.find(a => {
         return a.name.toLowerCase() === assetName || a.asset.toLowerCase() === assetName
       })
-      return asset.asset
+      return asset ? asset.asset : assetName
     }
   },
   computed: {

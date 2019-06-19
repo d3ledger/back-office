@@ -1,18 +1,46 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
-  <el-container class="column-fullheight">
-    <el-header class="header" :style="{ height: '3.9rem' }">
+  <el-container
+    v-if="wallets.length"
+    class="column-fullheight"
+  >
+    <el-header
+      :style="{ height: '3.9rem' }"
+      class="header"
+    >
       <el-row>
-        <el-col :xs="24" :md="{ span: 20, offset: 2 }" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }"
+        <el-col
+          :span="24"
           style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;"
         >
           <div style="display: flex;">
-            <router-link class="navlink" to="/settlements/history">History</router-link>
-            <router-link class="navlink" to="/settlements/incoming">Incoming</router-link>
-            <router-link class="navlink" to="/settlements/outgoing">Outgoing</router-link>
+            <router-link
+              class="navlink"
+              to="/settlements/history"
+            >History</router-link>
+            <router-link
+              class="navlink"
+              to="/settlements/incoming"
+            >Incoming</router-link>
+            <router-link
+              class="navlink"
+              to="/settlements/outgoing"
+            >Outgoing</router-link>
           </div>
           <div>
-            <el-button class="exchange_button" type="primary" @click="openExchangeDialog()">
-              <fa-icon class="exchange_button-icon" icon="exchange-alt" />
+            <el-button
+              class="exchange_button"
+              size="medium"
+              type="primary"
+              @click="openExchangeDialog()"
+            >
+              <fa-icon
+                class="exchange_button-icon"
+                icon="exchange-alt"
+              />
               <span>
                 Exchange
               </span>
@@ -23,20 +51,33 @@
     </el-header>
     <el-main>
       <el-row>
-        <el-col :xs="24" :md="{ span: 20, offset: 2 }" :lg="{ span: 18, offset: 3 }" :xl="{ span: 16, offset: 4 }">
+        <el-col :span="24">
           <router-view />
         </el-col>
       </el-row>
     </el-main>
   </el-container>
+  <el-container v-else>
+    <no-assets-card />
+  </el-container>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { lazyComponent } from '@router'
 
 export default {
+  components: {
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+  },
   data () {
     return {}
+  },
+
+  computed: {
+    ...mapGetters([
+      'wallets'
+    ])
   },
 
   methods: {

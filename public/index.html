@@ -6,14 +6,40 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title>D3</title>
+    <style>
+      :root {
+        --show-loading: block
+      }
+      *, *:before, *:after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      #app {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+        background: #363636;
+      }
+      .loading-logo {
+        background-image: url("./logo.svg");
+        width: 96px;
+        height: 96px;
+        display: var(--show-loading);
+        top: 50%;
+        left: 50%;
+        margin-left: -48px;
+        margin-top: -48px;
+        position: absolute;
+      }
+    </style>
   </head>
   <body>
     <noscript>
       <strong>We're sorry but D3 doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app">
-      Loading...
     </div>
+    <div class="loading-logo"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>

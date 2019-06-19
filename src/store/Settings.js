@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import Vue from 'vue'
 import map from 'lodash/fp/map'
 import fromPairs from 'lodash/fp/fromPairs'
@@ -120,7 +124,7 @@ const actions = {
       lastTransactionDate: 0,
       totalAmountInterval: 0
     }
-    return irohaUtil.setAccountDetail(privateKeys, getters.accountQuorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: getters.accountId,
       key: `limit_${_assetId}`,
       // Iroha don't allow quotes in strings
@@ -136,7 +140,7 @@ const actions = {
   removeAssetLimit ({ commit, getters }, { privateKeys, limit }) {
     commit(types.REMOVE_ASSET_LIMIT_REQUEST)
     const _assetId = limit.assetId.replace('#', '_')
-    return irohaUtil.setAccountDetail(privateKeys, getters.accountQuorum, {
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: getters.accountId,
       key: `limit_${_assetId}`,
       value: ''

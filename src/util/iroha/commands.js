@@ -1,3 +1,7 @@
+/*
+ * Copyright D3 Ledger, Inc. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import {
   commands,
   signWithArrayOfKeys,
@@ -31,7 +35,9 @@ function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = D
 
   let txClient = newCommandService()
 
-  return sendTransactions([txToSend], txClient, timeoutLimit)
+  return sendTransactions([txToSend], txClient, timeoutLimit, [
+    'COMMITTED'
+  ])
 }
 
 /**
@@ -52,33 +58,37 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   let txClient = newCommandService()
 
   let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount })
-  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, senderQuorum })
+  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, quorum: senderQuorum })
 
   let receiverTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount })
-  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, receiverQuorum })
+  receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
 
   const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
-  return sendTransactions(batchArray, txClient, timeoutLimit)
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'MST_PENDING'
+  ])
 }
 
-function acceptSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   if (!batchArray.length) return
 
   let txClient = newCommandService()
 
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
+    .findIndex(tx => {
+      return tx.payload.reducedPayload.creatorAccountId === accountId
+    })
 
-  batchArray[indexOfSigned].clearSignaturesList()
+  if (indexOfUnsigned === -1) throw new Error('Undefined tx to sign')
 
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit)
+  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[indexOfUnsigned], privateKeys)
+
+  return sendTransactions(batchArray, txClient, timeoutLimit, [
+    'COMMITTED'
+  ])
 }
 
 function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
@@ -86,18 +96,10 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
   let txClient = newCommandService()
 
-  const indexOfUnsigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => !tx.signaturesList.length)
-  const indexOfSigned = cloneDeep(batchArray)
-    .map(tx => tx.toObject())
-    .findIndex(tx => tx.signaturesList.length)
+  const batch = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
 
-  batchArray[indexOfSigned].clearSignaturesList()
-
-  batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[1], privateKeys)
-  return sendTransactions(batchArray, txClient, timeoutLimit, [
-    'ENOUGH_SIGNATURES_COLLECTED',
+  return sendTransactions(batch, txClient, timeoutLimit, [
+    'REJECTED',
     'STATEFUL_VALIDATION_FAILED'
   ])
 }

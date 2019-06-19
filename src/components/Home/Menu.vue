@@ -1,23 +1,41 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template class="menu">
-  <div @mouseenter.passive="isCollapsed = false" @mouseleave.passive="isCollapsed = true">
+  <div>
     <el-menu
       :router="true"
-      :class="isCollapsed ? 'el-side-menu el-menu--collapse' : 'el-side-menu'"
+      class="el-side-menu"
       text-color="#a2a2a2"
       background-color="#1e1e1e"
       active-text-color="#000"
-      :default-active="currentActiveMenu"
-      >
+    >
       <h1 class="logo">
-        <img src="@/assets/logo-small.svg" alt="D3"/>
+        <img
+          src="@/assets/logo-small.svg"
+          alt="D3"
+        >
       </h1>
       <el-menu-item index="/">
-        <SvgIcon iconName="Chart" iconClass="menu-icon"><ChartIcon/></SvgIcon>
-        <span class="title-left" slot="title">Dashboard</span>
+        <SvgIcon
+          icon-name="Chart"
+          icon-class="menu-icon"
+        ><ChartIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Dashboard</span>
       </el-menu-item>
       <el-menu-item index="/wallets">
-        <SvgIcon iconName="Wallet" iconClass="menu-icon"><WalletIcon/></SvgIcon>
-        <span class="title-left" slot="title">Wallets</span>
+        <SvgIcon
+          icon-name="Wallet"
+          icon-class="menu-icon"
+        ><WalletIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Wallets</span>
       </el-menu-item>
       <el-menu-item index="/settlements/history">
         <el-badge
@@ -26,34 +44,92 @@
           :max="9"
           :class="[isMenuActive('settlements') ? 'badge active' : 'badge']"
         >
-          <SvgIcon iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
+          <SvgIcon
+            icon-name="Exchange"
+            icon-class="menu-icon"
+          ><ExchangeIcon/></SvgIcon>
         </el-badge>
-        <SvgIcon v-else iconName="Exchange" iconClass="menu-icon"><ExchangeIcon/></SvgIcon>
-        <span class="title-left" slot="title">Exchange</span>
+        <SvgIcon
+          v-else
+          icon-name="Exchange"
+          icon-class="menu-icon"
+        ><ExchangeIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Exchange</span>
       </el-menu-item>
       <el-menu-item index="/reports">
-        <SvgIcon iconName="Report" iconClass="menu-icon"><ReportIcon/></SvgIcon>
-        <span class="title-left" slot="title">Reports</span>
+        <SvgIcon
+          icon-name="Report"
+          icon-class="menu-icon"
+        ><ReportIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Reports</span>
       </el-menu-item>
-      <el-menu-item v-if="quorum > 1" index="/transactions">
+      <el-menu-item
+        v-if="quorum > 1"
+        index="/transactions"
+      >
         <el-badge
           v-if="allPendingTransactions.length"
           :value="allPendingTransactions.length"
           :max="9"
           :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
         >
-          <SvgIcon iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
+          <SvgIcon
+            icon-name="Transaction"
+            icon-class="menu-icon"
+          ><TransactionsIcon/></SvgIcon>
         </el-badge>
-        <SvgIcon v-else iconName="Transaction" iconClass="menu-icon"><TransactionsIcon/></SvgIcon>
-        <span class="title-left" slot="title">Transactions</span>
+        <SvgIcon
+          v-else
+          icon-name="Transaction"
+          icon-class="menu-icon"
+        ><TransactionsIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Transactions</span>
+      </el-menu-item>
+      <el-menu-item
+        v-if="isAdmin"
+        index="/explorer"
+      >
+        <SvgIcon
+          icon-name="Explorer"
+          icon-class="menu-icon"
+        ><TransactionsIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Explorer</span>
       </el-menu-item>
       <el-menu-item index="/settings">
-        <SvgIcon iconName="Settings" iconClass="menu-icon"><SettingsIcon/></SvgIcon>
-        <span class="title-left" slot="title">Settings</span>
+        <SvgIcon
+          icon-name="Settings"
+          icon-class="menu-icon"
+        ><SettingsIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Settings</span>
       </el-menu-item>
-      <el-menu-item class="bottom-icon" index="/logout" @click="onLogout">
-        <SvgIcon iconName="Logout" iconClass="menu-icon"><LogoutIcon/></SvgIcon>
-        <span class="title-left" slot="title">Logout</span>
+      <el-menu-item
+        class="bottom-icon"
+        index="/logout"
+        @click="onLogout"
+      >
+        <SvgIcon
+          icon-name="Logout"
+          icon-class="menu-icon"
+        ><LogoutIcon/></SvgIcon>
+        <span
+          slot="title"
+          class="title-left"
+        >Logout</span>
       </el-menu-item>
     </el-menu>
   </div>
@@ -72,6 +148,16 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Menu',
+  components: {
+    ChartIcon,
+    ExchangeIcon,
+    ReportIcon,
+    SettingsIcon,
+    TransactionsIcon,
+    WalletIcon,
+    LogoutIcon,
+    SvgIcon
+  },
   props: {
     quorum: {
       type: Number,
@@ -83,23 +169,30 @@ export default {
       isCollapsed: true
     }
   },
-  components: {
-    ChartIcon,
-    ExchangeIcon,
-    ReportIcon,
-    SettingsIcon,
-    TransactionsIcon,
-    WalletIcon,
-    LogoutIcon,
-    SvgIcon
+  computed: {
+    ...mapGetters([
+      'incomingSettlements',
+      'allPendingTransactions',
+      'accountRoles'
+    ]),
+    currentActiveMenu () {
+      if (this.$route.path.includes('wallets')) return '/wallets'
+      if (this.$route.path.includes('settlements')) return '/settlements/history'
+      return this.$route.path
+    },
+    isAdmin () {
+      return this.accountRoles.includes('admin')
+    }
   },
-  updated () {
-    this.getPendingTransactions()
+  watch: {
+    isCollapsed (value) {
+      if (!value) this.getAllUnsignedTransactions()
+    }
   },
   methods: {
     ...mapActions([
       'logout',
-      'getPendingTransactions'
+      'getAllUnsignedTransactions'
     ]),
     onLogout () {
       this.logout()
@@ -107,17 +200,6 @@ export default {
     },
     isMenuActive (path) {
       return this.$route.path.includes(path)
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'incomingSettlements',
-      'allPendingTransactions'
-    ]),
-    currentActiveMenu () {
-      if (this.$route.path.includes('wallets')) return '/wallets'
-      if (this.$route.path.includes('settlements')) return '/settlements/history'
-      return this.$route.path
     }
   }
 }
@@ -128,6 +210,8 @@ export default {
   height: 62px;
   background-color: #e43c34;
   margin-bottom: 100px;
+  display: flex;
+  justify-content: center;
 }
 .logo img {
   height: 62px;
