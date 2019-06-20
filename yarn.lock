@@ -6402,10 +6402,10 @@ ipaddr.js@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.8.0.tgz#eaa33d6ddd7ace8f7f6fe0c9ca0440e706738b1e"
 
-iroha-helpers@0.6.20-beta.0:
-  version "0.6.20-beta.0"
-  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.20-beta.0.tgz#17c60348ca567dbc04df7cf33c9b92b11d545f1b"
-  integrity sha512-aRPgVSTkYUng/IrC+wPWAl50IliJoI1QNg/IFPDBfqXFB0K0SbPctNMaVK7ECKw5bEh9Ydr/g6uJyCP0jfa9hA==
+iroha-helpers@0.6.20-beta.1:
+  version "0.6.20-beta.1"
+  resolved "https://registry.yarnpkg.com/iroha-helpers/-/iroha-helpers-0.6.20-beta.1.tgz#668abcb511fd968bef77d1e16f88926c50ce00bb"
+  integrity sha512-+0tU81MMFW7WU6acBw6qHdzrXvZ9BzfbAmDoFXZxtR3CfeH1gmDrC8EtPJQfEVpu84LvBSXGePVFRdDMPUVh+Q==
   dependencies:
     "@babel/polyfill" "^7.4.4"
     "@improbable-eng/grpc-web" "^0.9.1"
