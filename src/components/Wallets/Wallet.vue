@@ -432,7 +432,7 @@
           <div class="form-item-text">
             Withdrawal fee:
             <span class="form-item-text-amount">
-              {{ withdrawForm.amount * currentWithdrawalFee | formatPrecision }} {{ wallet.asset }}
+              {{ withdrawalFeeAmount | formatPrecision }} {{ wallet.asset }}
             </span>
           </div>
         </div>
@@ -540,7 +540,7 @@
           <div class="form-item-text">
             Transfer fee:
             <span class="form-item-text-amount">
-              {{ transferForm.amount * currentTransferFee | formatPrecision }} {{ wallet.asset }}
+              {{ transferFeeAmount | formatPrecision }} {{ wallet.asset }}
             </span>
           </div>
         </div>
@@ -606,6 +606,7 @@ import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
+import BigNumber from 'bignumber.js'
 
 import {
   _wallet,
@@ -775,6 +776,14 @@ export default {
 
     currentWithdrawalFee () {
       return this.withdrawalFee[this.wallet.assetId] ? this.withdrawalFee[this.wallet.assetId].feeFraction : 0
+    },
+
+    transferFeeAmount () {
+      return BigNumber(this.transferForm.amount).multipliedBy(this.currentTransferFee)
+    },
+
+    withdrawalFeeAmount () {
+      return BigNumber(this.withdrawForm.amount).multipliedBy(this.currentWithdrawalFee)
     }
   },
 
@@ -835,7 +844,7 @@ export default {
             to: notaryAccount,
             description: this.withdrawForm.wallet,
             amount: this.withdrawForm.amount.toString(),
-            fee: this.currentWithdrawalFee,
+            fee: this.withdrawalFeeAmount.toString(),
             feeType: FeeTypes.WITHDRAWAL
           })
             .then(() => {
@@ -873,7 +882,7 @@ export default {
             to: this.transferForm.to,
             description: this.transferForm.description,
             amount: this.transferForm.amount,
-            fee: this.currentTransferFee,
+            fee: this.transferFeeAmount.toString(),
             feeType: FeeTypes.TRANSFER
           })
             .then(() => {
