@@ -29,7 +29,6 @@
             :show-file-list="false"
             :auto-upload="false"
             :on-change="(f, l) => onTransactionChosen(f, l)"
-            :disabled="isTransactionLoading"
             drag
             class="transaction-uploader"
             action=""
@@ -47,7 +46,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 
 export default {
@@ -66,25 +65,28 @@ export default {
     }
   },
   data () {
-    return {
-      isTransactionLoading: false
-    }
-  },
-  computed: {
-    ...mapGetters([])
+    return {}
   },
   methods: {
-    ...mapActions([]),
+    ...mapActions([
+      'sendCustomTransaction'
+    ]),
     onTransactionChosen (file, fileList) {
       const reader = new FileReader()
-      let tx
 
       reader.onload = (ev) => {
-        tx = (ev.target.result || '').trim()
-        console.log(tx)
+        const bytes = ev.target.result || []
+        this.sendCustomTransaction(
+          new Uint8Array(bytes)
+        )
+          .then(() => this.$message.success('Transaction sended!'))
+          .catch((err) => {
+            this.$message.error('Error! Please check your transaction!')
+            console.error(err)
+          })
       }
 
-      reader.readAsText(file.raw)
+      reader.readAsArrayBuffer(file.raw)
     }
   }
 }
@@ -100,6 +102,10 @@ export default {
 .transaction-uploader .el-upload-dragger {
   width: 100%;
   height: 8rem;
+}
+
+.transaction-uploader .el-upload:focus {
+  color: #000000;
 }
 
 .transaction-uploader .el-upload-dragger > .el-icon-plus.image-uploader-icon {

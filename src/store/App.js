@@ -12,6 +12,7 @@ import cryptoCompareUtil from '@util/crypto-util'
 import { getParsedItem, setStringifyItem } from '@util/storage-util'
 import notaryUtil from '@util/notary-util'
 import configUtil from '@util/config-util'
+import irohaUtil from '@util/iroha'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -33,6 +34,7 @@ const types = flow(
   'GET_OFFER_TO_REQUEST_PRICE',
   'GET_FREE_ETH_RELAYS',
   'GET_FREE_BTC_RELAYS',
+  'SEND_CUSTOM_TRANSACTION',
 
   'LOAD_CONFIGURATION_FILE'
 ])
@@ -160,7 +162,11 @@ const mutations = {
   },
   [types.LOAD_CONFIGURATION_FILE_FAILURE] (state, err) {
     handleError(state, err)
-  }
+  },
+
+  [types.SEND_CUSTOM_TRANSACTION_REQUEST] () {},
+  [types.SEND_CUSTOM_TRANSACTION_SUCCESS] () {},
+  [types.SEND_CUSTOM_TRANSACTION_FAILURE] () {}
 }
 
 const actions = {
@@ -272,6 +278,16 @@ const actions = {
       .then(config => commit(types.LOAD_CONFIGURATION_FILE_SUCCESS, config))
       .catch(err => {
         commit(types.LOAD_CONFIGURATION_FILE_FAILURE)
+        throw err
+      })
+  },
+
+  sendCustomTransaction ({ commit }, bytes) {
+    commit(types.SEND_CUSTOM_TRANSACTION_REQUEST)
+    irohaUtil.sendCustomTransaction(bytes)
+      .then(() => commit(types.SEND_CUSTOM_TRANSACTION_SUCCESS))
+      .catch(err => {
+        commit(types.SEND_CUSTOM_TRANSACTION_FAILURE, err)
         throw err
       })
   }
