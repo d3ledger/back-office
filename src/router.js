@@ -61,6 +61,11 @@ const defaultRouter = new Router({
           component: lazyComponent('Reports/ReportsPage')
         },
         {
+          path: 'billing-reports',
+          name: 'billing-reports',
+          component: lazyComponent('Reports/BillingReportsPage')
+        },
+        {
           path: 'transactions',
           name: 'transactions',
           component: lazyComponent('Transactions/TransactionPage')

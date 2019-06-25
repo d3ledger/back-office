@@ -15,6 +15,7 @@ import { grpc } from 'grpc-web-client'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
+import billingReportUtil from '@util/billing-report-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
@@ -67,8 +68,10 @@ const types = flow(
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
   'GET_CUSTOM_ASSETS',
-  'SET_FEE',
   'GET_FULL_BILLING_DATA',
+  'GET_CUSTODY_BILLING_REPORT',
+  'GET_TRANSFER_BILLING_REPORT',
+  'GET_EXCHANGE_BILLING_REPORT',
   'ADD_NETWORK'
 ])
 
@@ -89,6 +92,9 @@ function initialState () {
     connectionError: null,
     acceptSettlementLoading: false,
     rejectSettlementLoading: false,
+    custodyBillingReport: [],
+    transferBillingReport: [],
+    exchangeBillingReport: [],
 
     customAssets: {},
 
@@ -425,6 +431,18 @@ const getters = {
 
   withdrawalFee (state) {
     return state.withdrawalFee
+  },
+
+  custodyBillingReport (state) {
+    return state.custodyBillingReport
+  },
+
+  transferBillingReport (state) {
+    return state.transferBillingReport
+  },
+
+  exchangeBillingReport (state) {
+    return state.exchangeBillingReport
   }
 }
 
@@ -740,6 +758,67 @@ const mutations = {
   [types.SET_WHITELIST_SUCCESS] (state) {},
 
   [types.SET_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_FULL_BILLING_DATA_REQUEST] () {},
+
+  [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
+    state.transferFee = response.transfer.d3 || {}
+    state.custodyFee = response.custody.d3 || {}
+    state.accountCreationFee = response.accountCreation.d3 || {}
+    state.exchangeFee = response.exchange.d3 || {}
+    state.withdrawalFee = response.withdrawal.d3 || {}
+  },
+
+  [types.GET_FULL_BILLING_DATA_FAILURE] () {},
+
+  [types.GET_CUSTODY_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_CUSTODY_BILLING_REPORT_SUCCESS] (state, result) {
+    state.custodyBillingReport = Object.entries(result.accounts[0].assetCustody)
+  },
+
+  [types.GET_CUSTODY_BILLING_REPORT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_TRANSFER_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_TRANSFER_BILLING_REPORT_SUCCESS] (state, result) {
+    state.transferBillingReport = result.transfers.map(item => {
+      let data = {}
+      data.fromAccount = item.transfer.srcAccountId
+      data.toAccount = item.transfer.destAccountId
+      data.asset = item.transfer.assetId
+      data.amount = item.transfer.amount
+      data.fee = item.fee.amount
+      return data
+    })
+  },
+
+  [types.GET_TRANSFER_BILLING_REPORT_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
+  [types.GET_EXCHANGE_BILLING_REPORT_REQUEST] (state) {},
+
+  [types.GET_EXCHANGE_BILLING_REPORT_SUCCESS] (state, result) {
+    state.exchangeBillingReport = result.batches.map(item => {
+      const data = {}
+      data.offerAccount = item.transactions[0].creatorId
+      data.offerFee = item.transactions[0].commands[0].amount
+      data.offerAmount = item.transactions[0].commands[1].amount
+      data.offerAsset = item.transactions[0].commands[1].assetId
+      data.requestAccount = item.transactions[0].commands[1].destAccountId
+      data.requestFee = item.transactions[1].commands[0].amount
+      data.requestAmount = item.transactions[1].commands[1].amount
+      data.requestAsset = item.transactions[1].commands[1].assetId
+      return data
+    })
+  },
+
+  [types.GET_EXCHANGE_BILLING_REPORT_FAILURE] (state, err) {
     handleError(state, err)
   },
 
@@ -1191,6 +1270,42 @@ const actions = {
       })
       .catch(err => {
         commit(types.SET_WHITELIST_FAILURE, err)
+        throw err
+      })
+  },
+
+  getCustodyBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_CUSTODY_BILLING_REPORT_REQUEST)
+    const paramsWithId = { ...params, accountId: getters.accountId }
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getCustodyUserReport(reportServiceUrl.value, paramsWithId)
+      .then(res => commit(types.GET_CUSTODY_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_CUSTODY_BILLING_REPORT_FAILURE, err)
+        throw err
+      })
+  },
+
+  getTransferBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_TRANSFER_BILLING_REPORT_REQUEST)
+    const paramsWithId = { ...params, accountId: getters.accountId }
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getTransferUserReport(reportServiceUrl.value, paramsWithId)
+      .then(res => commit(types.GET_TRANSFER_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_TRANSFER_BILLING_REPORT_FAILURE, err)
+        throw err
+      })
+  },
+
+  getExchangeBillingReport ({ commit, getters }, { params }) {
+    commit(types.GET_EXCHANGE_BILLING_REPORT_REQUEST)
+    const paramsWithId = { ...params, accountId: getters.accountId }
+    const reportServiceUrl = getters.servicesIPs['report-service']
+    return billingReportUtil.getExchangeUserReport(reportServiceUrl.value, paramsWithId)
+      .then(res => commit(types.GET_EXCHANGE_BILLING_REPORT_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_EXCHANGE_BILLING_REPORT_FAILURE, err)
         throw err
       })
   },

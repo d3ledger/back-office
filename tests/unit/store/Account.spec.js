@@ -137,7 +137,10 @@ describe('Account store', () => {
         custodyFee: {},
         accountCreationFee: {},
         exchangeFee: {},
-        withdrawalFee: {}
+        withdrawalFee: {},
+        custodyBillingReport: [],
+        transferBillingReport: [],
+        exchangeBillingReport: []
       }
 
       mutations[types.RESET](state)

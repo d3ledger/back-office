@@ -24,6 +24,9 @@
   "services": {
     "data-collector-service": {
       "value": "localhost:8087"
+    },
+    "report-service": {
+      "value": "localhost:8090"
     }
   }
 }
