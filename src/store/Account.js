@@ -737,6 +737,14 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.SET_WHITELIST_REQUEST] (state) {},
+
+  [types.SET_WHITELIST_SUCCESS] (state) {},
+
+  [types.SET_WHITELIST_FAILURE] (state, err) {
+    handleError(state, err)
+  },
+
   [types.GET_FULL_BILLING_DATA_REQUEST] () {},
 
   [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
@@ -748,14 +756,6 @@ const mutations = {
   },
 
   [types.GET_FULL_BILLING_DATA_FAILURE] () {},
-
-  [types.SET_WHITELIST_REQUEST] (state) {},
-
-  [types.SET_WHITELIST_SUCCESS] (state) {},
-
-  [types.SET_WHITELIST_FAILURE] (state, err) {
-    handleError(state, err)
-  },
 
   [types.GET_CUSTODY_BILLING_REPORT_REQUEST] (state) {},
 
