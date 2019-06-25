@@ -14,16 +14,21 @@
         <template slot-scope="scope">
           <div class="transaction_details">
             <el-row>
-              <el-col :span="6">{{ formatDateLong(scope.row.from.date) }}</el-col>
+              <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
               <el-col
-                :span="6"
+                :span="5"
                 class="transaction_details-amount"
               >
                 <p>- {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}</p>
                 <p>+ {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}</p>
               </el-col>
-              <el-col :span="6">{{ scope.row.from.message }}</el-col>
-              <el-col :span="6">{{ scope.row.from.to }}</el-col>
+              <el-col
+                :span="5"
+              >
+                <p>Fee: {{ scope.row.from.fee }} {{ assetName(scope.row.from.assetId) }}</p>
+              </el-col>
+              <el-col :span="5">{{ scope.row.from.message }}</el-col>
+              <el-col :span="5">{{ scope.row.from.to }}</el-col>
             </el-row>
           </div>
         </template>
@@ -36,6 +41,14 @@
           {{ scope.row.from.amount }} {{ assetName(scope.row.from.assetId) }}
           {{ '→' }}
           {{ scope.row.to.amount }} {{ assetName(scope.row.to.assetId) }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="Fee"
+        min-width="100"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.from.fee }} {{ assetName(scope.row.from.assetId) }}
         </template>
       </el-table-column>
       <el-table-column

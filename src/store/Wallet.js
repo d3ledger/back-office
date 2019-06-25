@@ -18,7 +18,8 @@ const types = flow(
   map(x => [x, x]),
   fromPairs
 )([
-  'GET_CRYPTO_FULL_DATA'
+  'GET_CRYPTO_FULL_DATA',
+  'GET_BILLING_DATA'
 ])
 
 function initialState () {

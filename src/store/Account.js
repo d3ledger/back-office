@@ -18,6 +18,7 @@ import collectorUtil from '@util/collector-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
+import billingUtil from '@util/billing-util'
 
 // TODO: Move it into notary's API so we have the same list
 const ASSETS = require('@util/crypto-list.json')
@@ -66,6 +67,8 @@ const types = flow(
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
   'GET_CUSTOM_ASSETS',
+  'SET_FEE',
+  'GET_FULL_BILLING_DATA',
   'ADD_NETWORK'
 ])
 
@@ -87,7 +90,13 @@ function initialState () {
     acceptSettlementLoading: false,
     rejectSettlementLoading: false,
 
-    customAssets: {}
+    customAssets: {},
+
+    transferFee: {},
+    custodyFee: {},
+    accountCreationFee: {},
+    exchangeFee: {},
+    withdrawalFee: {}
   }
 }
 
@@ -106,7 +115,8 @@ const getters = {
         id: a.assetId.replace(/#/g, '$'),
         assetId: a.assetId,
         domain: assetParts[1],
-        amount: a.balance
+        amount: a.balance,
+        billingId: a.assetId.replace(/#/g, '__')
       }
 
       const ASSET = ASSETS.find(d =>
@@ -157,8 +167,9 @@ const getters = {
         const isERC20 = !t.asset.match(/^(BTC|XOR|ETH)$/)
         if (isERC20) {
           return {
-            id: `${t.name}$d3`,
-            assetId: `${t.name}#d3`,
+            id: `${t.name.toLowerCase()}$d3`,
+            assetId: `${t.asset.toLowerCase()}#d3`,
+            billingId: `${t.asset.toLowerCase()}__d3`,
             domain: 'd3',
 
             name: t.name,
@@ -186,6 +197,7 @@ const getters = {
           return {
             id: `${name}$${domain}`,
             assetId: `${name}#${domain}`,
+            billingId: `${name}__${domain}`,
             domain: domain,
 
             name: t.name,
@@ -212,7 +224,8 @@ const getters = {
               assetId: `${DOMAIN_ASSETS[key]}#${domain}`,
               domain: domain,
               name: key,
-              asset: DOMAIN_ASSETS[key]
+              asset: DOMAIN_ASSETS[key],
+              billingId: `${DOMAIN_ASSETS[key]}__${domain}`
             }
           })
       }
@@ -392,6 +405,26 @@ const getters = {
   subscribed (state) {
     const subscription = find('push_subscription', state.accountInfo)
     return subscription && subscription.push_subscription.length > 0
+  },
+
+  transferFee (state) {
+    return state.transferFee
+  },
+
+  custodyFee (state) {
+    return state.custodyFee
+  },
+
+  accountCreationFee (state) {
+    return state.accountCreationFee
+  },
+
+  exchangeFee (state) {
+    return state.exchangeFee
+  },
+
+  withdrawalFee (state) {
+    return state.withdrawalFee
   }
 }
 
@@ -686,6 +719,22 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.SET_FEE_SUCCESS] () {},
+  [types.SET_FEE_REQUEST] () {},
+  [types.SET_FEE_FAILURE] () {},
+
+  [types.GET_FULL_BILLING_DATA_REQUEST] () {},
+
+  [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
+    state.transferFee = response.transfer.d3 || {}
+    state.custodyFee = response.custody.d3 || {}
+    state.accountCreationFee = response.accountCreation.d3 || {}
+    state.exchangeFee = response.exchange.d3 || {}
+    state.withdrawalFee = response.withdrawal.d3 || {}
+  },
+
+  [types.GET_FULL_BILLING_DATA_FAILURE] () {},
+
   [types.SET_WHITELIST_REQUEST] (state) {},
 
   [types.SET_WHITELIST_SUCCESS] (state) {},
@@ -897,15 +946,16 @@ const actions = {
       })
   },
 
-  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount }) {
+  transferAsset ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee, feeType }) {
     commit(types.TRANSFER_ASSET_REQUEST)
-
-    return irohaUtil.transferAsset(privateKeys, getters.irohaQuorum, {
+    return irohaUtil.transferAssetWithFee(privateKeys, getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
       assetId,
       description,
-      amount
+      amount,
+      fee,
+      feeType
     })
       .then(() => {
         commit(types.TRANSFER_ASSET_SUCCESS)
@@ -931,7 +981,7 @@ const actions = {
 
   createSettlement (
     { commit, state, getters },
-    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '' }
+    { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '', feeType, senderFee, recieverFee }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
 
@@ -945,7 +995,10 @@ const actions = {
       to,
       2,
       requestAssetId,
-      requestAmount
+      requestAmount,
+      feeType,
+      senderFee,
+      recieverFee
     )
       .then(() => {
         commit(types.CREATE_SETTLEMENT_SUCCESS)
@@ -1149,6 +1202,20 @@ const actions = {
       .then(res => commit(types.GET_CUSTOM_ASSETS_SUCCESS, res))
       .catch(err => {
         commit(types.GET_CUSTOM_ASSETS_FAILURE, err)
+        throw err
+      })
+  },
+
+  getFullBillingData ({ commit, getters }) {
+    commit(types.GET_FULL_BILLING_DATA_REQUEST)
+
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
+    return billingUtil.getFullBillingData(dataCollectorUrl)
+      .then(response => {
+        commit(types.GET_FULL_BILLING_DATA_SUCCESS, { response })
+      })
+      .catch(err => {
+        commit(types.GET_FULL_BILLING_DATA_FAILURE)
         throw err
       })
   }

@@ -42,7 +42,8 @@ describe('Account store', () => {
     getAccountAssetTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
     getAccountAssets: (accountId) => Promise.resolve(MOCK_ASSETS),
     getAccountTransactions: () => Promise.resolve(MOCK_TRANSACTIONS),
-    transferAsset: () => Promise.resolve()
+    transferAsset: () => Promise.resolve(),
+    transferAssetWithFee: () => Promise.resolve()
   })
 
   const notaryUtilMock = {
@@ -131,7 +132,12 @@ describe('Account store', () => {
         connectionError: null,
         acceptSettlementLoading: false,
         rejectSettlementLoading: false,
-        customAssets: {}
+        customAssets: {},
+        transferFee: {},
+        custodyFee: {},
+        accountCreationFee: {},
+        exchangeFee: {},
+        withdrawalFee: {}
       }
 
       mutations[types.RESET](state)
@@ -367,7 +373,9 @@ describe('Account store', () => {
           assetId: randomAssetId(),
           to: randomAccountId(),
           description: randomHex(10),
-          amount: randomAmount()
+          amount: randomAmount(),
+          fee: 0.01,
+          feeType: 'transfer'
         }
 
         actions.transferAsset({ commit, state, getters }, params)
@@ -404,7 +412,7 @@ describe('Account store', () => {
       it('should return wallets transformed from raw assets', () => {
         const state = { assets: MOCK_ASSETS }
         const result = getters.wallets(state)
-        const expectedKeys = ['id', 'assetId', 'name', 'asset', 'color', 'domain', 'amount', 'precision']
+        const expectedKeys = ['id', 'assetId', 'billingId', 'name', 'asset', 'color', 'domain', 'amount', 'precision']
 
         expect(result)
           .to.be.an('array')

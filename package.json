@@ -10,6 +10,7 @@
     "test:unit": "nyc --reporter=lcov --reporter=text vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "init-fake-tokens": "node scripts/setup",
+    "init-tokens": "node scripts/setup-assets-wrapper",
     "start-iroha": "docker-compose -f docker/docker-compose-dev.yaml up"
   },
   "dependencies": {
@@ -17,6 +18,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.3.0",
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "axios": "^0.18.0",
+    "bignumber.js": "^9.0.0",
     "cryptocoins-icons": "^2.9.0",
     "csv.js": "^1.0.6",
     "date-fns": "^1.29.0",

@@ -52,16 +52,28 @@
           class="el-form-item__error"
         >{{ _showError($v.exchangeForm.offer_amount) }}</span>
       </el-form-item>
-      <span class="form-item-text">
-        Available balance:
-        <span
-          v-if="exchangeDialogOfferAsset"
-          class="form-item-text-amount"
-        >
-          {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
-        </span>
-        <span v-else>...</span>
-      </span>
+      <div>
+        <div class="form-item-text">
+          Available balance:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ wallets.find(x => x.asset === exchangeDialogOfferAsset).amount | formatPrecision }} {{ exchangeDialogOfferAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+        <div class="form-item-text">
+          Offer fee:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ offerFeeAmount | formatPrecision }} {{ exchangeDialogOfferAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+      </div>
       <el-form-item
         label="I receive"
         prop="request_amount"
@@ -99,16 +111,29 @@
           class="el-form-item__error"
         >{{ _showError($v.exchangeForm.request_amount) }}</span>
       </el-form-item>
-      <span class="form-item-text">
-        Market price:
-        <span
-          v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
-          class="form-item-text-amount"
-        >
-          {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
-        </span>
-        <span v-else>...</span>
-      </span>
+      <div>
+        <div class="form-item-text">
+          Market price:
+          <span
+            v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
+            class="form-item-text-amount"
+          >
+            {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+        <div class="form-item-text">
+          Request fee:
+          <span
+            v-if="exchangeDialogOfferAsset"
+            class="form-item-text-amount"
+          >
+            {{ requestFeeAmount | formatPrecision }} {{ exchangeDialogRequestAsset }}
+          </span>
+          <span v-else>...</span>
+        </div>
+      </div>
+
       <el-form-item
         label="Counterparty"
         prop="to"
@@ -158,10 +183,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import BigNumber from 'bignumber.js'
 
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
+import { FeeTypes } from '@/data/consts'
 
 import {
   _user,
@@ -181,7 +208,8 @@ export default {
   validations () {
     const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
     const { amount, precision } = wallet || { amount: 0, precision: 0 }
-    const offerAmount = { amount: Number.MAX_SAFE_INTEGER, precision }
+    const offerAmount = { amount: amount, fee: this.currentOfferFee, precision }
+    const requestAmount = { amount: Number.MAX_SAFE_INTEGER, precision }
     return {
       exchangeForm: {
         to: {
@@ -189,15 +217,15 @@ export default {
           _userDomain: _user.nameDomain,
           _userExist: _user.nameExist
         },
-        request_amount: {
-          required,
-          _asset: _wallet.asset(this.exchangeDialogRequestAsset),
-          _amount: _amount(offerAmount)
-        },
         offer_amount: {
           required,
           _asset: _wallet.asset(this.exchangeDialogOfferAsset),
-          _amount: _amount({ amount, precision })
+          _amount: _amount(offerAmount)
+        },
+        request_amount: {
+          required,
+          _asset: _wallet.asset(this.exchangeDialogRequestAsset),
+          _amount: _amount(requestAmount)
         },
         description: {
           maxLength: maxLength(64)
@@ -216,13 +244,15 @@ export default {
       isExchangeSending: false
     }
   },
+
   computed: {
     ...mapGetters([
       'wallets',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
       'accountQuorum',
-      'availableAssets'
+      'availableAssets',
+      'exchangeFee'
     ]),
 
     assetsWithoutOffer () {
@@ -255,14 +285,38 @@ export default {
 
     numberOfSettlements () {
       return this.$store.getters.incomingSettlements.length
+    },
+
+    currentOfferFee () {
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      return wallet && this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
+    },
+
+    currentRequestFee () {
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset)
+      return wallet && this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
+    },
+
+    offerFeeAmount () {
+      return BigNumber(this.exchangeForm.offer_amount || 0).multipliedBy(this.currentOfferFee)
+    },
+
+    requestFeeAmount () {
+      return BigNumber(this.exchangeForm.request_amount || 0).multipliedBy(this.currentRequestFee)
     }
   },
+
+  created () {
+    this.getFullBillingData()
+  },
+
   methods: {
     ...mapActions([
       'openApprovalDialog',
       'closeExchangeDialog',
       'getOfferToRequestPrice',
-      'createSettlement'
+      'createSettlement',
+      'getFullBillingData'
     ]),
 
     closeExchangeDialogWith () {
@@ -292,7 +346,10 @@ export default {
             offerAmount: s.offer_amount,
             requestAssetId: requestAsset.toLowerCase(),
             requestAmount: s.request_amount,
-            description: s.description
+            description: s.description,
+            feeType: FeeTypes.EXCHANGE,
+            senderFee: this.offerFeeAmount,
+            recieverFee: this.requestFeeAmount
           })
             .then(() => {
               let completed = privateKeys.length === this.accountQuorum
