@@ -181,7 +181,7 @@ export default {
       params.from = date[0].getTime()
       params.to = date[1].getTime()
 
-      this.getCustodyBillingReport({ params }).then(() => {})
+      this.getCustodyBillingReport({ params })
     },
     updateTransferReport () {
       const { date, ...params } = this.reportForm
@@ -194,7 +194,7 @@ export default {
       params.from = date[0].getTime()
       params.to = date[1].getTime()
 
-      this.getTransferBillingReport({ params }).then(() => {})
+      this.getTransferBillingReport({ params })
     },
     updateExhcangeReport () {
       const { date, ...params } = this.reportForm
@@ -207,7 +207,7 @@ export default {
       params.from = date[0].getTime()
       params.to = date[1].getTime()
 
-      this.getExchangeBillingReport({ params }).then(() => {})
+      this.getExchangeBillingReport({ params })
     }
   }
 }

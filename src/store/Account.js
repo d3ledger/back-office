@@ -756,7 +756,7 @@ const mutations = {
 
   [types.SET_WHITELIST_REQUEST] (state) {},
 
-  [types.SET_WHITELIST_SUCCESS] (state) { },
+  [types.SET_WHITELIST_SUCCESS] (state) {},
 
   [types.SET_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
