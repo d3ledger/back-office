@@ -1206,26 +1206,6 @@ const actions = {
       })
   },
 
-  setFee ({ commit, state, dispatch, getters }, { privateKeys, asset, amount, type }) {
-    commit(types.SET_FEE_REQUEST)
-
-    const accountId = `${type}@d3`
-
-    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId,
-      key: asset,
-      // eslint-disable-next-line
-      value: amount
-    })
-      .then(() => {
-        commit(types.SET_FEE_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.SET_FEE_FAILURE)
-        throw err
-      })
-  },
-
   getFullBillingData ({ commit, getters }) {
     commit(types.GET_FULL_BILLING_DATA_REQUEST)
 
