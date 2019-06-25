@@ -8,6 +8,7 @@ import {
   sendTransactions,
   txHelper
 } from 'iroha-helpers'
+import Transaction from 'iroha-helpers/lib/proto/transaction_pb'
 import {
   newCommandService,
   newCommandServiceOptions
@@ -127,6 +128,15 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
   return sendTransactions(batch, txClient, timeoutLimit, [
     'REJECTED',
     'STATEFUL_VALIDATION_FAILED'
+  ])
+}
+
+function sendCustomTransaction (bytes, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  const txClient = newCommandService()
+  let tx = Transaction.Transaction.deserializeBinary(bytes)
+
+  return sendTransactions([tx], txClient, timeoutLimit, [
+    'COMMITTED'
   ])
 }
 
@@ -260,5 +270,6 @@ export {
   rejectSettlement,
   setAccountDetail,
   setAccountQuorum,
+  sendCustomTransaction,
   signPendingTransaction
 }
