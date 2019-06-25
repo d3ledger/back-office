@@ -1276,9 +1276,9 @@ const actions = {
 
   getCustodyBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_CUSTODY_BILLING_REPORT_REQUEST)
-    params = { ...params, accountId: getters.accountId }
+    const paramsWithId = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
-    return billingReportUtil.getCustodyUserReport(reportServiceUrl.value, params)
+    return billingReportUtil.getCustodyUserReport(reportServiceUrl.value, paramsWithId)
       .then(res => commit(types.GET_CUSTODY_BILLING_REPORT_SUCCESS, res))
       .catch(err => {
         commit(types.GET_CUSTODY_BILLING_REPORT_FAILURE, err)
@@ -1288,9 +1288,9 @@ const actions = {
 
   getTransferBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_TRANSFER_BILLING_REPORT_REQUEST)
-    params = { ...params, accountId: getters.accountId }
+    const paramsWithId = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
-    return billingReportUtil.getTransferUserReport(reportServiceUrl.value, params)
+    return billingReportUtil.getTransferUserReport(reportServiceUrl.value, paramsWithId)
       .then(res => commit(types.GET_TRANSFER_BILLING_REPORT_SUCCESS, res))
       .catch(err => {
         commit(types.GET_TRANSFER_BILLING_REPORT_FAILURE, err)
@@ -1300,9 +1300,9 @@ const actions = {
 
   getExchangeBillingReport ({ commit, getters }, { params }) {
     commit(types.GET_EXCHANGE_BILLING_REPORT_REQUEST)
-    params = { ...params, accountId: getters.accountId }
+    const paramsWithId = { ...params, accountId: getters.accountId }
     const reportServiceUrl = getters.servicesIPs['report-service']
-    return billingReportUtil.getExchangeUserReport(reportServiceUrl.value, params)
+    return billingReportUtil.getExchangeUserReport(reportServiceUrl.value, paramsWithId)
       .then(res => commit(types.GET_EXCHANGE_BILLING_REPORT_SUCCESS, res))
       .catch(err => {
         commit(types.GET_EXCHANGE_BILLING_REPORT_FAILURE, err)
