@@ -68,7 +68,6 @@ const types = flow(
   'UNSUBSCRIBE_PUSH_NOTIFICATIONS',
   'SET_WHITELIST',
   'GET_CUSTOM_ASSETS',
-  'SET_FEE',
   'GET_FULL_BILLING_DATA',
   'GET_CUSTODY_BILLING_REPORT',
   'GET_TRANSFER_BILLING_REPORT',
@@ -738,10 +737,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SET_FEE_SUCCESS] () {},
-  [types.SET_FEE_REQUEST] () {},
-  [types.SET_FEE_FAILURE] () {},
-
   [types.GET_FULL_BILLING_DATA_REQUEST] () {},
 
   [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
@@ -761,12 +756,6 @@ const mutations = {
   [types.SET_WHITELIST_FAILURE] (state, err) {
     handleError(state, err)
   },
-
-  [types.SET_FEE_SUCCESS] () {},
-
-  [types.SET_FEE_REQUEST] () {},
-
-  [types.SET_FEE_FAILURE] () {},
 
   [types.GET_FULL_BILLING_DATA_REQUEST] () {},
 
