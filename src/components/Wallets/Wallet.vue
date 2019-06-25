@@ -838,7 +838,7 @@ export default {
           this.isSending = true
           const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
-          return this.transferAssetWithFee({
+          return this.transferAsset({
             privateKeys,
             assetId: this.wallet.assetId,
             to: notaryAccount,
