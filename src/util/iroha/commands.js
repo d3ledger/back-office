@@ -67,11 +67,10 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
     { srcAccountId: senderAccountId, destAccountId: receiverAccountId, assetId: senderAssetId, description, amount: senderAmount }
   )
   if (senderFee > 0) {
-    const amount = (Number(senderAmount) * senderFee).toString()
     senderTx = txHelper.addCommand(
       senderTx,
       'transferAsset',
-      { srcAccountId: senderAccountId, destAccountId: feeAccountId, assetId: senderAssetId, description, amount }
+      { srcAccountId: senderAccountId, destAccountId: feeAccountId, assetId: senderAssetId, description, amount: senderFee }
     )
   }
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: senderAccountId, quorum: senderQuorum })
@@ -82,11 +81,10 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
     { srcAccountId: receiverAccountId, destAccountId: senderAccountId, assetId: receiverAssetId, description, amount: receiverAmount }
   )
   if (receiverFee > 0) {
-    const amount = (Number(receiverAmount) * receiverFee).toString()
     receiverTx = txHelper.addCommand(
       receiverTx,
       'transferAsset',
-      { srcAccountId: receiverAccountId, destAccountId: feeAccountId, assetId: receiverAssetId, description, amount }
+      { srcAccountId: receiverAccountId, destAccountId: feeAccountId, assetId: receiverAssetId, description, amount: receiverFee }
     )
   }
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
@@ -186,7 +184,7 @@ const transferAssetWithFee = (privateKeys, quorum, {
   let txClient = newCommandService()
   let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
   if (fee > 0) {
-    senderTx = txHelper.addCommand(senderTx, 'transferAsset', { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: (Number(amount) * fee).toString() })
+    senderTx = txHelper.addCommand(senderTx, 'transferAsset', { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: fee })
   }
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: srcAccountId, quorum })
   senderTx = signWithArrayOfKeys(senderTx, privateKeys)

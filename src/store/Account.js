@@ -738,6 +738,22 @@ const mutations = {
     handleError(state, err)
   },
 
+  [types.SET_FEE_SUCCESS] () {},
+  [types.SET_FEE_REQUEST] () {},
+  [types.SET_FEE_FAILURE] () {},
+
+  [types.GET_FULL_BILLING_DATA_REQUEST] () {},
+
+  [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
+    state.transferFee = response.transfer.d3 || {}
+    state.custodyFee = response.custody.d3 || {}
+    state.accountCreationFee = response.accountCreation.d3 || {}
+    state.exchangeFee = response.exchange.d3 || {}
+    state.withdrawalFee = response.withdrawal.d3 || {}
+  },
+
+  [types.GET_FULL_BILLING_DATA_FAILURE] () {},
+
   [types.SET_WHITELIST_REQUEST] (state) {},
 
   [types.SET_WHITELIST_SUCCESS] (state) { },
@@ -1316,26 +1332,6 @@ const actions = {
       .then(res => commit(types.GET_CUSTOM_ASSETS_SUCCESS, res))
       .catch(err => {
         commit(types.GET_CUSTOM_ASSETS_FAILURE, err)
-        throw err
-      })
-  },
-
-  setFee ({ commit, state, dispatch, getters }, { privateKeys, asset, amount, type }) {
-    commit(types.SET_FEE_REQUEST)
-
-    const accountId = `${type}@d3`
-
-    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
-      accountId,
-      key: asset,
-      // eslint-disable-next-line
-      value: amount
-    })
-      .then(() => {
-        commit(types.SET_FEE_SUCCESS)
-      })
-      .catch(err => {
-        commit(types.SET_FEE_FAILURE)
         throw err
       })
   },
