@@ -198,6 +198,8 @@ import {
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
 
+BigNumber.config({ DECIMAL_PLACES: 18 })
+
 export default {
   name: 'ExchangeModal',
   mixins: [
