@@ -96,6 +96,8 @@ import 'echarts/lib/component/dataZoom'
 import VueClipboard from 'vue-clipboard2'
 
 import Vuelidate from 'vuelidate'
+import BigNumber from 'bignumber.js'
+BigNumber.set({ EXPONENTIAL_AT: [-19, 20] })
 
 Vue.use(Vuelidate)
 

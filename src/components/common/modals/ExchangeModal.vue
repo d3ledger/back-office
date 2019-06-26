@@ -293,16 +293,16 @@ export default {
     },
 
     currentRequestFee () {
-      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogRequestAsset)
+      const wallet = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset)
       return wallet && this.exchangeFee[wallet.assetId] ? this.exchangeFee[wallet.assetId].feeFraction : 0
     },
 
     offerFeeAmount () {
-      return BigNumber(this.exchangeForm.offer_amount || 0).multipliedBy(this.currentOfferFee)
+      return BigNumber(this.exchangeForm.offer_amount || 0).multipliedBy(this.currentOfferFee).toString()
     },
 
     requestFeeAmount () {
-      return BigNumber(this.exchangeForm.request_amount || 0).multipliedBy(this.currentRequestFee)
+      return BigNumber(this.exchangeForm.request_amount || 0).multipliedBy(this.currentRequestFee).toString()
     }
   },
 
