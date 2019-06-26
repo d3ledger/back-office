@@ -147,7 +147,7 @@ export const errorHandler = {
 // Note that the validator function accepts two parameters: the value and a debounce function to wrap
 // the asynchronous validation.
 // https://github.com/vuelidate/vuelidate/issues/242#issuecomment-428558197
-export function debounceAsyncValidator (validator, delay) {
+function debounceAsyncValidator (validator, delay) {
   let currentTimer = null
   let currentPromiseReject = null
 

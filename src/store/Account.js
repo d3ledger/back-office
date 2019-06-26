@@ -1058,11 +1058,22 @@ const actions = {
       })
   },
 
-  createSettlement (
+  async createSettlement (
     { commit, state, getters },
     { privateKeys, to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '', feeType, senderFee, recieverFee }
   ) {
     commit(types.CREATE_SETTLEMENT_REQUEST)
+
+    let receiverQuorum = 2
+    try {
+      const { itIs } = await collectorUtil.getAccountQuorum(
+        getters.servicesIPs['data-collector-service'],
+        requestAssetId
+      )
+      receiverQuorum = itIs
+    } catch (err) {
+      return commit(types.CREATE_SETTLEMENT_FAILURE, err)
+    }
 
     return irohaUtil.createSettlement(
       privateKeys,
@@ -1072,7 +1083,7 @@ const actions = {
       offerAmount,
       description,
       to,
-      2,
+      receiverQuorum,
       requestAssetId,
       requestAmount,
       feeType,

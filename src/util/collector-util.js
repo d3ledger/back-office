@@ -20,7 +20,7 @@ const checkAccountExists = (url, accountId) => {
 }
 
 const getAccountQuorum = (url, accountId) => {
-  const formattedString = querystring.stringify(accountId)
+  const formattedString = querystring.stringify({ accountId })
 
   return axios({
     url: `/iroha/account/quorum?${formattedString}`,
