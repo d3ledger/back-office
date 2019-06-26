@@ -617,8 +617,6 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { FeeTypes } from '@/data/consts'
 
-BigNumber.set({ EXPONENTIAL_AT: [-19, 20] })
-
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
 const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'

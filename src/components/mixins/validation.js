@@ -8,8 +8,6 @@ import lte from 'lodash/fp/lte'
 import BigNumber from 'bignumber.js'
 import { SearchTypes } from '@/data/consts'
 
-BigNumber.set({ EXPONENTIAL_AT: [-19, 20] })
-
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
 const errorMessages = {
