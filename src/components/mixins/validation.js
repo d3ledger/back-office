@@ -8,12 +8,15 @@ import lte from 'lodash/fp/lte'
 import BigNumber from 'bignumber.js'
 import { SearchTypes } from '@/data/consts'
 
+import collectorUtil from '@util/collector-util'
+
 const getPrecision = (v) => (v.split('.')[1] || []).length
 
 const errorMessages = {
   _userName: 'Username should match [a-z_0-9]{1,32}',
   _userDomain: 'Username should match [a-z_0-9]{1,32}@[a-z_0-9]{1,9}',
-  _userExist: 'This username not exist',
+  _userExist: 'This username does not exist',
+  _userIsMe: 'Username should not be same as your username',
 
   _keyPattern: 'Please provide correct private key',
   _keyDuplication: 'This key already used',
@@ -75,8 +78,16 @@ export const _user = {
     if (!pattern.test(name)) return false
     return true
   },
-  nameExist: async (name) => {
-    return true
+  nameExist: (url) => debounceAsyncValidator((name, debounce) => {
+    if (!_user.nameDomain(name)) return Promise.resolve(false)
+
+    return debounce()
+      .then(() => collectorUtil.checkAccountExists(url.value, name))
+      .then(res => res.itIs)
+      .catch(() => {})
+  }, 500),
+  isMe: (accountId) => (name) => {
+    return !(accountId === name)
   }
 }
 
@@ -129,5 +140,35 @@ export const errorHandler = {
       const fields = Object.keys(model).filter(k => k.includes('_') && !model[k])
       if (fields.length) return errorMessages[fields[0]]
     }
+  }
+}
+
+// This is the wrapper function: validator is the actual validation function, and delay is in milliseconds.
+// Note that the validator function accepts two parameters: the value and a debounce function to wrap
+// the asynchronous validation.
+// https://github.com/vuelidate/vuelidate/issues/242#issuecomment-428558197
+export function debounceAsyncValidator (validator, delay) {
+  let currentTimer = null
+  let currentPromiseReject = null
+
+  function debounce () {
+    return new Promise((resolve, reject) => {
+      currentTimer = setTimeout(() => {
+        currentTimer = null
+        currentPromiseReject = null
+        resolve()
+      }, delay)
+      currentPromiseReject = reject
+    })
+  }
+
+  return function (value) {
+    if (currentTimer) {
+      currentPromiseReject(new Error('replaced'))
+      clearTimeout(currentTimer)
+      currentTimer = null
+    }
+
+    return validator.call(this, value, debounce)
   }
 }
