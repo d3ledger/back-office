@@ -215,7 +215,10 @@ export default {
         to: {
           required,
           _userDomain: _user.nameDomain,
-          _userExist: _user.nameExist
+          _userExist: _user.nameExist(
+            this.servicesIPs['data-collector-service']
+          ),
+          _userIsMe: _user.isMe(this.accountId)
         },
         offer_amount: {
           required,
@@ -252,7 +255,9 @@ export default {
       'exchangeDialogPrice',
       'accountQuorum',
       'availableAssets',
-      'exchangeFee'
+      'exchangeFee',
+      'servicesIPs',
+      'accountId'
     ]),
 
     assetsWithoutOffer () {
