@@ -617,7 +617,7 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { FeeTypes } from '@/data/consts'
 
-BigNumber.config({ DECIMAL_PLACES: 18 })
+BigNumber.set({ EXPONENTIAL_AT: [-19, 20] })
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -781,11 +781,11 @@ export default {
     },
 
     transferFeeAmount () {
-      return BigNumber(this.transferForm.amount || 0).multipliedBy(this.currentTransferFee)
+      return BigNumber(this.transferForm.amount || 0).multipliedBy(this.currentTransferFee).toString()
     },
 
     withdrawalFeeAmount () {
-      return BigNumber(this.withdrawForm.amount || 0).multipliedBy(this.currentWithdrawalFee)
+      return BigNumber(this.withdrawForm.amount || 0).multipliedBy(this.currentWithdrawalFee).toString()
     }
   },
 

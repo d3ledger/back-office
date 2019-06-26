@@ -198,7 +198,7 @@ import {
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
 
-BigNumber.config({ DECIMAL_PLACES: 18 })
+BigNumber.set({ EXPONENTIAL_AT: [-19, 20] })
 
 export default {
   name: 'ExchangeModal',
