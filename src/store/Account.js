@@ -1068,7 +1068,7 @@ const actions = {
     try {
       const { itIs } = await collectorUtil.getAccountQuorum(
         getters.servicesIPs['data-collector-service'],
-        requestAssetId
+        to
       )
       receiverQuorum = itIs
     } catch (err) {
