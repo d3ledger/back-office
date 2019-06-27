@@ -403,23 +403,8 @@
           label="I send"
           prop="amount"
         >
-          <NumberInput
-            :input-model.sync="$v.withdrawForm.amount.$model"
-            :input-class="[
-              _isValid($v.withdrawForm.amount) ? 'border_success' : '',
-              _isError($v.withdrawForm.amount) ? 'border_fail' : ''
-            ]"
-            :input-placeholder="0"
-            input-name="amount"
-          >
-            <template v-slot:r>
-              <div>
-                {{ wallet.asset }}
-                123123123
-              </div>
-            </template>
-          </NumberInput>
-          <!-- <el-input
+          <el-input
+            v-numeric
             v-model="$v.withdrawForm.amount.$model"
             :class="[
               _isValid($v.withdrawForm.amount) ? 'border_success' : '',
@@ -432,7 +417,7 @@
             <div slot="append">
               {{ wallet.asset }}
             </div>
-          </el-input> -->
+          </el-input>
           <span
             v-if="_isError($v.withdrawForm.amount)"
             class="el-form-item__error"
@@ -528,6 +513,7 @@
           prop="amount"
         >
           <el-input
+            v-numeric
             v-model="$v.transferForm.amount.$model"
             :class="[
               _isValid($v.transferForm.amount) ? 'border_success' : '',
