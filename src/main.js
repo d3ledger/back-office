@@ -178,6 +178,23 @@ library.add(
 )
 Vue.component('fa-icon', FontAwesomeIcon)
 
+Vue.directive('numeric', {
+  _onKeyPress (e) {
+    const charCode = (e.which) ? e.which : e.keyCode
+    if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+      e.preventDefault()
+    } else {
+      return true
+    }
+  },
+  bind (el, binding, vnode) {
+    vnode.componentInstance.$refs.input.addEventListener('keypress', binding.def._onKeyPress)
+  },
+  unbind (el, binding, vnode) {
+    vnode.componentInstance.$refs.input.removeEventListener('keypress', binding.def._onKeyPress)
+  }
+})
+
 Vue.config.productionTip = false
 
 new Vue({
