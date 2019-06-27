@@ -737,22 +737,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.SET_FEE_SUCCESS] () {},
-  [types.SET_FEE_REQUEST] () {},
-  [types.SET_FEE_FAILURE] () {},
-
-  [types.GET_FULL_BILLING_DATA_REQUEST] () {},
-
-  [types.GET_FULL_BILLING_DATA_SUCCESS] (state, { response }) {
-    state.transferFee = response.transfer.d3 || {}
-    state.custodyFee = response.custody.d3 || {}
-    state.accountCreationFee = response.accountCreation.d3 || {}
-    state.exchangeFee = response.exchange.d3 || {}
-    state.withdrawalFee = response.withdrawal.d3 || {}
-  },
-
-  [types.GET_FULL_BILLING_DATA_FAILURE] () {},
-
   [types.SET_WHITELIST_REQUEST] (state) {},
 
   [types.SET_WHITELIST_SUCCESS] (state) {},
