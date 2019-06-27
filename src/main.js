@@ -188,10 +188,12 @@ Vue.directive('numeric', {
     }
   },
   bind (el, binding, vnode) {
-    vnode.componentInstance.$refs.input.addEventListener('keypress', binding.def._onKeyPress)
+    el.querySelector('input[type="number"]')
+      .addEventListener('keypress', binding.def._onKeyPress)
   },
   unbind (el, binding, vnode) {
-    vnode.componentInstance.$refs.input.removeEventListener('keypress', binding.def._onKeyPress)
+    el.querySelector('input[type="number"]')
+      .removeEventListener('keypress', binding.def._onKeyPress)
   }
 })
 
