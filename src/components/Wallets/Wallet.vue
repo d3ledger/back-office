@@ -660,7 +660,10 @@ export default {
         to: {
           required,
           _userDomain: _user.nameDomain,
-          _userExist: _user.nameExist
+          _userExist: _user.nameExist(
+            this.servicesIPs['data-collector-service']
+          ),
+          _userIsMe: _user.isMe(this.accountId)
         },
         amount: {
           required,
@@ -706,7 +709,9 @@ export default {
       'wallets',
       'getPaginationMetaByAssetId',
       'transferFee',
-      'withdrawalFee'
+      'withdrawalFee',
+      'servicesIPs',
+      'accountId'
     ]),
 
     wallet () {
