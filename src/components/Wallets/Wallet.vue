@@ -403,7 +403,23 @@
           label="I send"
           prop="amount"
         >
-          <el-input
+          <NumberInput
+            :input-model.sync="$v.withdrawForm.amount.$model"
+            :input-class="[
+              _isValid($v.withdrawForm.amount) ? 'border_success' : '',
+              _isError($v.withdrawForm.amount) ? 'border_fail' : ''
+            ]"
+            :input-placeholder="0"
+            input-name="amount"
+          >
+            <template v-slot:r>
+              <div>
+                {{ wallet.asset }}
+                123123123
+              </div>
+            </template>
+          </NumberInput>
+          <!-- <el-input
             v-model="$v.withdrawForm.amount.$model"
             :class="[
               _isValid($v.withdrawForm.amount) ? 'border_success' : '',
@@ -416,7 +432,7 @@
             <div slot="append">
               {{ wallet.asset }}
             </div>
-          </el-input>
+          </el-input> -->
           <span
             v-if="_isError($v.withdrawForm.amount)"
             class="el-form-item__error"
@@ -632,7 +648,8 @@ export default {
   components: {
     AssetIcon,
     QrcodeVue,
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+    NoAssetsCard: lazyComponent('common/NoAssetsCard'),
+    NumberInput: lazyComponent('common/NumberInput')
   },
   mixins: [
     dateFormat,
