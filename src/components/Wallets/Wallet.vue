@@ -634,8 +634,7 @@ export default {
   components: {
     AssetIcon,
     QrcodeVue,
-    NoAssetsCard: lazyComponent('common/NoAssetsCard'),
-    NumberInput: lazyComponent('common/NumberInput')
+    NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   mixins: [
     dateFormat,
