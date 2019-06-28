@@ -115,6 +115,7 @@
               prop="amount"
             >
               <el-input
+                v-numeric
                 v-model="limitForm.amount"
                 type="number"
                 placeholder="0"
@@ -183,6 +184,7 @@
             </el-form-item>
             <el-form-item label="Limit">
               <el-input
+                v-numeric
                 v-model="editLimitForm.amount"
                 type="number"
                 placeholder="0"

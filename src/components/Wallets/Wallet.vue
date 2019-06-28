@@ -404,6 +404,7 @@
           prop="amount"
         >
           <el-input
+            v-numeric
             v-model="$v.withdrawForm.amount.$model"
             :class="[
               _isValid($v.withdrawForm.amount) ? 'border_success' : '',
@@ -512,6 +513,7 @@
           prop="amount"
         >
           <el-input
+            v-numeric
             v-model="$v.transferForm.amount.$model"
             :class="[
               _isValid($v.transferForm.amount) ? 'border_success' : '',
