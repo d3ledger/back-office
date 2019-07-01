@@ -447,7 +447,7 @@ export default {
   height: 4.5rem;
   padding-left: 1.2rem;
   padding-top: 1.2rem;
-  line-height: 0;
+  line-height: 1rem;
   font-size: 1rem;
   border-radius: 0.1rem;
 }
