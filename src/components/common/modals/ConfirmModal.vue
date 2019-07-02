@@ -48,6 +48,7 @@
                   _isValid($v.approvalForm.privateKeys.$each[index], 'hex') ? 'border_success' : '',
                   _isError($v.approvalForm.privateKeys.$each[index]) ? 'border_fail' : ''
                 ]"
+                type="password"
                 @blur="checkPrivateKey(index)"
                 @input="checkPrivateKey(index)"
               />

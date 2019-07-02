@@ -37,6 +37,7 @@
                   _isError($v.form.privateKey) ? 'border_fail' : ''
                 ]"
                 name="privateKey"
+                type="password"
               />
             </el-col>
 
