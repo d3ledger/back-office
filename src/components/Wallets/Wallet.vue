@@ -53,7 +53,7 @@
                     v-if="accountExist"
                     role="button"
                     class="card_actions-button button"
-                    @click="withdrawFormVisible = true; getFullBillingData()"
+                    @click="onOpenWithdrawalForm"
                   >
                     <fa-icon
                       class="card_actions-button-text"
@@ -67,7 +67,7 @@
                   <div
                     role="button"
                     class="card_actions-button button"
-                    @click="transferFormVisible = true; getFullBillingData()"
+                    @click="onOpenTransferForm"
                   >
                     <fa-icon
                       class="card_actions-button-text"
@@ -605,10 +605,10 @@ import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
+import numberHandler from '@/components/mixins/numberHandler'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
-import BigNumber from 'bignumber.js'
 
 import {
   _wallet,
@@ -639,6 +639,7 @@ export default {
   mixins: [
     dateFormat,
     numberFormat,
+    numberHandler,
     currencySymbol,
     messageMixin,
     errorHandler
@@ -713,7 +714,8 @@ export default {
       'transferFee',
       'withdrawalFee',
       'servicesIPs',
-      'accountId'
+      'accountId',
+      'currentWalletPrecision'
     ]),
 
     wallet () {
@@ -786,11 +788,19 @@ export default {
     },
 
     transferFeeAmount () {
-      return BigNumber(this.transferForm.amount || 0).multipliedBy(this.currentTransferFee).toString()
+      return this.$_calculateFee(
+        this.transferForm.amount,
+        this.currentTransferFee,
+        this.currentWalletPrecision
+      ).toString()
     },
 
     withdrawalFeeAmount () {
-      return BigNumber(this.withdrawForm.amount || 0).multipliedBy(this.currentWithdrawalFee).toString()
+      return this.$_calculateFee(
+        this.withdrawForm.amount,
+        this.currentWithdrawalFee,
+        this.currentWalletPrecision
+      ).toString()
     }
   },
 
@@ -814,7 +824,8 @@ export default {
       'getAccountAssetTransactionsNextPage',
       'getCryptoFullData',
       'transferAsset',
-      'getFullBillingData'
+      'getFullBillingData',
+      'getAssetPrecision'
     ]),
 
     fetchWallet () {
@@ -833,6 +844,11 @@ export default {
         asset: this.wallet.asset,
         billingId: this.wallet.billingId
       })
+    },
+
+    onOpenWithdrawalForm () {
+      this.requestDataBeforeOpen()
+      this.withdrawFormVisible = true
     },
 
     onSubmitWithdrawalForm () {
@@ -874,6 +890,11 @@ export default {
         .finally(() => { this.isSending = false })
     },
 
+    onOpenTransferForm () {
+      this.requestDataBeforeOpen()
+      this.transferFormVisible = true
+    },
+
     onSubmitTransferForm () {
       this.$v.transferForm.$touch()
       if (this.$v.transferForm.$invalid) return
@@ -889,7 +910,7 @@ export default {
             to: this.transferForm.to,
             description: this.transferForm.description,
             amount: this.transferForm.amount,
-            fee: this.transferFeeAmount.toString(),
+            fee: this.transferFeeAmount,
             feeType: FeeTypes.TRANSFER
           })
             .then(() => {
@@ -932,6 +953,11 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
+    },
+
+    requestDataBeforeOpen () {
+      this.getFullBillingData()
+      this.getAssetPrecision(this.wallet.assetId)
     },
 
     onNextPage (page) {

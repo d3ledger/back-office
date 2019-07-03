@@ -39,8 +39,20 @@ const getAllAssets = (url) => {
     .catch(err => err)
 }
 
+const getAssetPrecision = (url, assetId) => {
+  // encodeURIComponent used for escape # character in assedId
+  const encodedAssetId = encodeURIComponent(assetId)
+  return axios({
+    url: `/iroha/asset/precision/${encodedAssetId}`,
+    baseURL: `${PROTOCOL}//${url}`
+  })
+    .then(({ data }) => data)
+    .catch(err => err)
+}
+
 export default {
   checkAccountExists,
   getAccountQuorum,
-  getAllAssets
+  getAllAssets,
+  getAssetPrecision
 }

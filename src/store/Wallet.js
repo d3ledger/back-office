@@ -9,6 +9,7 @@ import concat from 'lodash/fp/concat'
 import fromPairs from 'lodash/fp/fromPairs'
 import flow from 'lodash/fp/flow'
 import cryptoCompareUtil from '@util/crypto-util'
+import collectorUtil from '@util/collector-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -19,7 +20,7 @@ const types = flow(
   fromPairs
 )([
   'GET_CRYPTO_FULL_DATA',
-  'GET_BILLING_DATA'
+  'GET_ASSET_PRECISION'
 ])
 
 function initialState () {
@@ -44,6 +45,9 @@ function initialState () {
       },
       isLoading: false
     },
+    currentWallet: {
+      precision: 0
+    },
     connectionError: null
   }
 }
@@ -53,6 +57,9 @@ const state = initialState()
 const getters = {
   cryptoInfo (state) {
     return state.cryptoInfo
+  },
+  currentWalletPrecision (state) {
+    return state.currentWallet.precision
   }
 }
 
@@ -76,7 +83,6 @@ const mutations = {
   [types.GET_CRYPTO_FULL_DATA_REQUEST] (state) {
     Vue.set(state.cryptoInfo, 'isLoading', true)
   },
-
   [types.GET_CRYPTO_FULL_DATA_SUCCESS] (
     state,
     {
@@ -137,11 +143,16 @@ const mutations = {
       isLoading: false
     })
   },
-
   [types.GET_CRYPTO_FULL_DATA_FAILURE] (state, err) {
     Vue.set(state, 'cryptoInfo', initialState().cryptoInfo)
     handleError(state, err)
-  }
+  },
+
+  [types.GET_ASSET_PRECISION_REQUEST] (state, assetId) {},
+  [types.GET_ASSET_PRECISION_SUCCESS] (state, { itIs }) {
+    Vue.set(state.currentWallet, 'precision', itIs)
+  },
+  [types.GET_ASSET_PRECISION_FAILURE] (state) {}
 }
 
 const actions = {
@@ -167,6 +178,20 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_CRYPTO_FULL_DATA_FAILURE, err)
+        throw err
+      })
+  },
+
+  getAssetPrecision ({ commit, getters }, assetId) {
+    commit(types.GET_ASSET_PRECISION_REQUEST, assetId)
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service']
+    return collectorUtil.getAssetPrecision(
+      dataCollectorUrl.value,
+      assetId
+    )
+      .then(res => commit(types.GET_ASSET_PRECISION_SUCCESS, res))
+      .catch(err => {
+        commit(types.GET_ASSET_PRECISION_FAILURE, err)
         throw err
       })
   }
