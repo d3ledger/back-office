@@ -43,6 +43,9 @@ describe('Wallet store', () => {
           },
           isLoading: true
         },
+        currentWallet: {
+          precision: randomAmountRng()
+        },
         connectionError: new Error()
       }
       const expectedState = {
@@ -65,6 +68,9 @@ describe('Wallet store', () => {
             supply: 0
           },
           isLoading: false
+        },
+        currentWallet: {
+          precision: 0
         },
         connectionError: null
       }
