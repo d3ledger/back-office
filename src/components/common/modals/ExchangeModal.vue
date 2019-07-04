@@ -36,7 +36,6 @@
             v-model="exchangeDialogOfferAsset"
             placeholder="Asset"
             style="width: 100px"
-            @change="getOfferToRequestPrice()"
           >
             <el-option
               v-for="wallet in assetsWithoutRequest"
@@ -96,7 +95,6 @@
             placeholder="Asset"
             style="width: 100px"
             class="select_asset"
-            @change="getOfferToRequestPrice()"
           >
             <el-option
               v-for="wallet in assetsWithoutOffer"
@@ -185,7 +183,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import BigNumber from 'bignumber.js'
 
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
@@ -255,6 +252,8 @@ export default {
       'wallets',
       'exchangeDialogVisible',
       'exchangeDialogPrice',
+      'exchangeDialogOfferAssetPrecision',
+      'exchangeDialogRequestAssetPrecision',
       'accountQuorum',
       'availableAssets',
       'exchangeFee',
@@ -277,7 +276,7 @@ export default {
         return this.$store.getters.exchangeDialogOfferAsset
       },
       set (asset) {
-        this.$store.commit('SET_EXCHANGE_DIALOG_OFFER_ASSET', asset)
+        this.getExchangeAssetInfo({ asset, type: 'OFFER' })
       }
     },
 
@@ -286,7 +285,7 @@ export default {
         return this.$store.getters.exchangeDialogRequestAsset
       },
       set (asset) {
-        this.$store.commit('SET_EXCHANGE_DIALOG_REQUEST_ASSET', asset)
+        this.getExchangeAssetInfo({ asset, type: 'REQUEST' })
       }
     },
 
@@ -305,25 +304,28 @@ export default {
     },
 
     offerFeeAmount () {
-      return BigNumber(this.exchangeForm.offer_amount || 0).multipliedBy(this.currentOfferFee).toString()
+      return this.$_calculateFee(
+        this.exchangeForm.offer_amount,
+        this.currentOfferFee,
+        this.exchangeDialogOfferAssetPrecision
+      ).toString()
     },
 
     requestFeeAmount () {
-      return BigNumber(this.exchangeForm.request_amount || 0).multipliedBy(this.currentRequestFee).toString()
+      return this.$_calculateFee(
+        this.exchangeForm.request_amount,
+        this.currentRequestFee,
+        this.exchangeDialogRequestAssetPrecision
+      ).toString()
     }
-  },
-
-  created () {
-    this.getFullBillingData()
   },
 
   methods: {
     ...mapActions([
       'openApprovalDialog',
       'closeExchangeDialog',
-      'getOfferToRequestPrice',
       'createSettlement',
-      'getFullBillingData'
+      'getExchangeAssetInfo'
     ]),
 
     closeExchangeDialogWith () {

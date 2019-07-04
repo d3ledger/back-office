@@ -13,6 +13,7 @@ import { getParsedItem, setStringifyItem } from '@util/storage-util'
 import notaryUtil from '@util/notary-util'
 import configUtil from '@util/config-util'
 import irohaUtil from '@util/iroha'
+import collectorUtil from '@util/collector-util'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -21,8 +22,6 @@ const types = flow(
     'APPROVAL_DIALOG_CLOSE',
     'EXCHANGE_DIALOG_OPEN',
     'EXCHANGE_DIALOG_CLOSE',
-    'SET_EXCHANGE_DIALOG_OFFER_ASSET',
-    'SET_EXCHANGE_DIALOG_REQUEST_ASSET',
     'LOAD_WALLETS_SORT_CRITERION',
     'UPDATE_WALLETS_SORT_CRITERION',
     'LOAD_DASHBOARD_SORT_CRITERION',
@@ -35,6 +34,8 @@ const types = flow(
   'GET_FREE_ETH_RELAYS',
   'GET_FREE_BTC_RELAYS',
   'SEND_CUSTOM_TRANSACTION',
+  'SET_EXCHANGE_DIALOG_OFFER_ASSET_INFO',
+  'SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO',
 
   'LOAD_CONFIGURATION_FILE'
 ])
@@ -52,6 +53,8 @@ function initialState () {
       isVisible: false,
       offerAsset: null,
       requestAsset: null,
+      offerAssetPrecision: 0,
+      requestAssetPrecision: 0,
       price: null
     },
     connectionError: null,
@@ -100,23 +103,34 @@ const mutations = {
       isVisible: false,
       offerAsset: null,
       requestAsset: null,
+      offerAssetPrecision: 0,
+      requestAssetPrecision: 0,
       price: null
     })
   },
-  [types.SET_EXCHANGE_DIALOG_OFFER_ASSET] (state, offerAsset) {
-    Vue.set(state.exchangeDialog, 'offerAsset', offerAsset)
-  },
-  [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET] (state, requestAsset) {
-    Vue.set(state.exchangeDialog, 'requestAsset', requestAsset)
-  },
-  [types.GET_OFFER_TO_REQUEST_PRICE_REQUEST] (state) {},
 
+  [types.SET_EXCHANGE_DIALOG_OFFER_ASSET_INFO_REQUEST] (state, offerAsset) {},
+  [types.SET_EXCHANGE_DIALOG_OFFER_ASSET_INFO_SUCCESS] (state, { asset, precision }) {
+    Vue.set(state.exchangeDialog, 'offerAsset', asset)
+    Vue.set(state.exchangeDialog, 'offerAssetPrecision', precision)
+  },
+  [types.SET_EXCHANGE_DIALOG_OFFER_ASSET_INFO_FAILURE] (state, err) {},
+
+  [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO_REQUEST] (state, requestAsset) {},
+  [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO_SUCCESS] (state, { asset, precision }) {
+    Vue.set(state.exchangeDialog, 'requestAsset', asset)
+    Vue.set(state.exchangeDialog, 'requestAssetPrecision', precision)
+  },
+  [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO_FAILURE] (state, err) {},
+
+  [types.GET_OFFER_TO_REQUEST_PRICE_REQUEST] (state, offer) {},
   [types.GET_OFFER_TO_REQUEST_PRICE_SUCCESS] (state, price) {
     Vue.set(state.exchangeDialog, 'price', price)
   },
   [types.GET_OFFER_TO_REQUEST_PRICE_FAILURE] (state, err) {
     handleError(state, err)
   },
+
   [types.LOAD_WALLETS_SORT_CRITERION] (state, criterion) {
     state.walletsSortCriterion = criterion
   },
@@ -203,6 +217,12 @@ const actions = {
   openExchangeDialog ({ commit, dispatch }, offerAsset) {
     dispatch('getFullBillingData')
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
+    if (offerAsset) {
+      dispatch('getExchangeAssetInfo', {
+        asset: offerAsset,
+        type: 'OFFER'
+      })
+    }
   },
   closeExchangeDialog ({ commit }) {
     commit(types.EXCHANGE_DIALOG_CLOSE)
@@ -211,6 +231,10 @@ const actions = {
     const offerAsset = getters.exchangeDialogOfferAsset
     const requestAsset = getters.exchangeDialogRequestAsset
     if (offerAsset && requestAsset) {
+      commit(types.GET_OFFER_TO_REQUEST_PRICE_REQUEST, {
+        from: offerAsset,
+        to: requestAsset
+      })
       cryptoCompareUtil.loadPriceForAssets({
         from: offerAsset,
         to: requestAsset
@@ -221,6 +245,26 @@ const actions = {
           throw err
         })
     }
+  },
+  getExchangeAssetInfo ({ commit, getters, dispatch }, { asset, type }) {
+    if (!asset) return
+    const msgType = `SET_EXCHANGE_DIALOG_${type}_ASSET_INFO`
+    commit(types[`${msgType}_REQUEST`], asset)
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service']
+    const wallet = getters.availableAssets.find(w => w.asset === asset)
+    return collectorUtil.getAssetPrecision(
+      dataCollectorUrl.value,
+      wallet.assetId
+    )
+      .then(({ itIs }) => commit(types[`${msgType}_SUCCESS`], {
+        asset,
+        precision: itIs
+      }))
+      .catch(err => {
+        commit(types[`${msgType}_FAILURE`], err)
+        throw err
+      })
+      .then(() => dispatch('getOfferToRequestPrice'))
   },
   loadWalletsSortCriterion ({ commit }) {
     const criterion = getParsedItem('walletsSortCriterion')
@@ -311,6 +355,12 @@ const getters = {
   },
   exchangeDialogRequestAsset () {
     return state.exchangeDialog.requestAsset
+  },
+  exchangeDialogOfferAssetPrecision (state) {
+    return state.exchangeDialog.offerAssetPrecision
+  },
+  exchangeDialogRequestAssetPrecision (state) {
+    return state.exchangeDialog.requestAssetPrecision
   },
   exchangeDialogPrice () {
     return state.exchangeDialog.price
