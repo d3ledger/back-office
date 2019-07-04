@@ -605,7 +605,6 @@ import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import dateFormat from '@/components/mixins/dateFormat'
 import numberFormat from '@/components/mixins/numberFormat'
-import numberHandler from '@/components/mixins/numberHandler'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
@@ -639,7 +638,6 @@ export default {
   mixins: [
     dateFormat,
     numberFormat,
-    numberHandler,
     currencySymbol,
     messageMixin,
     errorHandler

@@ -185,7 +185,6 @@
 import { mapGetters, mapActions } from 'vuex'
 
 import numberFormat from '@/components/mixins/numberFormat'
-import numberHandler from '@/components/mixins/numberHandler'
 import messageMixin from '@/components/mixins/message'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
@@ -203,7 +202,6 @@ export default {
   mixins: [
     messageMixin,
     numberFormat,
-    numberHandler,
     errorHandler
   ],
   validations () {
