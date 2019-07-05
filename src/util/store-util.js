@@ -17,6 +17,7 @@ import cloneDeep from 'lodash/fp/cloneDeep'
 import { FeeTypes } from '@/data/consts'
 
 const notaryAccount = process.env.VUE_APP_NOTARY_ACCOUNT || 'notary@notary'
+const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
 
 export function getTransferAssetsFrom (transactions, accountId, settlements = []) {
   if (isEmpty(transactions)) return []
@@ -48,10 +49,12 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
           from: match(srcAccountId)
             .on(x => x === accountId, () => 'you')
             .on(x => x === notaryAccount, () => 'notary')
+            .on(x => x === btcNotaryAccount, () => 'btc_withdrawal_service')
             .otherwise(x => x),
           to: match(destAccountId)
             .on(x => x === accountId, () => 'you')
             .on(x => x === notaryAccount, () => 'notary')
+            .on(x => x === btcNotaryAccount, () => 'btc_withdrawal_service')
             .otherwise(x => x),
           amount: amount,
           date: createdTime,
