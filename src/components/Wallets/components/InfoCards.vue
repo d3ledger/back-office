@@ -333,6 +333,168 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.header {
+  background-color: #494949;
+  padding: 30px 20px;
+  color: white;
+}
 
+.title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.title-text {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.title-icon {
+  width: 40px;
+  margin-right: 15px;
+}
+
+.amount {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem 1.5rem;
+}
+
+.card {
+  height: 14rem;
+}
+
+.card_header {
+  padding: 0.9rem 1.5rem;
+}
+
+.card_header-title {
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_header-name {
+  padding: 1rem 0 0 1rem;
+}
+
+.card_history-title {
+  font-size: 1.2rem;
+}
+
+.card_header-divided {
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.card_header-filter {
+  display: flex;
+  justify-content: center;
+}
+
+.chart_time-filter {
+  justify-content: center;
+  opacity: 0.3;
+  padding: 1rem;
+  cursor: pointer;
+}
+.chart_time-filter.selected {
+  opacity: 1;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #000000;
+}
+
+.top-left-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.top-left-card >>> .button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 15px 10px;
+  border-top: 1px solid #e8e8e8;
+  flex-grow: 1;
+  color: rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.top-left-card >>> .button:hover {
+  background: #409eff;
+}
+
+.top-left-card >>> .button:active {
+  background: #227ede;
+}
+
+.top-left-card >>> .button:hover *{
+  color: #ffffff;
+}
+
+.top-left-card >>> .button>span{
+ margin-top: 5px;
+}
+
+.top-left-card >>> .button+.button {
+  border-left: 1px solid #e8e8e8;
+}
+
+.card_actions {
+  width: 100%;
+  display: flex;
+  margin-top: 1.3rem;
+}
+
+.card_actions-button {
+  background-color: #f9fcff;
+}
+
+.card_actions-button:hover {
+  background-color: #f9fcff;
+}
+
+.card_actions-button-text {
+  color: #409eff;
+}
+
+.card-info {
+  margin-top: 1.3rem;
+  font-size: 12px;
+  line-height: 1.3rem;
+  padding: 0rem 0 0rem 1.5rem;
+}
+
+.card-info .uptrend {
+  color: #06b023;
+}
+
+.card-info .downtrend {
+  color: #ff1339;
+}
+.card-info-title {
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 4px;
+}
+
+.card-info-amount {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.card-info-amount--small {
+  word-break: break-all;
+}
+
+.icon {
+  width: 17x;
+  font-size: 17px;
+}
 </style>

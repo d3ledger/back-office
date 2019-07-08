@@ -105,13 +105,15 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import numberFormat from '@/components/mixins/numberFormat'
+import messageMixin from '@/components/mixins/message'
 
 export default {
   mixins: [
     numberFormat,
-    errorHandler
+    errorHandler,
+    messageMixin
   ],
   validations () {
     const transferWallet = { ...this.wallet, fee: this.currentTransferFee }
@@ -185,6 +187,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'transferAsset'
+    ]),
+
     onOpenTransferForm () {
       this.requestDataBeforeOpen()
       this.transferFormVisible = true

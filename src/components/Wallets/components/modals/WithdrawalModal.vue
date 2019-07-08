@@ -56,7 +56,7 @@
         <el-select
           v-model="$v.withdrawForm.wallet.$model"
           :class="[
-            'withdraw-wallet_select',
+            'fullwidth',
             _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
             _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
           ]"
@@ -98,7 +98,8 @@ import { required } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
 import numberFormat from '@/components/mixins/numberFormat'
-import { mapGetters } from 'vuex'
+import messageMixin from '@/components/mixins/message'
+import { mapGetters, mapActions } from 'vuex'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -108,7 +109,8 @@ const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 export default {
   mixins: [
     numberFormat,
-    errorHandler
+    errorHandler,
+    messageMixin
   ],
   validations () {
     const withdrawalWallet = { ...this.wallet, fee: this.currentWithdrawalFee }
@@ -180,6 +182,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'transferAsset'
+    ]),
+
     onSubmitWithdrawalForm () {
       this.$v.withdrawForm.$touch()
       if (this.$v.withdrawForm.$invalid) return
@@ -236,6 +242,5 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
 </style>
