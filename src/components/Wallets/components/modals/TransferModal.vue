@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :visible.sync="transferFormVisible"
+    :visible="isVisible"
     title="Transfer"
     width="450px"
     center
@@ -105,9 +105,12 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
+import { mapGetters } from 'vuex'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   mixins: [
+    numberFormat,
     errorHandler
   ],
   validations () {
@@ -134,6 +137,11 @@ export default {
     }
   },
   props: {
+    isVisible: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
     wallet: {
       type: Object,
       required: true,
@@ -151,6 +159,24 @@ export default {
         amount: null,
         description: ''
       }
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'transferFee',
+      'servicesIPs'
+    ]),
+    currentTransferFee () {
+      return this.transferFee[this.wallet.assetId]
+        ? this.transferFee[this.wallet.assetId].feeFraction
+        : 0
+    },
+    transferFeeAmount () {
+      return this.$_calculateFee(
+        this.transferForm.amount,
+        this.currentTransferFee,
+        this.currentWalletPrecision
+      ).toString()
     }
   },
   methods: {
@@ -206,6 +232,7 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
+      this.$emit('update:isVisible', false)
     }
   }
 }
