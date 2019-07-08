@@ -199,11 +199,56 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
+import numberFormat from '@/components/mixins/numberFormat'
 
 export default {
   components: {
-    AssetIcon
+    AssetIcon,
+
+    DepositModal: lazyComponent(),
+    TransferModal: lazyComponent(),
+    WithdrawalModal: lazyComponent()
+  },
+  filters: {
+    fitAmount (amount) {
+      return numberFormat.filters.formatPrecision(amount)
+    }
+  },
+  props: {
+    wallet: {
+      type: Object,
+      required: true,
+      default: () => {}
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'ethWalletAddress',
+      'btcWalletAddress'
+    ]),
+    amountWithPrecision () {
+      return numberFormat.filters.formatPrecision(this.wallet.amount)
+    },
+    accountExist () {
+      const assetDomain = this.wallet.assetId.split('#')[1]
+
+      if (assetDomain === 'bitcoin' && this.btcWalletAddress) {
+        return true
+      }
+
+      if ((assetDomain === 'ethereum' ||
+        assetDomain === 'd3' ||
+        assetDomain === 'sora') && this.ethWalletAddress) {
+        return true
+      }
+
+      return false
+    }
+  },
+  methods: {
   }
 }
 </script>
