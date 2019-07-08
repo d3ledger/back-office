@@ -133,6 +133,13 @@ export default {
       }
     }
   },
+  props: {
+    wallet: {
+      type: Object,
+      required: true,
+      default: () => {}
+    }
+  },
   data () {
     return {
       isSending: false,
