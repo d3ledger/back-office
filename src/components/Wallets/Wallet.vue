@@ -4,7 +4,6 @@
 -->
 <template>
   <div v-if="wallet.assetId">
-    {{ wallet }}
     <info-cards
       :wallet="wallet"
     />
