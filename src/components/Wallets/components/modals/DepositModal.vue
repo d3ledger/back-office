@@ -29,8 +29,7 @@
 <script>
 import QrcodeVue from 'qrcode.vue'
 import { mapGetters } from 'vuex'
-
-const BITCOIN_ASSET_NAME = 'btc#bitcoin'
+import { BITCOIN_ASSET_NAME } from '@/data/consts'
 
 export default {
   components: {
