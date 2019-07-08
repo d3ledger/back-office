@@ -1,11 +1,6 @@
-<!--
-  Copyright D3 Ledger, Inc. All Rights Reserved.
-  SPDX-License-Identifier: Apache-2.0
--->
 <template>
   <el-dialog
-    :visible="isVisible"
-    data-cy="transferModal"
+    :visible.sync="transferFormVisible"
     title="Transfer"
     width="450px"
     center
@@ -110,15 +105,10 @@ import {
 import { required, maxLength } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
-import { mapGetters, mapActions } from 'vuex'
-import numberFormat from '@/components/mixins/numberFormat'
-import messageMixin from '@/components/mixins/message'
 
 export default {
   mixins: [
-    numberFormat,
-    errorHandler,
-    messageMixin
+    errorHandler
   ],
   validations () {
     const transferWallet = { ...this.wallet, fee: this.currentTransferFee }
@@ -143,26 +133,11 @@ export default {
       }
     }
   },
-  props: {
-    isVisible: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    wallet: {
-      type: Object,
-      required: true,
-      default: () => {}
-    },
-    openApprovalDialog: {
-      type: Function,
-      required: true,
-      default: () => {}
-    }
-  },
   data () {
     return {
       isSending: false,
+
+      transferFormVisible: false,
 
       transferForm: {
         to: null,
@@ -171,30 +146,7 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters([
-      'accountQuorum',
-      'transferFee',
-      'servicesIPs'
-    ]),
-    currentTransferFee () {
-      return this.transferFee[this.wallet.assetId]
-        ? this.transferFee[this.wallet.assetId].feeFraction
-        : 0
-    },
-    transferFeeAmount () {
-      return this.$_calculateFee(
-        this.transferForm.amount,
-        this.currentTransferFee,
-        this.currentWalletPrecision
-      ).toString()
-    }
-  },
   methods: {
-    ...mapActions([
-      'transferAsset'
-    ]),
-
     onOpenTransferForm () {
       this.requestDataBeforeOpen()
       this.transferFormVisible = true
@@ -226,8 +178,9 @@ export default {
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
-              this.$emit('update-history')
+              this.fetchWallet()
               this.closeTransferForm()
+              this.transferFormVisible = false
             })
             .catch(err => {
               console.error(err)
@@ -246,7 +199,6 @@ export default {
 
     closeTransferForm () {
       this.resetTransferForm()
-      this.$emit('update:isVisible', false)
     }
   }
 }
