@@ -20,3 +20,5 @@ export const FeeTypes = Object.freeze({
   EXCHANGE: 'exchange_billing',
   WITHDRAWAL: 'withdrawal_billing'
 })
+
+export const BITCOIN_ASSET_NAME = 'btc#bitcoin'
