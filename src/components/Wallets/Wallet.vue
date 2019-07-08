@@ -265,6 +265,7 @@
                         <p>
                           <span class="transaction_details-title">Type: </span>
                           <span v-if="scope.row.to === 'notary'">WITHDRAWAL</span>
+                          <span v-else-if="scope.row.to === 'btc_withdrawal_service'">WITHDRAWAL</span>
                           <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
                           <span v-else>TRANSFER</span>
                         </p>
@@ -315,6 +316,7 @@
               <template slot-scope="scope">
                 <span v-if="scope.row.from.to">EXCHANGE</span>
                 <span v-else-if="scope.row.to === 'notary'">WITHDRAWAL</span>
+                <span v-else-if="scope.row.to === 'btc_withdrawal_service'">WITHDRAWAL</span>
                 <span v-else-if="scope.row.from === 'notary'">DEPOSIT</span>
                 <span v-else>TRANSFER</span>
               </template>

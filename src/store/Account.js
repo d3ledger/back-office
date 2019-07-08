@@ -354,6 +354,13 @@ const getters = {
   },
 
   btcWhiteListAddresses (state, getters) {
+    const wallet = find('eth_whitelist', state.accountInfo)
+    const whitelist = wallet ? JSON.parse(wallet.eth_whitelist) : []
+
+    if (whitelist.length > 0 && getters.btcWhiteListAddressesAll.length === 0) {
+      return whitelist
+    }
+
     return getters.btcWhiteListAddressesAll
       .filter(([address, _]) => address.length)
       .filter(([_, time]) => parseInt(time) * 1000 < Date.now())
@@ -365,10 +372,9 @@ const getters = {
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
-    } else {
-      const wallet = find('btc_whitelist', state.accountInfo)
-      return wallet ? JSON.parse(wallet.btc_whitelist) : []
     }
+
+    return []
   },
 
   accountQuorum (state) {
@@ -1050,8 +1056,9 @@ const actions = {
 
     let receiverQuorum = 2
     try {
+      const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
       const { itIs } = await collectorUtil.getAccountQuorum(
-        getters.servicesIPs['data-collector-service'],
+        dataCollectorUrl,
         to
       )
       receiverQuorum = itIs
@@ -1259,14 +1266,12 @@ const actions = {
       // eslint-disable-next-line
       value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
     })
-      .then(async () => {
-        commit(types.SET_WHITELIST_SUCCESS)
-        await dispatch('updateAccount')
-      })
+      .then(() => commit(types.SET_WHITELIST_SUCCESS))
       .catch(err => {
         commit(types.SET_WHITELIST_FAILURE, err)
         throw err
       })
+      .then(() => dispatch('updateAccount'))
   },
 
   getCustodyBillingReport ({ commit, getters }, { params }) {
