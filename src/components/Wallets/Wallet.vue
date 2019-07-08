@@ -8,6 +8,9 @@
     <info-cards
       :wallet="wallet"
     />
+    <history-table
+      :wallet="wallet"
+    />
   </div>
   <div v-else>
     <no-assets-card />
@@ -30,6 +33,7 @@ export default {
   name: 'Wallet',
   components: {
     InfoCards: lazyComponent('Wallets/components/InfoCards'),
+    HistoryTable: lazyComponent('Wallets/components/HistoryTable'),
     NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
   //   mixins: [

@@ -77,7 +77,7 @@
                           {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                         </span>
                         <span v-else>
-                          {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row }} {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                          {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                         </span>
                       </p>
                       <p v-if="scope.row.fee">
@@ -189,8 +189,70 @@
 </template>
 
 <script>
-export default {
+import { mapGetters, mapActions } from 'vuex'
+import dateFormat from '@/components/mixins/dateFormat'
+import numberFormat from '@/components/mixins/numberFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
 
+export default {
+  mixins: [
+    dateFormat,
+    numberFormat,
+    currencySymbol
+  ],
+  props: {
+    wallet: {
+      type: Object,
+      required: true,
+      default: () => {}
+    }
+  },
+  data () {
+    return {
+      activePage: 1
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'getTransactionsByAssetId',
+      'getPaginationMetaByAssetId'
+    ]),
+    transactions () {
+      if (!this.wallet) return []
+      const paging = [this.activePage * 10 - 10, this.activePage * 10]
+      return this.getTransactionsByAssetId(this.wallet.assetId)
+        .slice()
+        .sort((t1, t2) => {
+          const date1 = t1.date ? t1.date : t1.from ? t1.from.date : 0
+          const date2 = t2.date ? t2.date : t2.from ? t2.from.date : 0
+          return date2 - date1
+        })
+        .slice(...paging)
+    },
+
+    paginationMeta () {
+      if (!this.wallet.assetId) return {}
+      return this.getPaginationMetaByAssetId(this.wallet.assetId)
+    },
+
+    allTransactionsSize () {
+      if (!this.paginationMeta) return 1
+      return this.paginationMeta.allTransactionsSize
+    }
+  },
+  methods: {
+    ...mapActions([
+      'getAccountAssetTransactionsNextPage'
+    ]),
+
+    onNextPage (page) {
+      this.activePage = page
+      this.getAccountAssetTransactionsNextPage({
+        page,
+        assetId: this.wallet.assetId
+      })
+    }
+  }
 }
 </script>
 
