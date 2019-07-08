@@ -24,6 +24,8 @@
 
 <script>
 import QrcodeVue from 'qrcode.vue'
+import { mapGetters } from 'vuex'
+
 const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
@@ -42,9 +44,15 @@ export default {
       default: () => {}
     }
   },
-  methods: {
+  computed: {
+    ...mapGetters([
+      'btcWalletAddress',
+      'ethWalletAddress'
+    ]),
     walletAddress () {
-      return this.wallet.assetId === BITCOIN_ASSET_NAME ? this.btcWalletAddress : this.ethWalletAddress
+      return this.wallet.assetId === BITCOIN_ASSET_NAME
+        ? this.btcWalletAddress
+        : this.ethWalletAddress
     }
   }
 }
