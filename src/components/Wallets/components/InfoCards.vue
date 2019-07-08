@@ -202,10 +202,12 @@
     <transfer-modal
       :is-visible.sync="isTransferModalVisible"
       :wallet="wallet"
+      :open-approval-dialog="openApprovalDialog"
     />
     <withdrawal-modal
       :is-visible.sync="isWithdrawalModalVisible"
       :wallet="wallet"
+      :open-approval-dialog="openApprovalDialog"
     />
   </el-row>
 </template>
@@ -271,14 +273,15 @@ export default {
     },
     accountExist () {
       const assetDomain = this.wallet.assetId.split('#')[1]
+      const allowedDomains = [
+        'ethereum',
+        'bitcoin',
+        'd3',
+        'sora'
+      ]
+      const isAllowedAddress = this.btcWalletAddress || this.ethWalletAddress
 
-      if (assetDomain === 'bitcoin' && this.btcWalletAddress) {
-        return true
-      }
-
-      if ((assetDomain === 'ethereum' ||
-        assetDomain === 'd3' ||
-        assetDomain === 'sora') && this.ethWalletAddress) {
+      if (allowedDomains.includes(assetDomain) && isAllowedAddress) {
         return true
       }
 
@@ -298,7 +301,8 @@ export default {
       'getFullBillingData',
       'getAssetPrecision',
       'openExchangeDialog',
-      'getCryptoFullData'
+      'getCryptoFullData',
+      'openApprovalDialog'
     ]),
     requestDataBeforeOpen () {
       this.getFullBillingData()
