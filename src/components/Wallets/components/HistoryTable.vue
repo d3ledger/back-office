@@ -256,6 +256,104 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.card {
+  height: 14rem;
+}
 
+.card_header {
+  padding: 0.9rem 1.5rem;
+}
+
+.card_header-title {
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card_header-name {
+  padding: 1rem 0 0 1rem;
+}
+
+.card_history-title {
+  font-size: 1.2rem;
+}
+
+.wallets_table {
+  font-size: 0.8rem;
+}
+.wallets_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.wallets_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+.wallets_table >>> .el-table__body tr {
+  height: 4.5rem;
+}
+.wallets_table-message > p {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.table_amount {
+  font-weight: 600;
+}
+.wallets_table >>> .el-table__expanded-cell {
+  padding: 0rem 1rem 1rem;
+}
+.transaction_details {
+  font-size: 0.8rem;
+  color: #000000;
+  background-color: #f4f4f4;
+  padding: 1rem;
+}
+.transaction_details-amount {
+  flex-wrap: wrap;
+  font-weight: 600;
+}
+.transaction_details-message {
+  word-break: break-all;
+}
+.transaction_details-title {
+  font-weight: 600;
+}
+.withdraw_form >>> .el-form-item__label::before,
+.transfer_form >>> .el-form-item__label::before {
+  content: '';
+}
+
+.wallet-pagination {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.wallet-pagination >>> .el-icon {
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .el-icon:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number {
+  height: 4rem;
+  width: 3rem;
+  line-height: 4rem;
+  opacity: 0.5;
+}
+
+.wallet-pagination >>> .number:hover {
+  color: #000000;
+  opacity: 1;
+}
+
+.wallet-pagination >>> .number.active {
+  background-color: #f4f4f4;
+  color: #000000;
+  opacity: 1;
+}
 </style>
