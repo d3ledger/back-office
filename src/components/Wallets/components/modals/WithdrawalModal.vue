@@ -136,6 +136,11 @@ export default {
       type: Object,
       required: true,
       default: () => {}
+    },
+    openApprovalDialog: {
+      type: Function,
+      required: true,
+      default: () => {}
     }
   },
   data () {
