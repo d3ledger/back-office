@@ -1,3 +1,7 @@
+<!--
+  Copyright D3 Ledger, Inc. All Rights Reserved.
+  SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <el-row style="margin-bottom: 0.5rem">
     <el-col :span="24">
