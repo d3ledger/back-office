@@ -1,7 +1,7 @@
 <template>
   <el-dialog
-    :title="'Withdraw'"
-    :visible.sync="withdrawFormVisible"
+    :visible="isVisible"
+    title="Withdraw"
     width="450px"
     center
     @close="closeWithdrawDialog()"
@@ -97,6 +97,8 @@ import {
 import { required } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
+import numberFormat from '@/components/mixins/numberFormat'
+import { mapGetters } from 'vuex'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
@@ -105,6 +107,7 @@ const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
   mixins: [
+    numberFormat,
     errorHandler
   ],
   validations () {
@@ -123,6 +126,18 @@ export default {
       }
     }
   },
+  props: {
+    isVisible: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    wallet: {
+      type: Object,
+      required: true,
+      default: () => {}
+    }
+  },
   data () {
     return {
       isSending: false,
@@ -135,12 +150,31 @@ export default {
       }
     }
   },
-  methods: {
-    onOpenWithdrawalForm () {
-      this.requestDataBeforeOpen()
-      this.withdrawFormVisible = true
+  computed: {
+    ...mapGetters([
+      'withdrawalFee',
+      'btcWhiteListAddresses',
+      'ethWhiteListAddresses'
+    ]),
+    whiteListAddresses () {
+      return this.wallet.assetId === BITCOIN_ASSET_NAME
+        ? this.btcWhiteListAddresses
+        : this.ethWhiteListAddresses
     },
-
+    currentWithdrawalFee () {
+      return this.withdrawalFee[this.wallet.assetId]
+        ? this.withdrawalFee[this.wallet.assetId].feeFraction
+        : 0
+    },
+    withdrawalFeeAmount () {
+      return this.$_calculateFee(
+        this.withdrawForm.amount,
+        this.currentWithdrawalFee,
+        this.currentWalletPrecision
+      ).toString()
+    }
+  },
+  methods: {
     onSubmitWithdrawalForm () {
       this.$v.withdrawForm.$touch()
       if (this.$v.withdrawForm.$invalid) return
@@ -149,7 +183,9 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
-          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
+          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME
+            ? btcNotaryAccount
+            : ethNotaryAccount
 
           return this.transferAsset({
             privateKeys,
@@ -189,6 +225,7 @@ export default {
 
     closeWithdrawDialog () {
       this.resetWithdrawForm()
+      this.$emit('update:isVisible', false)
     }
   }
 }

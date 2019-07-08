@@ -33,7 +33,7 @@
                   v-if="accountExist"
                   role="button"
                   class="card_actions-button button"
-                  @click="receiveFormVisible = true"
+                  @click="onOpenModal(modalTypes.DEPOSIT)"
                 >
                   <fa-icon
                     class="card_actions-button-text"
@@ -48,7 +48,7 @@
                   v-if="accountExist"
                   role="button"
                   class="card_actions-button button"
-                  @click="onOpenWithdrawalForm"
+                  @click="onOpenModal(modalTypes.WITHDRAWAL)"
                 >
                   <fa-icon
                     class="card_actions-button-text"
@@ -62,7 +62,7 @@
                 <div
                   role="button"
                   class="card_actions-button button"
-                  @click="onOpenTransferForm"
+                  @click="onOpenModal(modalTypes.TRANSFER)"
                 >
                   <fa-icon
                     class="card_actions-button-text"
@@ -195,28 +195,51 @@
         </el-col>
       </el-row>
     </el-col>
+    <deposit-modal
+      :is-visible.sync="isDepositModalVisible"
+      :wallet="wallet"
+    />
+    <transfer-modal
+      :is-visible.sync="isTransferModalVisible"
+      :wallet="wallet"
+    />
+    <withdrawal-modal
+      :is-visible.sync="isWithdrawalModalVisible"
+      :wallet="wallet"
+    />
   </el-row>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import numberFormat from '@/components/mixins/numberFormat'
+import currencySymbol from '@/components/mixins/currencySymbol'
+
+const MODAL_TYPES = {
+  DEPOSIT: 'DEPOSIT',
+  TRANSFER: 'TRANSFER',
+  WITHDRAWAL: 'WITHDRAWAL'
+}
 
 export default {
   components: {
     AssetIcon,
 
-    DepositModal: lazyComponent(),
-    TransferModal: lazyComponent(),
-    WithdrawalModal: lazyComponent()
+    DepositModal: lazyComponent('Wallets/components/modals/DepositModal'),
+    TransferModal: lazyComponent('Wallets/components/modals/TransferModal'),
+    WithdrawalModal: lazyComponent('Wallets/components/modals/WithdrawalModal')
   },
   filters: {
     fitAmount (amount) {
       return numberFormat.filters.formatPrecision(amount)
     }
   },
+  mixins: [
+    numberFormat,
+    currencySymbol
+  ],
   props: {
     wallet: {
       type: Object,
@@ -224,8 +247,22 @@ export default {
       default: () => {}
     }
   },
+  data () {
+    return {
+      modalTypes: MODAL_TYPES,
+
+      isDepositModalVisible: false,
+      isTransferModalVisible: false,
+      isWithdrawalModalVisible: false,
+
+      marketPeriods: ['1H', '1D', '1W', '1M', '1Y'],
+      selectedMarketPeriod: '1D'
+    }
+  },
   computed: {
     ...mapGetters([
+      'cryptoInfo',
+      'settingsView',
       'ethWalletAddress',
       'btcWalletAddress'
     ]),
@@ -248,7 +285,46 @@ export default {
       return false
     }
   },
+  watch: {
+    selectedMarketPeriod () {
+      this.updateMarketCard()
+    }
+  },
+  created () {
+    this.updateMarketCard()
+  },
   methods: {
+    ...mapActions([
+      'getFullBillingData',
+      'getAssetPrecision',
+      'openExchangeDialog',
+      'getCryptoFullData'
+    ]),
+    requestDataBeforeOpen () {
+      this.getFullBillingData()
+      this.getAssetPrecision(this.wallet.assetId)
+    },
+
+    onOpenModal (modalType) {
+      this.requestDataBeforeOpen()
+      if (modalType === this.modalTypes.DEPOSIT) {
+        this.isDepositModalVisible = true
+      }
+      if (modalType === this.modalTypes.WITHDRAWAL) {
+        this.isWithdrawalModalVisible = true
+      }
+      if (modalType === this.modalTypes.TRANSFER) {
+        this.isTransferModalVisible = true
+      }
+    },
+
+    updateMarketCard () {
+      return this.getCryptoFullData({
+        filter: this.selectedMarketPeriod,
+        asset: this.wallet.asset,
+        billingId: this.wallet.billingId
+      })
+    }
   }
 }
 </script>
