@@ -1056,8 +1056,9 @@ const actions = {
 
     let receiverQuorum = 2
     try {
+      const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
       const { itIs } = await collectorUtil.getAccountQuorum(
-        getters.servicesIPs['data-collector-service'],
+        dataCollectorUrl,
         to
       )
       receiverQuorum = itIs
