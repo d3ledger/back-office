@@ -1,12 +1,7 @@
-<!--
-  Copyright D3 Ledger, Inc. All Rights Reserved.
-  SPDX-License-Identifier: Apache-2.0
--->
 <template>
   <el-dialog
-    :visible="isVisible"
-    data-cy="withdrawalModal"
-    title="Withdraw"
+    :title="'Withdraw'"
+    :visible.sync="withdrawFormVisible"
     width="450px"
     center
     @close="closeWithdrawDialog()"
@@ -61,7 +56,7 @@
         <el-select
           v-model="$v.withdrawForm.wallet.$model"
           :class="[
-            'fullwidth',
+            'withdraw-wallet_select',
             _isValid($v.withdrawForm.wallet) ? 'border_success' : '',
             _isError($v.withdrawForm.wallet) ? 'border_fail' : ''
           ]"
@@ -101,20 +96,16 @@ import {
 } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
-import { FeeTypes, BITCOIN_ASSET_NAME } from '@/data/consts'
-import numberFormat from '@/components/mixins/numberFormat'
-import messageMixin from '@/components/mixins/message'
-import { mapGetters, mapActions } from 'vuex'
+import { FeeTypes } from '@/data/consts'
 
 // Notary account for withdrawal.
 const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
 const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
+const BITCOIN_ASSET_NAME = 'btc#bitcoin'
 
 export default {
   mixins: [
-    numberFormat,
-    errorHandler,
-    messageMixin
+    errorHandler
   ],
   validations () {
     const withdrawalWallet = { ...this.wallet, fee: this.currentWithdrawalFee }
@@ -132,26 +123,11 @@ export default {
       }
     }
   },
-  props: {
-    isVisible: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    wallet: {
-      type: Object,
-      required: true,
-      default: () => {}
-    },
-    openApprovalDialog: {
-      type: Function,
-      required: true,
-      default: () => {}
-    }
-  },
   data () {
     return {
       isSending: false,
+
+      withdrawFormVisible: false,
 
       withdrawForm: {
         amount: null,
@@ -159,35 +135,11 @@ export default {
       }
     }
   },
-  computed: {
-    ...mapGetters([
-      'accountQuorum',
-      'withdrawalFee',
-      'btcWhiteListAddresses',
-      'ethWhiteListAddresses'
-    ]),
-    whiteListAddresses () {
-      return this.wallet.assetId === BITCOIN_ASSET_NAME
-        ? this.btcWhiteListAddresses
-        : this.ethWhiteListAddresses
-    },
-    currentWithdrawalFee () {
-      return this.withdrawalFee[this.wallet.assetId]
-        ? this.withdrawalFee[this.wallet.assetId].feeFraction
-        : 0
-    },
-    withdrawalFeeAmount () {
-      return this.$_calculateFee(
-        this.withdrawForm.amount,
-        this.currentWithdrawalFee,
-        this.currentWalletPrecision
-      ).toString()
-    }
-  },
   methods: {
-    ...mapActions([
-      'transferAsset'
-    ]),
+    onOpenWithdrawalForm () {
+      this.requestDataBeforeOpen()
+      this.withdrawFormVisible = true
+    },
 
     onSubmitWithdrawalForm () {
       this.$v.withdrawForm.$touch()
@@ -197,9 +149,7 @@ export default {
         .then(privateKeys => {
           if (!privateKeys) return
           this.isSending = true
-          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME
-            ? btcNotaryAccount
-            : ethNotaryAccount
+          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME ? btcNotaryAccount : ethNotaryAccount
 
           return this.transferAsset({
             privateKeys,
@@ -218,8 +168,9 @@ export default {
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
-              this.$emit('update-history')
+              this.fetchWallet()
               this.closeWithdrawDialog()
+              this.withdrawFormVisible = false
             })
             .catch(err => {
               console.error(err)
@@ -238,11 +189,11 @@ export default {
 
     closeWithdrawDialog () {
       this.resetWithdrawForm()
-      this.$emit('update:isVisible', false)
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
+
 </style>

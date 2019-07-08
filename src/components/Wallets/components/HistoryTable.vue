@@ -1,7 +1,3 @@
-<!--
-  Copyright D3 Ledger, Inc. All Rights Reserved.
-  SPDX-License-Identifier: Apache-2.0
--->
 <template>
   <el-row>
     <el-col :span="24">
@@ -12,7 +8,7 @@
             <el-button
               size="medium"
               type="primary"
-              @click="$emit('update-history')"
+              @click="fetchWallet"
             >Refresh</el-button>
           </div>
         </div>
@@ -81,7 +77,7 @@
                           {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
                         </span>
                         <span v-else>
-                          {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
+                          {{ scope.row.from === 'notary' ? 'Deposit' : '' }} from {{ scope.row }} {{ scope.row.from === 'notary' ? scope.row.message : scope.row.from }}
                         </span>
                       </p>
                       <p v-if="scope.row.fee">
@@ -193,171 +189,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import dateFormat from '@/components/mixins/dateFormat'
-import numberFormat from '@/components/mixins/numberFormat'
-import currencySymbol from '@/components/mixins/currencySymbol'
-
 export default {
-  mixins: [
-    dateFormat,
-    numberFormat,
-    currencySymbol
-  ],
-  props: {
-    wallet: {
-      type: Object,
-      required: true,
-      default: () => {}
-    }
-  },
-  data () {
-    return {
-      activePage: 1
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'getTransactionsByAssetId',
-      'getPaginationMetaByAssetId'
-    ]),
-    transactions () {
-      if (!this.wallet) return []
-      const paging = [this.activePage * 10 - 10, this.activePage * 10]
-      return this.getTransactionsByAssetId(this.wallet.assetId)
-        .slice()
-        .sort((t1, t2) => {
-          const date1 = t1.date ? t1.date : t1.from ? t1.from.date : 0
-          const date2 = t2.date ? t2.date : t2.from ? t2.from.date : 0
-          return date2 - date1
-        })
-        .slice(...paging)
-    },
 
-    paginationMeta () {
-      if (!this.wallet.assetId) return {}
-      return this.getPaginationMetaByAssetId(this.wallet.assetId)
-    },
-
-    allTransactionsSize () {
-      if (!this.paginationMeta) return 1
-      return this.paginationMeta.allTransactionsSize
-    }
-  },
-  methods: {
-    ...mapActions([
-      'getAccountAssetTransactionsNextPage'
-    ]),
-
-    onNextPage (page) {
-      this.activePage = page
-      this.getAccountAssetTransactionsNextPage({
-        page,
-        assetId: this.wallet.assetId
-      })
-    }
-  }
 }
 </script>
 
-<style scoped>
-.card {
-  height: 14rem;
-}
+<style>
 
-.card_header {
-  padding: 0.9rem 1.5rem;
-}
-
-.card_header-title {
-  font-size: 0.9rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.card_header-name {
-  padding: 1rem 0 0 1rem;
-}
-
-.card_history-title {
-  font-size: 1.2rem;
-}
-
-.wallets_table {
-  font-size: 0.8rem;
-}
-.wallets_table >>> .el-table__header th {
-  font-weight: 500;
-}
-.wallets_table >>> .el-table__row td .cell {
-  color: #000000;
-}
-.wallets_table >>> .el-table__body tr {
-  height: 4.5rem;
-}
-.wallets_table-message > p {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.table_amount {
-  font-weight: 600;
-}
-.wallets_table >>> .el-table__expanded-cell {
-  padding: 0rem 1rem 1rem;
-}
-.transaction_details {
-  font-size: 0.8rem;
-  color: #000000;
-  background-color: #f4f4f4;
-  padding: 1rem;
-}
-.transaction_details-amount {
-  flex-wrap: wrap;
-  font-weight: 600;
-}
-.transaction_details-message {
-  word-break: break-all;
-}
-.transaction_details-title {
-  font-weight: 600;
-}
-.withdraw_form >>> .el-form-item__label::before,
-.transfer_form >>> .el-form-item__label::before {
-  content: '';
-}
-
-.wallet-pagination {
-  display: flex;
-  justify-content: center;
-  padding: 0;
-}
-
-.wallet-pagination >>> .el-icon {
-  line-height: 4rem;
-  opacity: 0.5;
-}
-
-.wallet-pagination >>> .el-icon:hover {
-  color: #000000;
-  opacity: 1;
-}
-
-.wallet-pagination >>> .number {
-  height: 4rem;
-  width: 3rem;
-  line-height: 4rem;
-  opacity: 0.5;
-}
-
-.wallet-pagination >>> .number:hover {
-  color: #000000;
-  opacity: 1;
-}
-
-.wallet-pagination >>> .number.active {
-  background-color: #f4f4f4;
-  color: #000000;
-  opacity: 1;
-}
 </style>
