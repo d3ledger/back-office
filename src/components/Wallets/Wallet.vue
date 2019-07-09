@@ -6,9 +6,11 @@
   <div v-if="wallet.assetId">
     <info-cards
       :wallet="wallet"
+      :update-history="updateHistory"
     />
     <history-table
       :wallet="wallet"
+      :update-history="updateHistory"
     />
   </div>
   <div v-else>
@@ -17,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 
 export default {
@@ -37,6 +39,14 @@ export default {
       const walletId = this.$route.params.walletId
 
       return this.$store.getters.wallets.find(w => (w.id === walletId)) || {}
+    }
+  },
+  methods: {
+    ...mapActions([
+
+    ]),
+    updateHistory () {
+      return 1
     }
   }
 }
