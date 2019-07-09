@@ -101,7 +101,7 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
 function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   if (!batchArray.length) return
 
-  let txClient = newCommandService()
+  const txClient = newCommandService()
 
   const indexOfUnsigned = cloneDeep(batchArray)
     .map(tx => tx.toObject())
@@ -110,6 +110,8 @@ function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DE
     })
 
   if (indexOfUnsigned === -1) throw new Error('Undefined tx to sign')
+
+  batchArray.forEach(tx => tx.clearSignaturesList())
 
   batchArray[indexOfUnsigned] = signWithArrayOfKeys(batchArray[indexOfUnsigned], privateKeys)
 
@@ -121,7 +123,9 @@ function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DE
 function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   if (!batchArray.length) return
 
-  let txClient = newCommandService()
+  const txClient = newCommandService()
+
+  batchArray.forEach(tx => tx.clearSignaturesList())
 
   const batch = batchArray.map(b => signWithArrayOfKeys(b, privateKeys))
 
