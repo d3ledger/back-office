@@ -224,8 +224,9 @@ const actions = {
       })
     }
   },
-  closeExchangeDialog ({ commit }) {
+  closeExchangeDialog ({ commit, dispatch }) {
     commit(types.EXCHANGE_DIALOG_CLOSE)
+    dispatch('getAllUnsignedTransactions')
   },
   getOfferToRequestPrice ({ commit, getters }) {
     const offerAsset = getters.exchangeDialogOfferAsset
