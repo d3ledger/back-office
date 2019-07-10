@@ -12,7 +12,7 @@
             <el-button
               size="medium"
               type="primary"
-              @click="updateHistory"
+              @click="$emit('update-history')"
             >Refresh</el-button>
           </div>
         </div>
@@ -207,11 +207,6 @@ export default {
   props: {
     wallet: {
       type: Object,
-      required: true,
-      default: () => {}
-    },
-    updateHistory: {
-      type: Function,
       required: true,
       default: () => {}
     }

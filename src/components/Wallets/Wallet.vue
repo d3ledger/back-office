@@ -6,11 +6,11 @@
   <div v-if="wallet.assetId">
     <info-cards
       :wallet="wallet"
-      :update-history="updateHistory"
+      @update-history="updateHistory"
     />
     <history-table
       :wallet="wallet"
-      :update-history="updateHistory"
+      @update-history="updateHistory"
     />
   </div>
   <div v-else>
@@ -44,13 +44,11 @@ export default {
   methods: {
     ...mapActions([
       'getAccountAssets',
-      'getAccountAssetTransactions',
-      'updateMarketCard'
+      'getAccountAssetTransactions'
     ]),
     updateHistory () {
       this.getAccountAssets()
       this.getAccountAssetTransactions({ assetId: this.wallet.assetId })
-        .then(() => this.updateMarketCard())
     }
   }
 }
