@@ -207,13 +207,13 @@
       :is-visible.sync="isTransferModalVisible"
       :wallet="wallet"
       :open-approval-dialog="openApprovalDialog"
-      :update-history="updateHistory"
+      @update-history="$emit('update-history')"
     />
     <withdrawal-modal
       :is-visible.sync="isWithdrawalModalVisible"
       :wallet="wallet"
       :open-approval-dialog="openApprovalDialog"
-      :update-history="updateHistory"
+      @update-history="$emit('update-history')"
     />
   </el-row>
 </template>
@@ -251,11 +251,6 @@ export default {
   props: {
     wallet: {
       type: Object,
-      required: true,
-      default: () => {}
-    },
-    updateHistory: {
-      type: Function,
       required: true,
       default: () => {}
     }
