@@ -43,10 +43,14 @@ export default {
   },
   methods: {
     ...mapActions([
-
+      'getAccountAssets',
+      'getAccountAssetTransactions',
+      'updateMarketCard'
     ]),
     updateHistory () {
-      return 1
+      this.getAccountAssets()
+      this.getAccountAssetTransactions({ assetId: this.wallet.assetId })
+        .then(() => this.updateMarketCard())
     }
   }
 }
