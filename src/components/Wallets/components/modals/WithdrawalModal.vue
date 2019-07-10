@@ -5,6 +5,7 @@
 <template>
   <el-dialog
     :visible="isVisible"
+    data-cy="withdrawalModal"
     title="Withdraw"
     width="450px"
     center

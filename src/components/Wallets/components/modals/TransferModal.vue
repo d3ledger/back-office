@@ -5,6 +5,7 @@
 <template>
   <el-dialog
     :visible="isVisible"
+    data-cy="transferModal"
     title="Transfer"
     width="450px"
     center

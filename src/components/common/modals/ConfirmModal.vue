@@ -6,6 +6,7 @@
   <el-dialog
     id="approval-dialog"
     :visible="approvalDialogVisible"
+    data-cy="confirmModal"
     title="Confirm the transaction"
     width="450px"
     center

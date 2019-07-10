@@ -5,6 +5,7 @@
 <template>
   <el-dialog
     :visible="exchangeDialogVisible"
+    data-cy="exchangeModal"
     title="Exchange"
     width="450px"
     top="2vh"
