@@ -157,6 +157,11 @@ export default {
       type: Function,
       required: true,
       default: () => {}
+    },
+    updateHistory: {
+      type: Function,
+      required: true,
+      default: () => {}
     }
   },
   data () {
@@ -226,7 +231,7 @@ export default {
                 NOTIFICATIONS.NOT_COMPLETED
               )
 
-              this.fetchWallet()
+              this.updateHistory()
               this.closeTransferForm()
               this.transferFormVisible = false
             })
