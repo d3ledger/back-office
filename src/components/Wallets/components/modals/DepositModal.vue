@@ -5,6 +5,7 @@
 <template>
   <el-dialog
     :visible="isVisible"
+    data-cy="depositModal"
     title="Deposit"
     width="450px"
     center
