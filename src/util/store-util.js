@@ -40,6 +40,8 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         assetId
       } = c.transferAsset
 
+      if ((destAccountId !== accountId) && (srcAccountId !== accountId)) return
+
       if (destAccountId === `${FeeTypes.TRANSFER}@d3`) {
         if (srcAccountId === accountId) {
           fee = amount
