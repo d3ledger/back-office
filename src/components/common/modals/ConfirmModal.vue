@@ -148,6 +148,7 @@
 import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
 import { required, minLength } from 'vuelidate/lib/validators'
+import { derivePublicKey } from 'ed25519.js'
 
 export default {
   name: 'ConfirmModal',
@@ -197,7 +198,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'closeApprovalDialog'
+      'closeApprovalDialog',
+      'getSignatories'
     ]),
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
@@ -207,9 +209,15 @@ export default {
       this.periodOfFinalisation = null
       this.timeToReject = 5
     },
-    beforeSubmitApprovalDialog () {
+    async beforeSubmitApprovalDialog () {
       this.$v.$touch()
       if (this.$v.$invalid) return
+
+      const validationResult = await this.validatePrivateKeys()
+      if (!validationResult) {
+        this.$message.error('Please provide correct private keys')
+        return
+      }
 
       this.isWaitFormVisible = true
       this.periodOfFinalisation = setInterval(() => {
@@ -222,6 +230,23 @@ export default {
     },
     countdown () {
       this.timeToReject = this.timeToReject - 1
+    },
+    async validatePrivateKeys () {
+      const allPublicKeys = (await this.getSignatories()).slice().sort()
+      const validationResult = this.approvalForm.privateKeys
+        .map(({ hex }) => {
+          if (!hex.length) return
+
+          return derivePublicKey(
+            Buffer.from(hex, 'hex')
+          ).toString('hex')
+        })
+        .sort()
+        .map((v, i) => {
+          if (!v) return true
+          return allPublicKeys[i] === v
+        })
+      return validationResult.every(Boolean)
     },
     submitApprovalDialog () {
       this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
