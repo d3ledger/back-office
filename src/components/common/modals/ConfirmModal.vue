@@ -232,19 +232,14 @@ export default {
       this.timeToReject = this.timeToReject - 1
     },
     async validatePrivateKeys () {
-      const allPublicKeys = (await this.getSignatories()).slice().sort()
+      const allPublicKeys = new Set(await this.getSignatories())
       const validationResult = this.approvalForm.privateKeys
         .map(({ hex }) => {
-          if (!hex.length) return
-
-          return derivePublicKey(
+          if (!hex.length) return true
+          const pub = derivePublicKey(
             Buffer.from(hex, 'hex')
           ).toString('hex')
-        })
-        .sort()
-        .map((v, i) => {
-          if (!v) return true
-          return allPublicKeys[i] === v
+          return allPublicKeys.has(pub)
         })
       return validationResult.every(Boolean)
     },
