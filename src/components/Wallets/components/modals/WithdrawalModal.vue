@@ -153,8 +153,6 @@ export default {
     return {
       isSending: false,
 
-      withdrawFormVisible: false,
-
       withdrawForm: {
         amount: null,
         wallet: null
@@ -163,6 +161,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'accountQuorum',
       'withdrawalFee',
       'btcWhiteListAddresses',
       'ethWhiteListAddresses'
@@ -221,7 +220,6 @@ export default {
 
               this.$emit('update-history')
               this.closeWithdrawDialog()
-              this.withdrawFormVisible = false
             })
             .catch(err => {
               console.error(err)
