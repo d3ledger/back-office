@@ -65,7 +65,7 @@ describe('Test wallets page without white list', () => {
   describe('Test deposit modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=deposit]').click()
-      cy.get('div.el-dialog').eq(1).should('be.visible')
+      cy.get('[data-cy=depositModal]').should('be.visible')
     })
 
     it('QR Code value and address are equal', () => {
@@ -76,94 +76,94 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Close modal', () => {
-      cy.get('i.el-dialog__close').eq(1).click()
-      cy.get('div.el-dialog').eq(1).should('not.be.visible')
+      cy.get('[data-cy=depositModal]').find('i').click()
+      cy.get('[data-cy=depositModal]').should('not.be.visible')
     })
   })
 
+  // Need to have white list address before perform this test
   describe.skip('Test withdraw modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=withdraw]').click()
-      cy.get('div.el-dialog').eq(0).should('be.visible')
+      cy.get('[data-cy=withdrawalModal]').should('be.visible')
     })
 
     it('Validate amount field', () => {
       const tokenAmount = '0.1'
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate wallet field', () => {
-      const walletAddress = '0x0000000000000000000000000000000000000000'
-      cy.get('div.el-dialog').eq(0)
-        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
-        .type(walletAddress)
-        .should('have.value', walletAddress)
-      cy.get('div.el-dialog').eq(0)
-        .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
+      const tokenAmount = '0.1'
+      cy.get('[data-cy=withdrawalModal]')
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
+        .type(tokenAmount)
+        .should('have.value', tokenAmount)
+      cy.get('[data-cy=withdrawalModal]')
+        .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(0)
-        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
+      cy.get('[data-cy=withdrawalModal]')
+        .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(0)
-        .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
+      cy.get('[data-cy=withdrawalModal]')
+        .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - handle an error', () => {
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find('.el-form-item__content > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.1'
-      const walletAddress = '0x0000000000000000000000000000000000000000'
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(0)
-        .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
-        .type(walletAddress)
-        .should('have.value', walletAddress)
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
+        .find('.el-select > .el-input > .el-input__inner')
+        .click()
+      cy.get('.el-select-dropdown__item')
+        .click()
+      cy.get('[data-cy=withdrawalModal]')
         .find('.el-form-item__content > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(0)
-        .get('div.el-dialog')
-        .eq(4)
+      cy.get('[data-cy=withdrawalModal]')
+        .get('[data-cy=confirmModal]')
         .should('be.visible')
     })
 
     it('Validate approval dialog - handle an error', () => {
       cy.wrap('invalid_private_key').as('invalidPrivateKey')
 
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
             .clear()
             .type(this.invalidPrivateKey)
             .should('have.value', this.invalidPrivateKey)
 
-          cy.get('#approval-dialog .el-form-item__error').eq(index)
+          cy.get('[data-cy=confirmModal] .el-form-item__error').eq(index)
             .should('be.visible')
         })
 
@@ -174,7 +174,7 @@ describe('Test wallets page without white list', () => {
     it('Validate approval dialog - correct', () => {
       cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
 
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
             .clear()
@@ -187,63 +187,63 @@ describe('Test wallets page without white list', () => {
     })
 
     it('Close approval modal', () => {
-      cy.get('#approval-dialog i.el-dialog__close').click()
+      cy.get('[data-cy=confirmModal] i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
-      cy.get('i.el-dialog__close').eq(0).click()
-      cy.get('div.el-dialog').eq(0).should('not.be.visible')
+      cy.get('[data-cy=withdrawalModal] i.el-dialog__close').click()
+      cy.get('[data-cy=withdrawalModal]').should('not.be.visible')
     })
   })
 
   describe('Test transfer modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
-      cy.get('div.el-dialog').eq(2).should('be.visible')
+      cy.get('[data-cy=transferModal]').should('be.visible')
     })
 
     it('Validate amount field', () => {
       const tokenAmount = '0.1'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate account field', () => {
       const account = 'test@d3'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - handle an error', () => {
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find('.el-dialog__body > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
@@ -252,28 +252,26 @@ describe('Test wallets page without white list', () => {
       mockUserRequest()
       const tokenAmount = '0.1'
       const account = 'test@d3'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
       cy.wait('@getUserInfo')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find('.el-dialog__body > .el-button')
         .click()
-      cy.get('#approval-dialog').should('be.visible')
-      cy.get('#approval-dialog i.el-dialog__close').click()
+      cy.get('[data-cy=confirmModal]').should('be.visible')
+      cy.get('[data-cy=confirmModal] i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
-      cy.get('div.el-dialog').eq(2)
-        .find('i.el-dialog__close')
+      cy.get('[data-cy=transferModal] i.el-dialog__close')
         .click()
-      cy.get('div.el-dialog').eq(2)
-        .find('div.el-dialog')
+      cy.get('[data-cy=transferModal]')
         .should('not.be.visible')
     })
   })
@@ -281,83 +279,83 @@ describe('Test wallets page without white list', () => {
   describe('Test exchange modal', () => {
     it('Open modal', () => {
       cy.get('[data-cy=exchange]').click()
-      cy.get('div.el-dialog').eq(3).should('be.visible')
+      cy.get('[data-cy=exchangeModal]').should('be.visible')
     })
 
     it('Validate first amount field', () => {
       const tokenAmount = '0.1'
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate second amount field', () => {
       const tokenAmount = '0.2'
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible').should('contain', 'Please select asset')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Select second token', () => {
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input-group > .el-input-group__append > .el-select > .el-input > .el-input__inner')
         .click()
       cy.get('.el-scrollbar > .el-select-dropdown__wrap > .el-scrollbar__view')
         .find(':nth-child(4) > span').eq(1)
         .click()
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find('.el-dialog__body > .el-form > :nth-child(4)')
         .should('be.visible')
     })
 
     it('Validate account field', () => {
       const account = 'test@d3'
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - handle an error', () => {
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find('.el-dialog__body > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
@@ -367,29 +365,29 @@ describe('Test wallets page without white list', () => {
       const tokenAmountFirst = '0.1'
       const tokenAmountSecond = '0.2'
       const account = 'test@d3'
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmountFirst)
         .should('have.value', tokenAmountFirst)
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmountSecond)
         .should('have.value', tokenAmountSecond)
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find(':nth-child(5) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
       cy.wait('@getUserInfo')
-      cy.get('div.el-dialog').eq(3)
+      cy.get('[data-cy=exchangeModal]')
         .find('.el-dialog__body > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(4).should('be.visible')
-      cy.get('i.el-dialog__close').eq(4).click()
+      cy.get('[data-cy=confirmModal]').should('be.visible')
+      cy.get('[data-cy=confirmModal] i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
-      cy.get('i.el-dialog__close').eq(3).click()
-      cy.get('div.el-dialog').eq(3).should('not.be.visible')
+      cy.get('[data-cy=exchangeModal] i.el-dialog__close').click()
+      cy.get('[data-cy=exchangeModal]').should('not.be.visible')
     })
   })
 })
@@ -407,69 +405,68 @@ describe('Test wallets page with white list', () => {
   describe('Test withdraw modal', () => {
     it('Open modal', () => {
       cy.contains('Withdraw').click()
-      cy.get('div.el-dialog').eq(0).should('be.visible')
+      cy.get('[data-cy=withdrawalModal]').should('be.visible')
     })
 
     it('Validate amount field', () => {
       const tokenAmount = '0.1'
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('not.be.visible')
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .clear()
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - handle an error', () => {
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find('.el-form-item__content > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-form-item__error')
         .should('be.visible')
     })
 
     it('Validate modal - correct', () => {
       const tokenAmount = '0.1'
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find('.el-select > .el-input > .el-input__inner')
         .click()
       cy.get('.el-select-dropdown__item')
         .click()
-      cy.get('div.el-dialog').eq(0)
+      cy.get('[data-cy=withdrawalModal]')
         .find('.el-form-item__content > .el-button')
         .click()
-      cy.get('div.el-dialog').eq(0)
-        .get('div.el-dialog')
-        .eq(4)
+      cy.get('[data-cy=withdrawalModal]')
+        .get('[data-cy=confirmModal]')
         .should('be.visible')
     })
 
     it('Validate approval dialog - handle an error', () => {
       cy.wrap('invalid_private_key').as('invalidPrivateKey')
 
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
             .clear()
             .type(this.invalidPrivateKey)
             .should('have.value', this.invalidPrivateKey)
 
-          cy.get('#approval-dialog .el-form-item__error').eq(index)
+          cy.get('[data-cy=confirmModal] .el-form-item__error').eq(index)
             .should('be.visible')
         })
 
@@ -480,7 +477,7 @@ describe('Test wallets page with white list', () => {
     it('Validate approval dialog - correct', () => {
       cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey')
 
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
             .clear()
@@ -493,12 +490,12 @@ describe('Test wallets page with white list', () => {
     })
 
     it('Close approval modal', () => {
-      cy.get('#approval-dialog i.el-dialog__close').click()
+      cy.get('[data-cy=confirmModal] i.el-dialog__close').click()
     })
 
     it('Close modal', () => {
-      cy.get('i.el-dialog__close').eq(0).click()
-      cy.get('div.el-dialog').eq(0).should('not.be.visible')
+      cy.get('[data-cy=withdrawalModal] i.el-dialog__close').click()
+      cy.get('[data-cy=withdrawalModal]').should('not.be.visible')
     })
   })
 })
@@ -524,30 +521,30 @@ describe('Test transfer with one private key', () => {
   describe('Test transfer with one key', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
-      cy.get('div.el-dialog').eq(2).should('be.visible')
+      cy.get('[data-cy=transferModal]').should('be.visible')
     })
 
     it('Validate modal - correct', () => {
       mockUserRequest()
       const tokenAmount = '0.001'
       const account = 'test@d3'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
       cy.wait('@getUserInfo')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find('.el-dialog__body > .el-button')
         .click()
     })
 
     it('Enter one private key and send', () => {
       cy.wrap('9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1').as('validPrivateKey')
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           cy.wrap($el).find('.el-input__inner')
             .type(this.validPrivateKey)
@@ -584,23 +581,23 @@ describe('Test transfer with two private keys', () => {
   describe('Test transfer with two keys', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
-      cy.get('div.el-dialog').eq(2).should('be.visible')
+      cy.get('[data-cy=transferModal]').should('be.visible')
     })
 
     it('Validate modal - correct', () => {
       mockUserRequest()
       const tokenAmount = '0.001'
       const account = 'alice@d3'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
       cy.wait('@getUserInfo')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find('.el-dialog__body > .el-button')
         .click()
     })
@@ -608,7 +605,7 @@ describe('Test transfer with two private keys', () => {
     it('Enter two private keys and send', () => {
       cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey1')
       cy.wrap('9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1').as('validPrivateKey2')
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           if (index === 0) {
             cy.wrap($el).find('.el-input__inner')
@@ -651,30 +648,30 @@ describe('Test transfer with one private key and quorum 2', () => {
   describe('Test transfer with one key and quorum 2', () => {
     it('Open modal', () => {
       cy.get('[data-cy=transfer]').click()
-      cy.get('div.el-dialog').eq(2).should('be.visible')
+      cy.get('[data-cy=transferModal]').should('be.visible')
     })
 
     it('Validate modal - correct', () => {
       mockUserRequest()
       const tokenAmount = '0.001'
       const account = 'alice@d3'
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(1) > .el-form-item__content > .el-input > .el-input__inner')
         .type(tokenAmount)
         .should('have.value', tokenAmount)
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find(':nth-child(3) > .el-form-item__content > .el-input > .el-input__inner')
         .type(account)
         .should('have.value', account)
       cy.wait('@getUserInfo')
-      cy.get('div.el-dialog').eq(2)
+      cy.get('[data-cy=transferModal]')
         .find('.el-dialog__body > .el-button')
         .click()
     })
 
     it('Enter one private key', () => {
       cy.wrap('0f0ce16d2afbb8eca23c7d8c2724f0c257a800ee2bbd54688cec6b898e3f7e33').as('validPrivateKey1')
-      cy.get('#approval-dialog .el-input')
+      cy.get('[data-cy=confirmModal] .el-input')
         .each(function ($el, index) {
           if (index === 0) {
             cy.wrap($el).find('.el-input__inner')
@@ -696,7 +693,7 @@ describe('Test transfer with one private key and quorum 2', () => {
 
     it('Enter second private key', () => {
       const validPrivateKey2 = '9c430dfe8c54b0a447e25f75121119ac3b649c1253bce8420f245e4c104dccd1'
-      cy.get('#approval-dialog .el-input__inner')
+      cy.get('[data-cy=confirmModal] .el-input__inner')
         .type(validPrivateKey2)
         .should('have.value', validPrivateKey2)
       cy.get('#confirm-approval-form').click({ force: true })

@@ -39,14 +39,14 @@ describe('Reports page', () => {
 
   it('opens "New Report" dialog', () => {
     cy.get('#reports-page [data-cy=getReport]').click()
-    cy.get('#reports-page .el-dialog .el-dialog__header').contains('Report')
+    cy.get('[data-cy=reportModal]').should('be.visible')
   })
 
   it('fills the form', () => {
-    cy.get('#reports-page .el-dialog input#wallet-selector').click()
+    cy.get('[data-cy=reportModal]').find('#wallet-selector').click({ force: true })
     cy.get('.el-select-dropdown .el-select-dropdown__item:contains("Augur")').click({ force: true })
-    cy.get('#reports-page .el-dialog input[placeholder="Start date"]').type(format(dateFrom, 'YYYY-MM-DD'), { force: true })
-    cy.get('#reports-page .el-dialog input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
+    cy.get('[data-cy=reportModal] input[placeholder="Start date"]').type(format(dateFrom, 'YYYY-MM-DD'), { force: true })
+    cy.get('[data-cy=reportModal] input[placeholder="End date"]').type(format(dateTo, 'YYYY-MM-DD'), { force: true }).blur()
   })
 
   /**

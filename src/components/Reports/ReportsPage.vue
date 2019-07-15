@@ -87,6 +87,7 @@
     </el-main>
     <el-dialog
       :visible.sync="reportFormVisible"
+      data-cy="reportModal"
       title="Report"
       width="400px"
       center
