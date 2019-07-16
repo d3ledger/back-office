@@ -86,12 +86,20 @@
           justify="center"
         >
           <div
-            :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''"
+            :class="
+              approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum
+                ? 'item__private-keys-success'
+                : ''
+            "
             class="item__private-keys"
           >
             {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
           </div>
         </el-row>
+        <span
+          v-if="$v.approvalForm.privateKeys._keyEqualsTo"
+          class="el-form-item__error"
+        >One or more keys are not valid</span>
       </el-form-item>
     </el-form>
     <div
@@ -145,10 +153,14 @@
 </template>
 
 <script>
-import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
+import {
+  _keyDuplication,
+  _keyPattern,
+  _keyEqualsTo,
+  errorHandler
+} from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
 import { required, minLength } from 'vuelidate/lib/validators'
-import { derivePublicKey } from 'ed25519.js'
 
 export default {
   name: 'ConfirmModal',
@@ -161,6 +173,7 @@ export default {
         privateKeys: {
           required,
           minLength: minLength(1),
+          _keyEqualsTo: _keyEqualsTo(this.accountSignatories),
           $each: {
             hex: {
               _keyPattern,
@@ -188,7 +201,8 @@ export default {
       'approvalDialogVisible',
       'approvalDialogSignatures',
       'approvalDialogMinAmountKeys',
-      'accountQuorum'
+      'accountQuorum',
+      'accountSignatories'
     ])
   },
   watch: {
@@ -209,15 +223,9 @@ export default {
       this.periodOfFinalisation = null
       this.timeToReject = 5
     },
-    async beforeSubmitApprovalDialog () {
+    beforeSubmitApprovalDialog () {
       this.$v.$touch()
       if (this.$v.$invalid) return
-
-      const validationResult = await this.validatePrivateKeys()
-      if (!validationResult) {
-        this.$message.error('Please provide correct private keys')
-        return
-      }
 
       this.isWaitFormVisible = true
       this.periodOfFinalisation = setInterval(() => {
@@ -231,18 +239,6 @@ export default {
     countdown () {
       this.timeToReject = this.timeToReject - 1
     },
-    async validatePrivateKeys () {
-      const allPublicKeys = new Set(await this.getSignatories())
-      const validationResult = this.approvalForm.privateKeys
-        .map(({ hex }) => {
-          if (!hex.length) return true
-          const pub = derivePublicKey(
-            Buffer.from(hex, 'hex')
-          ).toString('hex')
-          return allPublicKeys.has(pub)
-        })
-      return validationResult.every(Boolean)
-    },
     submitApprovalDialog () {
       this.closeApprovalDialog(this.approvalForm.privateKeys.map(x => x.hex).filter(x => !!x))
         .finally(() => {
@@ -253,6 +249,7 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
+      this.getSignatories()
     },
     onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()

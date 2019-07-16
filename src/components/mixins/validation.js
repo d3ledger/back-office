@@ -58,6 +58,19 @@ export const _keyDuplication = (keys) => (value) => {
   return true
 }
 
+export const _keyEqualsTo = (publicKeys) => (keys) => {
+  const allPublicKeys = new Set(publicKeys)
+  const validationResult = keys
+    .map(({ hex }) => {
+      if (!hex.length) return true
+      const pub = derivePublicKey(
+        Buffer.from(hex, 'hex')
+      ).toString('hex')
+      return allPublicKeys.has(pub)
+    })
+  return validationResult.every(Boolean)
+}
+
 export const _nodeIp = (url) => {
   let tempAddress = url.slice()
   if (url.includes('http://')) tempAddress = tempAddress.substr(7)
