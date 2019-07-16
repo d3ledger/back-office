@@ -328,6 +328,13 @@ export default {
 
     onClickDownload () {
       const filename = `${this.dialog.username}@${this.predefinedDomain}.priv`
+
+      if (window.Cypress) {
+        this.downloaded = true
+        window.Cypress.privateKey = this.dialog.privateKey
+        return
+      }
+
       const blob = new Blob(
         [this.dialog.privateKey],
         { type: 'text/plain;charset=utf-8' }
