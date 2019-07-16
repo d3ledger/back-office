@@ -164,8 +164,6 @@ export default {
     return {
       isSending: false,
 
-      transferFormVisible: false,
-
       transferForm: {
         to: null,
         amount: null,
@@ -175,6 +173,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'accountQuorum',
       'transferFee',
       'servicesIPs'
     ]),
@@ -229,7 +228,6 @@ export default {
 
               this.$emit('update-history')
               this.closeTransferForm()
-              this.transferFormVisible = false
             })
             .catch(err => {
               console.error(err)
