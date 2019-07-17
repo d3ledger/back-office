@@ -2,11 +2,7 @@
   <el-container class="fullheight">
     <el-main class="fullheight">
       <el-row class="fullheight">
-        <el-col
-          :xs="24"
-          :lg="{ span: 18, offset: 3 }"
-          :xl="{ span: 16, offset: 4 }"
-        >
+        <el-col :span="24">
           <el-card
             :body-style="{ padding: '1.5rem' }"
             class="fullheight"
@@ -53,6 +49,11 @@
                     <el-table-column
                       prop="1"
                       label="Fee amount"
+                      min-width="180"
+                    />
+                    <el-table-column
+                      prop="2"
+                      label="Assets under custody"
                       min-width="180"
                     />
                   </el-table>
