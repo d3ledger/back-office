@@ -61,7 +61,6 @@ const types = flow(
   'ACCEPT_SETTLEMENT',
   'REJECT_SETTLEMENT',
   'SIGN_PENDING',
-  'EDIT_ACCOUNT_QUORUM',
   'GET_ACCOUNT_QUORUM',
   'GET_ACCOUNT_LIMITS',
   'SUBSCRIBE_PUSH_NOTIFICATIONS',
@@ -671,14 +670,6 @@ const mutations = {
     handleError(state, err)
   },
 
-  [types.EDIT_ACCOUNT_QUORUM_REQUEST] (state) {},
-
-  [types.EDIT_ACCOUNT_QUORUM_SUCCESS] (state) {},
-
-  [types.EDIT_ACCOUNT_QUORUM_FAILURE] (state, err) {
-    handleError(state, err)
-  },
-
   [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
@@ -1165,19 +1156,6 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
-        throw err
-      })
-  },
-
-  editAccountQuorum ({ commit, state, getters }, { privateKeys, quorum }) {
-    commit(types.EDIT_ACCOUNT_QUORUM_REQUEST)
-    return irohaUtil.setAccountQuorum(privateKeys, getters.irohaQuorum, {
-      accountId: state.accountId,
-      quorum
-    })
-      .then(() => commit(types.EDIT_ACCOUNT_QUORUM_SUCCESS))
-      .catch(err => {
-        commit(types.EDIT_ACCOUNT_QUORUM_FAILURE, err)
         throw err
       })
   },
