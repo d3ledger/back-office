@@ -164,7 +164,8 @@ export default {
       'accountQuorum',
       'withdrawalFee',
       'btcWhiteListAddresses',
-      'ethWhiteListAddresses'
+      'ethWhiteListAddresses',
+      'currentWalletPrecision'
     ]),
     whiteListAddresses () {
       return this.wallet.assetId === BITCOIN_ASSET_NAME
