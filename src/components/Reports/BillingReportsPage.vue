@@ -51,6 +51,11 @@
                       label="Fee amount"
                       min-width="180"
                     />
+                    <el-table-column
+                      prop="2"
+                      label="Assets under custody"
+                      min-width="180"
+                    />
                   </el-table>
                 </el-tab-pane>
                 <el-tab-pane label="Transfer">

@@ -767,6 +767,7 @@ const mutations = {
 
   [types.GET_CUSTODY_BILLING_REPORT_SUCCESS] (state, result) {
     state.custodyBillingReport = Object.entries(result.accounts[0].assetCustody)
+      .map(item => [item[0], item[1].fee, item[1].assetsUnderCustody])
   },
 
   [types.GET_CUSTODY_BILLING_REPORT_FAILURE] (state, err) {
