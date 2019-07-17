@@ -19,6 +19,7 @@ const errorMessages = {
   _userIsMe: 'Username should not be same as your username',
 
   _keyPattern: 'Please provide correct private key',
+  _keyEqualsTo: 'Please provide private key related to your account',
   _keyDuplication: 'This key already used',
   _nodeIp: 'Please provide correct IP address',
 
@@ -47,7 +48,7 @@ export const _keyPattern = (value) => {
 export const _keyDuplication = (keys) => (value) => {
   let publicKey
   try {
-    publicKey = derivePublicKey(Buffer.from(value, 'hex'))
+    publicKey = derivePublicKey(Buffer.from(value, 'hex')).toString('hex')
   } catch (error) {
     console.error('Error: Invalid private key')
     return false
@@ -58,17 +59,19 @@ export const _keyDuplication = (keys) => (value) => {
   return true
 }
 
-export const _keyEqualsTo = (publicKeys) => (keys) => {
+export const _keyEqualsTo = (publicKeys) => (value) => {
+  if (!value.length) return true
+
   const allPublicKeys = new Set(publicKeys)
-  const validationResult = keys
-    .map(({ hex }) => {
-      if (!hex.length) return true
-      const pub = derivePublicKey(
-        Buffer.from(hex, 'hex')
-      ).toString('hex')
-      return allPublicKeys.has(pub)
-    })
-  return validationResult.every(Boolean)
+  let publicKey
+  try {
+    publicKey = derivePublicKey(Buffer.from(value, 'hex')).toString('hex')
+  } catch (error) {
+    console.error('Error: Invalid private key')
+    return false
+  }
+
+  return allPublicKeys.has(publicKey)
 }
 
 export const _nodeIp = (url) => {

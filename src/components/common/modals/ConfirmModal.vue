@@ -73,7 +73,7 @@
           <span
             v-if="_isError($v.approvalForm.privateKeys.$each[index])"
             class="el-form-item__error"
-          >Please provide correct private key</span>
+          >{{ _showError($v.approvalForm.privateKeys.$each[index].hex) }}</span>
         </el-form-item>
       </template>
 
@@ -173,11 +173,11 @@ export default {
         privateKeys: {
           required,
           minLength: minLength(1),
-          _keyEqualsTo: _keyEqualsTo(this.accountSignatories),
           $each: {
             hex: {
               _keyPattern,
-              _keyDuplication: _keyDuplication(this.approvalDialogSignatures)
+              _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+              _keyEqualsTo: _keyEqualsTo(this.accountSignatories)
             }
           }
         }
