@@ -97,16 +97,15 @@ export default {
   margin-right: 1rem;
 }
 .settings-item_row-delete {
+  background-color: transparent;
   border: none;
   padding: 0;
-  height: 0;
-  line-height: 3rem;
   font-size: 0.8rem;
 }
 .settings-item_row-delete:active,
 .settings-item_row-delete:focus,
 .settings-item_row-delete:hover {
-  background-color: #ffffff;
+  background-color: transparent;
   color: #000000;
 }
 .el-input-number__decrease, .el-input-number__increase {
