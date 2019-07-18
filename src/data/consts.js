@@ -21,4 +21,9 @@ export const FeeTypes = Object.freeze({
   WITHDRAWAL: 'withdrawal_billing'
 })
 
+export const NOTARY_ACCOUNT = 'notary@notary'
+
+export const ETH_WITHDRAWAL = 'withdrawal@notary'
+export const BTC_WITHDRAWAL = 'btc_withdrawal_service@notary'
+
 export const BITCOIN_ASSET_NAME = 'btc#bitcoin'
