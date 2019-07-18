@@ -73,7 +73,7 @@
           <span
             v-if="_isError($v.approvalForm.privateKeys.$each[index])"
             class="el-form-item__error"
-          >Please provide correct private key</span>
+          >{{ _showError($v.approvalForm.privateKeys.$each[index].hex) }}</span>
         </el-form-item>
       </template>
 
@@ -86,12 +86,20 @@
           justify="center"
         >
           <div
-            :class="approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum ? 'item__private-keys-success' :''"
+            :class="
+              approvalForm.numberOfValidKeys + approvalDialogSignatures.length === accountQuorum
+                ? 'item__private-keys-success'
+                : ''
+            "
             class="item__private-keys"
           >
             {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
           </div>
         </el-row>
+        <span
+          v-if="$v.approvalForm.privateKeys._keyEqualsTo"
+          class="el-form-item__error"
+        >One or more keys are not valid</span>
       </el-form-item>
     </el-form>
     <div
@@ -145,7 +153,12 @@
 </template>
 
 <script>
-import { _keyDuplication, _keyPattern, errorHandler } from '@/components/mixins/validation'
+import {
+  _keyDuplication,
+  _keyPattern,
+  _keyEqualsTo,
+  errorHandler
+} from '@/components/mixins/validation'
 import { mapActions, mapGetters } from 'vuex'
 import { required, minLength } from 'vuelidate/lib/validators'
 
@@ -163,7 +176,8 @@ export default {
           $each: {
             hex: {
               _keyPattern,
-              _keyDuplication: _keyDuplication(this.approvalDialogSignatures)
+              _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+              _keyEqualsTo: _keyEqualsTo(this.accountSignatories)
             }
           }
         }
@@ -187,7 +201,8 @@ export default {
       'approvalDialogVisible',
       'approvalDialogSignatures',
       'approvalDialogMinAmountKeys',
-      'accountQuorum'
+      'accountQuorum',
+      'accountSignatories'
     ])
   },
   watch: {
@@ -197,7 +212,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'closeApprovalDialog'
+      'closeApprovalDialog',
+      'getSignatories'
     ]),
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
@@ -233,6 +249,7 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
+      this.getSignatories()
     },
     onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()

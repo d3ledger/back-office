@@ -175,7 +175,8 @@ export default {
     ...mapGetters([
       'accountQuorum',
       'transferFee',
-      'servicesIPs'
+      'servicesIPs',
+      'currentWalletPrecision'
     ]),
     currentTransferFee () {
       return this.transferFee[this.wallet.assetId]

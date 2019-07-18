@@ -1159,7 +1159,10 @@ const actions = {
     return irohaUtil.getSignatories({
       accountId: state.accountId
     })
-      .then((keys) => commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys))
+      .then((keys) => {
+        commit(types.GET_ACCOUNT_SIGNATORIES_SUCCESS, keys)
+        return keys
+      })
       .catch(err => {
         commit(types.GET_ACCOUNT_SIGNATORIES_FAILURE, err)
         throw err
