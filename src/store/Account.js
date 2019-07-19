@@ -376,6 +376,7 @@ const getters = {
   },
 
   accountQuorum (state, getters) {
+    // User quorum is based on amount of signatories
     return getters.accountSignatories.length
   },
 
@@ -658,7 +659,18 @@ const mutations = {
 
   [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
 
-  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state, key) {
+    if (state.accountInfo['brvs@brvs']) {
+      const keys = state.accountInfo['brvs@brvs'].user_keys
+      const parsedKeys = JSON.parse(keys)
+      Vue.set(
+        state.accountInfo['brvs@brvs'],
+        'user_keys',
+        // eslint-disable-next-line
+        JSON.stringify([...parsedKeys, key]).replace(/"/g, '\\\"')
+      )
+    }
+  },
 
   [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
     handleError(state, err)
@@ -1115,13 +1127,14 @@ const actions = {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey, publicKey } = irohaUtil.generateKeypair()
+    const upperPublicKey = publicKey.toUpperCase()
     return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
-      publicKey: publicKey.toUpperCase()
+      publicKey: upperPublicKey
     })
-      .then(async () => {
-        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS)
-        await dispatch('updateAccount')
+      .then(() => {
+        // Manual update, because BRVS is taking a lot of time to update account information
+        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS, upperPublicKey)
       })
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
