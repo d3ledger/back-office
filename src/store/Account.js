@@ -1116,7 +1116,11 @@ const actions = {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
     const { privateKey } = irohaUtil.generateKeypair()
-    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+    const publicKey = derivePublicKey(
+      Buffer.from(privateKey, 'hex')
+    )
+      .toString('hex')
+      .toUpperCase()
     return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       publicKey
