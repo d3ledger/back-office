@@ -198,8 +198,7 @@ export default {
   methods: {
     ...mapActions([
       'addSignatory',
-      'removeSignatory',
-      'getSignatories'
+      'removeSignatory'
     ]),
     addPublicKey () {
       this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
@@ -221,7 +220,6 @@ export default {
           this.updateActiveTab(1)
           this.addingNewKey = false
           this.addKeyFormVisible = false
-          this.getSignatories()
         })
     },
     removePublicKey () {
@@ -249,7 +247,6 @@ export default {
           this.updateActiveTab(1)
           this.removingKey = false
           this.removeKeyFormVisible = false
-          this.getSignatories()
         })
     },
     doCopy (key) {

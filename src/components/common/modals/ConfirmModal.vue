@@ -209,7 +209,7 @@ export default {
   methods: {
     ...mapActions([
       'closeApprovalDialog',
-      'getSignatories'
+      'updateAccount'
     ]),
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
@@ -245,7 +245,7 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
-      this.getSignatories()
+      this.updateAccount()
     },
     onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()
