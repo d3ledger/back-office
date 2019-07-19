@@ -203,16 +203,14 @@ const transferAssetWithFee = (privateKeys, quorum, {
     { srcAccountId, destAccountId, assetId, description, amount }
   )
 
-  if (feeType === FeeTypes.WITHDRAWAL) {
-    if (fee > 0) {
+  if (fee > 0) {
+    if (feeType === FeeTypes.WITHDRAWAL) {
       senderTx = txHelper.addCommand(
         senderTx,
         'transferAsset',
         { srcAccountId, destAccountId, assetId, description: 'withdrawal fee', amount: fee }
       )
-    }
-  } else {
-    if (fee > 0) {
+    } else {
       const feeAccountId = `${feeType}@d3`
       senderTx = txHelper.addCommand(
         senderTx,
