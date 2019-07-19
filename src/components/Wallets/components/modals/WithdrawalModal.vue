@@ -101,14 +101,15 @@ import {
 } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
 import NOTIFICATIONS from '@/data/notifications'
-import { FeeTypes, BITCOIN_ASSET_NAME } from '@/data/consts'
+import {
+  FeeTypes,
+  BITCOIN_ASSET_NAME,
+  ETH_WITHDRAWAL,
+  BTC_WITHDRAWAL
+} from '@/data/consts'
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import { mapGetters, mapActions } from 'vuex'
-
-// Notary account for withdrawal.
-const btcNotaryAccount = process.env.VUE_APP_BTC_NOTARY_ACCOUNT || 'btc_withdrawal_service@notary'
-const ethNotaryAccount = process.env.VUE_APP_ETH_NOTARY_ACCOUNT || 'notary@notary'
 
 export default {
   mixins: [
@@ -199,8 +200,8 @@ export default {
           if (!privateKeys) return
           this.isSending = true
           const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME
-            ? btcNotaryAccount
-            : ethNotaryAccount
+            ? BTC_WITHDRAWAL
+            : ETH_WITHDRAWAL
 
           return this.transferAsset({
             privateKeys,

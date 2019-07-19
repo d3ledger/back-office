@@ -14,6 +14,7 @@ import {
   newCommandServiceOptions
 } from './util'
 import cloneDeep from 'lodash/fp/cloneDeep'
+import { FeeTypes } from '@/data/consts'
 
 const DEFAULT_TIMEOUT_LIMIT = 5000
 
@@ -194,12 +195,31 @@ const transferAssetWithFee = (privateKeys, quorum, {
   feeType,
   timeoutLimit = DEFAULT_TIMEOUT_LIMIT
 }) => {
-  let feeAccountId = `${feeType}@d3`
-  let txClient = newCommandService()
-  let senderTx = txHelper.addCommand(txHelper.emptyTransaction(), 'transferAsset', { srcAccountId, destAccountId, assetId, description, amount })
+  const txClient = newCommandService()
+
+  let senderTx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'transferAsset',
+    { srcAccountId, destAccountId, assetId, description, amount }
+  )
+
   if (fee > 0) {
-    senderTx = txHelper.addCommand(senderTx, 'transferAsset', { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: fee })
+    if (feeType === FeeTypes.WITHDRAWAL) {
+      senderTx = txHelper.addCommand(
+        senderTx,
+        'transferAsset',
+        { srcAccountId, destAccountId, assetId, description: 'withdrawal fee', amount: fee }
+      )
+    } else {
+      const feeAccountId = `${feeType}@d3`
+      senderTx = txHelper.addCommand(
+        senderTx,
+        'transferAsset',
+        { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: fee }
+      )
+    }
   }
+
   senderTx = txHelper.addMeta(senderTx, { creatorAccountId: srcAccountId, quorum })
   senderTx = signWithArrayOfKeys(senderTx, privateKeys)
 
