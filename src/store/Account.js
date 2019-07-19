@@ -667,7 +667,7 @@ const mutations = {
         state.accountInfo['brvs@brvs'],
         'user_keys',
         // eslint-disable-next-line
-        JSON.stringify([...parsedKeys, key]).replace(/"/g, '\\\"')
+        JSON.stringify([...parsedKeys, key])
       )
     }
   },
