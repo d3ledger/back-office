@@ -376,9 +376,8 @@ const getters = {
     return []
   },
 
-  accountQuorum (state) {
-    const quorum = find('user_quorum', state.accountInfo)
-    return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
+  accountQuorum (state, getters) {
+    return getters.accountSignatories.length
   },
 
   irohaQuorum (state, getters) {
@@ -394,7 +393,7 @@ const getters = {
       return JSON.parse(brvsUserSignatories)
     }
 
-    return state.accountSignatories
+    return []
   },
 
   accountLimits (state) {
