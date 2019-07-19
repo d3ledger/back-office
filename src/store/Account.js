@@ -386,11 +386,15 @@ const getters = {
   },
 
   accountSignatories (state) {
-    if (state.accountInfo['brvs@brvs']) {
-      return state.accountSignatories.filter((item, key) => key % 2 === 1)
-    } else {
-      return state.accountSignatories
+    const brvsUserSignatories = state.accountInfo['brvs@brvs']
+      ? state.accountInfo['brvs@brvs'].user_keys
+      : null
+
+    if (brvsUserSignatories) {
+      return JSON.parse(brvsUserSignatories)
     }
+
+    return state.accountSignatories
   },
 
   accountLimits (state) {
