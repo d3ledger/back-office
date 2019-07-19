@@ -17,7 +17,6 @@ import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
 import billingReportUtil from '@util/billing-report-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
-import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
 import billingUtil from '@util/billing-util'
 
@@ -1115,15 +1114,10 @@ const actions = {
   addSignatory ({ commit, dispatch, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
-    const { privateKey } = irohaUtil.generateKeypair()
-    const publicKey = derivePublicKey(
-      Buffer.from(privateKey, 'hex')
-    )
-      .toString('hex')
-      .toUpperCase()
+    const { privateKey, publicKey } = irohaUtil.generateKeypair()
     return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
-      publicKey
+      publicKey: publicKey.toUpperCase()
     })
       .then(async () => {
         commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS)
