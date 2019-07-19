@@ -71,7 +71,7 @@ export const _keyEqualsTo = (publicKeys) => (value) => {
     return false
   }
 
-  return allPublicKeys.has(publicKey)
+  return allPublicKeys.has(publicKey.toUpperCase())
 }
 
 export const _nodeIp = (url) => {
