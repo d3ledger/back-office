@@ -20,7 +20,8 @@ const errorMessages = {
 
   _keyPattern: 'Please provide correct private key',
   _keyEqualsTo: 'Please provide private key related to your account',
-  _keyDuplication: 'This key already used',
+  _keyDuplication: 'You can\'t use this private key twice',
+  _isSignedWithKey: 'You already sign transaction with this private key',
   _nodeIp: 'Please provide correct IP address',
 
   _address: 'Please provide correct address',
@@ -45,7 +46,7 @@ export const _keyPattern = (value) => {
   return true
 }
 
-export const _keyDuplication = (keys) => (value) => {
+export const _isSignedWithKey = (keys) => (value) => {
   let publicKey
   try {
     publicKey = derivePublicKey(Buffer.from(value, 'hex')).toString('hex')
@@ -72,6 +73,11 @@ export const _keyEqualsTo = (publicKeys) => (value) => {
   }
 
   return allPublicKeys.has(publicKey.toUpperCase())
+}
+
+export const _keyDuplication = (keys) => {
+  const privateKeys = keys.map(({ hex }) => hex)
+  return new Set(privateKeys).size === privateKeys.length
 }
 
 export const _nodeIp = (url) => {
