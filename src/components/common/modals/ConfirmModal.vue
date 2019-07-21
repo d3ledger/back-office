@@ -150,6 +150,7 @@
 
 <script>
 import {
+  _isSignedWithKey,
   _keyDuplication,
   _keyPattern,
   _keyEqualsTo,
@@ -169,10 +170,11 @@ export default {
         privateKeys: {
           required,
           minLength: minLength(1),
+          _keyDuplication,
           $each: {
             hex: {
               _keyPattern,
-              _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+              _isSignedWithKey: _isSignedWithKey(this.approvalDialogSignatures),
               _keyEqualsTo: _keyEqualsTo(this.accountSignatories)
             }
           }
