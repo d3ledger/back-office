@@ -381,6 +381,9 @@ const getters = {
   },
 
   irohaQuorum (state, getters) {
+    // TODO: Need to better way to handle this
+    if (window.Cypress) return getters.accountQuorum
+
     return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : getters.accountQuorum
   },
 
