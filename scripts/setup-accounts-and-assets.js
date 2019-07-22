@@ -87,8 +87,11 @@ new Promise((resolve, reject) => resolve())
     {
       accountId: testAccFull,
       key: 'user_keys',
-      // eslint-disable-next-line
-      value: JSON.stringify([testPubKey, alicePubKey]).replace(/"/g, '\\\"')
+      value: JSON.stringify([
+        testPubKey.toUpperCase(),
+        alicePubKey.toUpperCase()
+        // eslint-disable-next-line
+      ]).replace(/"/g, '\\\"')
     }
   ))
   .then(() => commands.setAccountDetail(
@@ -97,7 +100,7 @@ new Promise((resolve, reject) => resolve())
       accountId: aliceAccFull,
       key: 'user_keys',
       // eslint-disable-next-line
-      value: JSON.stringify([alicePubKey]).replace(/"/g, '\\\"')
+      value: JSON.stringify([alicePubKey.toUpperCase()]).replace(/"/g, '\\\"')
     }
   ))
   .then(() => commands.setAccountDetail(
