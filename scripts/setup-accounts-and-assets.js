@@ -24,12 +24,16 @@ const testAccName = 'test'
 const aliceAccName = 'alice'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
+const brvsAccFull = 'brvs@brvs'
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
 const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex')).toString('hex')
 
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex')).toString('hex')
+
+const brvsPrivKeyHex = testPrivKeyHex
+const brvsPubKey = testPubKey
 
 const NODE_IP = process.env.NODE_IP || 'localhost:50051'
 const DEFAULT_TIMEOUT_LIMIT = 5000
@@ -75,6 +79,24 @@ new Promise((resolve, reject) => resolve())
       accountId: testAccFull,
       key: 'ethereum_wallet',
       value: '0xAdmin-ethereum_wallet'
+    }
+  ))
+  .then(() => commands.setAccountDetail(
+    newCommandServiceOptions([brvsPrivKeyHex], 1, brvsAccFull),
+    {
+      accountId: testAccFull,
+      key: 'user_keys',
+      // eslint-disable-next-line
+      value: JSON.stringify([testPubKey, alicePubKey]).replace(/"/g, '\\\"')
+    }
+  ))
+  .then(() => commands.setAccountDetail(
+    newCommandServiceOptions([brvsPrivKeyHex], 1, brvsAccFull),
+    {
+      accountId: aliceAccFull,
+      key: 'user_keys',
+      // eslint-disable-next-line
+      value: JSON.stringify([alicePubKey]).replace(/"/g, '\\\"')
     }
   ))
   .then(() => commands.setAccountDetail(
