@@ -73,6 +73,7 @@ function newQueryServiceOptions (privateKey, accountId) {
 }
 
 new Promise((resolve, reject) => resolve())
+  .then(async () => await tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
   .then(() => commands.setAccountDetail(
     newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
     {
@@ -108,7 +109,6 @@ new Promise((resolve, reject) => resolve())
       value: JSON.stringify(['0x1234567890123456789012345678901234567890']).replace(/"/g, '\\\"')
     }
   ))
-  .then(async () => await tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
   .then(async () => await tryToSetRole(aliceAccFull, 'client'))
   .then(() => commands.setAccountDetail(
     newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
