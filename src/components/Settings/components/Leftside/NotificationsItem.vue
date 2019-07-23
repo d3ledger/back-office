@@ -4,20 +4,23 @@
 -->
 <template>
   <SettingsItem
-    title="Push Notifications"
+    title="Notifications"
   >
-    <el-row>
+    <!-- <el-row>
       <el-col>
+        <b>Push notifications:</b>
         <el-switch
           v-model="pushNotifications"
           @change="switchPushNotifications"
         />
       </el-col>
-    </el-row>
+    </el-row> -->
     <el-row>
       <el-col>
+        <b>Email:</b>
         {{ email }}
         <el-button
+          size="small"
           @click="openEditEmailDialog()"
         >
           Edit
@@ -26,6 +29,7 @@
     </el-row>
     <el-row>
       <el-col>
+        <b>Email notifications:</b>
         <el-switch
           v-model="emailNotifications"
           @change="switchNotifications"
@@ -46,12 +50,23 @@
           type="email"
         />
       </div>
-      <div>
-        <el-button @click="isEditEmailDialogVisible = false">Cancel</el-button>
+      <div
+        slot="footer"
+        class="dialog-form_buttons-block"
+      >
+        <el-button
+          class="dialog-form_buttons close"
+          @click="isEditEmailDialogVisible = false"
+        >
+          Cancel
+        </el-button>
         <el-button
           type="primary"
+          class="dialog-form_buttons action"
           @click="editEmail()"
-        >Save</el-button>
+        >
+          Save
+        </el-button>
       </div>
     </el-dialog>
   </SettingsItem>
