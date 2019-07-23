@@ -215,6 +215,10 @@
       :open-approval-dialog="openApprovalDialog"
       @update-history="$emit('update-history')"
     />
+    <withdrawal-modal
+      :is-visible.sync="isSignTransactionModalVisible"
+      :wallet="wallet"
+    />
   </el-row>
 </template>
 
@@ -228,7 +232,8 @@ import currencySymbol from '@/components/mixins/currencySymbol'
 const MODAL_TYPES = {
   DEPOSIT: 'DEPOSIT',
   TRANSFER: 'TRANSFER',
-  WITHDRAWAL: 'WITHDRAWAL'
+  WITHDRAWAL: 'WITHDRAWAL',
+  SIGN: 'SIGN'
 }
 
 export default {
@@ -262,6 +267,7 @@ export default {
       isDepositModalVisible: false,
       isTransferModalVisible: false,
       isWithdrawalModalVisible: false,
+      isSignTransactionModalVisible: false,
 
       marketPeriods: ['1H', '1D', '1W', '1M', '1Y'],
       selectedMarketPeriod: '1D'
@@ -325,6 +331,9 @@ export default {
       }
       if (modalType === this.modalTypes.TRANSFER) {
         this.isTransferModalVisible = true
+      }
+      if (modalType === this.modalTypes.SIGN) {
+        this.isSignTransactionModalVisible = true
       }
     },
 
