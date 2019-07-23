@@ -826,7 +826,15 @@ const mutations = {
 
   [types.ADD_NETWORK_REQUEST] (state) {},
   [types.ADD_NETWORK_SUCCESS] (state) {},
-  [types.ADD_NETWORK_FAILURE] (state) {}
+  [types.ADD_NETWORK_FAILURE] (state) {},
+
+  [types.SET_EMAIL_REQUEST] (state) {},
+  [types.SET_EMAIL_SUCCESS] (state) {},
+  [types.SET_EMAIL_FAILURE] (state) {},
+
+  [types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST] (state) {},
+  [types.SWITCH_EMAIL_NOTIFICATIONS_SUCCESS] (state) {},
+  [types.SWITCH_EMAIL_NOTIFICATIONS_FAILURE] (state) {}
 }
 
 const actions = {
