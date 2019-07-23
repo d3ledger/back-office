@@ -173,6 +173,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'accountId',
       'accountQuorum',
       'transferFee',
       'servicesIPs',

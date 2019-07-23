@@ -24,12 +24,16 @@ const testAccName = 'test'
 const aliceAccName = 'alice'
 const testAccFull = `${testAccName}@${irohaDomain}`
 const aliceAccFull = `${aliceAccName}@${irohaDomain}`
+const brvsAccFull = 'brvs@brvs'
 
 const testPrivKeyHex = fs.readFileSync(path.join(__dirname, `${testAccFull}.priv`)).toString().trim()
 const testPubKey = derivePublicKey(Buffer.from(testPrivKeyHex, 'hex')).toString('hex')
 
 const alicePrivKeyHex = fs.readFileSync(path.join(__dirname, `${aliceAccFull}.priv`)).toString().trim()
 const alicePubKey = derivePublicKey(Buffer.from(alicePrivKeyHex, 'hex')).toString('hex')
+
+const brvsPrivKeyHex = testPrivKeyHex
+const brvsPubKey = testPubKey
 
 const NODE_IP = process.env.NODE_IP || 'localhost:50051'
 const DEFAULT_TIMEOUT_LIMIT = 5000
@@ -69,12 +73,34 @@ function newQueryServiceOptions (privateKey, accountId) {
 }
 
 new Promise((resolve, reject) => resolve())
+  .then(async () => await tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
   .then(() => commands.setAccountDetail(
     newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),
     {
       accountId: testAccFull,
       key: 'ethereum_wallet',
       value: '0xAdmin-ethereum_wallet'
+    }
+  ))
+  .then(() => commands.setAccountDetail(
+    newCommandServiceOptions([brvsPrivKeyHex], 1, brvsAccFull),
+    {
+      accountId: testAccFull,
+      key: 'user_keys',
+      value: JSON.stringify([
+        testPubKey.toUpperCase(),
+        alicePubKey.toUpperCase()
+        // eslint-disable-next-line
+      ]).replace(/"/g, '\\\"')
+    }
+  ))
+  .then(() => commands.setAccountDetail(
+    newCommandServiceOptions([brvsPrivKeyHex], 1, brvsAccFull),
+    {
+      accountId: aliceAccFull,
+      key: 'user_keys',
+      // eslint-disable-next-line
+      value: JSON.stringify([alicePubKey.toUpperCase()]).replace(/"/g, '\\\"')
     }
   ))
   .then(() => commands.setAccountDetail(
@@ -86,7 +112,6 @@ new Promise((resolve, reject) => resolve())
       value: JSON.stringify(['0x1234567890123456789012345678901234567890']).replace(/"/g, '\\\"')
     }
   ))
-  .then(async () => await tryToCreateAccount(aliceAccName, irohaDomain, alicePubKey))
   .then(async () => await tryToSetRole(aliceAccFull, 'client'))
   .then(() => commands.setAccountDetail(
     newCommandServiceOptions([testPrivKeyHex], 1, testAccFull),

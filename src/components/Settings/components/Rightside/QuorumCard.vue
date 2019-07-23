@@ -33,11 +33,10 @@ export default {
     ])
   },
   created () {
-    this.getSignatories()
+    this.getAccountQuorum()
   },
   methods: {
     ...mapActions([
-      'getSignatories',
       'getAccountQuorum'
     ])
   }

@@ -20,6 +20,7 @@
                   "permissions": [
                     "can_get_all_acc_ast",
                     "can_get_all_accounts",
+                    "can_get_all_acc_detail",
                     "can_create_asset",
                     "can_add_asset_qty",
                     "can_transfer",
@@ -61,7 +62,7 @@
                     "can_append_role",
                     "can_create_account",
                     "can_set_detail",
-                    "can_get_all_accounts",
+                    "can_get_all_acc_detail",
                     "can_get_domain_accounts",
                     "can_get_all_txs",
                     "can_get_blocks",
@@ -80,13 +81,15 @@
                     "can_get_my_acc_ast_txs",
                     "can_get_my_acc_txs",
                     "can_get_my_txs",
-                    "can_get_all_accounts",
                     "can_transfer",
                     "can_receive",
                     "can_set_quorum",
                     "can_add_signatory",
                     "can_get_my_signatories",
-                    "can_remove_signatory"
+                    "can_remove_signatory",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory"
                   ]
                 }
               },
@@ -94,13 +97,51 @@
                 "createRole": {
                   "roleName": "admin",
                   "permissions": [
-                    "can_get_all_accounts",
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_create_asset",
+                    "can_receive",
+                    "can_transfer",
+                    "can_add_asset_qty",
+                    "can_subtract_asset_qty",
+                    "can_add_domain_asset_qty",
+                    "can_subtract_domain_asset_qty",
+                    "can_create_domain",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory",
+                    "can_grant_can_set_my_account_detail",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_transfer_my_assets",
+                    "can_add_peer",
+                    "can_append_role",
+                    "can_create_role",
+                    "can_detach_role",
+                    "can_add_signatory",
+                    "can_remove_signatory",
+                    "can_set_quorum",
                     "can_get_all_acc_detail",
-                    "can_get_all_txs",
-                    "can_get_all_acc_txs",
+                    "can_get_all_accounts",
+                    "can_get_domain_acc_detail",
+                    "can_get_domain_accounts",
+                    "can_get_my_acc_detail",
+                    "can_get_my_account",
                     "can_get_all_acc_ast",
+                    "can_get_domain_acc_ast",
+                    "can_get_my_acc_ast",
+                    "can_get_all_acc_ast_txs",
+                    "can_get_domain_acc_ast_txs",
+                    "can_get_my_acc_ast_txs",
+                    "can_get_all_acc_txs",
+                    "can_get_domain_acc_txs",
+                    "can_get_my_acc_txs",
+                    "can_read_assets",
                     "can_get_blocks",
-                    "can_set_detail"
+                    "can_get_roles",
+                    "can_get_all_signatories",
+                    "can_get_domain_signatories",
+                    "can_get_my_signatories",
+                    "can_get_all_txs",
+                    "can_get_my_txs"
                   ]
                 }
               },
@@ -117,6 +158,7 @@
                   "roleName": "withdrawal",
                   "permissions": [
                     "can_get_all_accounts",
+                    "can_get_all_acc_detail",
                     "can_get_blocks",
                     "can_read_assets",
                     "can_receive",
@@ -126,7 +168,25 @@
               },
               {
                 "createRole": {
+                  "roleName": "data_collector",
+                  "permissions": [
+                    "can_get_blocks"
+                  ]
+                }
+              },
+              {
+                "createRole": {
                   "roleName": "signature_collector",
+                  "permissions": [
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_get_all_acc_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "consensus_collector",
                   "permissions": [
                     "can_create_account",
                     "can_set_detail",
@@ -139,6 +199,7 @@
                   "roleName": "vacuumer",
                   "permissions": [
                     "can_get_domain_accounts",
+                    "can_get_all_acc_detail",
                     "can_read_assets"
                   ]
                 }
@@ -152,10 +213,71 @@
               },
               {
                 "createRole": {
+                  "roleName": "superuser",
+                  "permissions": [
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_create_asset",
+                    "can_receive",
+                    "can_transfer",
+                    "can_add_asset_qty",
+                    "can_subtract_asset_qty",
+                    "can_add_domain_asset_qty",
+                    "can_subtract_domain_asset_qty",
+                    "can_create_domain",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory",
+                    "can_grant_can_set_my_account_detail",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_transfer_my_assets",
+                    "can_add_peer",
+                    "can_append_role",
+                    "can_create_role",
+                    "can_detach_role",
+                    "can_add_signatory",
+                    "can_remove_signatory",
+                    "can_set_quorum",
+                    "can_get_all_acc_detail",
+                    "can_get_all_accounts",
+                    "can_get_domain_acc_detail",
+                    "can_get_domain_accounts",
+                    "can_get_my_acc_detail",
+                    "can_get_my_account",
+                    "can_get_all_acc_ast",
+                    "can_get_domain_acc_ast",
+                    "can_get_my_acc_ast",
+                    "can_get_all_acc_ast_txs",
+                    "can_get_domain_acc_ast_txs",
+                    "can_get_my_acc_ast_txs",
+                    "can_get_all_acc_txs",
+                    "can_get_domain_acc_txs",
+                    "can_get_my_acc_txs",
+                    "can_read_assets",
+                    "can_get_blocks",
+                    "can_get_roles",
+                    "can_get_all_signatories",
+                    "can_get_domain_signatories",
+                    "can_get_my_signatories",
+                    "can_get_all_txs",
+                    "can_get_my_txs"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "broadcast",
+                  "permissions": [
+                    "can_set_detail"
+                    ]
+                }
+              },
+              {
+                "createRole": {
                   "roleName": "tester",
                   "permissions": [
-                    "can_create_asset",
+                    "can_create_account",
                     "can_set_detail",
+                    "can_create_asset",
                     "can_transfer",
                     "can_receive",
                     "can_add_asset_qty",
@@ -163,10 +285,15 @@
                     "can_create_domain",
                     "can_grant_can_add_my_signatory",
                     "can_grant_can_remove_my_signatory",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_transfer_my_assets",
                     "can_add_peer",
                     "can_append_role",
                     "can_create_role",
                     "can_detach_role",
+                    "can_add_signatory",
+                    "can_remove_signatory",
+                    "can_set_quorum",
                     "can_get_all_acc_detail",
                     "can_get_all_accounts",
                     "can_get_all_acc_ast",
@@ -174,24 +301,9 @@
                     "can_get_roles",
                     "can_get_all_signatories",
                     "can_get_domain_accounts",
-                    "can_set_quorum",
-                    "can_add_signatory",
-                    "can_create_account",
                     "can_get_all_txs",
                     "can_get_domain_acc_detail",
-                    "can_read_assets",
-                    "can_grant_can_set_my_quorum",
-                    "can_grant_can_transfer_my_assets",
-                    "can_get_my_signatories",
-                    "can_remove_signatory"
-                  ]
-                }
-              },
-              {
-                "createRole": {
-                  "roleName": "whitelist_setter",
-                  "permissions": [
-                    "can_set_detail"
+                    "can_read_assets"
                   ]
                 }
               },
@@ -211,6 +323,17 @@
                   "roleName": "notary_list_holder",
                   "permissions": [
                     "can_set_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "exchange",
+                  "permissions": [
+                    "can_transfer",
+                    "can_receive",
+                    "can_get_my_acc_ast",
+                    "can_read_assets"
                   ]
                 }
               },
@@ -239,23 +362,51 @@
                     "can_set_quorum",
                     "can_add_signatory",
                     "can_get_my_signatories",
-                    "can_remove_signatory"
+                    "can_remove_signatory",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory"
                   ]
                 }
               },
               {
                 "createRole": {
-                  "roleName": "btc_fee_rate_setter",
+                  "roleName": "brvs",
                   "permissions": [
-                    "can_set_detail",
-                    "can_get_all_accounts"
+                    "can_add_signatory",
+                    "can_remove_signatory",
+                    "can_get_all_signatories",
+                    "can_get_all_accounts",
+                    "can_get_all_txs",
+                    "can_get_blocks",
+                    "can_get_all_acc_detail",
+                    "can_set_quorum",
+                    "can_set_detail"
                   ]
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "test",
+                  "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "bootstrap",
+                  "defaultRole": "none"
                 }
               },
               {
                 "createDomain": {
                   "domainId": "notary",
                   "defaultRole": "none"
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "brvs",
+                  "defaultRole": "brvs"
                 }
               },
               {
@@ -309,10 +460,37 @@
                 }
               },
               {
+                "createDomain": {
+                  "domainId": "btcConsensus",
+                  "defaultRole": "none"
+                }
+              },
+              {
                 "createAsset": {
                   "assetName": "btc",
                   "domainId": "bitcoin",
                   "precision": 8
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "brvs",
+                  "domainId": "brvs",
+                  "publicKey": "889f6b881e331be21487db77dcf32c5f8d3d5e8066e78d2feac4239fe91d416f"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "client_accounts",
+                  "domainId": "notary",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_consensus_collector",
+                  "domainId": "notary",
+                  "publicKey": "8338ab91ce2cc2a739c40c29ae782439f2b43ddc96c756ac5d4e50ee4307e269"
                 }
               },
               {
@@ -323,9 +501,28 @@
                 }
               },
               {
+                "createAccount": {
+                  "accountName": "superuser",
+                  "domainId": "bootstrap",
+                  "publicKey": "02a3c31288f3800e08bcb7f1a2fe446ee5921434096e71f8b7535eda9210524b"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "superuser@bootstrap",
+                  "roleName": "superuser"
+                }
+              },
+              {
                 "appendRole": {
                   "accountId": "rmq@notary",
                   "roleName": "rmq"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "btc_consensus_collector@notary",
+                  "roleName": "consensus_collector"
                 }
               },
               {
@@ -386,12 +583,6 @@
                 }
               },
               {
-                "appendRole": {
-                  "accountId": "eth_registration_service@notary",
-                  "roleName": "whitelist_setter"
-                }
-              },
-              {
                 "createAccount": {
                   "accountName": "btc_registration_service",
                   "domainId": "notary",
@@ -419,6 +610,13 @@
                 }
               },
               {
+                "createAccount": {
+                  "accountName": "broadcast",
+                  "domainId": "notary",
+                  "publicKey": "e48e003991142b90a3569d6804738c69296f339216166a3e6d20d6380afb25b1"
+                }
+              },
+              {
                 "setAccountQuorum":{
                   "accountId":"mst_btc_registration_service@notary",
                   "quorum":1
@@ -432,20 +630,40 @@
               },
               {
                 "appendRole": {
+                  "accountId": "broadcast@notary",
+                  "roleName": "broadcast"
+                }
+              },
+              {
+                "appendRole": {
                   "accountId": "mst_btc_registration_service@notary",
                   "roleName": "client"
                 }
               },
               {
                 "createAccount": {
-                  "accountName": "eth_token_storage_service",
+                  "accountName": "eth_token_service",
                   "domainId": "notary",
                   "publicKey": "8f0f6ceb147679fb81549c48e720345f14ed0340879e4ad370a21b6ddc3281c9"
                 }
               },
               {
+                "createAccount": {
+                  "accountName": "eth_anchored_token_service",
+                  "domainId": "notary",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "iroha_anchored_token_service",
+                  "domainId": "notary",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
                 "appendRole": {
-                  "accountId": "eth_token_storage_service@notary",
+                  "accountId": "eth_token_service@notary",
                   "roleName": "eth_token_list_storage"
                 }
               },
@@ -457,90 +675,9 @@
                 }
               },
               {
-                "createAccount": {
-                  "accountName": "btc_fee_rate",
-                  "domainId": "notary",
-                  "publicKey": "1776d3cf1e73b0f361dd9287f8aa7d95f78bb6abe44784ce1cd173096084abd0"
-                }
-              },
-              {
                 "appendRole": {
-                  "accountId": "btc_fee_rate@notary",
-                  "roleName": "btc_fee_rate_setter"
-                }
-              },
-              {
-                "createRole": {
-                  "roleName": "billing",
-                  "permissions": [
-                    "can_transfer",
-                    "can_receive"
-                  ]
-                }
-              },
-              {
-                "createAccount": {
-                  "accountName": "transfer_billing",
-                  "domainId": "d3",
-                  "publicKey": "548a734a73872d20ce46dc2f72c8a69f3a5890406d662600dd9dc8bbd92a0b92"
-                }
-              },
-              {
-                "createAccount": {
-                  "accountName": "custody_billing",
-                  "domainId": "d3",
-                  "publicKey": "64ff795a8395a83a82030873f05955d65158a137efd516cc90cda59f222d2dea"
-                }
-              },
-              {
-                "createAccount": {
-                  "accountName": "account_creation_billing",
-                  "domainId": "d3",
-                  "publicKey": "d56621bdd9b354d89523d404a405be48352771d16168d4f12c8cfa41991198fd"
-                }
-              },
-              {
-                "createAccount": {
-                  "accountName": "exchange_billing",
-                  "domainId": "d3",
-                  "publicKey": "1f9195df82ca6ad074141c307307b1d642c17f6060c293b7a3b8f19bf7587979"
-                }
-              },
-              {
-                "createAccount": {
-                  "accountName": "withdrawal_billing",
-                  "domainId": "d3",
-                  "publicKey": "5c65f42a43deded4cf8871539daa618901966210f0661755eeb421106d65b2f3"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "transfer_billing@d3",
-                  "roleName": "billing"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "custody_billing@d3",
-                  "roleName": "billing"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "account_creation_billing@d3",
-                  "roleName": "billing"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "exchange_billing@d3",
-                  "roleName": "billing"
-                }
-              },
-              {
-                "appendRole": {
-                  "accountId": "withdrawal_billing@d3",
-                  "roleName": "billing"
+                  "accountId": "withdrawal@notary",
+                  "roleName": "withdrawal"
                 }
               },
               {
@@ -548,6 +685,20 @@
                   "accountName": "btc_withdrawal_service",
                   "domainId": "notary",
                   "publicKey": "2ea1d2c3eb5b35a85b393622609ae116ddb2ea35e060fc74adb3b2caa324eacb"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_tx_storage",
+                  "domainId": "notary",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "btc_utxo_storage_v2",
+                  "domainId": "notary",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
                 }
               },
               {
@@ -631,6 +782,12 @@
                   "domainId": "notary",
                   "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
                 }
+              },{
+                "createAccount": {
+                  "accountName": "changelog_history",
+                  "domainId": "bootstrap",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
               },
               {
                 "appendRole": {
@@ -642,7 +799,7 @@
                 "setAccountDetail": {
                   "accountId": "notaries@notary",
                   "key": "some_notary",
-                  "value": "http://localhost:20000"
+                  "value": "http://d3-eth-deposit:20000"
                 }
               },
               {
@@ -650,6 +807,19 @@
                   "accountName": "gen_btc_pk_trigger",
                   "domainId": "notary",
                   "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "exchanger",
+                  "domainId": "notary",
+                  "publicKey": "6ddd0509439afc402200d5c745444d501179f7952c4f687666972aaa35fdd948"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "exchanger@notary",
+                  "roleName": "exchange"
                 }
               },
               {
@@ -667,15 +837,198 @@
               },
               {
                 "createAccount": {
-                  "accountName": "sora",
+                  "accountName": "xor",
                   "domainId": "sora",
                   "publicKey": "5665875b228b9eee51fbb7525e21b7fc8b7db9fb6e92c0c6fd9269b1342a1b03"
                 }
               },
               {
                 "appendRole": {
-                  "accountId": "sora@sora",
+                  "accountId": "xor@sora",
                   "roleName": "sora"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "data_collector",
+                  "domainId": "notary",
+                  "publicKey": "97B888554684FB30F29FAB92991AB7ECEFFFE433AB3AF501E5DEAEE69392518C"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "data_collector@notary",
+                  "roleName": "data_collector"
+                }
+              },
+              {
+                "addAssetQuantity": {
+                  "assetId": "xor#sora",
+                  "amount": "1618033988749894848204586834"
+                }
+              },
+              {
+                "transferAsset": {
+                  "srcAccountId": "notary@notary",
+                  "destAccountId": "xor@sora",
+                  "assetId": "xor#sora",
+                  "description": "initial supply",
+                  "amount": "1618033988749894848204586834"
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "dapp",
+                  "permissions": [
+                    "can_get_my_acc_detail",
+                    "can_get_blocks",
+                    "can_grant_can_set_my_quorum",
+                    "can_grant_can_add_my_signatory",
+                    "can_grant_can_remove_my_signatory",
+                    "can_grant_can_set_my_account_detail"
+                  ]
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "dapp_manager",
+                  "permissions": [
+                    "can_add_signatory",
+                    "can_remove_signatory",
+                    "can_set_quorum",
+                    "can_create_account",
+                    "can_set_detail",
+                    "can_get_domain_accounts",
+                    "can_get_domain_signatories",
+                    "can_get_domain_acc_detail"
+                  ]
+                }
+              },
+              {
+                "createDomain": {
+                  "domainId": "dapp",
+                  "defaultRole": "dapp"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "dapp_manager",
+                  "domainId": "dapp",
+                  "publicKey": "4c7c040308e853a91b05038cf51f23e8a1bbb42691d2822df992bbdc56fa563e"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "dapp_manager@dapp",
+                  "roleName": "dapp_manager"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "dapp_brvs",
+                  "domainId": "dapp",
+                  "publicKey": "0e73d5e941060c3a3af9c6b69fe8a766471a91076ff9fe15029f7c8d350ca461"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "dapp_brvs@dapp",
+                  "roleName": "brvs"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "dapp_repo",
+                  "domainId": "dapp",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "dapp_journal",
+                  "domainId": "dapp",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "dapp_accounts",
+                  "domainId": "dapp",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createRole": {
+                  "roleName": "billing",
+                  "permissions": [
+                    "can_transfer",
+                    "can_receive"
+                  ]
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "transfer_billing",
+                  "domainId": "d3",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "custody_billing",
+                  "domainId": "d3",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "account_creation_billing",
+                  "domainId": "d3",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "exchange_billing",
+                  "domainId": "d3",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "createAccount": {
+                  "accountName": "withdrawal_billing",
+                  "domainId": "d3",
+                  "publicKey": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "transfer_billing@d3",
+                  "roleName": "billing"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "custody_billing@d3",
+                  "roleName": "billing"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "account_creation_billing@d3",
+                  "roleName": "billing"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "exchange_billing@d3",
+                  "roleName": "billing"
+                }
+              },
+              {
+                "appendRole": {
+                  "accountId": "withdrawal_billing@d3",
+                  "roleName": "billing"
                 }
               },
               {
@@ -690,7 +1043,7 @@
                   "accountId": "test@d3",
                   "roleName": "tester"
                 }
-              },
+              }
             ],
             "creatorAccountId": "notary@notary",
             "quorum": 1

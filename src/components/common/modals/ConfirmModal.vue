@@ -24,7 +24,7 @@
           <p>
             Please enter your private key<span v-if="accountQuorum > 1">s</span>.
             <span v-if="accountQuorum > 1 && !exchangeDialogVisible">
-              You need to enter at least {{ approvalDialogMinAmountKeys }} key.
+              You need to enter at least {{ approvalDialogMinAmountKeys }} key<span v-if="approvalDialogMinAmountKeys > 1">s</span>.
             </span>
           </p>
           <p v-if="approvalDialogSignatures.length">This transaction already has {{ approvalDialogSignatures.length }} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
@@ -96,10 +96,6 @@
             {{ approvalForm.numberOfValidKeys + approvalDialogSignatures.length }}/{{ accountQuorum }}
           </div>
         </el-row>
-        <span
-          v-if="$v.approvalForm.privateKeys._keyEqualsTo"
-          class="el-form-item__error"
-        >One or more keys are not valid</span>
       </el-form-item>
     </el-form>
     <div
@@ -154,6 +150,7 @@
 
 <script>
 import {
+  _isSignedWithKey,
   _keyDuplication,
   _keyPattern,
   _keyEqualsTo,
@@ -173,10 +170,11 @@ export default {
         privateKeys: {
           required,
           minLength: minLength(1),
+          _keyDuplication,
           $each: {
             hex: {
               _keyPattern,
-              _keyDuplication: _keyDuplication(this.approvalDialogSignatures),
+              _isSignedWithKey: _isSignedWithKey(this.approvalDialogSignatures),
               _keyEqualsTo: _keyEqualsTo(this.accountSignatories)
             }
           }
@@ -213,7 +211,7 @@ export default {
   methods: {
     ...mapActions([
       'closeApprovalDialog',
-      'getSignatories'
+      'updateAccount'
     ]),
     closeApprovalDialogWith () {
       clearInterval(this.periodOfFinalisation)
@@ -249,7 +247,7 @@ export default {
       const privateKeys = Array.from({ length: this.accountQuorum - this.approvalDialogSignatures.length }, () => ({ hex: '' }))
       this.$set(this.approvalForm, 'privateKeys', privateKeys)
       this.updateNumberOfValidKeys()
-      this.getSignatories()
+      this.updateAccount()
     },
     onFileChosen (file, fileList, key, index) {
       const reader = new FileReader()

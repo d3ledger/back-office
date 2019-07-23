@@ -17,7 +17,6 @@ import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
 import billingReportUtil from '@util/billing-report-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
-import { derivePublicKey } from 'ed25519.js'
 import { WalletTypes } from '@/data/consts'
 import billingUtil from '@util/billing-util'
 
@@ -378,21 +377,28 @@ const getters = {
     return []
   },
 
-  accountQuorum (state) {
-    const quorum = find('user_quorum', state.accountInfo)
-    return quorum ? parseInt(quorum.user_quorum) : state.accountQuorum
+  accountQuorum (state, getters) {
+    // User quorum is based on amount of signatories
+    return getters.accountSignatories.length
   },
 
   irohaQuorum (state, getters) {
+    // TODO: Need to better way to handle this
+    if (window.Cypress) return getters.accountQuorum
+
     return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : getters.accountQuorum
   },
 
   accountSignatories (state) {
-    if (state.accountInfo['brvs@brvs']) {
-      return state.accountSignatories.filter((item, key) => key % 2 === 1)
-    } else {
-      return state.accountSignatories
+    const brvsUserSignatories = state.accountInfo['brvs@brvs']
+      ? state.accountInfo['brvs@brvs'].user_keys
+      : null
+
+    if (brvsUserSignatories) {
+      return JSON.parse(brvsUserSignatories)
     }
+
+    return []
   },
 
   accountLimits (state) {
@@ -668,7 +674,18 @@ const mutations = {
 
   [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
 
-  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state) {},
+  [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state, key) {
+    if (state.accountInfo['brvs@brvs']) {
+      const keys = state.accountInfo['brvs@brvs'].user_keys
+      const parsedKeys = JSON.parse(keys)
+      Vue.set(
+        state.accountInfo['brvs@brvs'],
+        'user_keys',
+        // eslint-disable-next-line
+        JSON.stringify([...parsedKeys, key].sort())
+      )
+    }
+  },
 
   [types.ADD_ACCOUNT_SIGNATORY_FAILURE] (state, err) {
     handleError(state, err)
@@ -1132,15 +1149,15 @@ const actions = {
   addSignatory ({ commit, dispatch, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
-    const { privateKey } = irohaUtil.generateKeypair()
-    const publicKey = derivePublicKey(Buffer.from(privateKey, 'hex')).toString('hex')
+    const { privateKey, publicKey } = irohaUtil.generateKeypair()
+    const upperPublicKey = publicKey.toUpperCase()
     return irohaUtil.addSignatory(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
-      publicKey
+      publicKey: upperPublicKey
     })
-      .then(async () => {
-        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS)
-        await dispatch('updateAccount')
+      .then(() => {
+        // Manual update, because BRVS is taking a lot of time to update account information
+        commit(types.ADD_ACCOUNT_SIGNATORY_SUCCESS, upperPublicKey)
       })
       .then(() => ({ username: state.accountId, privateKey }))
       .catch(err => {
