@@ -4,7 +4,7 @@
 -->
 <template>
   <SettingsItem
-    title="Notifications"
+    title="Push Notifications"
   >
     <el-row>
       <el-col>
@@ -12,11 +12,6 @@
           v-model="pushNotifications"
           @change="switchPushNotifications"
         />
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col>
-        Email notifications
       </el-col>
     </el-row>
     <el-row>
@@ -32,8 +27,8 @@
     <el-row>
       <el-col>
         <el-switch
-          v-model="notifications"
-          @change="switchEmailNotifications"
+          v-model="emailNotifications"
+          @change="switchNotifications"
         />
       </el-col>
     </el-row>
@@ -47,7 +42,7 @@
     >
       <div>
         <el-input
-          :model="email"
+          v-model="emailAddress"
           type="email"
         />
       </div>
@@ -81,6 +76,8 @@ export default {
   data () {
     return {
       pushNotifications: false,
+      emailAddress: '',
+      emailNotifications: false,
       isEditEmailDialogVisible: false
     }
   },
@@ -93,6 +90,7 @@ export default {
   },
   created () {
     this.pushNotifications = this.subscribed
+    this.emailNotifications = this.notifications
   },
   methods: {
     ...mapActions([
@@ -128,19 +126,22 @@ export default {
       this.openApprovalDialog()
         .then(privateKeys => {
           if (!privateKeys) return
-
           this.switchEmailNotifications({ privateKeys, notifications })
         })
     },
     openEditEmailDialog () {
-
+      this.isEditEmailDialogVisible = true
     },
     editEmail () {
       this.openApprovalDialog()
         .then(privateKeys => {
+          console.log(privateKeys)
           if (!privateKeys) return
 
-          this.setEmail({ privateKeys, email: this.email })
+          this.setEmail({ privateKeys, email: this.emailAddress })
+        })
+        .then(() => {
+          this.isEditEmailDialogVisible = false
         })
     }
 

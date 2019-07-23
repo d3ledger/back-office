@@ -71,7 +71,9 @@ const types = flow(
   'GET_CUSTODY_BILLING_REPORT',
   'GET_TRANSFER_BILLING_REPORT',
   'GET_EXCHANGE_BILLING_REPORT',
-  'ADD_NETWORK'
+  'ADD_NETWORK',
+  'SET_EMAIL',
+  'SWITCH_EMAIL_NOTIFICATIONS'
 ])
 
 function initialState () {
@@ -420,12 +422,12 @@ const getters = {
 
   email (state) {
     const email = find('email', state.accountInfo)
-    return email && email.email
+    return email ? email.email : ''
   },
 
-  notification (state) {
-    const notification = find('notification', state.accountInfo)
-    return notification && notification.notification
+  notifications (state) {
+    const notifications = find('notifications', state.accountInfo)
+    return notifications ? notifications.notifications === 'true' : false
   },
 
   transferFee (state) {
@@ -1268,11 +1270,10 @@ const actions = {
 
   switchEmailNotifications ({ commit, state, dispatch, getters }, { privateKeys, notifications }) {
     commit(types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST)
-
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
       accountId: state.accountId,
       key: `notifications`,
-      value: notifications
+      value: notifications.toString()
     })
       .then(() => {
         commit(types.SWITCH_EMAIL_NOTIFICATIONS_SUCCESS)
