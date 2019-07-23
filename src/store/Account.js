@@ -70,7 +70,9 @@ const types = flow(
   'GET_CUSTODY_BILLING_REPORT',
   'GET_TRANSFER_BILLING_REPORT',
   'GET_EXCHANGE_BILLING_REPORT',
-  'ADD_NETWORK'
+  'ADD_NETWORK',
+  'SET_EMAIL',
+  'SWITCH_EMAIL_NOTIFICATIONS'
 ])
 
 function initialState () {
@@ -422,6 +424,16 @@ const getters = {
   subscribed (state) {
     const subscription = find('push_subscription', state.accountInfo)
     return subscription && subscription.push_subscription.length > 0
+  },
+
+  email (state) {
+    const email = find('email', state.accountInfo)
+    return email ? email.email : ''
+  },
+
+  notifications (state) {
+    const notifications = find('notifications', state.accountInfo)
+    return notifications ? notifications.notifications === 'true' : false
   },
 
   transferFee (state) {
@@ -831,7 +843,15 @@ const mutations = {
 
   [types.ADD_NETWORK_REQUEST] (state) {},
   [types.ADD_NETWORK_SUCCESS] (state) {},
-  [types.ADD_NETWORK_FAILURE] (state) {}
+  [types.ADD_NETWORK_FAILURE] (state) {},
+
+  [types.SET_EMAIL_REQUEST] (state) {},
+  [types.SET_EMAIL_SUCCESS] (state) {},
+  [types.SET_EMAIL_FAILURE] (state) {},
+
+  [types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST] (state) {},
+  [types.SWITCH_EMAIL_NOTIFICATIONS_SUCCESS] (state) {},
+  [types.SWITCH_EMAIL_NOTIFICATIONS_FAILURE] (state) {}
 }
 
 const actions = {
@@ -1251,6 +1271,41 @@ const actions = {
       })
       .catch(err => {
         commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
+  },
+
+  setEmail ({ commit, state, dispatch, getters }, { privateKeys, email }) {
+    commit(types.SET_EMAIL_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `email`,
+      value: email
+    })
+      .then(() => {
+        commit(types.SET_EMAIL_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SET_EMAIL_FAILURE)
+        throw err
+      })
+  },
+
+  switchEmailNotifications ({ commit, state, dispatch, getters }, { privateKeys, notifications }) {
+    commit(types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST)
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `notifications`,
+      value: notifications.toString()
+    })
+      .then(() => {
+        commit(types.SWITCH_EMAIL_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SWITCH_EMAIL_NOTIFICATIONS_FAILURE)
         throw err
       })
   },
