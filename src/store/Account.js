@@ -418,6 +418,16 @@ const getters = {
     return subscription && subscription.push_subscription.length > 0
   },
 
+  email (state) {
+    const email = find('email', state.accountInfo)
+    return email && email.email
+  },
+
+  notification (state) {
+    const notification = find('notification', state.accountInfo)
+    return notification && notification.notification
+  },
+
   transferFee (state) {
     return state.transferFee
   },
@@ -1234,6 +1244,42 @@ const actions = {
       })
       .catch(err => {
         commit(types.UNSUBSCRIBE_PUSH_NOTIFICATIONS_FAILURE)
+        throw err
+      })
+  },
+
+  setEmail ({ commit, state, dispatch, getters }, { privateKeys, email }) {
+    commit(types.SET_EMAIL_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `email`,
+      value: email
+    })
+      .then(() => {
+        commit(types.SET_EMAIL_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SET_EMAIL_FAILURE)
+        throw err
+      })
+  },
+
+  switchEmailNotifications ({ commit, state, dispatch, getters }, { privateKeys, notifications }) {
+    commit(types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST)
+
+    return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: `notifications`,
+      value: notifications
+    })
+      .then(() => {
+        commit(types.SWITCH_EMAIL_NOTIFICATIONS_SUCCESS)
+        dispatch('updateAccount')
+      })
+      .catch(err => {
+        commit(types.SWITCH_EMAIL_NOTIFICATIONS_FAILURE)
         throw err
       })
   },
