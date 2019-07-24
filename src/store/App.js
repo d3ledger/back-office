@@ -22,6 +22,8 @@ const types = flow(
     'APPROVAL_DIALOG_CLOSE',
     'EXCHANGE_DIALOG_OPEN',
     'EXCHANGE_DIALOG_CLOSE',
+    'UPLOAD_TRANSACTION_DIALOG_OPEN',
+    'UPLOAD_TRANSACTION_DIALOG_CLOSE',
     'LOAD_WALLETS_SORT_CRITERION',
     'UPDATE_WALLETS_SORT_CRITERION',
     'LOAD_DASHBOARD_SORT_CRITERION',
@@ -56,6 +58,10 @@ function initialState () {
       offerAssetPrecision: 0,
       requestAssetPrecision: 0,
       price: null
+    },
+    uploadTransactionDialog: {
+      isVisible: false,
+      type: null
     },
     connectionError: null,
     walletsSortCriterion: null,
@@ -122,6 +128,21 @@ const mutations = {
     Vue.set(state.exchangeDialog, 'requestAssetPrecision', precision)
   },
   [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO_FAILURE] (state, err) {},
+
+  [types.UPLOAD_TRANSACTION_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting, type }) {
+    Vue.set(state, 'aploadTransactionDialog', {
+      isVisible: true,
+      type,
+      resolvePrompting,
+      rejectPrompting
+    })
+  },
+
+  [types.UPLOAD_TRANSACTION__DIALOG_CLOSE] (state) {
+    Vue.set(state.aploadTransactionDialog, 'isVisible', false)
+    Vue.set(state.aploadTransactionDialog, 'type', null)
+    state.aploadTransactionDialog.resolvePrompting()
+  },
 
   [types.GET_OFFER_TO_REQUEST_PRICE_REQUEST] (state, offer) {},
   [types.GET_OFFER_TO_REQUEST_PRICE_SUCCESS] (state, price) {
@@ -227,6 +248,24 @@ const actions = {
   closeExchangeDialog ({ commit, dispatch }) {
     commit(types.EXCHANGE_DIALOG_CLOSE)
     dispatch('getAllUnsignedTransactions')
+  },
+  openUploadTransactionDialog ({ commit }, type) {
+    let resolvePrompting, rejectPrompting
+    const prompting = new Promise((resolve, reject) => {
+      resolvePrompting = resolve
+      rejectPrompting = reject
+    })
+
+    commit(types.UPLOAD_TRANSACTION_DIALOG_OPEN, {
+      resolvePrompting,
+      rejectPrompting,
+      type
+    })
+
+    return prompting
+  },
+  closeUploadTransactionDialog ({ commit }) {
+    commit(types.UPLOAD_TRANSACTION_CLOSE)
   },
   getOfferToRequestPrice ({ commit, getters }) {
     const offerAsset = getters.exchangeDialogOfferAsset
@@ -365,6 +404,12 @@ const getters = {
   },
   exchangeDialogPrice () {
     return state.exchangeDialog.price
+  },
+  uploadTransactionDialogVisible () {
+    return state.uploadTransactionDialog.isVisible
+  },
+  uploadTransactionDialogType () {
+    return state.uploadTransactionDialog.type
   },
   walletsSortCriterion (state) {
     return state.walletsSortCriterion

@@ -4,8 +4,8 @@
 -->
 <template>
   <el-dialog
-    :visible="isVisible"
-    data-cy="depositModal"
+    :visible="uploadTransactionDialogVisible"
+    data-cy="signTransactionModal"
     title="Please sign the transaction offline"
     width="450px"
     center
@@ -31,54 +31,47 @@
         <b>Step 2.</b> Go to Sign transaction in D3 OTS. Upload transaction draft file (.draft). Upload your private key (.priv). Click “Sign and download” to receive signed transaction file (.bin)
       </p>
       <p>
-        <b>Step 3.</b> Turn on internet connection. Switch to D3 web interface. Upload signed transaction file (.bin) <span v-if="transactionType === true">Step 3. Turn on internet connection. Switch to D3 web interface. Upload signed transaction file (.bin) Confirm the exchange and wait for your counterparty to accept it.</span>
+        <b>Step 3.</b> Turn on internet connection. Switch to D3 web interface. Upload signed transaction file (.bin) <span v-if="uploadTransactionDialogType === true">Step 3. Turn on internet connection. Switch to D3 web interface. Upload signed transaction file (.bin) Confirm the exchange and wait for your counterparty to accept it.</span>
       </p>
+    </div>
+    <div>
+      <upload-tx
+        :on-complete="completeTransaction"
+      />
     </div>
     <div
       slot="footer"
       class="dialog-footer"
     >
-      <el-button
-        type="primary"
-        @click="completeTransaction()"
-      >
-        Confirm
-      </el-button>
       <el-button @click="closeSignTransactionDialog()">Cancel</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { lazyComponent } from '@router'
 
 export default {
-  props: {
-    isVisible: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    transactionType: {
-      type: String,
-      required: true
-    }
+  components: {
+    UploadTx: lazyComponent('common/UploadTx')
   },
   data () {
     return {
-      transaction: null
     }
   },
   computed: {
     ...mapGetters([
+      'uploadTransactionDialogVisible',
+      'uploadTransactionDialogType'
     ])
   },
   methods: {
-    completeTransaction () {
-
-    },
-    closeSignTransactionDialog () {
-      this.$emit('update:isVisible', false)
+    ...mapActions([
+      'closeUploadTransactionDialog'
+    ]),
+    closeDialog () {
+      this.closeUploadTransactionDialog()
     }
   }
 }

@@ -215,10 +215,6 @@
       :open-approval-dialog="openApprovalDialog"
       @update-history="$emit('update-history')"
     />
-    <withdrawal-modal
-      :is-visible.sync="isSignTransactionModalVisible"
-      :wallet="wallet"
-    />
   </el-row>
 </template>
 
@@ -331,9 +327,6 @@ export default {
       }
       if (modalType === this.modalTypes.TRANSFER) {
         this.isTransferModalVisible = true
-      }
-      if (modalType === this.modalTypes.SIGN) {
-        this.isSignTransactionModalVisible = true
       }
     },
 

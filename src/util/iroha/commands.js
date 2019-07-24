@@ -42,25 +42,20 @@ function signPendingTransaction (privateKeys = [], transaction, timeoutLimit = D
   ])
 }
 
-/**
- * Create settlement: an exchange request
- * @param {Array.<String>} senderPrivateKeys
- * @param {String} senderAccountId
- * @param {Number} senderQuorum
- * @param {String} senderAssetId
- * @param {String} senderAmount
- * @param {String} description
- * @param {String} receiverAccountId
- * @param {Number} receiverQuorum
- * @param {String} receiverAssetId
- * @param {String} receiverAmount
- * @param {Number} timeoutLimit
- * @param {String} feeType
- * @param {Number} senderFee
- * @param {Number} recieverFee
- */
-function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, feeType, senderFee = 0, receiverFee = 0, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
-  let txClient = newCommandService()
+function createSettlementTransaction (
+  senderAccountId,
+  senderQuorum = 1,
+  senderAssetId,
+  senderAmount,
+  description,
+  receiverAccountId,
+  receiverQuorum = 1,
+  receiverAssetId,
+  receiverAmount,
+  feeType,
+  senderFee = 0,
+  receiverFee = 0
+) {
   const feeAccountId = `${feeType}@d3`
 
   let senderTx = txHelper.addCommand(
@@ -91,7 +86,30 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   }
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
 
-  const batchArray = txHelper.addBatchMeta([senderTx, receiverTx], 0)
+  return txHelper.addBatchMeta([senderTx, receiverTx], 0)
+}
+
+/**
+ * Create settlement: an exchange request
+ * @param {Array.<String>} senderPrivateKeys
+ * @param {String} senderAccountId
+ * @param {Number} senderQuorum
+ * @param {String} senderAssetId
+ * @param {String} senderAmount
+ * @param {String} description
+ * @param {String} receiverAccountId
+ * @param {Number} receiverQuorum
+ * @param {String} receiverAssetId
+ * @param {String} receiverAmount
+ * @param {Number} timeoutLimit
+ * @param {String} feeType
+ * @param {Number} senderFee
+ * @param {Number} recieverFee
+ */
+function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum = 1, receiverAssetId, receiverAmount, feeType, senderFee = 0, receiverFee = 0, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
+  let txClient = newCommandService()
+
+  let batchArray = createSettlementTransaction(senderAccountId, senderQuorum, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum, receiverAssetId, receiverAmount, feeType, senderFee, receiverFee)
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit, [
@@ -185,6 +203,41 @@ const transferAsset = (privateKeys, quorum, {
   }
 )
 
+const createTransferTransaction = (quorum, {
+  srcAccountId,
+  destAccountId,
+  assetId,
+  description,
+  amount,
+  fee,
+  feeType
+}) => {
+  let tx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'transferAsset',
+    { srcAccountId, destAccountId, assetId, description, amount }
+  )
+
+  if (fee > 0) {
+    if (feeType === FeeTypes.WITHDRAWAL) {
+      tx = txHelper.addCommand(
+        tx,
+        'transferAsset',
+        { srcAccountId, destAccountId, assetId, description: 'withdrawal fee', amount: fee }
+      )
+    } else {
+      const feeAccountId = `${feeType}@d3`
+      tx = txHelper.addCommand(
+        tx,
+        'transferAsset',
+        { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: fee }
+      )
+    }
+  }
+
+  return txHelper.addMeta(tx, { creatorAccountId: srcAccountId, quorum })
+}
+
 const transferAssetWithFee = (privateKeys, quorum, {
   srcAccountId,
   destAccountId,
@@ -197,30 +250,7 @@ const transferAssetWithFee = (privateKeys, quorum, {
 }) => {
   const txClient = newCommandService()
 
-  let senderTx = txHelper.addCommand(
-    txHelper.emptyTransaction(),
-    'transferAsset',
-    { srcAccountId, destAccountId, assetId, description, amount }
-  )
-
-  if (fee > 0) {
-    if (feeType === FeeTypes.WITHDRAWAL) {
-      senderTx = txHelper.addCommand(
-        senderTx,
-        'transferAsset',
-        { srcAccountId, destAccountId, assetId, description: 'withdrawal fee', amount: fee }
-      )
-    } else {
-      const feeAccountId = `${feeType}@d3`
-      senderTx = txHelper.addCommand(
-        senderTx,
-        'transferAsset',
-        { srcAccountId, destAccountId: feeAccountId, assetId, description, amount: fee }
-      )
-    }
-  }
-
-  senderTx = txHelper.addMeta(senderTx, { creatorAccountId: srcAccountId, quorum })
+  let senderTx = createTransferTransaction(quorum, { srcAccountId, destAccountId, assetId, description, amount, fee, feeType })
   senderTx = signWithArrayOfKeys(senderTx, privateKeys)
 
   return sendTransactions([senderTx], txClient, timeoutLimit, [
@@ -285,10 +315,12 @@ export {
   createAccount,
   createAsset,
   transferAsset,
+  createTransferTransaction,
   transferAssetWithFee,
   addSignatory,
   removeSignatory,
   addAssetQuantity,
+  createSettlementTransaction,
   createSettlement,
   acceptSettlement,
   rejectSettlement,

@@ -100,7 +100,6 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
-import NOTIFICATIONS from '@/data/notifications'
 import {
   FeeTypes,
   BITCOIN_ASSET_NAME,
@@ -188,47 +187,30 @@ export default {
   },
   methods: {
     ...mapActions([
-      'transferAsset'
+      'transferAsset',
+      'createTransferAssetTransaction',
+      'openUploadTransactionDialog'
     ]),
 
     onSubmitWithdrawalForm () {
       this.$v.withdrawForm.$touch()
       if (this.$v.withdrawForm.$invalid) return
 
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.isSending = true
-          const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME
-            ? BTC_WITHDRAWAL
-            : ETH_WITHDRAWAL
+      const notaryAccount = this.wallet.assetId === BITCOIN_ASSET_NAME
+        ? BTC_WITHDRAWAL
+        : ETH_WITHDRAWAL
 
-          return this.transferAsset({
-            privateKeys,
-            assetId: this.wallet.assetId,
-            to: notaryAccount,
-            description: this.withdrawForm.wallet,
-            amount: this.withdrawForm.amount.toString(),
-            fee: this.withdrawalFeeAmount.toString(),
-            feeType: FeeTypes.WITHDRAWAL
-          })
-            .then(() => {
-              let completed = privateKeys.length === this.accountQuorum
-              this.$_showMessageFromStatus(
-                completed,
-                NOTIFICATIONS.WITHDRAWAL_SUCCESS,
-                NOTIFICATIONS.NOT_COMPLETED
-              )
+      this.createTransferAssetTransaction({
+        assetId: this.wallet.assetId,
+        to: notaryAccount,
+        description: this.withdrawForm.wallet,
+        amount: this.withdrawForm.amount.toString(),
+        fee: this.withdrawalFeeAmount.toString(),
+        feeType: FeeTypes.WITHDRAWAL
+      })
 
-              this.$emit('update-history')
-              this.closeWithdrawDialog()
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showErrorAlertMessage(err.message, 'Withdrawal error')
-            })
-        })
-        .finally(() => { this.isSending = false })
+      this.closeWithdrawDialog()
+      this.openUploadTransactionDialog()
     },
 
     resetWithdrawForm () {
