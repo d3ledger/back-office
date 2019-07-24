@@ -1065,8 +1065,8 @@ const actions = {
       })
   },
 
-  createTransferAssetTransaction ({ commit, state, getters }, { privateKeys, assetId, to, description = '', amount, fee, feeType }) {
-    let transaction = irohaUtil.createTransferTransaction(privateKeys, getters.irohaQuorum, {
+  createTransferAssetTransaction ({ commit, state, getters }, { assetId, to, description = '', amount, fee, feeType }) {
+    let transaction = irohaUtil.createTransferTransaction(getters.irohaQuorum, {
       srcAccountId: state.accountId,
       destAccountId: to,
       assetId,
