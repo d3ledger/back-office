@@ -61,7 +61,9 @@ function initialState () {
     },
     uploadTransactionDialog: {
       isVisible: false,
-      type: null
+      type: null,
+      resolvePrompting: null,
+      rejectPrompting: null
     },
     connectionError: null,
     walletsSortCriterion: null,
@@ -130,7 +132,7 @@ const mutations = {
   [types.SET_EXCHANGE_DIALOG_REQUEST_ASSET_INFO_FAILURE] (state, err) {},
 
   [types.UPLOAD_TRANSACTION_DIALOG_OPEN] (state, { resolvePrompting, rejectPrompting, type }) {
-    Vue.set(state, 'aploadTransactionDialog', {
+    Vue.set(state, 'uploadTransactionDialog', {
       isVisible: true,
       type,
       resolvePrompting,
@@ -138,10 +140,10 @@ const mutations = {
     })
   },
 
-  [types.UPLOAD_TRANSACTION__DIALOG_CLOSE] (state) {
-    Vue.set(state.aploadTransactionDialog, 'isVisible', false)
-    Vue.set(state.aploadTransactionDialog, 'type', null)
-    state.aploadTransactionDialog.resolvePrompting()
+  [types.UPLOAD_TRANSACTION_DIALOG_CLOSE] (state) {
+    Vue.set(state.uploadTransactionDialog, 'isVisible', false)
+    Vue.set(state.uploadTransactionDialog, 'type', null)
+    state.uploadTransactionDialog.resolvePrompting()
   },
 
   [types.GET_OFFER_TO_REQUEST_PRICE_REQUEST] (state, offer) {},
@@ -265,7 +267,7 @@ const actions = {
     return prompting
   },
   closeUploadTransactionDialog ({ commit }) {
-    commit(types.UPLOAD_TRANSACTION_CLOSE)
+    commit(types.UPLOAD_TRANSACTION_DIALOG_CLOSE)
   },
   getOfferToRequestPrice ({ commit, getters }) {
     const offerAsset = getters.exchangeDialogOfferAsset

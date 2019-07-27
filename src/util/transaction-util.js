@@ -6,6 +6,7 @@ import {
   txHelper
 } from 'iroha-helpers'
 import Transaction from 'iroha-helpers/lib/proto/transaction_pb'
+import TxList from 'iroha-helpers/lib/proto/endpoint_pb'
 import format from 'date-fns/format'
 import FileSaver from 'file-saver'
 
@@ -28,17 +29,21 @@ function binaryToTransaction (bytes) {
   return Transaction.Transaction.deserializeBinary(bytes)
 }
 
+function binaryToTxList (bytes) {
+  return TxList.TxList.deserializeBinary(bytes)
+}
+
 function saveTransaction (tx) {
   const date = format(new Date(), 'MM-DD-YYYY-HH-mm-ss')
   const filename = `D3-Transaction-${date}.bin`
-  const binaryArray = tx.map(t => transactionToBinary(t))
-
-  FileSaver.saveAs(new Blob(binaryArray), filename)
+  const binaryArray = transactionToBinary(tx)
+  FileSaver.saveAs(new Blob([binaryArray]), filename)
 }
 
 export default {
   createCommand,
   transactionToBinary,
   binaryToTransaction,
+  binaryToTxList,
   saveTransaction
 }

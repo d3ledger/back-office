@@ -5,11 +5,11 @@
 <template>
   <el-dialog
     :visible="uploadTransactionDialogVisible"
-    data-cy="signTransactionModal"
+    data-cy="uploadTransactionModal"
     title="Please sign the transaction offline"
     width="450px"
     center
-    @close="closeSignTransactionDialog()"
+    @close="closeDialog"
   >
     <div>
       For your security, please sign the transaction in D3 OTS app.
@@ -36,14 +36,14 @@
     </div>
     <div>
       <upload-tx
-        :on-complete="completeTransaction"
+        :on-complete="closeDialog"
       />
     </div>
     <div
       slot="footer"
       class="dialog-footer"
     >
-      <el-button @click="closeSignTransactionDialog()">Cancel</el-button>
+      <el-button @click="closeDialog">Cancel</el-button>
     </div>
   </el-dialog>
 </template>

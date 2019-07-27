@@ -263,7 +263,6 @@ export default {
       isDepositModalVisible: false,
       isTransferModalVisible: false,
       isWithdrawalModalVisible: false,
-      isSignTransactionModalVisible: false,
 
       marketPeriods: ['1H', '1D', '1W', '1M', '1Y'],
       selectedMarketPeriod: '1D'

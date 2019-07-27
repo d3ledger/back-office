@@ -188,6 +188,7 @@ import { mapGetters, mapActions } from 'vuex'
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
 import { FeeTypes } from '@/data/consts'
+// import NOTIFICATIONS from '@/data/notifications'
 
 import {
   _user,
@@ -343,6 +344,39 @@ export default {
       this.$v.$touch()
       if (this.$v.$invalid) return
 
+      // const s = this.exchangeForm
+      // this.openApprovalDialog()
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+      //     this.isExchangeSending = true
+      //     const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+      //     const requestAsset = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
+      //     return this.createSettlement({
+      //       privateKeys,
+      //       to: s.to,
+      //       offerAssetId: offerAsset.toLowerCase(),
+      //       offerAmount: s.offer_amount,
+      //       requestAssetId: requestAsset.toLowerCase(),
+      //       requestAmount: s.request_amount,
+      //       description: s.description
+      //     })
+      //       .then(() => {
+      //         let completed = privateKeys.length === this.accountQuorum
+      //         this.$_showMessageFromStatus(
+      //           completed,
+      //           NOTIFICATIONS.SETTLEMENT_SUCCESS,
+      //           NOTIFICATIONS.NOT_COMPLETED
+      //         )
+      //         this.closeExchangeDialogWith()
+      //       })
+      //       .catch(err => {
+      //         console.error(err)
+      //         this.$_showErrorAlertMessage(err.message, 'Exchange error')
+      //       })
+      //       .finally(() => {
+      //         this.isExchangeSending = false
+      //       })
+      //   })
       const s = this.exchangeForm
       const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
       const requestAsset = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId

@@ -9,6 +9,7 @@ import {
   txHelper
 } from 'iroha-helpers'
 import Transaction from 'iroha-helpers/lib/proto/transaction_pb'
+import TxList from 'iroha-helpers/lib/proto/endpoint_pb'
 import {
   newCommandService,
   newCommandServiceOptions
@@ -86,7 +87,7 @@ function createSettlementTransaction (
   }
   receiverTx = txHelper.addMeta(receiverTx, { creatorAccountId: receiverAccountId, quorum: receiverQuorum })
 
-  return txHelper.addBatchMeta([senderTx, receiverTx], 0)
+  return txHelper.createTxListFromArray(txHelper.addBatchMeta([senderTx, receiverTx], 0))
 }
 
 /**
@@ -110,11 +111,18 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   let txClient = newCommandService()
 
   let batchArray = createSettlementTransaction(senderAccountId, senderQuorum, senderAssetId, senderAmount, description, receiverAccountId, receiverQuorum, receiverAssetId, receiverAmount, feeType, senderFee, receiverFee)
+  batchArray = batchArray.getTransactionsList()
   batchArray[0] = signWithArrayOfKeys(batchArray[0], senderPrivateKeys)
 
   return sendTransactions(batchArray, txClient, timeoutLimit, [
     'MST_PENDING'
   ])
+}
+
+function createAcceptSettlementTransaction (batchArray, accountId) {
+  if (!batchArray.length) return
+
+  return txHelper.createTxListFromArray(txHelper.addBatchMeta(batchArray, 0))
 }
 
 function acceptSettlement (privateKeys, batchArray, accountId, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
@@ -156,9 +164,13 @@ function rejectSettlement (privateKeys, batchArray, timeoutLimit = DEFAULT_TIMEO
 
 function sendCustomTransaction (bytes, timeoutLimit = DEFAULT_TIMEOUT_LIMIT) {
   const txClient = newCommandService()
-  let tx = Transaction.Transaction.deserializeBinary(bytes)
-
-  return sendTransactions([tx], txClient, timeoutLimit, [
+  let tx
+  try {
+    tx = [Transaction.Transaction.deserializeBinary(bytes)]
+  } catch (error) {
+    tx = TxList.TxList.deserializeBinary(bytes).getTransactionsList()
+  }
+  return sendTransactions(tx, txClient, timeoutLimit, [
     'COMMITTED'
   ])
 }
@@ -322,6 +334,7 @@ export {
   addAssetQuantity,
   createSettlementTransaction,
   createSettlement,
+  createAcceptSettlementTransaction,
   acceptSettlement,
   rejectSettlement,
   setAccountDetail,

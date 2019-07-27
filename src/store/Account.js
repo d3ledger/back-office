@@ -1076,7 +1076,7 @@ const actions = {
       feeType
     })
 
-    transactionUtil.saveTransaction([transaction])
+    transactionUtil.saveTransaction(transaction)
   },
 
   signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
@@ -1168,6 +1168,12 @@ const actions = {
         commit(types.CREATE_SETTLEMENT_FAILURE, err)
         throw err
       })
+  },
+
+  createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
+    transactionUtil.saveTransaction(transaction)
   },
 
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {
