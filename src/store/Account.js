@@ -16,6 +16,7 @@ import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
 import billingReportUtil from '@util/billing-report-util'
+import transactionUtil from '@util/transaction-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
 import { WalletTypes } from '@/data/consts'
 import billingUtil from '@util/billing-util'
@@ -1064,6 +1065,20 @@ const actions = {
       })
   },
 
+  createTransferAssetTransaction ({ commit, state, getters }, { assetId, to, description = '', amount, fee, feeType }) {
+    let transaction = irohaUtil.createTransferTransaction(getters.irohaQuorum, {
+      srcAccountId: state.accountId,
+      destAccountId: to,
+      assetId,
+      description,
+      amount,
+      fee,
+      feeType
+    })
+
+    transactionUtil.saveTransaction(transaction)
+  },
+
   signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
     commit(types.SIGN_PENDING_REQUEST)
 
@@ -1075,6 +1090,42 @@ const actions = {
         commit(types.SIGN_PENDING_FAILURE, err)
         throw err
       })
+  },
+
+  async createSettlementTransaction (
+    { commit, state, getters },
+    { to, offerAssetId, offerAmount, requestAssetId, requestAmount, description = '', feeType, senderFee, recieverFee }
+  ) {
+    commit(types.CREATE_SETTLEMENT_REQUEST)
+
+    let receiverQuorum = 2
+    try {
+      const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
+      const { itIs } = await collectorUtil.getAccountQuorum(
+        dataCollectorUrl,
+        to
+      )
+      receiverQuorum = itIs
+    } catch (err) {
+      return commit(types.CREATE_SETTLEMENT_FAILURE, err)
+    }
+
+    let transaction = irohaUtil.createSettlementTransaction(
+      state.accountId,
+      getters.irohaQuorum,
+      offerAssetId,
+      offerAmount,
+      description,
+      to,
+      receiverQuorum,
+      requestAssetId,
+      requestAmount,
+      feeType,
+      senderFee,
+      recieverFee
+    )
+
+    transactionUtil.saveTransaction(transaction)
   },
 
   async createSettlement (
@@ -1117,6 +1168,12 @@ const actions = {
         commit(types.CREATE_SETTLEMENT_FAILURE, err)
         throw err
       })
+  },
+
+  createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
+    transactionUtil.saveTransaction(transaction)
   },
 
   acceptSettlement ({ commit, state }, { privateKeys, settlementBatch }) {

@@ -10,6 +10,7 @@
     </el-main>
     <exchange-modal />
     <confirm-modal />
+    <upload-transaction-modal />
   </el-container>
 </template>
 
@@ -22,7 +23,8 @@ export default {
   components: {
     Menu: lazyComponent('Home/Menu'),
     ConfirmModal: lazyComponent('common/modals/ConfirmModal'),
-    ExchangeModal: lazyComponent('common/modals/ExchangeModal')
+    ExchangeModal: lazyComponent('common/modals/ExchangeModal'),
+    UploadTransactionModal: lazyComponent('common/modals/UploadTransactionModal')
   },
   data () {
     return {}

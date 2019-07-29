@@ -228,7 +228,8 @@ import currencySymbol from '@/components/mixins/currencySymbol'
 const MODAL_TYPES = {
   DEPOSIT: 'DEPOSIT',
   TRANSFER: 'TRANSFER',
-  WITHDRAWAL: 'WITHDRAWAL'
+  WITHDRAWAL: 'WITHDRAWAL',
+  SIGN: 'SIGN'
 }
 
 export default {

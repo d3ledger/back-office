@@ -177,30 +177,37 @@ export default {
       'openApprovalDialog',
       'getAllUnsignedTransactions',
       'acceptSettlement',
-      'rejectSettlement'
+      'rejectSettlement',
+      'createAcceptSettlementTransaction',
+      'openUploadTransactionDialog'
     ]),
 
     onAccept () {
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
+      this.createAcceptSettlementTransaction({
+        settlementBatch: this.settlementForAcceptance.from.batch
+      })
+      this.openUploadTransactionDialog()
 
-          return this.acceptSettlement({
-            privateKeys,
-            settlementBatch: this.settlementForAcceptance.from.batch
-          })
-            .then(() => {
-              this.$message.success('Accepted')
-            })
-            .catch(err => {
-              console.error(err)
-              this.$message.error('Failed to accept')
-            })
-            .finally(() => {
-              this.acceptanceDialogVisible = false
-              this.getAllUnsignedTransactions()
-            })
-        })
+      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+
+      //     return this.acceptSettlement({
+      //       privateKeys,
+      //       settlementBatch: this.settlementForAcceptance.to.batch
+      //     })
+      //       .then(() => {
+      //         this.$message.success('Accepted')
+      //       })
+      //       .catch(err => {
+      //         console.error(err)
+      //         this.$message.error('Failed to accept')
+      //       })
+      //       .finally(() => {
+      //         this.acceptanceDialogVisible = false
+      //         this.getAllUnsignedTransactions()
+      //       })
+      //   })
     },
 
     onReject () {

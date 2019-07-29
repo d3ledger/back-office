@@ -108,7 +108,6 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import NOTIFICATIONS from '@/data/notifications'
 import { FeeTypes } from '@/data/consts'
 import { mapGetters, mapActions } from 'vuex'
 import numberFormat from '@/components/mixins/numberFormat'
@@ -153,11 +152,6 @@ export default {
       type: Object,
       required: true,
       default: () => {}
-    },
-    openApprovalDialog: {
-      type: Function,
-      required: true,
-      default: () => {}
     }
   },
   data () {
@@ -194,7 +188,10 @@ export default {
   },
   methods: {
     ...mapActions([
-      'transferAsset'
+      'transferAsset',
+      'createTransferAssetTransaction',
+      'openApprovalDialog',
+      'openUploadTransactionDialog'
     ]),
 
     onOpenTransferForm () {
@@ -206,37 +203,46 @@ export default {
       this.$v.transferForm.$touch()
       if (this.$v.transferForm.$invalid) return
 
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.isSending = true
+      // this.openApprovalDialog()
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+      //     this.isSending = true
+      //     return this.transferAsset({
+      //       privateKeys,
+      //       assetId: this.wallet.assetId,
+      //       to: this.transferForm.to,
+      //       description: this.transferForm.description,
+      //       amount: this.transferForm.amount,
+      //       fee: this.transferFeeAmount,
+      //       feeType: FeeTypes.TRANSFER
+      //     })
+      //       .then(() => {
+      //         let completed = privateKeys.length === this.accountQuorum
+      //         this.$_showMessageFromStatus(
+      //           completed,
+      //           NOTIFICATIONS.TRANSFER_SUCCESS,
+      //           NOTIFICATIONS.NOT_COMPLETED
+      //         )
+      //         this.$emit('update-history')
+      //         this.closeTransferForm()
+      //       })
+      //       .catch(err => {
+      //         console.error(err)
+      //         this.$_showErrorAlertMessage(err.message, 'Transfer error')
+      //       })
+      //   })
+      //   .finally(() => { this.isSending = false })
+      this.createTransferAssetTransaction({
+        assetId: this.wallet.assetId,
+        to: this.transferForm.to,
+        description: this.transferForm.description,
+        amount: this.transferForm.amount,
+        fee: this.transferFeeAmount,
+        feeType: FeeTypes.TRANSFER
+      })
 
-          return this.transferAsset({
-            privateKeys,
-            assetId: this.wallet.assetId,
-            to: this.transferForm.to,
-            description: this.transferForm.description,
-            amount: this.transferForm.amount,
-            fee: this.transferFeeAmount,
-            feeType: FeeTypes.TRANSFER
-          })
-            .then(() => {
-              let completed = privateKeys.length === this.accountQuorum
-              this.$_showMessageFromStatus(
-                completed,
-                NOTIFICATIONS.TRANSFER_SUCCESS,
-                NOTIFICATIONS.NOT_COMPLETED
-              )
-
-              this.$emit('update-history')
-              this.closeTransferForm()
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showErrorAlertMessage(err.message, 'Transfer error')
-            })
-        })
-        .finally(() => { this.isSending = false })
+      this.closeTransferForm()
+      this.openUploadTransactionDialog('1')
     },
 
     resetTransferForm () {
