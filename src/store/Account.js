@@ -1079,6 +1079,11 @@ const actions = {
     transactionUtil.saveTransaction(transaction)
   },
 
+  createPendingTransaction ({ commit, state }, { txStoreId }) {
+    const transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
+    transactionUtil.saveTransaction(transaction)
+  },
+
   signPendingTransaction ({ commit, state }, { privateKeys, txStoreId }) {
     commit(types.SIGN_PENDING_REQUEST)
 
