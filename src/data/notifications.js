@@ -4,7 +4,7 @@
  */
 export default {
   SETTLEMENT_SUCCESS: 'New settlement has successfully been created!',
-  TRANSACTION_SUCCESS: 'Transaction succesfuly finalised and sent!',
+  TRANSACTION_SUCCESS: 'Transaction succesfully finalised and sent!',
   WITHDRAWAL_SUCCESS: 'Withdrawal request is submitted to notary!',
   TRANSFER_SUCCESS: 'Transfer has successfully sent!',
   NOT_COMPLETED: 'Operation not completed. You should complete it on transactions page',
