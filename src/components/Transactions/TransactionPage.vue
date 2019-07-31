@@ -109,7 +109,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 import messageMixin from '@/components/mixins/message'
-import NOTIFICATIONS from '@/data/notifications'
+// import NOTIFICATIONS from '@/data/notifications'
 
 export default {
   name: 'TransactionPage',
@@ -137,33 +137,40 @@ export default {
     ...mapActions([
       'openApprovalDialog',
       'signPendingTransaction',
-      'getAllUnsignedTransactions'
+      'getAllUnsignedTransactions',
+      'createPendingTransaction',
+      'openUploadTransactionDialog'
     ]),
     onSignPendingTransaction (txStoreId, signatures) {
-      this.openApprovalDialog({ signatures })
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.isSending = true
+      this.createPendingTransaction({
+        txStoreId
+      })
+      this.openUploadTransactionDialog()
 
-          return this.signPendingTransaction({
-            privateKeys,
-            txStoreId
-          })
-            .then(() => {
-              let completed = privateKeys.length + signatures.length === this.accountQuorum
-              this.$_showMessageFromStatus(
-                completed,
-                NOTIFICATIONS.TRANSACTION_SUCCESS,
-                NOTIFICATIONS.NOT_COMPLETED
-              )
-              this.getAllUnsignedTransactions()
-            })
-            .catch(err => {
-              console.error(err)
-              this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
-            })
-        })
-        .finally(() => { this.isSending = false })
+      // this.openApprovalDialog({ signatures })
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+      //     this.isSending = true
+
+      //     return this.signPendingTransaction({
+      //       privateKeys,
+      //       txStoreId
+      //     })
+      //       .then(() => {
+      //         let completed = privateKeys.length + signatures.length === this.accountQuorum
+      //         this.$_showMessageFromStatus(
+      //           completed,
+      //           NOTIFICATIONS.TRANSACTION_SUCCESS,
+      //           NOTIFICATIONS.NOT_COMPLETED
+      //         )
+      //         this.getAllUnsignedTransactions()
+      //       })
+      //       .catch(err => {
+      //         console.error(err)
+      //         this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
+      //       })
+      //   })
+      //   .finally(() => { this.isSending = false })
     },
     calculateEstimatedTime (date) {
       const rightDate = date + this.liveTimeOfTransaction
