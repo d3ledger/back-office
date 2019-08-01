@@ -47,7 +47,7 @@ pipeline {
             sh(returnStdout: true, script: "docker exec d3-back-office-${DOCKER_NETWORK} /app/docker/back-office/wait-for-up.sh")
             iC = docker.image('cypress/base:10')
             iC.inside("--network='d3-${DOCKER_NETWORK}' --shm-size 4096m --ipc=host") {
-              sh(script: "yarn global add cypress")
+              sh(script: "yarn global add cypress@3.4.0")
               var = sh(returnStatus:true, script: "yarn test:unit")
               if (var != 0) {
                 echo '[FAILURE] Unit tests failed'

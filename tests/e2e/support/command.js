@@ -25,6 +25,8 @@ Cypress.Commands.add('goToPage', (url, expect) => {
 
 Cypress.Commands.add('login', (keyPath) => {
   cy.upload_file(keyPath, 'input.el-upload__input')
+  cy.get('form > div:nth-child(3)')
+    .click()
   cy.get('form > div:nth-child(3) input')
     .type(Cypress.env('IROHA')).should('have.value', Cypress.env('IROHA'))
   cy.get('.el-scrollbar__view > :nth-child(1)').click()
