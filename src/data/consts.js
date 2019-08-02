@@ -21,6 +21,15 @@ export const FeeTypes = Object.freeze({
   WITHDRAWAL: 'withdrawal_billing'
 })
 
+export const BillingTypes = Object.freeze({
+  TRANSFER: 'TRANSFER',
+  CUSTODY: 'CUSTODY',
+  ACCOUNT_CREATION: 'ACCOUNT_CREATION',
+  EXCHANGE: 'EXCHANGE',
+  WITHDRAWAL: 'WITHDRAWAL'
+
+})
+
 export const NOTARY_ACCOUNT = 'notary@notary'
 
 export const ETH_WITHDRAWAL = 'withdrawal@notary'

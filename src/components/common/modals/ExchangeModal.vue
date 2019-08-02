@@ -37,6 +37,7 @@
             v-model="exchangeDialogOfferAsset"
             placeholder="Asset"
             style="width: 100px"
+            @change="onOfferAssetChange"
           >
             <el-option
               v-for="wallet in assetsWithoutRequest"
@@ -96,6 +97,7 @@
             placeholder="Asset"
             style="width: 100px"
             class="select_asset"
+            @change="onRequestAssetChange"
           >
             <el-option
               v-for="wallet in assetsWithoutOffer"
@@ -187,7 +189,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
-import { FeeTypes } from '@/data/consts'
+import { FeeTypes, BillingTypes } from '@/data/consts'
 // import NOTIFICATIONS from '@/data/notifications'
 
 import {
@@ -318,9 +320,19 @@ export default {
         this.currentRequestFee,
         this.exchangeDialogRequestAssetPrecision
       ).toString()
+    },
+
+    offerAsset () {
+      return this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+    },
+
+    requestAsset () {
+      return this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
     }
   },
-
+  created () {
+    this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+  },
   methods: {
     ...mapActions([
       'openApprovalDialog',
@@ -328,8 +340,17 @@ export default {
       'createSettlement',
       'getExchangeAssetInfo',
       'createSettlementTransaction',
-      'openUploadTransactionDialog'
+      'openUploadTransactionDialog',
+      'getBillingData'
     ]),
+
+    onOfferAssetChange () {
+      this.getBillingData({ asset: this.offerAsset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+    },
+
+    onRequestAssetChange () {
+      this.getBillingData({ asset: this.requestAsset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+    },
 
     closeExchangeDialogWith () {
       this.closeExchangeDialog()
@@ -378,14 +399,12 @@ export default {
       //       })
       //   })
       const s = this.exchangeForm
-      const offerAsset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
-      const requestAsset = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
 
       this.createSettlementTransaction({
         to: s.to,
-        offerAssetId: offerAsset.toLowerCase(),
+        offerAssetId: this.offerAsset.toLowerCase(),
         offerAmount: s.offer_amount,
-        requestAssetId: requestAsset.toLowerCase(),
+        requestAssetId: this.requestAsset.toLowerCase(),
         requestAmount: s.request_amount,
         description: s.description,
         feeType: FeeTypes.EXCHANGE,

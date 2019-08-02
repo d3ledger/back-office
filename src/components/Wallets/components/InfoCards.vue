@@ -305,14 +305,12 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getFullBillingData',
       'getAssetPrecision',
       'openExchangeDialog',
       'getCryptoFullData',
       'openApprovalDialog'
     ]),
     requestDataBeforeOpen () {
-      this.getFullBillingData()
       this.getAssetPrecision(this.wallet.assetId)
     },
 
