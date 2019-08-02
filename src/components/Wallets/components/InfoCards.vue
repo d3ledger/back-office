@@ -224,6 +224,7 @@ import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
+import { BillingTypes } from '@/data/consts'
 
 const MODAL_TYPES = {
   DEPOSIT: 'DEPOSIT',
@@ -305,14 +306,13 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getFullBillingData',
       'getAssetPrecision',
       'openExchangeDialog',
       'getCryptoFullData',
-      'openApprovalDialog'
+      'openApprovalDialog',
+      'getBillingData'
     ]),
     requestDataBeforeOpen () {
-      this.getFullBillingData()
       this.getAssetPrecision(this.wallet.assetId)
     },
 
@@ -322,9 +322,11 @@ export default {
         this.isDepositModalVisible = true
       }
       if (modalType === this.modalTypes.WITHDRAWAL) {
+        this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.WITHDRAWAL })
         this.isWithdrawalModalVisible = true
       }
       if (modalType === this.modalTypes.TRANSFER) {
+        this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.TRANSFER })
         this.isTransferModalVisible = true
       }
     },

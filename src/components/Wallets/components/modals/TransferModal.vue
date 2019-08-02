@@ -194,11 +194,6 @@ export default {
       'openUploadTransactionDialog'
     ]),
 
-    onOpenTransferForm () {
-      this.requestDataBeforeOpen()
-      this.transferFormVisible = true
-    },
-
     onSubmitTransferForm () {
       this.$v.transferForm.$touch()
       if (this.$v.transferForm.$invalid) return

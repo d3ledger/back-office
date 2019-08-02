@@ -14,6 +14,7 @@ import notaryUtil from '@util/notary-util'
 import configUtil from '@util/config-util'
 import irohaUtil from '@util/iroha'
 import collectorUtil from '@util/collector-util'
+import { BillingTypes } from '@/data/consts'
 
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
@@ -237,14 +238,17 @@ const actions = {
   closeApprovalDialog ({ commit }, privateKeys) {
     commit(types.APPROVAL_DIALOG_CLOSE, privateKeys)
   },
-  openExchangeDialog ({ commit, dispatch }, offerAsset) {
-    dispatch('getFullBillingData')
+  openExchangeDialog ({ commit, dispatch, getters }, offerAsset) {
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
     if (offerAsset) {
       dispatch('getExchangeAssetInfo', {
         asset: offerAsset,
         type: 'OFFER'
       })
+        .then(() => {
+          const asset = getters.availableAssets.find(w => w.asset === offerAsset)
+          dispatch('getBillingData', { asset: asset.assetId, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+        })
     }
   },
   closeExchangeDialog ({ commit, dispatch }) {

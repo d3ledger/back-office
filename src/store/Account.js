@@ -18,7 +18,7 @@ import collectorUtil from '@util/collector-util'
 import billingReportUtil from '@util/billing-report-util'
 import transactionUtil from '@util/transaction-util'
 import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
-import { WalletTypes } from '@/data/consts'
+import { WalletTypes, BillingTypes } from '@/data/consts'
 import billingUtil from '@util/billing-util'
 
 // TODO: Move it into notary's API so we have the same list
@@ -68,6 +68,7 @@ const types = flow(
   'SET_WHITELIST',
   'GET_CUSTOM_ASSETS',
   'GET_FULL_BILLING_DATA',
+  'GET_BILLING_DATA',
   'GET_CUSTODY_BILLING_REPORT',
   'GET_TRANSFER_BILLING_REPORT',
   'GET_EXCHANGE_BILLING_REPORT',
@@ -784,6 +785,35 @@ const mutations = {
 
   [types.GET_FULL_BILLING_DATA_FAILURE] () {},
 
+  [types.GET_BILLING_DATA_REQUEST] () {},
+
+  [types.GET_BILLING_DATA_SUCCESS] (state, { response, asset, billingType }) {
+    switch (billingType) {
+      case BillingTypes.TRANSFER: {
+        Vue.set(state.transferFee, asset, response.billing)
+        break
+      }
+      case BillingTypes.WITHDRAWAL: {
+        Vue.set(state.withdrawalFee, asset, response.billing)
+        break
+      }
+      case BillingTypes.EXCHANGE: {
+        Vue.set(state.exchangeFee, asset, response.billing)
+        break
+      }
+      case BillingTypes.CUSTODY: {
+        Vue.set(state.custodyFee, asset, response.billing)
+        break
+      }
+      case BillingTypes.ACCOUNT_CREATION: {
+        Vue.set(state.accountCreationFee, asset, response.billing)
+        break
+      }
+    }
+  },
+
+  [types.GET_BILLING_DATA_FAILURE] () {},
+
   [types.GET_CUSTODY_BILLING_REPORT_REQUEST] (state) {},
 
   [types.GET_CUSTODY_BILLING_REPORT_SUCCESS] (state, result) {
@@ -1447,6 +1477,20 @@ const actions = {
       })
       .catch(err => {
         commit(types.GET_FULL_BILLING_DATA_FAILURE)
+        throw err
+      })
+  },
+
+  getBillingData ({ commit, getters }, { domain, asset, billingType }) {
+    commit(types.GET_FULL_BILLING_DATA_REQUEST)
+
+    const dataCollectorUrl = getters.servicesIPs['data-collector-service'].value
+    return billingUtil.getBillingData(dataCollectorUrl, domain, asset, billingType)
+      .then(response => {
+        commit(types.GET_BILLING_DATA_SUCCESS, { response, domain, asset, billingType })
+      })
+      .catch(err => {
+        commit(types.GET_BILLING_DATA_FAILURE)
         throw err
       })
   }
