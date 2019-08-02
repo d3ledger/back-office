@@ -108,7 +108,7 @@ import {
   errorHandler
 } from '@/components/mixins/validation'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { FeeTypes, BillingTypes } from '@/data/consts'
+import { FeeTypes } from '@/data/consts'
 import { mapGetters, mapActions } from 'vuex'
 import numberFormat from '@/components/mixins/numberFormat'
 import messageMixin from '@/components/mixins/message'
@@ -186,22 +186,13 @@ export default {
       ).toString()
     }
   },
-  created () {
-    this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.TRANSFER })
-  },
   methods: {
     ...mapActions([
       'transferAsset',
       'createTransferAssetTransaction',
       'openApprovalDialog',
-      'openUploadTransactionDialog',
-      'getBillingData'
+      'openUploadTransactionDialog'
     ]),
-
-    onOpenTransferForm () {
-      this.requestDataBeforeOpen()
-      this.transferFormVisible = true
-    },
 
     onSubmitTransferForm () {
       this.$v.transferForm.$touch()

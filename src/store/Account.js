@@ -790,23 +790,23 @@ const mutations = {
   [types.GET_BILLING_DATA_SUCCESS] (state, { response, asset, billingType }) {
     switch (billingType) {
       case BillingTypes.TRANSFER: {
-        state.transferFee[asset] = response.billing
+        Vue.set(state.transferFee, asset, response.billing)
         break
       }
       case BillingTypes.WITHDRAWAL: {
-        state.withdrawalFee[asset] = response.billing
+        Vue.set(state.withdrawalFee, asset, response.billing)
         break
       }
       case BillingTypes.EXCHANGE: {
-        state.exchangeFee[asset] = response.billing
+        Vue.set(state.exchangeFee, asset, response.billing)
         break
       }
       case BillingTypes.CUSTODY: {
-        state.custodyFee[asset] = response.billing
+        Vue.set(state.custodyFee, asset, response.billing)
         break
       }
       case BillingTypes.ACCOUNT_CREATION: {
-        state.accountCreationFee[asset] = response.billing
+        Vue.set(state.accountCreationFee, asset, response.billing)
         break
       }
     }

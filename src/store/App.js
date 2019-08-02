@@ -238,7 +238,7 @@ const actions = {
   closeApprovalDialog ({ commit }, privateKeys) {
     commit(types.APPROVAL_DIALOG_CLOSE, privateKeys)
   },
-  openExchangeDialog ({ commit, dispatch }, offerAsset) {
+  openExchangeDialog ({ commit, dispatch, getters }, offerAsset) {
     commit(types.EXCHANGE_DIALOG_OPEN, offerAsset)
     if (offerAsset) {
       dispatch('getExchangeAssetInfo', {
@@ -246,7 +246,8 @@ const actions = {
         type: 'OFFER'
       })
         .then(() => {
-          dispatch('getBillingData', { asset: offerAsset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+          const asset = getters.availableAssets.find(w => w.asset === offerAsset)
+          dispatch('getBillingData', { asset: asset.assetId, domain: 'd3', billingType: BillingTypes.EXCHANGE })
         })
     }
   },

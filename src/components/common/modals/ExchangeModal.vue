@@ -330,9 +330,11 @@ export default {
       return this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
     }
   },
-  created () {
-    this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.EXCHANGE })
-  },
+  // created () {
+  //   console.log(this)
+  //   const asset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+  //   this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+  // },
   methods: {
     ...mapActions([
       'openApprovalDialog',
@@ -344,12 +346,14 @@ export default {
       'getBillingData'
     ]),
 
-    onOfferAssetChange () {
-      this.getBillingData({ asset: this.offerAsset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+    onOfferAssetChange (assetName) {
+      const asset = this.wallets.find(x => x.asset === assetName).assetId
+      this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
     },
 
-    onRequestAssetChange () {
-      this.getBillingData({ asset: this.requestAsset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+    onRequestAssetChange (assetName) {
+      const asset = this.availableAssets.find(x => x.asset === assetName).assetId
+      this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
     },
 
     closeExchangeDialogWith () {

@@ -15,7 +15,7 @@ const getFullBillingData = (url) => {
 }
 
 const getBillingData = (url, domain, asset, billingType) => {
-  let [assetId, assetDomain] = asset.split('@')
+  let [assetId, assetDomain] = asset.split('#')
   return axios({
     baseURL: `${PROTOCOL}//${url}`,
     url: `/cache/get/billing/${domain}/${assetId}/${assetDomain}/${billingType}`

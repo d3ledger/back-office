@@ -102,7 +102,6 @@ import {
 import { required } from 'vuelidate/lib/validators'
 import {
   FeeTypes,
-  BillingTypes,
   BITCOIN_ASSET_NAME,
   ETH_WITHDRAWAL,
   BTC_WITHDRAWAL
@@ -186,15 +185,11 @@ export default {
       ).toString()
     }
   },
-  created () {
-    this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.WITHDRAWAL })
-  },
   methods: {
     ...mapActions([
       'transferAsset',
       'createTransferAssetTransaction',
-      'openUploadTransactionDialog',
-      'getBillingData'
+      'openUploadTransactionDialog'
     ]),
 
     onSubmitWithdrawalForm () {
