@@ -83,20 +83,7 @@
             class="el-form-item__error"
           >{{ _showError($v.form.nodeIp) }}</span>
         </el-form-item>
-        <el-form-item label=" ">
-          <el-checkbox
-            v-model="form.isNewKeyRequired"
-            :class="[
-              'fullwidth checkbox_key',
-              _isValid($v.form.username) && _isValid($v.form.nodeIp) ? 'border_success' : '',
-              _isError($v.form.username) && _isError($v.form.nodeIp) ? 'border_fail' : ''
-            ]"
-            label="Generate new pair key"
-            border
-          />
-        </el-form-item>
         <el-form-item
-          v-if="!form.isNewKeyRequired"
           label="Public key"
           prop="publicKey"
         >
@@ -207,7 +194,7 @@ import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 
 import { _nodeIp, _user, _keyPattern, errorHandler } from '@/components/mixins/validation'
-import { required, requiredIf } from 'vuelidate/lib/validators'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   name: 'Signup',
@@ -225,11 +212,8 @@ export default {
         required,
         _nodeIp
       },
-      isNewKeyRequired: {
-        required
-      },
       publicKey: {
-        required: requiredIf(form => !form.isNewKeyRequired),
+        required: required,
         _keyPattern
       }
     }
@@ -241,7 +225,6 @@ export default {
       form: {
         username: '',
         nodeIp: '',
-        isNewKeyRequired: true,
         publicKey: ''
       },
       dialogVisible: false,
@@ -287,37 +270,17 @@ export default {
 
       this.selectNotaryIp()
 
-      if (!this.form.isNewKeyRequired) {
-        this.signupWithKey({
-          username: this.form.username,
-          publicKey: this.form.publicKey
-        })
-          .then(() => {
-            this.$message.success('Success! Registration completed!')
-            this.$router.push('/login')
-          })
-          .catch(err => {
-            console.error(err)
-            this.$_showRegistrationError(err.message, err.response)
-          })
-
-        return
-      }
-
-      this.signup({
-        username: this.form.username
+      this.signupWithKey({
+        username: this.form.username,
+        publicKey: this.form.publicKey
       })
-        .then(({ username, privateKey }) => {
-          this.dialog.username = username
-          this.dialog.privateKey = privateKey
-          this.dialogVisible = true
+        .then(() => {
+          this.$message.success('Success! Registration completed!')
+          this.$router.push('/login')
         })
         .catch(err => {
           console.error(err)
           this.$_showRegistrationError(err.message, err.response)
-        })
-        .finally(() => {
-          this.isLoading = false
         })
     },
 
