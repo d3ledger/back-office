@@ -186,6 +186,7 @@ export default {
       this.createAcceptSettlementTransaction({
         settlementBatch: this.settlementForAcceptance.from.batch
       })
+      this.acceptanceDialogVisible = false
       this.openUploadTransactionDialog()
 
       // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })

@@ -1238,6 +1238,25 @@ const actions = {
       })
   },
 
+  createAddSignatoryTransaction ({ state, getters }, publicKey) {
+    const upperPublicKey = publicKey.toUpperCase()
+    let transaction = irohaUtil.createAddSignatoryTransaction(getters.irohaQuorum, {
+      accountId: state.accountId,
+      publicKey: upperPublicKey
+    })
+
+    transactionUtil.saveTransaction(transaction)
+  },
+
+  createRemoveSignatoryTransaction ({ state, getters }, publicKey) {
+    let transaction = irohaUtil.createRemoveSignatoryTransaction(getters.irohaQuorum, {
+      accountId: state.accountId,
+      publicKey
+    })
+
+    transactionUtil.saveTransaction(transaction)
+  },
+
   addSignatory ({ commit, dispatch, state, getters }, privateKeys) {
     commit(types.ADD_ACCOUNT_SIGNATORY_REQUEST)
 
@@ -1385,6 +1404,16 @@ const actions = {
       })
   },
 
+  createSetEmailTransaction ({ state, getters }, { email }) {
+    const transaction = irohaUtil.createSetAccountDetailTransaction(getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: 'email',
+      value: email
+    })
+
+    transactionUtil.saveTransaction(transaction)
+  },
+
   switchEmailNotifications ({ commit, state, dispatch, getters }, { privateKeys, notifications }) {
     commit(types.SWITCH_EMAIL_NOTIFICATIONS_REQUEST)
     return irohaUtil.setAccountDetail(privateKeys, getters.irohaQuorum, {
@@ -1400,6 +1429,16 @@ const actions = {
         commit(types.SWITCH_EMAIL_NOTIFICATIONS_FAILURE)
         throw err
       })
+  },
+
+  createSwitchEmailNotificationsTransaction ({ commit, state, dispatch, getters }, { notifications }) {
+    const transaction = irohaUtil.createSetAccountDetailTransaction(getters.irohaQuorum, {
+      accountId: state.accountId,
+      key: 'notifications',
+      value: notifications.toString()
+    })
+
+    transactionUtil.saveTransaction(transaction)
   },
 
   setWhiteList ({ commit, state, dispatch, getters }, { privateKeys, whitelist, type }) {
@@ -1418,6 +1457,19 @@ const actions = {
         throw err
       })
       .then(() => dispatch('updateAccount'))
+  },
+
+  createSetWhiteListTransaction ({ commit, state, dispatch, getters }, { whitelist, type }) {
+    const key = type === WalletTypes.ETH ? 'eth_whitelist' : 'btc_whitelist'
+
+    const transaction = irohaUtil.createSetAccountDetailTransaction(getters.irohaQuorum, {
+      accountId: state.accountId,
+      key,
+      // eslint-disable-next-line
+      value: JSON.stringify(whitelist).replace(/"/g, '\\\"')
+    })
+
+    transactionUtil.saveTransaction(transaction)
   },
 
   getCustodyBillingReport ({ commit, getters }, { params }) {
