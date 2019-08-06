@@ -96,6 +96,11 @@ export default {
 .settings-item_row-key-item {
   margin-right: 1rem;
 }
+.settings-item_row div {
+  display: flex;
+  justify-content: center;
+}
+
 .settings-item_row-delete {
   background-color: transparent;
   border: none;

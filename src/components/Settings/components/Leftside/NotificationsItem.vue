@@ -33,7 +33,7 @@
       <el-col>
         Email notifications:
         <el-switch
-          v-bind="notifications"
+          value="notifications"
           @change="switchNotifications"
         />
       </el-col>
@@ -48,7 +48,7 @@
     >
       <div>
         <el-input
-          v-model="emailAddress"
+          value="emailAddress"
           type="email"
         />
       </div>
@@ -108,6 +108,7 @@ export default {
   created () {
     this.pushNotifications = this.subscribed
     this.emailNotifications = this.notifications
+    this.emailAddress = this.email
   },
   methods: {
     ...mapActions([
@@ -116,7 +117,8 @@ export default {
       'setEmail',
       'createSetEmailTransaction',
       'switchEmailNotifications',
-      'createSwitchEmailNotificationsTransaction'
+      'createSwitchEmailNotificationsTransaction',
+      'openUploadTransactionDialog'
     ]),
     subscribe (settings) {
       this.openApprovalDialog()
@@ -142,7 +144,8 @@ export default {
       }
     },
     switchNotifications (notifications) {
-      this.createSetEmailTransaction({ notifications })
+      this.createSwitchEmailNotificationsTransaction({ notifications })
+      this.openUploadTransactionDialog()
     },
     openEditEmailDialog () {
       this.isEditEmailDialogVisible = true
@@ -150,6 +153,7 @@ export default {
     editEmail () {
       this.createSetEmailTransaction({ email: this.emailAddress })
       this.isEditEmailDialogVisible = false
+      this.openUploadTransactionDialog()
     }
   }
 }
