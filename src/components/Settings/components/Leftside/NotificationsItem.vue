@@ -33,7 +33,7 @@
       <el-col>
         Email notifications:
         <el-switch
-          value="notifications"
+          v-model="notifications"
           @change="switchNotifications"
         />
       </el-col>
@@ -48,7 +48,7 @@
     >
       <div>
         <el-input
-          value="emailAddress"
+          v-model="emailAddress"
           type="email"
         />
       </div>
@@ -152,6 +152,7 @@ export default {
     },
     editEmail () {
       this.createSetEmailTransaction({ email: this.emailAddress })
+      this.emailAddress = ''
       this.isEditEmailDialogVisible = false
       this.openUploadTransactionDialog()
     }
