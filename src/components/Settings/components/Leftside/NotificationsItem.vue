@@ -17,21 +17,23 @@
     </el-row> -->
     <el-row>
       <el-col>
-        <b>Email:</b>
-        {{ email }}
+        <span>
+          Email:
+          {{ email }}
+        </span>
         <el-button
           size="small"
           @click="openEditEmailDialog()"
         >
-          Edit
+          {{ email.length > 0 ? 'Edit' : 'Add' }}
         </el-button>
       </el-col>
     </el-row>
     <el-row>
       <el-col>
-        <b>Email notifications:</b>
+        Email notifications:
         <el-switch
-          v-model="emailNotifications"
+          v-model="notifications"
           @change="switchNotifications"
         />
       </el-col>
@@ -106,13 +108,17 @@ export default {
   created () {
     this.pushNotifications = this.subscribed
     this.emailNotifications = this.notifications
+    this.emailAddress = this.email
   },
   methods: {
     ...mapActions([
       'subscribePushNotifications',
       'unsubscribePushNotifications',
       'setEmail',
-      'switchEmailNotifications'
+      'createSetEmailTransaction',
+      'switchEmailNotifications',
+      'createSwitchEmailNotificationsTransaction',
+      'openUploadTransactionDialog'
     ]),
     subscribe (settings) {
       this.openApprovalDialog()
@@ -138,28 +144,18 @@ export default {
       }
     },
     switchNotifications (notifications) {
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.switchEmailNotifications({ privateKeys, notifications })
-        })
+      this.createSwitchEmailNotificationsTransaction({ notifications })
+      this.openUploadTransactionDialog()
     },
     openEditEmailDialog () {
       this.isEditEmailDialogVisible = true
     },
     editEmail () {
-      this.openApprovalDialog()
-        .then(privateKeys => {
-          console.log(privateKeys)
-          if (!privateKeys) return
-
-          this.setEmail({ privateKeys, email: this.emailAddress })
-        })
-        .then(() => {
-          this.isEditEmailDialogVisible = false
-        })
+      this.createSetEmailTransaction({ email: this.emailAddress })
+      this.emailAddress = ''
+      this.isEditEmailDialogVisible = false
+      this.openUploadTransactionDialog()
     }
-
   }
 }
 </script>

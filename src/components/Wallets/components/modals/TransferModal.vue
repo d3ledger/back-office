@@ -237,7 +237,7 @@ export default {
       })
 
       this.closeTransferForm()
-      this.openUploadTransactionDialog('1')
+      this.openUploadTransactionDialog()
     },
 
     resetTransferForm () {

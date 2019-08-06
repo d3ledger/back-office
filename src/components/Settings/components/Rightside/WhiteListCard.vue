@@ -246,7 +246,8 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setWhiteList'
+      'setWhiteList',
+      'createSetWhiteListTransaction'
     ]),
     addWhiteAddress () {
       this.$v.whitelistForm.$touch()
@@ -267,30 +268,41 @@ export default {
         this.whitelistForm.address
       ]
 
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.addingNewAddress = true
-          return this.setWhiteList({
-            privateKeys,
-            whitelist,
-            type: this.walletType
-          })
-            .then(() => {
-              this.$message.success('Address successfully added')
-            })
-            .catch((err) => {
-              this.$message.error('Failed to add address')
-              console.error(err)
-            })
-        })
-        .finally(() => {
-          this.addAddressFormVisible = false
-          this.addingNewAddress = false
-          this.whitelistForm = {
-            address: ''
-          }
-        })
+      this.createSetWhiteListTransaction({
+        whitelist,
+        type: this.walletType
+      })
+
+      this.addAddressFormVisible = false
+      this.addingNewAddress = false
+      this.whitelistForm = {
+        address: ''
+      }
+
+      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+      //     this.addingNewAddress = true
+      //     return this.setWhiteList({
+      //       privateKeys,
+      //       whitelist,
+      //       type: this.walletType
+      //     })
+      //       .then(() => {
+      //         this.$message.success('Address successfully added')
+      //       })
+      //       .catch((err) => {
+      //         this.$message.error('Failed to add address')
+      //         console.error(err)
+      //       })
+      //   })
+      //   .finally(() => {
+      //     this.addAddressFormVisible = false
+      //     this.addingNewAddress = false
+      //     this.whitelistForm = {
+      //       address: ''
+      //     }
+      //   })
     },
     removeWhiteAddress () {
       const whitelist = [
@@ -299,28 +311,37 @@ export default {
           .map(item => item[0])
       ]
 
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
-          this.removingAddress = true
-          return this.setWhiteList({
-            privateKeys,
-            whitelist,
-            type: this.walletType
-          })
-            .then(() => {
-              this.$message.success('Address successfully removed')
-            })
-            .catch((err) => {
-              this.$message.error('Failed to remove address')
-              console.error(err)
-            })
-        })
-        .finally(() => {
-          this.removeAddressFormVisible = false
-          this.removingAddress = false
-          this.addressToRemove = null
-        })
+      this.createSetWhiteListTransaction({
+        whitelist,
+        type: this.walletType
+      })
+
+      this.removeAddressFormVisible = false
+      this.removingAddress = false
+      this.addressToRemove = null
+
+      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
+      //   .then(privateKeys => {
+      //     if (!privateKeys) return
+      //     this.removingAddress = true
+      //     return this.setWhiteList({
+      //       privateKeys,
+      //       whitelist,
+      //       type: this.walletType
+      //     })
+      //       .then(() => {
+      //         this.$message.success('Address successfully removed')
+      //       })
+      //       .catch((err) => {
+      //         this.$message.error('Failed to remove address')
+      //         console.error(err)
+      //       })
+      //   })
+      //   .finally(() => {
+      //     this.removeAddressFormVisible = false
+      //     this.removingAddress = false
+      //     this.addressToRemove = null
+      //   })
     },
 
     onCloseWhiteAddressForm () {

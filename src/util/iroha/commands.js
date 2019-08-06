@@ -271,6 +271,38 @@ const transferAssetWithFee = (privateKeys, quorum, {
   ])
 }
 
+const createAddSignatoryTransaction = (quorum, { accountId, publicKey }) => {
+  const tx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'addSignatory',
+    {
+      accountId,
+      publicKey
+    }
+  )
+
+  return txHelper.addMeta(tx, {
+    creatorAccountId: accountId,
+    quorum
+  })
+}
+
+const createRemoveSignatoryTransaction = (quorum, { accountId, publicKey }) => {
+  const tx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'removeSignatory',
+    {
+      accountId,
+      publicKey
+    }
+  )
+
+  return txHelper.addMeta(tx, {
+    creatorAccountId: accountId,
+    quorum
+  })
+}
+
 const addSignatory = (privateKeys, quorum, {
   accountId,
   publicKey
@@ -313,6 +345,27 @@ const setAccountDetail = (privateKeys, quorum, {
   }
 )
 
+const createSetAccountDetailTransaction = (quorum, {
+  accountId,
+  key,
+  value
+}) => {
+  const tx = txHelper.addCommand(
+    txHelper.emptyTransaction(),
+    'setAccountDetail',
+    {
+      accountId,
+      key,
+      value
+    }
+  )
+
+  return txHelper.addMeta(tx, {
+    creatorAccountId: accountId,
+    quorum
+  })
+}
+
 const setAccountQuorum = (privateKeys, currentQuorum, {
   accountId,
   quorum
@@ -330,7 +383,9 @@ export {
   createTransferTransaction,
   transferAssetWithFee,
   addSignatory,
+  createAddSignatoryTransaction,
   removeSignatory,
+  createRemoveSignatoryTransaction,
   addAssetQuantity,
   createSettlementTransaction,
   createSettlement,
@@ -338,6 +393,7 @@ export {
   acceptSettlement,
   rejectSettlement,
   setAccountDetail,
+  createSetAccountDetailTransaction,
   setAccountQuorum,
   sendCustomTransaction,
   signPendingTransaction
