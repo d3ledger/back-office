@@ -21,14 +21,13 @@
         background: #363636;
       }
       .loading-logo {
-        background-image: url("./logo.svg");
+        background-repeat: no-repeat;
         width: 96px;
         height: 96px;
         display: var(--show-loading);
         top: 50%;
         left: 50%;
-        margin-left: -48px;
-        margin-top: -48px;
+        transform: translate(-50%, -50%);
         position: absolute;
       }
     </style>
@@ -39,7 +38,7 @@
     </noscript>
     <div id="app">
     </div>
-    <div class="loading-logo"></div>
+    <img class="loading-logo" src="logo.svg"></img>
     <!-- built files will be auto injected -->
   </body>
 </html>

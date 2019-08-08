@@ -11,7 +11,7 @@
         @click="onShowVersion"
       >
     </div>
-    <span class="auth-welcome">Welcome to D3</span>
+    <span class="auth-welcome">Log in to D3</span>
     <div class="auth-form-container">
       <el-form
         ref="form"
