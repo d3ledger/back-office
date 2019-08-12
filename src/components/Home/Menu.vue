@@ -102,7 +102,7 @@
         <span
           slot="title"
           class="title-left"
-        >Transactions</span>
+        >Waitings</span>
       </el-menu-item>
       <el-menu-item index="/settings">
         <SvgIcon

@@ -9,95 +9,158 @@
         <el-col :span="24">
           <el-card :body-style="{ padding: '0' }">
             <div class="header">
-              <span>Pending transactions</span>
+              <span>Waiting transactions</span>
             </div>
-            <el-table
-              :data="allPendingTransactions"
-              class="transactions_table"
-            >
-              <el-table-column type="expand">
-                <template slot-scope="scope">
-                  <div class="transaction_details">
-                    <p>
-                      {{ scope.row.from }} transfered {{ scope.row.amount }}
-                      {{ wallets.find(w => w.assetId = scope.row.assetId).asset }} to {{ scope.row.to }}
-                    </p>
-                    <div>
-                      <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
-                      <p>Message: {{ scope.row.message }}</p>
-                    </div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Date"
-                width="110"
-              >
-                <template slot-scope="scope">
-                  {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Amount"
-                min-width="60"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.from === 'you' ? '−' : '+' }}{{ Number(scope.row.amount) }}
-                  {{ wallets.find(w => w.assetId === scope.row.assetId).asset }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Address"
-                min-width="90"
-                show-overflow-tooltip
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Description"
-                min-width="90"
-                show-overflow-tooltip
-              >
-                <template slot-scope="scope">
-                  <div>
-                    <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"/>
-                    <div v-else>{{ scope.row.message }}</div>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Expire"
-                width="70"
-              >
-                <template slot-scope="scope">
-                  {{ calculateEstimatedTime(scope.row.date) }}
-                </template>
-              </el-table-column>
-              <el-table-column
-                label="Signs"
-                width="60"
-              >
-                <template slot-scope="scope">
-                  {{ scope.row.signatures.length }} / {{ accountQuorum }}
-                </template>
-              </el-table-column>
-              <el-table-column width="210">
-                <template slot-scope="scope">
-                  <div class="transaction_action">
-                    <el-button
-                      size="medium"
-                      type="primary"
-                      plain
-                      @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
-                    >
-                      Add signatures
-                    </el-button>
-                  </div>
-                </template>
-              </el-table-column>
-            </el-table>
+            <el-tabs type="card">
+              <el-tab-pane label="Transfer">
+                <el-table
+                  :data="allPendingTransactions"
+                  class="transactions_table"
+                >
+                  <el-table-column type="expand">
+                    <template slot-scope="scope">
+                      <div class="transaction_details">
+                        <p>
+                          {{ scope.row.from }} transfered {{ scope.row.amount }}
+                          {{ wallets.find(w => w.assetId = scope.row.assetId).asset }} to {{ scope.row.to }}
+                        </p>
+                        <div>
+                          <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
+                          <p>Message: {{ scope.row.message }}</p>
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Date"
+                    width="110"
+                  >
+                    <template slot-scope="scope">
+                      {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Amount"
+                    min-width="60"
+                  >
+                    <template slot-scope="scope">
+                      {{ scope.row.from === 'you' ? '−' : '+' }}{{ Number(scope.row.amount) }}
+                      {{ wallets.find(w => w.assetId === scope.row.assetId).asset }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Address"
+                    min-width="90"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      {{ scope.row.to === 'notary' ? 'Withdrawal' : '' }} to {{ scope.row.to === 'notary' ? scope.row.message : scope.row.to }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Description"
+                    min-width="90"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      <div>
+                        <div v-if="scope.row.from === 'notary' || scope.row.to === 'notary'"/>
+                        <div v-else>{{ scope.row.message }}</div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Expire"
+                    width="70"
+                  >
+                    <template slot-scope="scope">
+                      {{ calculateEstimatedTime(scope.row.date) }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Signs"
+                    width="60"
+                  >
+                    <template slot-scope="scope">
+                      {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="210">
+                    <template slot-scope="scope">
+                      <div class="transaction_action">
+                        <el-button
+                          size="medium"
+                          type="primary"
+                          plain
+                          @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
+                        >
+                          Add signatures
+                        </el-button>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-tab-pane>
+              <el-tab-pane label="Settings">
+                <el-table
+                  :data="pendingSettingsTransactions"
+                  class="transactions_table"
+                >
+                  <el-table-column
+                    label="Date"
+                    width="110"
+                  >
+                    <template slot-scope="scope">
+                      {{ formatDateWith(scope.row.date, 'MMM D, HH:mm') }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Type"
+                    min-width="90"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      <div>
+                        {{ scope.row.type }}
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Description"
+                    min-width="90"
+                    show-overflow-tooltip
+                  >
+                    <template slot-scope="scope">
+                      <div>
+                        {{ scope.row.description }}
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    label="Signs"
+                    width="60"
+                  >
+                    <template slot-scope="scope">
+                      {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="210">
+                    <template slot-scope="scope">
+                      <div class="transaction_action">
+                        <el-button
+                          size="medium"
+                          type="primary"
+                          plain
+                          @click="onSignPendingTransaction(scope.row.id, scope.row.signatures)"
+                        >
+                          Add signatures
+                        </el-button>
+                      </div>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-tab-pane>
+            </el-tabs>
           </el-card>
         </el-col>
       </el-row>
@@ -126,6 +189,7 @@ export default {
   computed: {
     ...mapGetters([
       'allPendingTransactions',
+      'pendingSettingsTransactions',
       'wallets',
       'accountQuorum'
     ])
@@ -146,31 +210,6 @@ export default {
         txStoreId
       })
       this.openUploadTransactionDialog()
-
-      // this.openApprovalDialog({ signatures })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.isSending = true
-
-      //     return this.signPendingTransaction({
-      //       privateKeys,
-      //       txStoreId
-      //     })
-      //       .then(() => {
-      //         let completed = privateKeys.length + signatures.length === this.accountQuorum
-      //         this.$_showMessageFromStatus(
-      //           completed,
-      //           NOTIFICATIONS.TRANSACTION_SUCCESS,
-      //           NOTIFICATIONS.NOT_COMPLETED
-      //         )
-      //         this.getAllUnsignedTransactions()
-      //       })
-      //       .catch(err => {
-      //         console.error(err)
-      //         this.$_showErrorAlertMessage(err.message, 'Transaction signing error')
-      //       })
-      //   })
-      //   .finally(() => { this.isSending = false })
     },
     calculateEstimatedTime (date) {
       const rightDate = date + this.liveTimeOfTransaction
