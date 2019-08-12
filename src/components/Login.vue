@@ -3,140 +3,150 @@
   SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <el-container class="auth-container">
-    <div style="margin-top: 2.5rem">
-      <img
-        src="@/assets/logo.svg"
-        alt="D3"
-        @click="onShowVersion"
-      >
-    </div>
-    <span class="auth-welcome">Log in to D3</span>
-    <div class="auth-form-container">
-      <el-form
-        ref="form"
-        :model="form"
-        class="auth-form"
-        label-position="top"
-        @keyup.enter.native="onSubmit"
-      >
-        <el-form-item
-          label="Private key"
-          prop="privateKey"
+  <el-container class="flex-center">
+    <div class="auth-container">
+      <div class="auth-header">
+        <img
+          src="@/assets/logo.svg"
+          alt="D3"
+          class="auth-header_logo"
+          @click="onShowVersion"
         >
-          <el-row
-            type="flex"
-            justify="space-between"
+        <span class="auth-header_title">Log in to D3</span>
+      </div>
+      <div class="auth-form-container">
+        <el-form
+          ref="form"
+          :model="form"
+          class="auth-form"
+          label-position="top"
+          @keyup.enter.native="onSubmit"
+        >
+          <el-form-item
+            label="Private key"
+            prop="privateKey"
           >
-            <el-col :span="20">
-              <el-input
-                v-model="$v.form.privateKey.$model"
-                :disabled="isLoading"
-                :class="[
-                  _isValid($v.form.privateKey) ? 'border_success' : '',
-                  _isError($v.form.privateKey) ? 'border_fail' : ''
-                ]"
-                name="privateKey"
-                type="password"
-              />
-            </el-col>
-
-            <el-upload
-              :auto-upload="false"
-              :show-file-list="false"
-              :on-change="onFileChosen"
+            <el-row
+              type="flex"
+              justify="space-between"
+            >
+              <el-col :span="24">
+                <el-input
+                  v-model="$v.form.privateKey.$model"
+                  :disabled="isLoading"
+                  :class="[
+                    'auth-form_upload-input',
+                    _isValid($v.form.privateKey) ? 'border_success' : '',
+                    _isError($v.form.privateKey) ? 'border_fail' : ''
+                  ]"
+                  name="privateKey"
+                  type="password"
+                />
+                <el-upload
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="onFileChosen"
+                  :disabled="isLoading"
+                  :class="[
+                    'auth-form_upload',
+                    _isValid($v.form.privateKey) ? 'border_success' : '',
+                    _isError($v.form.privateKey) ? 'border_fail' : ''
+                  ]"
+                  action=""
+                >
+                  <el-button>
+                    <img
+                      src="@/assets/icons/download.svg"
+                      alt=""
+                      srcset=""
+                    >
+                  </el-button>
+                </el-upload>
+              </el-col>
+            </el-row>
+            <div
+              v-if="_isError($v.form.privateKey)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.privateKey) }}</div>
+          </el-form-item>
+          <el-form-item
+            label="Username"
+            prop="username"
+          >
+            <el-input
+              v-model="$v.form.username.$model"
               :disabled="isLoading"
               :class="[
-                'auth-form_upload',
-                _isValid($v.form.privateKey) ? 'border_success' : '',
-                _isError($v.form.privateKey) ? 'border_fail' : ''
+                _isValid($v.form.username) ? 'border_success' : '',
+                _isError($v.form.username) ? 'border_fail' : ''
               ]"
-              action=""
+              name="username"
+            />
+            <div
+              v-if="_isError($v.form.username)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.username) }}</div>
+          </el-form-item>
+          <el-form-item
+            label="Node IP"
+            prop="nodeIp"
+          >
+            <el-select
+              v-model="$v.form.nodeIp.$model"
+              :disabled="isLoading"
+              :class="[
+                'fullwidth',
+                _isValid($v.form.nodeIp) ? 'border_success' : '',
+                _isError($v.form.nodeIp) ? 'border_fail' : ''
+              ]"
+              style="z-index: 1;"
+              filterable
+              allow-create
+              popper-class="black-form_select-dropdown"
             >
-              <el-button>
-                <fa-icon icon="upload" />
-              </el-button>
-            </el-upload>
-          </el-row>
-          <span
-            v-if="_isError($v.form.privateKey)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.privateKey) }}</span>
-        </el-form-item>
-        <el-form-item
-          label="Username"
-          prop="username"
-        >
-          <el-input
-            v-model="$v.form.username.$model"
-            :disabled="isLoading"
-            :class="[
-              _isValid($v.form.username) ? 'border_success' : '',
-              _isError($v.form.username) ? 'border_fail' : ''
-            ]"
-            name="username"
-          />
-          <span
-            v-if="_isError($v.form.username)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.username) }}</span>
-        </el-form-item>
-        <el-form-item
-          label="Node IP"
-          prop="nodeIp"
-        >
-          <el-select
-            v-model="$v.form.nodeIp.$model"
-            :disabled="isLoading"
-            :class="[
-              'auth-form_select',
-              _isValid($v.form.nodeIp) ? 'border_success' : '',
-              _isError($v.form.nodeIp) ? 'border_fail' : ''
-            ]"
-            style="width: 100%;"
-            filterable
-            allow-create
-            popper-class="black-form_select-dropdown"
-          >
-            <el-option
-              v-for="node in nodeIPs"
-              :key="node.value"
-              :label="node.label"
-              :value="node.value"
-            >
-              <span class="option left">{{ node.label }}</span>
-              <span class="option right">{{ node.value }}</span>
-            </el-option>
-          </el-select>
-          <span
-            v-if="_isError($v.form.nodeIp)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.nodeIp) }}</span>
-        </el-form-item>
-        <el-form-item class="auth-button-container">
-          <el-button
-            :loading="isLoading"
-            data-cy="login"
-            class="auth-button fullwidth black"
-            type="primary"
-            @click="onSubmit"
-          >
-            Log in
-          </el-button>
-        </el-form-item>
-      </el-form>
-      <div class="auth_goto-container">
-        <p class="auth_goto-container-title">Don’t have an account?</p>
-        <router-link
-          to="/signup"
-        >
-          <el-button
-            data-cy="signup"
-            class="auth_goto-container-button fullwidth"
-          >
-            Sign up
-          </el-button>
-        </router-link>
+              <el-option
+                v-for="node in nodeIPs"
+                :key="node.value"
+                :label="node.label"
+                :value="node.value"
+              >
+                <span class="option left">{{ node.label }}</span>
+                <span class="option right">{{ node.value }}</span>
+              </el-option>
+            </el-select>
+            <div
+              v-if="_isError($v.form.nodeIp)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.nodeIp) }}</div>
+          </el-form-item>
+          <el-form-item class="auth-button-container">
+            <el-row class="auth-button_actions">
+              <el-col
+                :span="12"
+                class="auth-button_actions-button"
+              >
+                <el-button
+                  :loading="isLoading"
+                  data-cy="login"
+                  class="auth-button black fullwidth"
+                  type="primary"
+                  @click="onSubmit"
+                >
+                  Login
+                </el-button>
+              </el-col>
+              <el-col
+                :span="12"
+                class="auth_button_actions-msg"
+              >
+                <span>Don't have an account?</span>
+                <router-link to="/signup">
+                  <span class="actions-msg_red-link pointed">Register</span>
+                </router-link>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </el-container>
@@ -277,12 +287,13 @@ export default {
   .option.left {
     float: left;
     margin-right: 10px;
-    color: #ffffff;
+    font-size: 1rem;
+    color: #000000;
   }
 
   .option.right {
     float: right;
-    font-size: 0.8rem;
-    color: #8492a6;
+    font-size: 1rem;
+    color: #000000;
   }
 </style>
