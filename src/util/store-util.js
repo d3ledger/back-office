@@ -2,6 +2,8 @@
  * Copyright D3 Ledger, Inc. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
+
+// TODO: We should make refactoring of this file, because we have a lot of code duplications
 import flow from 'lodash/fp/flow'
 import isEmpty from 'lodash/fp/isEmpty'
 import isEqual from 'lodash/fp/isEqual'
@@ -39,7 +41,7 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
 
       if ((destAccountId !== accountId) && (srcAccountId !== accountId)) return
 
-      if (destAccountId === `${FeeTypes.TRANSFER}@d3`) {
+      if (destAccountId === `${FeeTypes.TRANSFER}@d3` || destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
         if (srcAccountId === accountId) {
           fee = amount
         }
@@ -126,6 +128,7 @@ export function getSettlementsFrom (transactions, accountId) {
           description,
           assetId
         } = c.transferAsset
+
         if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
           fee = amount
         } else {
@@ -185,6 +188,98 @@ function findSettlementByBatch (tx, settlements) {
     s => isEqual(s.from.batch)(tx.batch)
   )(settlements)
   return s[0]
+}
+
+export function getSettingsTransactionsFrom (transactions, account) {
+  if (isEmpty(transactions)) return []
+  const transformed = []
+
+  transactions.forEach((t, idx) => {
+    const batch = t.payload.batch
+    const { commandsList, createdTime } = t.payload.reducedPayload
+    const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'hex').toString('hex'))
+
+    commandsList.forEach(c => {
+      let tx
+      if (c.setAccountDetail) {
+        const {
+          key,
+          value
+        } = c.setAccountDetail
+        let type = ''
+        let description = ''
+
+        switch (key) {
+          case 'eth_whitelist': {
+            type = 'ETH whitlist'
+            break
+          }
+          case 'btc_whitelist': {
+            type = 'BTC whitelist'
+            break
+          }
+          case 'notifications': {
+            if (key === 'true') {
+              type = 'Enable notifications'
+            } else {
+              type = 'Disable notifications'
+            }
+            break
+          }
+          case 'email': {
+            type = 'Set notification email'
+            description = value
+            break
+          }
+        }
+
+        tx = {
+          type,
+          description,
+          date: createdTime,
+          batch,
+          signatures,
+          id: idx
+        }
+      } else if (c.addSignatory) {
+        const {
+          publicKey
+        } = c.addSignatory
+
+        tx = {
+          type: 'Add signatory',
+          description: publicKey,
+          date: createdTime,
+          batch,
+          signatures,
+          id: idx
+        }
+      } else if (c.removeSignatory) {
+        const {
+          publicKey
+        } = c.removeSignatory
+
+        tx = {
+          type: 'Remove signatory',
+          description: publicKey,
+          date: createdTime,
+          batch,
+          signatures,
+          id: idx
+        }
+      }
+
+      transformed.push(tx)
+    })
+  })
+
+  console.log(transformed)
+
+  return flow(
+    uniqWith(isEqual),
+    sortBy('date'),
+    reverse
+  )(transformed)
 }
 
 // Match function https://codeburst.io/alternative-to-javascripts-switch-statement-with-a-functional-twist-3f572787ba1c

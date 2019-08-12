@@ -17,7 +17,7 @@ import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
 import billingReportUtil from '@util/billing-report-util'
 import transactionUtil from '@util/transaction-util'
-import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw } from '@util/store-util'
+import { getTransferAssetsFrom, getSettlementsFrom, findBatchFromRaw, getSettingsTransactionsFrom } from '@util/store-util'
 import { WalletTypes, BillingTypes } from '@/data/consts'
 import billingUtil from '@util/billing-util'
 
@@ -268,6 +268,14 @@ const getters = {
       pendingTransactionsCopy.toObject().transactionsList,
       state.accountId
     ).filter(tx => tx.from === 'you') : []
+  },
+
+  pendingSettingsTransactions: (state) => {
+    let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
+    return !Array.isArray(pendingTransactionsCopy) ? getSettingsTransactionsFrom(
+      pendingTransactionsCopy.toObject().transactionsList,
+      state.accountId
+    ) : []
   },
 
   waitingSettlements () {
