@@ -222,11 +222,11 @@ button.el-dialog__headerbtn {
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 100vh;
 }
 
 .auth-container {
   background-color: #ffffff;
-  margin-top: 6rem;
   border-radius: 0.8rem;
 }
 
