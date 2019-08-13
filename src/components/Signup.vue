@@ -153,7 +153,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 
 import { _nodeIp, _user, _keyPattern, errorHandler } from '@/components/mixins/validation'
@@ -189,20 +188,12 @@ export default {
         username: '',
         nodeIp: '',
         publicKey: ''
-      },
-      dialogVisible: false,
-      dialog: {
-        username: '',
-        privateKey: ''
-      },
-      downloaded: false
+      }
     }
   },
 
   computed: {
     ...mapGetters([
-      'freeEthRelaysNumber',
-      'freeBtcRelaysNumber',
       'registrationIPs'
     ])
   },
@@ -222,7 +213,6 @@ export default {
   methods: {
     ...mapActions([
       'setNotaryIp',
-      'signup',
       'signupWithKey'
     ]),
 
@@ -245,30 +235,6 @@ export default {
           console.error(err)
           this.$_showRegistrationError(err.message, err.response)
         })
-    },
-
-    onCloseDialog () {
-      this.dialogVisible = false
-      this.$router.push('/login')
-    },
-
-    onClickDownload () {
-      const filename = `${this.dialog.username}@${this.predefinedDomain}.priv`
-
-      if (window.Cypress) {
-        this.downloaded = true
-        window.Cypress.privateKey = this.dialog.privateKey
-        return
-      }
-
-      const blob = new Blob(
-        [this.dialog.privateKey],
-        { type: 'text/plain;charset=utf-8' }
-      )
-
-      FileSaver.saveAs(blob, filename)
-
-      this.downloaded = true
     },
 
     selectNotaryIp () {
