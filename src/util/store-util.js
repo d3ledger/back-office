@@ -273,8 +273,6 @@ export function getSettingsTransactionsFrom (transactions, account) {
     })
   })
 
-  console.log(transformed)
-
   return flow(
     uniqWith(isEqual),
     sortBy('date'),

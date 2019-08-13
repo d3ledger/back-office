@@ -162,7 +162,6 @@ export const errorHandler = {
     _isError: (model) => model.$error,
     _showError: (model) => {
       const fields = Object.keys(model).filter(k => k.includes('_') && !model[k])
-      console.log(model, fields)
       if (fields.length) return errorMessages[fields[0]]
       if (!model.required) return errorMessages['_required']
     }
