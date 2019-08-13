@@ -126,7 +126,7 @@
               >
                 <el-button
                   :loading="isLoading"
-                  data-cy="login"
+                  data-cy="register"
                   class="auth-button black fullwidth"
                   type="primary"
                   @click="onSubmit"
@@ -139,7 +139,10 @@
                 class="auth_button_actions-msg"
               >
                 <span>Already have an account?</span>
-                <router-link to="/signin">
+                <router-link
+                  to="/signin"
+                  data-cy="toLoginPage"
+                >
                   <span class="actions-msg_red-link pointed">Login</span>
                 </router-link>
               </el-col>

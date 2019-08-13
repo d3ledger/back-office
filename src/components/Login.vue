@@ -140,7 +140,10 @@
                 class="auth_button_actions-msg"
               >
                 <span>Don't have an account?</span>
-                <router-link to="/signup">
+                <router-link
+                  to="/signup"
+                  data-cy="toRegisterPage"
+                >
                   <span class="actions-msg_red-link pointed">Register</span>
                 </router-link>
               </el-col>
