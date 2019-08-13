@@ -12,7 +12,7 @@ const mockUserRequest = () => {
   ).as('getUserInfo')
 }
 
-describe('Test wallets page without white list', () => {
+describe.skip('Test wallets page without white list', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(aliceKeyPath)
@@ -392,7 +392,7 @@ describe('Test wallets page without white list', () => {
   })
 })
 
-describe('Test wallets page with white list', () => {
+describe.skip('Test wallets page with white list', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)
@@ -500,7 +500,7 @@ describe('Test wallets page with white list', () => {
   })
 })
 
-describe('Test transfer with one private key', () => {
+describe.skip('Test transfer with one private key', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(aliceKeyPath)
@@ -560,7 +560,7 @@ describe('Test transfer with one private key', () => {
   })
 })
 
-describe('Test transfer with two private keys', () => {
+describe.skip('Test transfer with two private keys', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)
@@ -627,7 +627,7 @@ describe('Test transfer with two private keys', () => {
   })
 })
 
-describe('Test transfer with one private key and quorum 2', () => {
+describe.skip('Test transfer with one private key and quorum 2', () => {
   it('Make auth', () => {
     cy.visit('/')
     cy.login(testKeyPath)

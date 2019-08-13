@@ -3,194 +3,159 @@
   SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <el-container class="auth-container">
-    <div style="margin-top: 2.5rem">
-      <img
-        src="@/assets/logo.svg"
-        alt="D3"
-      >
-    </div>
-    <span class="auth-welcome">Sign Up</span>
-    <div class="auth-form-container">
-      <el-form
-        ref="form"
-        :model="form"
-        class="auth-form"
-        label-position="top"
-      >
-        <el-form-item
-          label="Username"
-          prop="username"
+  <el-container class="flex-center">
+    <div class="auth-container">
+      <div class="auth-header">
+        <img
+          src="@/assets/logo.svg"
+          alt="D3"
+          class="auth-header_logo"
         >
-          <el-row
-            type="flex"
-            justify="space-between"
+        <span class="auth-header_title">Register in D3</span>
+      </div>
+      <div class="auth-form-container">
+        <el-form
+          ref="form"
+          :model="form"
+          class="auth-form"
+          label-position="top"
+        >
+          <el-form-item
+            label="Username"
+            prop="username"
           >
-            <el-col :span="20">
-              <el-input
-                v-model="$v.form.username.$model"
-                :disabled="isLoading"
-                :class="[
-                  _isValid($v.form.username) ? 'border_success' : '',
-                  _isError($v.form.username) ? 'border_fail' : ''
-                ]"
-                name="username"
-              />
-            </el-col>
-            <div
+            <el-input
+              v-model="$v.form.username.$model"
+              :disabled="isLoading"
               :class="[
-                'auth-form_tag',
+                'fullwidth',
                 _isValid($v.form.username) ? 'border_success' : '',
                 _isError($v.form.username) ? 'border_fail' : ''
               ]"
-            >d3</div>
-          </el-row>
-          <span
-            v-if="_isError($v.form.username)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.username) }}</span>
-        </el-form-item>
-        <el-form-item
-          label="Registration IP"
-          prop="nodeIp"
-        >
-          <el-select
-            v-model="$v.form.nodeIp.$model"
-            :disabled="isLoading"
-            :class="[
-              'auth-form_select',
-              _isValid($v.form.nodeIp) ? 'border_success' : '',
-              _isError($v.form.nodeIp) ? 'border_fail' : ''
-            ]"
-            style="width: 100%;"
-            filterable
-            allow-create
-            popper-class="black-form_select-dropdown"
-            @change="selectNotaryIp"
+              name="username"
+            />
+            <div
+              v-if="_isError($v.form.username)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.username) }}</div>
+          </el-form-item>
+          <el-form-item
+            label="Public key"
+            prop="publicKey"
           >
-            <el-option
-              v-for="node in registrationIPs"
-              :key="node.value"
-              :label="node.label"
-              :value="node.value"
+            <el-row
+              type="flex"
+              justify="space-between"
             >
-              <span class="option left">{{ node.label }}</span>
-              <span class="option right">{{ node.value }}</span>
-            </el-option>
-          </el-select>
-          <span
-            v-if="_isError($v.form.nodeIp)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.nodeIp) }}</span>
-        </el-form-item>
-        <el-form-item
-          label="Public key"
-          prop="publicKey"
-        >
-          <el-row
-            type="flex"
-            justify="space-between"
+              <el-col :span="24">
+                <el-input
+                  v-model="$v.form.publicKey.$model"
+                  :disabled="isLoading"
+                  :class="[
+                    'auth-form_upload-input',
+                    _isValid($v.form.publicKey) ? 'border_success' : '',
+                    _isError($v.form.publicKey) ? 'border_fail' : ''
+                  ]"
+                  name="publicKey"
+                />
+                <el-upload
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="onFileChosen"
+                  :disabled="isLoading"
+                  :class="[
+                    'auth-form_upload',
+                    _isValid($v.form.publicKey) ? 'border_success' : '',
+                    _isError($v.form.publicKey) ? 'border_fail' : ''
+                  ]"
+                  action=""
+                >
+                  <el-button>
+                    <img
+                      src="@/assets/icons/download.svg"
+                      alt=""
+                      srcset=""
+                    >
+                  </el-button>
+                </el-upload>
+              </el-col>
+            </el-row>
+            <div
+              v-if="_isError($v.form.publicKey)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.publicKey) }}</div>
+          </el-form-item>
+          <el-form-item
+            label="Registration IP"
+            prop="nodeIp"
           >
-            <el-col :span="20">
-              <el-input
-                v-model="$v.form.publicKey.$model"
-                :disabled="isLoading"
-                :class="[
-                  _isValid($v.form.publicKey) ? 'border_success' : '',
-                  _isError($v.form.publicKey) ? 'border_fail' : ''
-                ]"
-                name="publicKey"
-              />
-            </el-col>
-
-            <el-upload
-              :auto-upload="false"
-              :show-file-list="false"
-              :on-change="onFileChosen"
+            <el-select
+              v-model="$v.form.nodeIp.$model"
               :disabled="isLoading"
               :class="[
-                'auth-form_upload',
-                _isValid($v.form.publicKey) ? 'border_success' : '',
-                _isError($v.form.publicKey) ? 'border_fail' : ''
+                'fullwidth',
+                _isValid($v.form.nodeIp) ? 'border_success' : '',
+                _isError($v.form.nodeIp) ? 'border_fail' : ''
               ]"
-              action=""
+              style="z-index: 1;"
+              filterable
+              allow-create
+              popper-class="black-form_select-dropdown"
+              @change="selectNotaryIp"
             >
-              <el-button>
-                <fa-icon icon="upload" />
-              </el-button>
-            </el-upload>
-          </el-row>
-          <span
-            v-if="_isError($v.form.publicKey)"
-            class="el-form-item__error"
-          >{{ _showError($v.form.publicKey) }}</span>
-        </el-form-item>
-        <el-form-item class="auth-button-container">
-          <el-button
-            :loading="isLoading"
-            data-cy="signup"
-            class="auth-button fullwidth black"
-            type="primary"
-            @click="onSubmit"
-          >
-            Sign Up
-          </el-button>
-        </el-form-item>
-      </el-form>
-      <div class="auth_goto-container">
-        <p class="auth_goto-container-title">Already have an account?</p>
-        <router-link
-          to="/login"
-        >
-          <el-button
-            data-cy="login"
-            class="auth_goto-container-button fullwidth"
-          >
-            Log in
-          </el-button>
-        </router-link>
+              <el-option
+                v-for="node in registrationIPs"
+                :key="node.value"
+                :label="node.label"
+                :value="node.value"
+              >
+                <span class="option left">{{ node.label }}</span>
+                <span class="option right">{{ node.value }}</span>
+              </el-option>
+            </el-select>
+            <div
+              v-if="_isError($v.form.nodeIp)"
+              class="el-form-item__error"
+            >{{ _showError($v.form.nodeIp) }}</div>
+          </el-form-item>
+          <el-form-item class="auth-button-container">
+            <el-row class="auth-button_actions">
+              <el-col
+                :span="12"
+                class="auth-button_actions-button"
+              >
+                <el-button
+                  :loading="isLoading"
+                  data-cy="register"
+                  class="auth-button black fullwidth"
+                  type="primary"
+                  @click="onSubmit"
+                >
+                  Register
+                </el-button>
+              </el-col>
+              <el-col
+                :span="12"
+                class="auth_button_actions-msg"
+              >
+                <span>Already have an account?</span>
+                <router-link
+                  to="/signin"
+                  data-cy="toLoginPage"
+                >
+                  <span class="actions-msg_red-link pointed">Login</span>
+                </router-link>
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
-    <el-dialog
-      :visible.sync="dialogVisible"
-      :before-close="onCloseDialog"
-      :close-on-click-modal="false"
-      :show-close="false"
-      title="Private key"
-      width="400px"
-      center
-    >
-      <div class="dialog-content">
-        <span>Download your private key and keep it secret!</span>
-      </div>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          type="primary"
-          class="black"
-          @click="onClickDownload"
-        >
-          <fa-icon icon="download"/>
-          Download
-        </el-button>
-
-        <el-button
-          :disabled="!downloaded"
-          type="default"
-          @click="onCloseDialog"
-        >
-          Confirm
-        </el-button>
-      </span>
-    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import FileSaver from 'file-saver'
 import messageMixin from '@/components/mixins/message'
 
 import { _nodeIp, _user, _keyPattern, errorHandler } from '@/components/mixins/validation'
@@ -226,20 +191,12 @@ export default {
         username: '',
         nodeIp: '',
         publicKey: ''
-      },
-      dialogVisible: false,
-      dialog: {
-        username: '',
-        privateKey: ''
-      },
-      downloaded: false
+      }
     }
   },
 
   computed: {
     ...mapGetters([
-      'freeEthRelaysNumber',
-      'freeBtcRelaysNumber',
       'registrationIPs'
     ])
   },
@@ -259,7 +216,6 @@ export default {
   methods: {
     ...mapActions([
       'setNotaryIp',
-      'signup',
       'signupWithKey'
     ]),
 
@@ -282,30 +238,6 @@ export default {
           console.error(err)
           this.$_showRegistrationError(err.message, err.response)
         })
-    },
-
-    onCloseDialog () {
-      this.dialogVisible = false
-      this.$router.push('/login')
-    },
-
-    onClickDownload () {
-      const filename = `${this.dialog.username}@${this.predefinedDomain}.priv`
-
-      if (window.Cypress) {
-        this.downloaded = true
-        window.Cypress.privateKey = this.dialog.privateKey
-        return
-      }
-
-      const blob = new Blob(
-        [this.dialog.privateKey],
-        { type: 'text/plain;charset=utf-8' }
-      )
-
-      FileSaver.saveAs(blob, filename)
-
-      this.downloaded = true
     },
 
     selectNotaryIp () {
@@ -381,13 +313,14 @@ export default {
   .option.left {
     float: left;
     margin-right: 10px;
-    color: #ffffff;
+    font-size: 1rem;
+    color: #000000;
   }
 
   .option.right {
     float: right;
-    font-size: 0.8rem;
-    color: #8492a6;
+    font-size: 1rem;
+    color: #000000;
   }
 
   .checkbox_key {

@@ -18,7 +18,7 @@ const errorMessages = {
   _userExist: 'This username does not exist',
   _userIsMe: 'Username should not be same as your username',
 
-  _keyPattern: 'Please provide correct private key',
+  _keyPattern: 'Please provide correct key',
   _keyEqualsTo: 'Please provide private key related to your account',
   _keyDuplication: 'You can\'t use this private key twice',
   _isSignedWithKey: 'You already sign transaction with this private key',
@@ -31,7 +31,9 @@ const errorMessages = {
   _asset: 'Please select asset',
   _amount: 'Please provide correct amount',
 
-  _explorerQuery: 'Query is incorrect'
+  _explorerQuery: 'Query is incorrect',
+
+  _required: 'This field is required'
 }
 
 /**
@@ -161,6 +163,7 @@ export const errorHandler = {
     _showError: (model) => {
       const fields = Object.keys(model).filter(k => k.includes('_') && !model[k])
       if (fields.length) return errorMessages[fields[0]]
+      if (!model.required) return errorMessages['_required']
     }
   }
 }

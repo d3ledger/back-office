@@ -65,7 +65,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  background: #363636;
+  background: #000000;
 }
 
 a {
@@ -117,8 +117,8 @@ a:hover {
 
 .black.el-button {
   color: white;
-  background: #041820;
-  border: 1px solid #041820;
+  background: #000000;
+  border: 1px solid #000000;
 }
 
 .black.el-button:hover {
@@ -218,43 +218,48 @@ button.el-dialog__headerbtn {
 /*
  * Login and SignUp pages
  */
-.black-form_select-dropdown {
-  background-color: #363636;
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-.black-form_select-dropdown .el-select-dropdown__item {
-  background-color: #363636;
-  color: #ffffff;
-  opacity: 0.8;
-}
-
-.black-form_select-dropdown .el-select-dropdown__item:hover {
-  background-color: #424242;
-}
 .auth-container {
+  background-color: #ffffff;
+  border-radius: 0.8rem;
+}
+
+.auth-header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  border-bottom: 1px solid #ebebeb;
 }
 
-.auth-welcome {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #ffffff;
+.auth-header_logo {
+  margin-top: 1rem;
+}
+
+.auth-header_title {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #000000;
+  margin: 1rem 0;
 }
 
 .auth-form .el-input.is-disabled .el-input__inner {
-  background-color: #363636;
-  color: rgba(255, 255, 255, 0.8);
-  border: solid 1px rgba(255, 255, 255, 0.4);
+  background: #f2f2f2;
+  border: solid 1px #000000;
 }
 
 .auth-form .el-input__inner {
-  background-color: #363636;
-  color: rgba(255, 255, 255, 0.8);
-  border: solid 1px rgba(255, 255, 255, 0.4);
-  font-weight: 700;
-  height: 4.5rem;
+  background: #f2f2f2;
+  color: #000000;
+  border: 1px solid #ebebeb;
+  border-radius: 0.8rem;
+  font-weight: 500;
+  height: 4.2rem;
   padding-left: 1.2rem;
   padding-top: 1.2rem;
   line-height: 0;
@@ -262,90 +267,131 @@ button.el-dialog__headerbtn {
 }
 
 .auth-form .el-input__inner:focus {
-  border-color: #ffffff;
-  color: #ffffff;
+  border: 1px solid #cdcdcd;
+  color: #000000;
+  opacity: 1;
+}
+
+.auth-form .el-input.is-focus .el-input__inner {
+  border-color: #cdcdcd;
+}
+
+.auth-form .el-form-item:focus-within .el-form-item__label {
   opacity: 1;
 }
 
 .auth-form .el-form-item {
-  height: 4.4rem;
+  margin-bottom: 0.9rem;
 }
 
 .auth-form .el-form-item__label {
+  font-weight: 400;
   line-height: 1;
-  position: relative;
-  top: 2rem;
+  position: absolute;
   z-index: 10;
+  margin-top: 1rem;
   margin-left: 1.2rem;
+  font-size: 0.9rem;
+  color: #000000;
+  opacity: 0.5;
+}
+
+.auth-form_upload-input .el-input__inner {
+  padding-right: 4.5rem;
+}
+
+.auth-form_upload {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.auth-form_upload .el-button,
+.auth-form_upload .el-button:focus {
+  width: 3.5rem;
+  height: 4.2rem;
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  padding: 0;
   font-size: 0.8rem;
-  opacity: 0.56;
-  color: #ffffff;
+  border-radius: 0.8rem;
+  z-index: 10;
 }
 
 .el-form-item__label::before {
   display: none !important;
 }
 
-.auth-form_upload .el-button,
-.auth-form_upload .el-button:focus {
-  width: 3.8rem;
-  height: 4.5rem;
-  border: solid 1px rgba(255, 255, 255, 0.4);
-  background-color: #363636;
-  color: rgba(255, 255, 255, 0.4);
-  padding: 0;
-  font-size: 1.2rem;
-  border-radius: 0.3rem;
-}
-
-.auth-form_upload .el-button:hover {
-  border-color: #ffffff;
-  color: #ffffff;
-}
-
-.auth-form_select .el-input__inner {
-  height: 4.5rem !important;
-}
-
 .auth-button {
-  margin-top: 1.5rem;
   height: 3.8rem;
   font-size: 0.8rem;
+  border-radius: 0.8rem;
   background-color: #000000;
+}
+
+.auth-button_actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.auth_button_actions-msg {
+  float: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.5;
+}
+
+.actions-msg_red-link {
+  color: #d0021b;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.auth-button_actions-button {
+  margin-right: 1rem;
 }
 
 .auth-form-container {
   position: relative;
   width: 28rem;
   overflow: visible;
-  margin-top: 3rem;
+  margin-top: 1rem;
+  padding: 0 1.2rem;
 }
 
-.auth_goto-container {
-  margin-top: 4rem;
+.el-icon-arrow-up::before {
+  content: url('./assets/icons/shape.svg');
 }
 
-.auth_goto-container-title {
-  margin-bottom: 1.2rem;
-  font-size: 0.8rem;
-  color: #ffffff;
-  opacity: 0.8;
-  text-align: center;
+.black-form_select-dropdown {
+  background-color: #ffffff;
+  border-color: #000000;
+  border-top: 0;
+  border-radius: 0px 0px 0.5rem 0.5rem;
+  z-index: 0 !important;
+  margin-top: -0.6rem !important;
 }
 
-.auth_goto-container-button {
-  height: 3.8rem;
-  font-size: 0.8rem;
-  border: solid 1px rgba(255, 255, 255, 0.4);
-  background-color: #363636;
-  margin-bottom: 1rem;
+.black-form_select-dropdown .popper__arrow {
+  display: none;
 }
 
-.auth_goto-container-button:hover {
-  background-color: #363636;
-  border-color: #ffffff;
-  color: #ffffff;
+.black-form_select-dropdown .el-select-dropdown__item {
+  background-color: #ffffff;
+  color: #000000;
+  border-bottom: 1px solid #e5e5e5;
+  line-height: 3rem;
+  height: 3rem;
 }
+
+.black-form_select-dropdown .el-select-dropdown__item.selected {
+  font-weight: 500;
+}
+
+.black-form_select-dropdown .el-select-dropdown__item:hover {}
 
 .text-overflow {
   text-overflow: ellipsis;
@@ -357,13 +403,13 @@ button.el-dialog__headerbtn {
 .border_success .el-input__inner,
 .border_success .el-textarea__inner,
 .border_success .el-button {
-  border-color: #67c23a !important;
+  border-color: #000000 !important;
 }
 .border_fail,
 .border_fail .el-input__inner,
 .border_fail .el-textarea__inner,
 .border_fail .el-button {
-  border-color: #f56c6c !important;
+  border-color: #d0021b !important;
 }
 
 .el-loading-mask.is-fullscreen
@@ -374,5 +420,12 @@ button.el-dialog__headerbtn {
 
 .approval_form-desc .key_representation {
   word-break: break-all;
+}
+
+.el-form-item__error {
+  color: #d0021b;
+  padding: 0.7rem 0;
+  position: relative !important;
+  font-size: 0.9rem;
 }
 </style>
