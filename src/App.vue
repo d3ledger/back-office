@@ -249,9 +249,8 @@ button.el-dialog__headerbtn {
 }
 
 .auth-form .el-input.is-disabled .el-input__inner {
-  background-color: #363636;
-  color: rgba(255, 255, 255, 0.8);
-  border: solid 1px rgba(255, 255, 255, 0.4);
+  background: #f2f2f2;
+  border: solid 1px #000000;
 }
 
 .auth-form .el-input__inner {
