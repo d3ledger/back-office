@@ -121,7 +121,7 @@
             v-if="exchangeDialogRequestAsset && exchangeDialogOfferAsset && exchangeDialogPrice"
             class="form-item-text-amount"
           >
-            {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ $v.exchangeForm.offer_amount.$model * exchangeDialogPrice }} {{ exchangeDialogRequestAsset }}
+            {{ $v.exchangeForm.offer_amount.$model }} {{ exchangeDialogOfferAsset }} ≈ {{ marketPrice }} {{ exchangeDialogRequestAsset }}
           </span>
           <span v-else>...</span>
         </div>
@@ -307,7 +307,7 @@ export default {
     },
 
     offerFeeAmount () {
-      return this.$_calculateFee(
+      return this.$_multiply(
         this.exchangeForm.offer_amount,
         this.currentOfferFee,
         this.exchangeDialogOfferAssetPrecision
@@ -315,7 +315,7 @@ export default {
     },
 
     requestFeeAmount () {
-      return this.$_calculateFee(
+      return this.$_multiply(
         this.exchangeForm.request_amount,
         this.currentRequestFee,
         this.exchangeDialogRequestAssetPrecision
@@ -328,6 +328,14 @@ export default {
 
     requestAsset () {
       return this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
+    },
+
+    marketPrice () {
+      return this.$_multiply(
+        this.exchangeForm.offer_amount,
+        this.exchangeDialogPrice,
+        this.exchangeDialogOfferAssetPrecision
+      ).toString()
     }
   },
   // created () {

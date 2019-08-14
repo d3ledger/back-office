@@ -262,7 +262,7 @@ const getters = {
     return flatten(txs)
   },
 
-  allPendingTransactions: (state) => {
+  pendingTransferTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
     return !Array.isArray(pendingTransactionsCopy) ? getTransferAssetsFrom(
       pendingTransactionsCopy.toObject().transactionsList,
@@ -1213,9 +1213,10 @@ const actions = {
       })
   },
 
-  createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
+  createAcceptSettlementTransaction ({ commit, state }, { settlementBatchs }) {
+    const batchFrom = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatchs[0])
+    const batchTo = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatchs[1])
+    const transaction = irohaUtil.createAcceptSettlementTransaction([batchFrom, batchTo], state.accountId)
     transactionUtil.saveTransaction(transaction)
   },
 

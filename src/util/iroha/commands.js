@@ -119,7 +119,7 @@ function createSettlement (senderPrivateKeys, senderAccountId, senderQuorum = 1,
   ])
 }
 
-function createAcceptSettlementTransaction (batchArray, accountId) {
+function createAcceptSettlementTransaction (batchArray) {
   if (!batchArray.length) return
 
   return txHelper.createTxListFromArray(txHelper.addBatchMeta(batchArray, 0))

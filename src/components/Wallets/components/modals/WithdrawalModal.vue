@@ -178,7 +178,7 @@ export default {
         : 0
     },
     withdrawalFeeAmount () {
-      return this.$_calculateFee(
+      return this.$_multiply(
         this.withdrawForm.amount,
         this.currentWithdrawalFee,
         this.currentWalletPrecision

@@ -179,7 +179,7 @@ export default {
         : 0
     },
     transferFeeAmount () {
-      return this.$_calculateFee(
+      return this.$_multiply(
         this.transferForm.amount,
         this.currentTransferFee,
         this.currentWalletPrecision

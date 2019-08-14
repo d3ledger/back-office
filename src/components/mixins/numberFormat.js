@@ -49,14 +49,14 @@ const dateFormat = {
   methods: {
     /**
      * This function returns correct fee based on asset precision.
-     * @param {Number | Null} amount
-     * @param {Number} fee
-     * @param {Number} assetPrecision
+     * @param {Number | Null} a
+     * @param {Number} b
+     * @param {Number} precision
      * @returns {Number} Current fee or minimum available precision as fee
      */
-    $_calculateFee: (amount, fee, assetPrecision) => BigNumber(amount || 0)
-      .multipliedBy(fee)
-      .decimalPlaces(assetPrecision, BigNumber.ROUND_UP)
+    $_multiply: (a, b, precision) => BigNumber(a || 0)
+      .multipliedBy(b)
+      .decimalPlaces(precision, BigNumber.ROUND_UP)
   }
 }
 

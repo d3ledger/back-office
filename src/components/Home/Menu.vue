@@ -84,8 +84,8 @@
         index="/transactions"
       >
         <el-badge
-          v-if="allPendingTransactions.length"
-          :value="allPendingTransactions.length"
+          v-if="pendingTransactionsAmount"
+          :value="pendingTransactionsAmount"
           :max="9"
           :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
         >
@@ -169,12 +169,16 @@ export default {
   computed: {
     ...mapGetters([
       'incomingSettlements',
-      'allPendingTransactions'
+      'pendingTransferTransactions',
+      'pendingSettingsTransactions'
     ]),
     currentActiveMenu () {
       if (this.$route.path.includes('wallets')) return '/wallets'
       if (this.$route.path.includes('settlements')) return '/settlements/history'
       return this.$route.path
+    },
+    pendingTransactionsAmount () {
+      return this.pendingTransferTransactions.length + this.pendingSettingsTransactions
     }
   },
   watch: {
