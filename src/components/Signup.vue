@@ -171,7 +171,7 @@ export default {
     form: {
       username: {
         required,
-        _userName: _user.name
+        _userName: _user.nameDomain
       },
       nodeIp: {
         required,
@@ -186,7 +186,6 @@ export default {
   data () {
     return {
       isLoading: false,
-      predefinedDomain: 'd3',
       form: {
         username: '',
         nodeIp: '',
