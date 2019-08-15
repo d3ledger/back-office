@@ -171,7 +171,7 @@ export default {
     form: {
       username: {
         required,
-        _userName: _user.nameDomain
+        _userDomain: _user.nameDomain
       },
       nodeIp: {
         required,
