@@ -408,7 +408,7 @@ const getters = {
       return JSON.parse(brvsUserSignatories)
     }
 
-    return []
+    return state.accountSignatories
   },
 
   accountLimits (state) {

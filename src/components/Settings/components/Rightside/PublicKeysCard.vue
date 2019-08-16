@@ -201,34 +201,18 @@ export default {
       'accountSignatories'
     ])
   },
+  created () {
+    this.getSignatories()
+  },
   methods: {
     ...mapActions([
       'addSignatory',
       'removeSignatory',
+      'getSignatories',
       'createAddSignatoryTransaction',
       'createRemoveSignatoryTransaction'
     ]),
     addPublicKey () {
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.addingNewKey = true
-      //     return this.addSignatory(privateKeys)
-      //       .then((fileData) => {
-      //         this.fileData = fileData
-      //         this.isDownloaded = false
-      //         this.downloadKeyVisible = true
-      //       })
-      //       .catch(err => {
-      //         this.$message.error('Failed to add new public key')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.updateActiveTab(1)
-      //     this.addingNewKey = false
-      //     this.addKeyFormVisible = false
-      //   })
       this.createAddSignatoryTransaction(this.keyToAdd)
       this.keyToAdd = ''
       this.updateActiveTab(1)
@@ -240,27 +224,6 @@ export default {
         this.$message.error('Amount of public keys can\'t be smaller than quorum')
         return
       }
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.removingKey = true
-      //     return this.removeSignatory({
-      //       privateKeys,
-      //       publicKey: this.keyToRemove
-      //     })
-      //       .then((fileData) => {
-      //         this.$message.success('Public key is removed')
-      //       })
-      //       .catch(err => {
-      //         this.$message.error('Failed to remove public key')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.updateActiveTab(1)
-      //     this.removingKey = false
-      //     this.removeKeyFormVisible = false
-      //   })
 
       this.createRemoveSignatoryTransaction(this.keyToRemove)
       this.updateActiveTab(1)
