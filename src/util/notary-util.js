@@ -10,11 +10,15 @@ const axiosNotaryRegistration = axios.create({
   baseURL: ''
 })
 
-const signup = axios => (name, publicKey) => {
+const signup = axios => (username, publicKey) => {
   // Unfortunately, server awaits for formData, and it is the only way to provide it.
   let postData = new FormData()
+
+  const [name, domain] = username.split('@')
+
   postData.append('name', name)
   postData.append('pubkey', publicKey)
+  postData.append('domain', domain)
 
   return axios
     .post('users', postData)
