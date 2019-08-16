@@ -924,7 +924,7 @@ const actions = {
 
   addNetwork ({ commit, state }) {
     commit(types.ADD_NETWORK_REQUEST)
-    const username = state.accountId.split('@')[0]
+    const username = state.accountId
 
     return notaryUtil.signup(username, '')
       .then(() => commit(types.ADD_NETWORK_SUCCESS))
