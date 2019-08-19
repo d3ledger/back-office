@@ -184,7 +184,7 @@ export default {
 
     onAccept () {
       this.createAcceptSettlementTransaction({
-        settlementBatchs: [this.settlementForAcceptance.to.batch, this.settlementForAcceptance.from.batch]
+        settlementBatch: this.settlementForAcceptance.to.batch
       })
       this.acceptanceDialogVisible = false
       this.openUploadTransactionDialog()

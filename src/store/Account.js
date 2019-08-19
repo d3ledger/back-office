@@ -12,6 +12,7 @@ import find from 'lodash/fp/find'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import flatten from 'lodash/fp/flatten'
 import { grpc } from 'grpc-web-client'
+import { txHelper } from 'iroha-helpers'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
@@ -924,9 +925,8 @@ const actions = {
 
   addNetwork ({ commit, state }) {
     commit(types.ADD_NETWORK_REQUEST)
-    const username = state.accountId.split('@')[0]
 
-    return notaryUtil.signup(username, '')
+    return notaryUtil.signup(state.accountId, '')
       .then(() => commit(types.ADD_NETWORK_SUCCESS))
       .catch(err => {
         commit(types.ADD_NETWORK_FAILURE, err)
@@ -1118,7 +1118,17 @@ const actions = {
   },
 
   createPendingTransaction ({ commit, state }, { txStoreId }) {
-    const transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
+    let transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
+    if (transaction.payload.batch.reducedHashesList.length > 1) {
+      const transactions = []
+
+      for (let id of transaction.payload.batch.reducedHashesList) {
+        transactions.push(state.rawUnsignedTransactions.getTransactionsList()[id])
+      }
+
+      transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(transactions, 0))
+    }
+
     transactionUtil.saveTransaction(transaction)
   },
 
@@ -1213,10 +1223,9 @@ const actions = {
       })
   },
 
-  createAcceptSettlementTransaction ({ commit, state }, { settlementBatchs }) {
-    const batchFrom = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatchs[0])
-    const batchTo = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatchs[1])
-    const transaction = irohaUtil.createAcceptSettlementTransaction([batchFrom, batchTo], state.accountId)
+  createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
+    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
     transactionUtil.saveTransaction(transaction)
   },
 
