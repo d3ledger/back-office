@@ -338,11 +338,6 @@ export default {
       ).toString()
     }
   },
-  // created () {
-  //   console.log(this)
-  //   const asset = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
-  //   this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
-  // },
   methods: {
     ...mapActions([
       'openApprovalDialog',

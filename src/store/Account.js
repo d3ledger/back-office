@@ -1120,15 +1120,9 @@ const actions = {
 
   createPendingTransaction ({ commit, state }, { txStoreId }) {
     let transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
-    if (transaction.payload.batch.reducedHashesList.length > 1) {
-      const transactions = []
-
-      for (let id of transaction.payload.batch.reducedHashesList) {
-        transactions.push(state.rawUnsignedTransactions.getTransactionsList()[id])
-      }
-
-      transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(transactions, 0))
-    }
+    const objectTransaction = transaction.toObject()
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, objectTransaction.payload.batch)
+    transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(batch, 0))
 
     transactionUtil.saveTransaction(transaction)
   },
@@ -1226,7 +1220,7 @@ const actions = {
 
   createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
+    const transaction = irohaUtil.createAcceptSettlementTransaction(batch)
     transactionUtil.saveTransaction(transaction)
   },
 

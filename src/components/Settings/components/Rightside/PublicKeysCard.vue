@@ -269,7 +269,6 @@ export default {
       const reader = new FileReader()
       reader.onload = (ev) => {
         this.form.keyToAdd = (ev.target.result || '').trim()
-        console.log(this.form.keyToAdd)
         this.$v.$touch()
       }
       reader.readAsText(file.raw)
