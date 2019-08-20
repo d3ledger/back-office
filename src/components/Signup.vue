@@ -178,7 +178,7 @@ export default {
         _nodeIp
       },
       publicKey: {
-        required: required,
+        required,
         _keyPattern
       }
     }

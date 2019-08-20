@@ -14,7 +14,7 @@
             <el-tabs type="card">
               <el-tab-pane label="Transfer">
                 <el-table
-                  :data="allPendingTransactions"
+                  :data="pendingTransferTransactions"
                   class="transactions_table"
                 >
                   <el-table-column type="expand">
@@ -188,7 +188,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'allPendingTransactions',
+      'pendingTransferTransactions',
       'pendingSettingsTransactions',
       'wallets',
       'accountQuorum'

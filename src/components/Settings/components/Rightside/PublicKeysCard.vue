@@ -66,9 +66,52 @@
           Enter public key to add
         </div>
         <div class="approval_form-desc">
-          <el-input
-            v-model="keyToAdd"
-          />
+          <el-form
+            ref="form"
+            v-model="form"
+            class="approval_form"
+            label-position="top"
+          >
+            <el-form-item
+              label="Public key"
+              class="approval_form-item-clearm"
+            >
+              <el-row
+                type="flex"
+                justify="space-between"
+              >
+                <el-col :span="20">
+                  <el-input
+                    v-model="$v.form.keyToAdd.$model"
+                    :class="[
+                      _isValid($v.form.keyToAdd) ? 'border_success' : '',
+                      _isError($v.form.keyToAdd) ? 'border_fail' : ''
+                    ]"
+                    type="password"
+                  />
+                </el-col>
+                <el-upload
+                  :auto-upload="false"
+                  :show-file-list="false"
+                  :on-change="(f, l) => onFileChosen(f, l)"
+                  :class="[
+                    _isValid($v.form.keyToAdd) ? 'border_success' : '',
+                    _isError($v.form.keyToAdd) ? 'border_fail' : ''
+                  ]"
+                  class="approval_form-upload"
+                  action=""
+                >
+                  <el-button>
+                    <fa-icon icon="upload" />
+                  </el-button>
+                </el-upload>
+              </el-row>
+              <span
+                v-if="_isError($v.form.keyToAdd)"
+                class="el-form-item__error"
+              >{{ _showError($v.form.keyToAdd) }}</span>
+            </el-form-item>
+          </el-form>
         </div>
         <div
           slot="footer"
@@ -118,56 +161,28 @@
           </el-button>
         </div>
       </el-dialog>
-      <el-dialog
-        :visible.sync="downloadKeyVisible"
-        :close-on-click-modal="false"
-        :show-close="false"
-        data-cy="downloadPrivateKeyDialog"
-        title="Private key"
-        width="450px"
-        center
-      >
-        <div class="approval_form-desc">
-          <span>Download your private key and keep it secret!</span>
-        </div>
-        <div
-          slot="footer"
-          class="dialog-form_buttons-block"
-        >
-          <el-button
-            class="dialog-form_buttons action"
-            data-cy="buttonDownload"
-            @click="onClickDownload"
-          >
-            <fa-icon icon="download"/>
-            Download
-          </el-button>
-          <el-button
-            :disabled="!isDownloaded"
-            class="dialog-form_buttons close"
-            data-cy="buttonConfirm"
-            @click="downloadKeyVisible = false"
-          >
-            Confirm
-          </el-button>
-        </div>
-      </el-dialog>
     </template>
   </SettingsCard>
 </template>
 
 <script>
 import FileSaver from 'file-saver'
-
 import { mapActions, mapGetters } from 'vuex'
 import { lazyComponent } from '@router'
+import { required } from 'vuelidate/lib/validators'
+import {
+  _keyPattern,
+  errorHandler
+} from '@/components/mixins/validation'
 
 export default {
   name: 'PublicKeysCard',
   components: {
     SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard')
   },
-
+  mixins: [
+    errorHandler
+  ],
   props: {
     activeTab: {
       type: Number,
@@ -182,6 +197,14 @@ export default {
       required: true
     }
   },
+  validations: {
+    form: {
+      keyToAdd: {
+        required,
+        _keyPattern
+      }
+    }
+  },
   data () {
     return {
       addKeyFormVisible: false,
@@ -192,7 +215,9 @@ export default {
       addingNewKey: false,
       keyToRemove: null,
       removingKey: false,
-      keyToAdd: ''
+      form: {
+        keyToAdd: ''
+      }
     }
   },
   computed: {
@@ -201,36 +226,23 @@ export default {
       'accountSignatories'
     ])
   },
+  created () {
+    this.getSignatories()
+  },
   methods: {
     ...mapActions([
       'addSignatory',
       'removeSignatory',
+      'getSignatories',
       'createAddSignatoryTransaction',
       'createRemoveSignatoryTransaction'
     ]),
     addPublicKey () {
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.addingNewKey = true
-      //     return this.addSignatory(privateKeys)
-      //       .then((fileData) => {
-      //         this.fileData = fileData
-      //         this.isDownloaded = false
-      //         this.downloadKeyVisible = true
-      //       })
-      //       .catch(err => {
-      //         this.$message.error('Failed to add new public key')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.updateActiveTab(1)
-      //     this.addingNewKey = false
-      //     this.addKeyFormVisible = false
-      //   })
-      this.createAddSignatoryTransaction(this.keyToAdd)
-      this.keyToAdd = ''
+      this.$v.$touch()
+      if (this.$v.$invalid) return
+
+      this.createAddSignatoryTransaction(this.form.keyToAdd)
+      this.form.keyToAdd = ''
       this.updateActiveTab(1)
       this.addingNewKey = false
       this.addKeyFormVisible = false
@@ -240,27 +252,6 @@ export default {
         this.$message.error('Amount of public keys can\'t be smaller than quorum')
         return
       }
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.removingKey = true
-      //     return this.removeSignatory({
-      //       privateKeys,
-      //       publicKey: this.keyToRemove
-      //     })
-      //       .then((fileData) => {
-      //         this.$message.success('Public key is removed')
-      //       })
-      //       .catch(err => {
-      //         this.$message.error('Failed to remove public key')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.updateActiveTab(1)
-      //     this.removingKey = false
-      //     this.removeKeyFormVisible = false
-      //   })
 
       this.createRemoveSignatoryTransaction(this.keyToRemove)
       this.updateActiveTab(1)
@@ -273,6 +264,14 @@ export default {
       this.$copyText(key)
         .then(onSuccess)
         .catch(onError)
+    },
+    onFileChosen (file, fileList) {
+      const reader = new FileReader()
+      reader.onload = (ev) => {
+        this.form.keyToAdd = (ev.target.result || '').trim()
+        this.$v.$touch()
+      }
+      reader.readAsText(file.raw)
     },
     onClickDownload () {
       const filename = `${this.fileData.username}.priv`

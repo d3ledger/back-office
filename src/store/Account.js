@@ -12,6 +12,7 @@ import find from 'lodash/fp/find'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import flatten from 'lodash/fp/flatten'
 import { grpc } from 'grpc-web-client'
+import { txHelper } from 'iroha-helpers'
 import irohaUtil from '@util/iroha'
 import notaryUtil from '@util/notary-util'
 import collectorUtil from '@util/collector-util'
@@ -262,7 +263,7 @@ const getters = {
     return flatten(txs)
   },
 
-  allPendingTransactions: (state) => {
+  pendingTransferTransactions: (state) => {
     let pendingTransactionsCopy = cloneDeep(state.rawUnsignedTransactions)
     return !Array.isArray(pendingTransactionsCopy) ? getTransferAssetsFrom(
       pendingTransactionsCopy.toObject().transactionsList,
@@ -287,9 +288,13 @@ const getters = {
   },
 
   incomingSettlements (state) {
-    return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
-    })
+    return getters.waitingSettlements()
+      .filter(pair => {
+        return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
+      })
+      .filter(pair => {
+        return Math.round(pair.from.quorum / 2) === pair.from.signatures.length
+      })
   },
 
   outgoingSettlements (state) {
@@ -408,7 +413,7 @@ const getters = {
       return JSON.parse(brvsUserSignatories)
     }
 
-    return []
+    return state.accountSignatories
   },
 
   accountLimits (state) {
@@ -1118,7 +1123,11 @@ const actions = {
   },
 
   createPendingTransaction ({ commit, state }, { txStoreId }) {
-    const transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
+    let transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
+    const objectTransaction = transaction.toObject()
+    const batch = findBatchFromRaw(state.rawUnsignedTransactions, objectTransaction.payload.batch)
+    transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(batch, 0))
+
     transactionUtil.saveTransaction(transaction)
   },
 
@@ -1215,7 +1224,7 @@ const actions = {
 
   createAcceptSettlementTransaction ({ commit, state }, { settlementBatch }) {
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
-    const transaction = irohaUtil.createAcceptSettlementTransaction(batch, state.accountId)
+    const transaction = irohaUtil.createAcceptSettlementTransaction(batch)
     transactionUtil.saveTransaction(transaction)
   },
 

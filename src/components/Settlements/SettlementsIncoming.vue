@@ -184,31 +184,10 @@ export default {
 
     onAccept () {
       this.createAcceptSettlementTransaction({
-        settlementBatch: this.settlementForAcceptance.from.batch
+        settlementBatch: this.settlementForAcceptance.to.batch
       })
       this.acceptanceDialogVisible = false
       this.openUploadTransactionDialog()
-
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-
-      //     return this.acceptSettlement({
-      //       privateKeys,
-      //       settlementBatch: this.settlementForAcceptance.to.batch
-      //     })
-      //       .then(() => {
-      //         this.$message.success('Accepted')
-      //       })
-      //       .catch(err => {
-      //         console.error(err)
-      //         this.$message.error('Failed to accept')
-      //       })
-      //       .finally(() => {
-      //         this.acceptanceDialogVisible = false
-      //         this.getAllUnsignedTransactions()
-      //       })
-      //   })
     },
 
     onReject () {

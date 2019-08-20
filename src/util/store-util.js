@@ -115,7 +115,7 @@ export function getSettlementsFrom (transactions, accountId) {
     filter(tr => tr.payload.batch),
     map(tr => {
       const commands = []
-      const { commandsList, createdTime } = tr.payload.reducedPayload
+      const { commandsList, createdTime, quorum } = tr.payload.reducedPayload
       const batch = tr.payload.batch
       const signatures = tr.signaturesList.map(x => Buffer.from(x.publicKey, 'base64').toString('hex'))
       let fee = 0
@@ -142,7 +142,8 @@ export function getSettlementsFrom (transactions, accountId) {
             signatures,
             assetId,
             fee,
-            batch
+            batch,
+            quorum
           }
           fee = 0
           txIndex += 1
