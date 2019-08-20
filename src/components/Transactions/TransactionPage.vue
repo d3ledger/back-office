@@ -82,13 +82,16 @@
                     width="60"
                   >
                     <template slot-scope="scope">
-                      {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                      {{ scope.row.signatures.length >= accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
+                      /
+                      {{ accountQuorum }}
                     </template>
                   </el-table-column>
                   <el-table-column width="210">
                     <template slot-scope="scope">
                       <div class="transaction_action">
                         <el-button
+                          v-if="scope.row.signatures.length < accountQuorum"
                           size="medium"
                           type="primary"
                           plain
@@ -141,13 +144,16 @@
                     width="60"
                   >
                     <template slot-scope="scope">
-                      {{ scope.row.signatures.length }} / {{ accountQuorum }}
+                      {{ scope.row.signatures.length >= accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
+                      /
+                      {{ accountQuorum }}
                     </template>
                   </el-table-column>
                   <el-table-column width="210">
                     <template slot-scope="scope">
                       <div class="transaction_action">
                         <el-button
+                          v-if="scope.row.signatures.length < accountQuorum"
                           size="medium"
                           type="primary"
                           plain
