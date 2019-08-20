@@ -288,9 +288,13 @@ const getters = {
   },
 
   incomingSettlements (state) {
-    return getters.waitingSettlements().filter(pair => {
-      return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
-    })
+    return getters.waitingSettlements()
+      .filter(pair => {
+        return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
+      })
+      .filter(pair => {
+        return Math.round(pair.from.quorum / 2) === pair.from.signatures.length
+      })
   },
 
   outgoingSettlements (state) {
