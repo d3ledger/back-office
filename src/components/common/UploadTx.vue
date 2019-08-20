@@ -49,7 +49,7 @@ export default {
           new Uint8Array(bytes)
         )
           .then(() => {
-            this.$message.success('Transaction sended!')
+            this.$message.success('Transaction sent!')
             this.onComplete()
           })
           .catch((err) => {

@@ -293,7 +293,7 @@ const getters = {
         return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
       })
       .filter(pair => {
-        return Math.round(pair.from.quorum / 2) === pair.from.signatures.length
+        return pair.to.quorum === pair.to.signatures.length
       })
   },
 
