@@ -22,7 +22,7 @@
                       <div class="transaction_details">
                         <p>
                           {{ scope.row.from }} transfered {{ scope.row.amount }}
-                          {{ wallets.find(w => w.assetId = scope.row.assetId).asset }} to {{ scope.row.to }}
+                          {{ availableAssets.find(w => w.assetId = scope.row.assetId).asset }} to {{ scope.row.to }}
                         </p>
                         <div>
                           <p>Was <el-tag>created</el-tag> at {{ formatDateLong(scope.row.date) }}</p>
@@ -45,7 +45,7 @@
                   >
                     <template slot-scope="scope">
                       {{ scope.row.from === 'you' ? '−' : '+' }}{{ Number(scope.row.amount) }}
-                      {{ wallets.find(w => w.assetId === scope.row.assetId).asset }}
+                      {{ availableAssets.find(w => w.assetId === scope.row.assetId).asset }}
                     </template>
                   </el-table-column>
                   <el-table-column
@@ -82,7 +82,7 @@
                     width="60"
                   >
                     <template slot-scope="scope">
-                      {{ scope.row.signatures.length >= accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
+                      {{ scope.row.signatures.length > accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
                       /
                       {{ accountQuorum }}
                     </template>
@@ -144,7 +144,7 @@
                     width="60"
                   >
                     <template slot-scope="scope">
-                      {{ scope.row.signatures.length >= accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
+                      {{ scope.row.signatures.length > accountQuorum ? scope.row.signatures.length / 2 : scope.row.signatures.length }}
                       /
                       {{ accountQuorum }}
                     </template>
@@ -197,6 +197,7 @@ export default {
       'pendingTransferTransactions',
       'pendingSettingsTransactions',
       'wallets',
+      'availableAssets',
       'accountQuorum'
     ])
   },

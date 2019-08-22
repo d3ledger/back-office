@@ -284,7 +284,7 @@ const getters = {
     return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
       rawUnsignedTransactionsCopy.toObject().transactionsList,
       state.accountId
-    ) : []
+    ).filter(Boolean) : []
   },
 
   incomingSettlements (state) {
@@ -293,7 +293,7 @@ const getters = {
         return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
       })
       .filter(pair => {
-        return pair.to.quorum === pair.to.signatures.length
+        return pair.to.signatures.length >= pair.to.quorum / 2
       })
   },
 
