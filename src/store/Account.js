@@ -284,7 +284,7 @@ const getters = {
     return !Array.isArray(rawUnsignedTransactionsCopy) ? getSettlementsFrom(
       rawUnsignedTransactionsCopy.toObject().transactionsList,
       state.accountId
-    ) : []
+    ).filter(Boolean) : []
   },
 
   incomingSettlements (state) {
@@ -293,7 +293,7 @@ const getters = {
         return (pair.from.txId % 2 === 1) && (pair.from.from === state.accountId)
       })
       .filter(pair => {
-        return pair.to.quorum === pair.to.signatures.length
+        return pair.to.signatures.length >= pair.to.quorum / 2
       })
   },
 
@@ -1241,7 +1241,7 @@ const actions = {
       })
   },
 
-  rejectSettlement ({ commit, state, getters }, { privateKeys, settlementBatch }) {
+  rejectSettlement ({ commit, state, getters }, { settlementBatch }) {
     commit(types.REJECT_SETTLEMENT_REQUEST)
     const batch = findBatchFromRaw(state.rawUnsignedTransactions, settlementBatch)
     const fakePrivateKeys = [...new Array(21)].map(() => irohaUtil.generateKeypair().privateKey)

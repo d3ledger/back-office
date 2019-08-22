@@ -191,25 +191,19 @@ export default {
     },
 
     onReject () {
-      this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-        .then(privateKeys => {
-          if (!privateKeys) return
-
-          return this.rejectSettlement({
-            privateKeys,
-            settlementBatch: this.settlementForRejection.from.batch
-          })
-            .then(() => {
-              this.$message.success('Rejected')
-            })
-            .catch(err => {
-              console.error(err)
-              this.$message.error('Failed to reject')
-            })
-            .finally(() => {
-              this.rejectionDialogVisible = false
-              this.getAllUnsignedTransactions()
-            })
+      return this.rejectSettlement({
+        settlementBatch: this.settlementForRejection.from.batch
+      })
+        .then(() => {
+          this.$message.success('Rejected')
+        })
+        .catch(err => {
+          console.error(err)
+          this.$message.error('Failed to reject')
+        })
+        .finally(() => {
+          this.rejectionDialogVisible = false
+          this.getAllUnsignedTransactions()
         })
     }
   }
