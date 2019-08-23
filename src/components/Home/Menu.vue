@@ -87,7 +87,7 @@
           v-if="pendingTransactionsAmount"
           :value="pendingTransactionsAmount"
           :max="9"
-          :class="[isMenuActive('transactions') ? 'badge active' : 'badge']"
+          :class="[isMenuActive('pendingTransactionsAmount') ? 'badge active' : 'badge']"
         >
           <SvgIcon
             icon-name="Transaction"
@@ -178,7 +178,7 @@ export default {
       return this.$route.path
     },
     pendingTransactionsAmount () {
-      return this.pendingTransferTransactions.length + this.pendingSettingsTransactions
+      return this.pendingTransferTransactions.length + this.pendingSettingsTransactions.length
     }
   },
   watch: {

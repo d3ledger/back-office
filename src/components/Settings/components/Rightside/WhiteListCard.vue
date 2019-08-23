@@ -247,7 +247,8 @@ export default {
   methods: {
     ...mapActions([
       'setWhiteList',
-      'createSetWhiteListTransaction'
+      'createSetWhiteListTransaction',
+      'openUploadTransactionDialog'
     ]),
     addWhiteAddress () {
       this.$v.whitelistForm.$touch()
@@ -279,30 +280,7 @@ export default {
         address: ''
       }
 
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.addingNewAddress = true
-      //     return this.setWhiteList({
-      //       privateKeys,
-      //       whitelist,
-      //       type: this.walletType
-      //     })
-      //       .then(() => {
-      //         this.$message.success('Address successfully added')
-      //       })
-      //       .catch((err) => {
-      //         this.$message.error('Failed to add address')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.addAddressFormVisible = false
-      //     this.addingNewAddress = false
-      //     this.whitelistForm = {
-      //       address: ''
-      //     }
-      //   })
+      this.openUploadTransactionDialog()
     },
     removeWhiteAddress () {
       const whitelist = [
@@ -320,28 +298,7 @@ export default {
       this.removingAddress = false
       this.addressToRemove = null
 
-      // this.openApprovalDialog({ requiredMinAmount: this.accountQuorum })
-      //   .then(privateKeys => {
-      //     if (!privateKeys) return
-      //     this.removingAddress = true
-      //     return this.setWhiteList({
-      //       privateKeys,
-      //       whitelist,
-      //       type: this.walletType
-      //     })
-      //       .then(() => {
-      //         this.$message.success('Address successfully removed')
-      //       })
-      //       .catch((err) => {
-      //         this.$message.error('Failed to remove address')
-      //         console.error(err)
-      //       })
-      //   })
-      //   .finally(() => {
-      //     this.removeAddressFormVisible = false
-      //     this.removingAddress = false
-      //     this.addressToRemove = null
-      //   })
+      this.openUploadTransactionDialog()
     },
 
     onCloseWhiteAddressForm () {
