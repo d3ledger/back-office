@@ -235,7 +235,8 @@ export default {
       'removeSignatory',
       'getSignatories',
       'createAddSignatoryTransaction',
-      'createRemoveSignatoryTransaction'
+      'createRemoveSignatoryTransaction',
+      'openUploadTransactionDialog'
     ]),
     addPublicKey () {
       this.$v.$touch()
@@ -246,6 +247,8 @@ export default {
       this.updateActiveTab(1)
       this.addingNewKey = false
       this.addKeyFormVisible = false
+
+      this.openUploadTransactionDialog()
     },
     removePublicKey () {
       if (this.accountSignatories.length === 1) {
@@ -257,6 +260,8 @@ export default {
       this.updateActiveTab(1)
       this.removingKey = false
       this.removeKeyFormVisible = false
+
+      this.openUploadTransactionDialog()
     },
     doCopy (key) {
       const onSuccess = (e) => this.$message(`You just copied: ${e.text}`)

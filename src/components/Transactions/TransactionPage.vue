@@ -134,7 +134,7 @@
                     show-overflow-tooltip
                   >
                     <template slot-scope="scope">
-                      <div>
+                      <div class="transaction_description">
                         {{ scope.row.description }}
                       </div>
                     </template>
@@ -254,5 +254,9 @@ export default {
   background: #ffffff;
   text-transform: uppercase;
   padding: 0.7rem;
+}
+.transaction_description {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

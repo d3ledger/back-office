@@ -1125,8 +1125,11 @@ const actions = {
   createPendingTransaction ({ commit, state }, { txStoreId }) {
     let transaction = state.rawUnsignedTransactions.getTransactionsList()[txStoreId]
     const objectTransaction = transaction.toObject()
-    const batch = findBatchFromRaw(state.rawUnsignedTransactions, objectTransaction.payload.batch)
-    transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(batch, 0))
+
+    if (objectTransaction.payload.batch) {
+      const batch = findBatchFromRaw(state.rawUnsignedTransactions, objectTransaction.payload.batch)
+      transaction = txHelper.createTxListFromArray(txHelper.addBatchMeta(batch, 0))
+    }
 
     transactionUtil.saveTransaction(transaction)
   },

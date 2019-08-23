@@ -213,10 +213,12 @@ export function getSettingsTransactionsFrom (transactions, account) {
         switch (key) {
           case 'eth_whitelist': {
             type = 'ETH whitlist'
+            description = `New whitelist: ${JSON.parse(value.replace(/\\/g, '')).join(', ')}`
             break
           }
           case 'btc_whitelist': {
             type = 'BTC whitelist'
+            description = `New whitelist: ${JSON.parse(value.replace(/\\/g, '')).join(', ')}`
             break
           }
           case 'notifications': {
@@ -269,8 +271,9 @@ export function getSettingsTransactionsFrom (transactions, account) {
           id: idx
         }
       }
-
-      transformed.push(tx)
+      if (tx) {
+        transformed.push(tx)
+      }
     })
   })
 
