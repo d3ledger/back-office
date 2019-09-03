@@ -33,6 +33,13 @@ const DOMAIN_KEY = {
   private: 'privateAssets'
 }
 
+const getBrvsAccount = (userAccount) => {
+  if (window.Cypress) return 'brvs@brvs'
+  if (!userAccount) return new Error('Undefined user account')
+
+  return `${userAccount.split('@')[1]}@brvs`
+}
+
 const types = flow(
   flatMap(x => [x + '_REQUEST', x + '_SUCCESS', x + '_FAILURE']),
   concat([
@@ -359,7 +366,7 @@ const getters = {
   },
 
   ethWhiteListAddressesAll (state) {
-    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].eth_whitelist : null
+    const brvsWhitelist = state.accountInfo[getBrvsAccount(state.accountId)] ? state.accountInfo[getBrvsAccount(state.accountId)].eth_whitelist : null
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
@@ -383,7 +390,7 @@ const getters = {
   },
 
   btcWhiteListAddressesAll (state) {
-    const brvsWhitelist = state.accountInfo['brvs@brvs'] ? state.accountInfo['brvs@brvs'].btc_whitelist : null
+    const brvsWhitelist = state.accountInfo[getBrvsAccount(state.accountId)] ? state.accountInfo[getBrvsAccount(state.accountId)].btc_whitelist : null
     if (brvsWhitelist) {
       const brvsWhitelistParsed = JSON.parse(brvsWhitelist)
       return Object.entries(brvsWhitelistParsed)
@@ -401,12 +408,12 @@ const getters = {
     // TODO: Need to better way to handle this
     if (window.Cypress) return getters.accountQuorum
 
-    return state.accountInfo['brvs@brvs'] ? getters.accountQuorum * 2 : getters.accountQuorum
+    return state.accountInfo[getBrvsAccount(state.accountId)] ? getters.accountQuorum * 2 : getters.accountQuorum
   },
 
   accountSignatories (state) {
-    const brvsUserSignatories = state.accountInfo['brvs@brvs']
-      ? state.accountInfo['brvs@brvs'].user_keys
+    const brvsUserSignatories = state.accountInfo[getBrvsAccount(state.accountId)]
+      ? state.accountInfo[getBrvsAccount(state.accountId)].user_keys
       : null
 
     if (brvsUserSignatories) {
@@ -690,11 +697,11 @@ const mutations = {
   [types.ADD_ACCOUNT_SIGNATORY_REQUEST] (state) {},
 
   [types.ADD_ACCOUNT_SIGNATORY_SUCCESS] (state, key) {
-    if (state.accountInfo['brvs@brvs']) {
-      const keys = state.accountInfo['brvs@brvs'].user_keys
+    if (state.accountInfo[getBrvsAccount(state.accountId)]) {
+      const keys = state.accountInfo[getBrvsAccount(state.accountId)].user_keys
       const parsedKeys = JSON.parse(keys)
       Vue.set(
-        state.accountInfo['brvs@brvs'],
+        state.accountInfo[getBrvsAccount(state.accountId)],
         'user_keys',
         // eslint-disable-next-line
         JSON.stringify([...parsedKeys, key].sort())
