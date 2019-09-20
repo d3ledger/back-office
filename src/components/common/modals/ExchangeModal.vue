@@ -351,12 +351,14 @@ export default {
 
     onOfferAssetChange (assetName) {
       const asset = this.wallets.find(x => x.asset === assetName).assetId
-      this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+      const [, domain] = this.accountId.split('@')
+      this.getBillingData({ asset, domain, billingType: BillingTypes.EXCHANGE })
     },
 
     onRequestAssetChange (assetName) {
       const asset = this.availableAssets.find(x => x.asset === assetName).assetId
-      this.getBillingData({ asset, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+      const [, domain] = this.accountId.split('@')
+      this.getBillingData({ asset, domain, billingType: BillingTypes.EXCHANGE })
     },
 
     closeExchangeDialogWith () {

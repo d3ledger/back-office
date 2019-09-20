@@ -39,9 +39,14 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
         assetId
       } = c.transferAsset
 
+      const [, domain] = srcAccountId.split('@')
+
       if ((destAccountId !== accountId) && (srcAccountId !== accountId)) return
 
-      if (destAccountId === `${FeeTypes.TRANSFER}@d3` || destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
+      if (
+        destAccountId === `${FeeTypes.TRANSFER}@${domain}` ||
+        destAccountId === `${FeeTypes.EXCHANGE}@${domain}`
+      ) {
         if (srcAccountId === accountId) {
           fee = amount
         }
@@ -129,7 +134,9 @@ export function getSettlementsFrom (transactions, accountId) {
           assetId
         } = c.transferAsset
 
-        if (destAccountId === `${FeeTypes.EXCHANGE}@d3`) {
+        const [, domain] = srcAccountId.split('@')
+
+        if (destAccountId === `${FeeTypes.EXCHANGE}@${domain}`) {
           fee = amount
         } else {
           const tx = {
