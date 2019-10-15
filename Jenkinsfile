@@ -112,7 +112,7 @@ pipeline {
         script {
           scmVars = checkout scm
           docker_tag = env.TAG_NAME ? env.TAG_NAME : tag[scmVars.GIT_BRANCH]
-          def iC = docker.build("nexus.iroha.tech:19002/d3-deploy/back-office:${tag[scmVars.GIT_BRANCH]}")
+          def iC = docker.build("nexus.iroha.tech:19002/d3-deploy/back-office:${docker_tag}")
           docker.withRegistry('https://nexus.iroha.tech:19002', 'nexus-d3-docker') {
             iC.push()
           }
