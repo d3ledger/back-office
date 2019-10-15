@@ -105,13 +105,13 @@ pipeline {
     stage('Build') {
       when {
         beforeAgent true
-        expression { return (scmVars.GIT_BRANCH in tag || scmVars.TAG_NAME) }
+        expression { return (scmVars.GIT_BRANCH in tag || env.TAG_NAME) }
       }
       agent { label 'd3-build-agent' }
       steps {
         script {
           scmVars = checkout scm
-          docker_tag = scmVars.TAG_NAME ? scmVars.TAG_NAME : tag[scmVars.GIT_BRANCH]
+          docker_tag = env.TAG_NAME ? env.TAG_NAME : tag[scmVars.GIT_BRANCH]
           def iC = docker.build("nexus.iroha.tech:19002/d3-deploy/back-office:${tag[scmVars.GIT_BRANCH]}")
           docker.withRegistry('https://nexus.iroha.tech:19002', 'nexus-d3-docker') {
             iC.push()
