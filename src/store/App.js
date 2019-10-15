@@ -247,7 +247,8 @@ const actions = {
       })
         .then(() => {
           const asset = getters.availableAssets.find(w => w.asset === offerAsset)
-          dispatch('getBillingData', { asset: asset.assetId, domain: 'd3', billingType: BillingTypes.EXCHANGE })
+          const [, domain] = getters.accountId.split('@')
+          dispatch('getBillingData', { asset: asset.assetId, domain, billingType: BillingTypes.EXCHANGE })
         })
     }
   },

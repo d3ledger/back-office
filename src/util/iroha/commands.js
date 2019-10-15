@@ -57,7 +57,8 @@ function createSettlementTransaction (
   senderFee = 0,
   receiverFee = 0
 ) {
-  const feeAccountId = `${feeType}@d3`
+  const [, domain] = senderAccountId.split('@')
+  const feeAccountId = `${feeType}@${domain}`
 
   let senderTx = txHelper.addCommand(
     txHelper.emptyTransaction(),
@@ -238,7 +239,8 @@ const createTransferTransaction = (quorum, {
         { srcAccountId, destAccountId, assetId, description: 'withdrawal fee', amount: fee }
       )
     } else {
-      const feeAccountId = `${feeType}@d3`
+      const [, domain] = srcAccountId.split('@')
+      const feeAccountId = `${feeType}@${domain}`
       tx = txHelper.addCommand(
         tx,
         'transferAsset',

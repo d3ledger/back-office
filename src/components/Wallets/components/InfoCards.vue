@@ -271,6 +271,7 @@ export default {
   },
   computed: {
     ...mapGetters([
+      'accountId',
       'cryptoInfo',
       'settingsView',
       'ethWalletAddress',
@@ -322,11 +323,13 @@ export default {
         this.isDepositModalVisible = true
       }
       if (modalType === this.modalTypes.WITHDRAWAL) {
-        this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.WITHDRAWAL })
+        const [, domain] = this.accountId.split('@')
+        this.getBillingData({ asset: this.wallet.assetId, domain, billingType: BillingTypes.WITHDRAWAL })
         this.isWithdrawalModalVisible = true
       }
       if (modalType === this.modalTypes.TRANSFER) {
-        this.getBillingData({ asset: this.wallet.assetId, domain: 'd3', billingType: BillingTypes.TRANSFER })
+        const [, domain] = this.accountId.split('@')
+        this.getBillingData({ asset: this.wallet.assetId, domain, billingType: BillingTypes.TRANSFER })
         this.isTransferModalVisible = true
       }
     },
