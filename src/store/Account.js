@@ -947,7 +947,7 @@ const actions = {
       })
   },
 
-  login ({ commit }, { username, privateKey, nodeIp }) {
+  login ({ commit, dispatch }, { username, privateKey, nodeIp }) {
     commit(types.LOGIN_REQUEST)
 
     return irohaUtil.login(username, privateKey, nodeIp)
@@ -956,6 +956,7 @@ const actions = {
         commit(types.LOGIN_FAILURE, err)
         throw err
       })
+      .then(() => dispatch('getAccountQuorum'))
   },
 
   logout ({ commit }) {
