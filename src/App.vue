@@ -428,4 +428,31 @@ button.el-dialog__headerbtn {
   position: relative !important;
   font-size: 0.9rem;
 }
+
+.transactions_table {
+  padding: 0.9rem 1.5rem;
+}
+.transactions_table >>> .el-table__header th {
+  font-weight: 500;
+}
+.transactions_table >>> .el-table__row td .cell {
+  color: #000000;
+}
+.transactions_table-row {
+  height: 72px;
+  color: #000000;
+}
+.transaction_details {
+  font-size: 0.8rem;
+  color: #000000;
+}
+.transaction_action >>> button {
+  background: #ffffff;
+  text-transform: uppercase;
+  padding: 0.7rem;
+}
+.transaction_description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

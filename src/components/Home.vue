@@ -41,6 +41,12 @@ export default {
     this.getCustomAssets()
   },
 
+  updated () {
+    console.log(
+      this.accountQuorum
+    )
+  },
+
   mounted () {
     document.documentElement.style.setProperty('--show-loading', 'none')
   },

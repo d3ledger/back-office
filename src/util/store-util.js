@@ -25,61 +25,64 @@ export function getTransferAssetsFrom (transactions, accountId, settlements = []
   transactions.forEach((t, idx) => {
     const batch = t.payload.batch
     const { commandsList, createdTime } = t.payload.reducedPayload
+    const transferAssetCommands = commandsList.filter(({ transferAsset }) => transferAsset)
     const signatures = t.signaturesList.map(x => Buffer.from(x.publicKey, 'hex').toString('hex'))
     let fee = 0
 
-    commandsList.forEach(c => {
-      if (!c.transferAsset) return
+    transferAssetCommands.forEach(
+      ({ transferAsset }) => {
+        const {
+          amount,
+          destAccountId,
+          srcAccountId,
+          description,
+          assetId
+        } = transferAsset
+        const [, domain] = srcAccountId.split('@')
 
-      const {
-        amount,
-        destAccountId,
-        srcAccountId,
-        description,
-        assetId
-      } = c.transferAsset
+        if (
+          (destAccountId !== accountId) &&
+          (srcAccountId !== accountId)
+        ) return
 
-      const [, domain] = srcAccountId.split('@')
-
-      if ((destAccountId !== accountId) && (srcAccountId !== accountId)) return
-
-      if (
-        destAccountId === `${FeeTypes.TRANSFER}@${domain}` ||
-        destAccountId === `${FeeTypes.EXCHANGE}@${domain}`
-      ) {
-        if (srcAccountId === accountId) {
-          fee = amount
-        }
-      } else {
-        const tx = {
-          from: match(srcAccountId)
-            .on(x => x === accountId, () => 'you')
-            .on(x => x === NOTARY_ACCOUNT, () => 'notary')
-            .on(x => x === BTC_WITHDRAWAL, () => 'btc_withdrawal_service')
-            .otherwise(x => x),
-          to: match(destAccountId)
-            .on(x => x === accountId, () => 'you')
-            .on(x => x === NOTARY_ACCOUNT, () => 'notary')
-            .on(x => x === BTC_WITHDRAWAL, () => 'btc_withdrawal_service')
-            .otherwise(x => x),
-          amount: amount,
-          date: createdTime,
-          message: description,
-          batch,
-          signatures,
-          id: idx,
-          assetId,
-          fee
-        }
-        fee = 0
-        const settlement = findSettlementByBatch(tx, settlements)
-        if (settlement) {
-          transformed.push(settlement)
+        if (
+          destAccountId === `${FeeTypes.TRANSFER}@${domain}` ||
+          destAccountId === `${FeeTypes.EXCHANGE}@${domain}`
+        ) {
+          if (srcAccountId === accountId) {
+            fee = amount
+          }
         } else {
-          transformed.push(tx)
+          const tx = {
+            from: match(srcAccountId)
+              .on(x => x === accountId, () => 'you')
+              .on(x => x === NOTARY_ACCOUNT, () => 'notary')
+              .on(x => x === BTC_WITHDRAWAL, () => 'btc_withdrawal_service')
+              .otherwise(x => x),
+            to: match(destAccountId)
+              .on(x => x === accountId, () => 'you')
+              .on(x => x === NOTARY_ACCOUNT, () => 'notary')
+              .on(x => x === BTC_WITHDRAWAL, () => 'btc_withdrawal_service')
+              .otherwise(x => x),
+            amount: amount,
+            date: createdTime,
+            message: description,
+            batch,
+            signatures,
+            id: idx,
+            assetId,
+            fee
+          }
+          fee = 0
+          const settlement = findSettlementByBatch(tx, settlements)
+          if (settlement) {
+            transformed.push(settlement)
+          } else {
+            transformed.push(tx)
+          }
         }
       }
-    })
+    )
   })
 
   /*

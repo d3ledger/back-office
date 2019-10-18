@@ -22,10 +22,12 @@ const getRawAccount = ({
 )
 
 const getAccountAssets = ({
-  accountId
+  accountId,
+  pageSize
 }) => queries.getAccountAssets(
   newQueryServiceOptions(), {
-    accountId
+    accountId,
+    pageSize
   }
 )
 
