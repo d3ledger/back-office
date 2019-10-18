@@ -19,13 +19,13 @@
               label="To"
             />
             <el-table-column
-              prop="amount"
               label="Amount"
-            />
-            <el-table-column
-              prop="assetId"
-              label="Asset Id"
-            />
+            >
+              <template slot-scope="scope">
+                {{ scope.row.from === 'you' ? '−' : '+' }}{{ scope.row.amount }}
+                {{ availableAssets.find(w => w.assetId === scope.row.assetId).asset }}
+              </template>
+            </el-table-column>
             <el-table-column
               prop="message"
               label="Message"
