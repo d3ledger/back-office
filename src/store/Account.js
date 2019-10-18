@@ -724,6 +724,7 @@ const mutations = {
   [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
+    console.log(quorum)
     state.accountQuorum = quorum
   },
 
@@ -956,7 +957,10 @@ const actions = {
         commit(types.LOGIN_FAILURE, err)
         throw err
       })
-      .then(() => dispatch('getAccountQuorum'))
+      .then(() => {
+        dispatch('getAccountQuorum')
+        dispatch('getSignatories')
+      })
   },
 
   logout ({ commit }) {
@@ -1038,7 +1042,8 @@ const actions = {
     commit(types.GET_ACCOUNT_ASSETS_REQUEST)
 
     return irohaUtil.getAccountAssets({
-      accountId: state.accountId
+      accountId: state.accountId,
+      pageSize: 100
     })
       .then(assets => {
         commit(types.GET_ACCOUNT_ASSETS_SUCCESS, assets)
