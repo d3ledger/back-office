@@ -13,7 +13,9 @@
               size="medium"
               type="primary"
               @click="$emit('update-history')"
-            >Refresh</el-button>
+            >
+              Refresh
+            </el-button>
           </div>
         </div>
         <el-table
@@ -30,7 +32,7 @@
                     <el-col :span="6">
                       {{ formatDateLong(scope.row.from.date) }}
                     </el-col>
-                    <el-col :span="18" >
+                    <el-col :span="18">
                       <p>
                         <span class="transaction_details-title">Type: </span>
                         <span>EXCHANGE</span>

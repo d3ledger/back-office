@@ -49,8 +49,10 @@
     >
       <template slot-scope="scope">
         <div>
-          <div v-if="scope.row[0].from === 'notary' || scope.row[0].to === 'notary'"/>
-          <div v-else>{{ scope.row[0].message }}</div>
+          <div v-if="scope.row[0].from === 'notary' || scope.row[0].to === 'notary'" />
+          <div v-else>
+            {{ scope.row[0].message }}
+          </div>
         </div>
       </template>
     </el-table-column>

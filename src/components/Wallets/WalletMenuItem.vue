@@ -13,8 +13,12 @@
       style="margin-right: 20px"
     />
     <div class="info-container">
-      <div class="label">{{ name }}</div>
-      <div class="asset">{{ asset }}</div>
+      <div class="label">
+        {{ name }}
+      </div>
+      <div class="asset">
+        {{ asset }}
+      </div>
     </div>
   </router-link>
 </template>

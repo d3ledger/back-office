@@ -13,7 +13,9 @@
         class="portfolio_card-padding"
       >
         <div class="portfolio_header">
-          <p class="portfolio_header-title">My Portfolio</p>
+          <p class="portfolio_header-title">
+            My Portfolio
+          </p>
         </div>
         <div class="portfolio_current-price">
           <el-tooltip
@@ -23,7 +25,9 @@
             <p
               class="portfolio_current-price_value"
               justify="center"
-            >{{ price.value | formatNumberLong }} {{ currencySymbol }}</p>
+            >
+              {{ price.value | formatNumberLong }} {{ currencySymbol }}
+            </p>
           </el-tooltip>
         </div>
         <div class="portfolio_diff-price">
@@ -38,11 +42,13 @@
         </div>
       </el-col>
       <el-col :span="1">
-        <div class="vertical_devider"/>
+        <div class="vertical_devider" />
       </el-col>
       <el-col :span="15">
         <div class="chart_header">
-          <div class="chart_header-name">Portfolio history</div>
+          <div class="chart_header-name">
+            Portfolio history
+          </div>
           <div class="chart_header-filter">
             <div
               v-for="(value, index) in daysLabels"
@@ -50,11 +56,13 @@
               :class="[portfolioFilter !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
               @click="selectLabel(value)"
             >
-              <p class="chart_time-filter_value">{{ value }}</p>
+              <p class="chart_time-filter_value">
+                {{ value }}
+              </p>
             </div>
           </div>
         </div>
-        <div class="chart_header-divider"/>
+        <div class="chart_header-divider" />
         <line-chart-portfolio
           v-loading="portfolioHistoryIsLoading"
           :data="chartData"

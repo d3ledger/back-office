@@ -62,7 +62,7 @@
       />
     </el-aside>
     <el-main class="column-fullheight wallet">
-      <router-view :key="$route.params.walletId"/>
+      <router-view :key="$route.params.walletId" />
     </el-main>
   </el-container>
   <el-container v-else>
