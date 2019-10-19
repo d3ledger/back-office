@@ -21,9 +21,9 @@
             <el-table-column
               label="Amount"
             >
-              <template slot-scope="scope">
-                {{ scope.row.from === 'you' ? '−' : '+' }}{{ scope.row.amount }}
-                {{ availableAssets.find(w => w.assetId === scope.row.assetId).asset }}
+              <template slot-scope="nestedScope">
+                {{ nestedScope.row.from === 'you' ? '−' : '+' }}{{ nestedScope.row.amount }}
+                {{ availableAssets.find(w => w.assetId === nestedScope.row.assetId).asset }}
               </template>
             </el-table-column>
             <el-table-column
