@@ -249,9 +249,9 @@ export default {
   components: {
     AssetIcon,
 
-    DepositModal: lazyComponent('Wallets/components/modals/DepositModal'),
-    TransferModal: lazyComponent('Wallets/components/modals/TransferModal'),
-    WithdrawalModal: lazyComponent('Wallets/components/modals/WithdrawalModal')
+    DepositModal: lazyComponent('Wallets/modals/DepositModal'),
+    TransferModal: lazyComponent('Wallets/modals/TransferModal'),
+    WithdrawalModal: lazyComponent('Wallets/modals/WithdrawalModal')
   },
   filters: {
     fitAmount (amount) {

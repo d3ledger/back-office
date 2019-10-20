@@ -3,9 +3,12 @@
   SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <router-link
-    :to="'/wallets/' + walletId"
-    class="card"
+  <div
+    :class="[
+      'card',
+      walletId === active.id ? 'active' : ''
+    ]"
+    @click="$emit('select-asset', walletId)"
   >
     <asset-icon
       :asset="asset"
@@ -20,7 +23,7 @@
         {{ asset }}
       </div>
     </div>
-  </router-link>
+  </div>
 </template>
 
 <script>
@@ -37,6 +40,12 @@ export default {
       required: true,
       default: 'ASSET$DOMAIN'
     },
+    active: {
+      type: Object,
+      default: () => ({
+        id: ''
+      })
+    },
     name: {
       type: String,
       required: true,
@@ -47,6 +56,12 @@ export default {
       required: true,
       default: 'ASSET'
     }
+  },
+  created () {
+    console.log(
+      this.active,
+      this.walletId
+    )
   }
 }
 </script>
@@ -59,9 +74,10 @@ export default {
   text-decoration: none;
   align-items: center;
   padding: 15px 20px;
+  cursor: pointer;
 }
 
-.card.router-link-active {
+.card.active {
   background: #f4f4f4;
   padding-bottom: 13px;
   border-bottom: 2px solid #2d2d2d;

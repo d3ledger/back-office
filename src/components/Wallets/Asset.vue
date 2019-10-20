@@ -6,11 +6,10 @@
   <div v-if="wallet.assetId">
     <info-cards
       :wallet="wallet"
-      @update-history="updateHistory"
     />
     <history-table
       :wallet="wallet"
-      @update-history="updateHistory"
+      @update-history="$emit('update-history')"
     />
   </div>
   <div v-else>
@@ -19,26 +18,20 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 import { lazyComponent } from '@router'
 
 export default {
   name: 'Wallet',
   components: {
-    InfoCards: lazyComponent('Wallets/components/InfoCards'),
-    HistoryTable: lazyComponent('Wallets/components/HistoryTable'),
+    InfoCards: lazyComponent('Wallets/InfoCards'),
+    HistoryTable: lazyComponent('Wallets/HistoryTable'),
     NoAssetsCard: lazyComponent('common/NoAssetsCard')
   },
-
-  computed: {
-    ...mapGetters([
-      'wallets'
-    ]),
-
-    wallet () {
-      const walletId = this.$route.params.walletId
-
-      return this.$store.getters.wallets.find(w => (w.id === walletId)) || {}
+  props: {
+    wallet: {
+      type: Object,
+      default: () => {}
     }
   },
   methods: {

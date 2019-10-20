@@ -9,34 +9,29 @@ import irohaUtil from '@util/iroha'
 Vue.use(Router)
 
 export const lazyComponent = (name) => () => import(`@/components/${name}.vue`)
+export const lazyViews = (name) => () => import(`@/views/${name}.vue`)
 
 const defaultRouter = new Router({
   mode: 'hash',
   routes: [
     {
       path: '/',
-      component: lazyComponent('Home'),
+      component: lazyViews('Home'),
       children: [
         {
           path: '',
           name: 'dashboard',
-          component: lazyComponent('Dashboard/DashboardPage')
+          component: lazyViews('DashboardPage')
         },
         {
           path: 'wallets',
           name: 'wallets',
-          component: lazyComponent('Wallets/WalletsPage'),
-          children: [
-            {
-              path: ':walletId',
-              component: lazyComponent('Wallets/Wallet')
-            }
-          ]
+          component: lazyViews('WalletsPage')
         },
         {
           path: 'settlements',
           name: 'settlements-page',
-          component: lazyComponent('Settlements/SettlementsPage'),
+          component: lazyViews('SettlementsPage'),
           children: [
             {
               path: 'history',
@@ -68,24 +63,24 @@ const defaultRouter = new Router({
         {
           path: 'transactions',
           name: 'transactions',
-          component: lazyComponent('Transactions/TransactionPage')
+          component: lazyViews('TransactionPage')
         },
         {
           path: 'settings',
           name: 'settings',
-          component: lazyComponent('Settings/SettingsPage')
+          component: lazyViews('SettingsPage')
         }
       ]
     },
     {
       path: '/login',
       name: 'login',
-      component: lazyComponent('Login')
+      component: lazyViews('Login')
     },
     {
       path: '/signup',
       name: 'signup',
-      component: lazyComponent('Signup')
+      component: lazyViews('Signup')
     },
     {
       path: '*',
