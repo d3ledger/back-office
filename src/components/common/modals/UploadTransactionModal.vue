@@ -43,7 +43,9 @@
       slot="footer"
       class="dialog-footer"
     >
-      <el-button @click="closeDialog">Cancel</el-button>
+      <el-button @click="closeDialog">
+        Cancel
+      </el-button>
     </div>
   </el-dialog>
 </template>

@@ -21,7 +21,9 @@
         <SvgIcon
           icon-name="Chart"
           icon-class="menu-icon"
-        ><ChartIcon/></SvgIcon>
+        >
+          <ChartIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -31,7 +33,9 @@
         <SvgIcon
           icon-name="Wallet"
           icon-class="menu-icon"
-        ><WalletIcon/></SvgIcon>
+        >
+          <WalletIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -47,13 +51,17 @@
           <SvgIcon
             icon-name="Exchange"
             icon-class="menu-icon"
-          ><ExchangeIcon/></SvgIcon>
+          >
+            <ExchangeIcon />
+          </SvgIcon>
         </el-badge>
         <SvgIcon
           v-else
           icon-name="Exchange"
           icon-class="menu-icon"
-        ><ExchangeIcon/></SvgIcon>
+        >
+          <ExchangeIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -63,7 +71,9 @@
         <SvgIcon
           icon-name="Report"
           icon-class="menu-icon"
-        ><ReportIcon/></SvgIcon>
+        >
+          <ReportIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -73,7 +83,9 @@
         <SvgIcon
           icon-name="Report"
           icon-class="menu-icon"
-        ><ReportIcon/></SvgIcon>
+        >
+          <ReportIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -92,13 +104,17 @@
           <SvgIcon
             icon-name="Transaction"
             icon-class="menu-icon"
-          ><TransactionsIcon/></SvgIcon>
+          >
+            <TransactionsIcon />
+          </SvgIcon>
         </el-badge>
         <SvgIcon
           v-else
           icon-name="Transaction"
           icon-class="menu-icon"
-        ><TransactionsIcon/></SvgIcon>
+        >
+          <TransactionsIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -108,7 +124,9 @@
         <SvgIcon
           icon-name="Settings"
           icon-class="menu-icon"
-        ><SettingsIcon/></SvgIcon>
+        >
+          <SettingsIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -122,7 +140,9 @@
         <SvgIcon
           icon-name="Logout"
           icon-class="menu-icon"
-        ><LogoutIcon/></SvgIcon>
+        >
+          <LogoutIcon />
+        </SvgIcon>
         <span
           slot="title"
           class="title-left"
@@ -178,7 +198,9 @@ export default {
       return this.$route.path
     },
     pendingTransactionsAmount () {
-      return this.pendingTransferTransactions.length + this.pendingSettingsTransactions.length
+      const transferTransactionsAmount = new Set(this.pendingTransferTransactions.map(({ id }) => id)).size
+      const settingsTransactionsAmount = new Set(this.pendingSettingsTransactions.map(({ id }) => id)).size
+      return transferTransactionsAmount + settingsTransactionsAmount
     }
   },
   watch: {

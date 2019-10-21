@@ -59,9 +59,15 @@
         justify="center"
         class="table_header"
       >
-        <div class="table_header-title currency">Currency</div>
-        <div class="table_header-title text-left balance">Balance</div>
-        <div class="table_header-title text-right changes">Changes</div>
+        <div class="table_header-title currency">
+          Currency
+        </div>
+        <div class="table_header-title text-left balance">
+          Balance
+        </div>
+        <div class="table_header-title text-right changes">
+          Changes
+        </div>
       </el-row>
       <el-row class="table_body">
         <div
@@ -70,8 +76,8 @@
         >
           <div
             v-for="(value, index) in sortedPortfolio"
-            :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
             :key="index"
+            :class="['table_body-item', portfolioChart.crypto === value.asset ? 'active' : '' ]"
           >
             <div
               class="table_body-item_content"

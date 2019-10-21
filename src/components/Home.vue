@@ -4,7 +4,7 @@
 -->
 <template>
   <el-container>
-    <Menu :quorum="accountQuorum"/>
+    <Menu :quorum="accountQuorum" />
     <el-main style="width: 100%; height: 100vh; padding: 0; padding-left: 160px;">
       <router-view />
     </el-main>
@@ -39,12 +39,6 @@ export default {
     this.loadSettings()
     this.getAccountRoles()
     this.getCustomAssets()
-  },
-
-  updated () {
-    console.log(
-      this.accountQuorum
-    )
   },
 
   mounted () {

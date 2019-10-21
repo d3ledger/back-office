@@ -8,7 +8,9 @@
     title="Currency"
   >
     <el-row class="currencies_list">
-      <p class="list-title">Dashboard (Portfolio, Market, Balance and Changes)</p>
+      <p class="list-title">
+        Dashboard (Portfolio, Market, Balance and Changes)
+      </p>
       <el-col>
         <el-radio-group
           v-model="currentFiat"
@@ -20,12 +22,16 @@
             :label="value"
             class="currencies_list-select"
             border
-          >{{ value }}</el-radio>
+          >
+            {{ value }}
+          </el-radio>
         </el-radio-group>
       </el-col>
     </el-row>
     <el-row class="currencies_list">
-      <p class="list-title">Wallets (Market)</p>
+      <p class="list-title">
+        Wallets (Market)
+      </p>
       <el-col>
         <el-radio-group
           v-model="currentCrypto"
@@ -37,7 +43,9 @@
             :label="value"
             class="currencies_list-select"
             border
-          >{{ value }}</el-radio>
+          >
+            {{ value }}
+          </el-radio>
         </el-radio-group>
       </el-col>
     </el-row>

@@ -49,7 +49,7 @@
                   class="settings-item_row-delete"
                   @click="removeAssetLimitVisible = true; limitToRemove = limit"
                 >
-                  <fa-icon icon="trash-alt"/>
+                  <fa-icon icon="trash-alt" />
                 </el-button>
               </span>
             </div>
@@ -115,8 +115,8 @@
               prop="amount"
             >
               <el-input
-                v-numeric
                 v-model="limitForm.amount"
+                v-numeric
                 type="number"
                 placeholder="0"
               />
@@ -184,8 +184,8 @@
             </el-form-item>
             <el-form-item label="Limit">
               <el-input
-                v-numeric
                 v-model="editLimitForm.amount"
+                v-numeric
                 type="number"
                 placeholder="0"
               />
@@ -233,7 +233,8 @@
             class="dialog-form_buttons action"
             type="danger"
             @click="onRemoveAssetLimit"
-          >Remove
+          >
+            Remove
           </el-button>
           <el-button
             class="dialog-form_buttons close"

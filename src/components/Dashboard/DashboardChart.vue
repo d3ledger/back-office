@@ -21,7 +21,9 @@
             :class="[portfolioChart.filter !== value ? 'chart_time-filter' : 'chart_time-filter selected']"
             @click="selectLabel(value)"
           >
-            <p class="chart_time-filter_value">{{ value }}</p>
+            <p class="chart_time-filter_value">
+              {{ value }}
+            </p>
           </div>
         </el-col>
       </el-row>

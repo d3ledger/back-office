@@ -67,7 +67,9 @@
             <div
               v-if="_isError($v.form.privateKey)"
               class="el-form-item__error"
-            >{{ _showError($v.form.privateKey) }}</div>
+            >
+              {{ _showError($v.form.privateKey) }}
+            </div>
           </el-form-item>
           <el-form-item
             label="Username"
@@ -85,7 +87,9 @@
             <div
               v-if="_isError($v.form.username)"
               class="el-form-item__error"
-            >{{ _showError($v.form.username) }}</div>
+            >
+              {{ _showError($v.form.username) }}
+            </div>
           </el-form-item>
           <el-form-item
             label="Node IP"
@@ -117,7 +121,9 @@
             <div
               v-if="_isError($v.form.nodeIp)"
               class="el-form-item__error"
-            >{{ _showError($v.form.nodeIp) }}</div>
+            >
+              {{ _showError($v.form.nodeIp) }}
+            </div>
           </el-form-item>
           <el-form-item class="auth-button-container">
             <el-row class="auth-button_actions">

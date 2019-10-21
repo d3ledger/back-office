@@ -19,15 +19,21 @@
             <router-link
               class="navlink"
               to="/settlements/history"
-            >History</router-link>
+            >
+              History
+            </router-link>
             <router-link
               class="navlink"
               to="/settlements/incoming"
-            >Incoming</router-link>
+            >
+              Incoming
+            </router-link>
             <router-link
               class="navlink"
               to="/settlements/outgoing"
-            >Outgoing</router-link>
+            >
+              Outgoing
+            </router-link>
           </div>
           <div>
             <el-button
@@ -60,12 +66,8 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
 
 export default {
-  components: {
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
-  },
   data () {
     return {}
   },

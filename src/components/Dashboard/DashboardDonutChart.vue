@@ -7,7 +7,9 @@
     <el-row>
       <el-col :span="16">
         <div class="crypto_header">
-          <p class="crypto_header-title">Portfolio structure</p>
+          <p class="crypto_header-title">
+            Portfolio structure
+          </p>
         </div>
         <div class="list_crypto">
           <div class="list_crypto-content">
@@ -32,7 +34,7 @@
         :span="8"
         class="donut-chart"
       >
-        <donut-chart :data="filterPortfolio"/>
+        <donut-chart :data="filterPortfolio" />
       </el-col>
     </el-row>
   </el-card>

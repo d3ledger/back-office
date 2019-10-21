@@ -27,7 +27,9 @@
               You need to enter at least {{ approvalDialogMinAmountKeys }} key<span v-if="approvalDialogMinAmountKeys > 1">s</span>.
             </span>
           </p>
-          <p v-if="approvalDialogSignatures.length">This transaction already has {{ approvalDialogSignatures.length }} signature<span v-if="approvalDialogSignatures.length > 1">s</span></p>
+          <p v-if="approvalDialogSignatures.length">
+            This transaction already has {{ approvalDialogSignatures.length }} signature<span v-if="approvalDialogSignatures.length > 1">s</span>
+          </p>
         </el-row>
       </el-form-item>
 

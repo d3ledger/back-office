@@ -22,8 +22,8 @@
         prop="offer_amount"
       >
         <el-input
-          v-numeric
           v-model="$v.exchangeForm.offer_amount.$model"
+          v-numeric
           :class="[
             _isValid($v.exchangeForm.offer_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.offer_amount) ? 'border_fail' : ''
@@ -81,8 +81,8 @@
         prop="request_amount"
       >
         <el-input
-          v-numeric
           v-model="$v.exchangeForm.request_amount.$model"
+          v-numeric
           :class="[
             _isValid($v.exchangeForm.request_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.request_amount) ? 'border_fail' : ''
