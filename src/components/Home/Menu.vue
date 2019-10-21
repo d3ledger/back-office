@@ -198,7 +198,9 @@ export default {
       return this.$route.path
     },
     pendingTransactionsAmount () {
-      return this.pendingTransferTransactions.length + this.pendingSettingsTransactions.length
+      const transferTransactionsAmount = new Set(this.pendingTransferTransactions.map(({ id }) => id)).size
+      const settingsTransactionsAmount = new Set(this.pendingSettingsTransactions.map(({ id }) => id)).size
+      return transferTransactionsAmount + settingsTransactionsAmount
     }
   },
   watch: {
