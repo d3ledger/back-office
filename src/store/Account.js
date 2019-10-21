@@ -401,7 +401,8 @@ const getters = {
 
   accountQuorum (state, getters) {
     // User quorum is based on amount of signatories
-    return getters.accountSignatories.length
+    // return getters.accountSignatories.length
+    return state.accountQuorum
   },
 
   irohaQuorum (state, getters) {
@@ -724,7 +725,6 @@ const mutations = {
   [types.GET_ACCOUNT_QUORUM_REQUEST] (state) {},
 
   [types.GET_ACCOUNT_QUORUM_SUCCESS] (state, { quorum }) {
-    console.log(quorum)
     state.accountQuorum = quorum
   },
 
