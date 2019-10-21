@@ -29,7 +29,9 @@
                   effect="dark"
                   placement="top-start"
                 >
-                  <h2 class="text-overflow">{{ wallet.amount | fitAmount }} {{ wallet.asset }}</h2>
+                  <h2 class="text-overflow">
+                    {{ wallet.amount | fitAmount }} {{ wallet.asset }}
+                  </h2>
                 </el-tooltip>
               </div>
               <div class="card_actions">
@@ -102,7 +104,9 @@
           >
             <div class="card_header-divided">
               <div class="card_header-title">
-                <div class="card_header-name">Market</div>
+                <div class="card_header-name">
+                  Market
+                </div>
                 <div class="card_header-filter">
                   <div
                     v-for="period in marketPeriods"
@@ -110,7 +114,9 @@
                     :class="[selectedMarketPeriod !== period ? 'chart_time-filter' : 'chart_time-filter selected']"
                     @click="selectedMarketPeriod = period"
                   >
-                    <p class="chart_time-filter_value">{{ period }}</p>
+                    <p class="chart_time-filter_value">
+                      {{ period }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -155,7 +161,9 @@
 
               <el-row>
                 <el-col :span="9">
-                  <p class="card-info-title">Market Cap</p>
+                  <p class="card-info-title">
+                    Market Cap
+                  </p>
                   <p
                     :title="`the market cap in ${settingsView.fiat}`"
                     class="card-info-amount--small"
@@ -170,7 +178,9 @@
                   </p>
                 </el-col>
                 <el-col :span="8">
-                  <p class="card-info-title">Volume ({{ selectedMarketPeriod }})</p>
+                  <p class="card-info-title">
+                    Volume ({{ selectedMarketPeriod }})
+                  </p>
                   <p
                     :title="`the amount ${wallet.asset} has been traded in ${selectedMarketPeriod} against ALL its trading pairs, in terms of ${settingsView.fiat}`"
                     class="card-info-amount--small"
@@ -185,7 +195,9 @@
                   </p>
                 </el-col>
                 <el-col :span="7">
-                  <p class="card-info-title">Circulating Supply</p>
+                  <p class="card-info-title">
+                    Circulating Supply
+                  </p>
                   <p
                     :title="`the total supply in ${wallet.asset}`"
                     class="card-info-amount--small"

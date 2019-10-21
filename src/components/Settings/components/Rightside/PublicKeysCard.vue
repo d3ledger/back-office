@@ -49,7 +49,7 @@
                 class="settings-item_row-delete"
                 @click="removeKeyFormVisible = true; keyToRemove = pubKey"
               >
-                <fa-icon icon="trash-alt"/>
+                <fa-icon icon="trash-alt" />
               </el-button>
             </div>
           </template>
@@ -122,7 +122,8 @@
             type="danger"
             class="dialog-form_buttons action"
             @click="addPublicKey"
-          >Add
+          >
+            Add
           </el-button>
           <el-button
             class="dialog-form_buttons close"
@@ -151,7 +152,8 @@
             class="dialog-form_buttons action"
             type="danger"
             @click="removePublicKey"
-          >Remove
+          >
+            Remove
           </el-button>
           <el-button
             class="dialog-form_buttons close"

@@ -13,7 +13,9 @@
       <template slot-scope="scope">
         <div class="transaction_details">
           <el-row>
-            <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
+            <el-col :span="4">
+              {{ formatDateLong(scope.row.from.date) }}
+            </el-col>
             <el-col
               :span="5"
               class="transaction_details-amount"
@@ -26,8 +28,12 @@
             >
               <p>Fee: {{ scope.row.from.fee }} {{ assetName(scope.row.from.assetId) }}</p>
             </el-col>
-            <el-col :span="5">{{ scope.row.from.message }}</el-col>
-            <el-col :span="5">{{ scope.row.from.to }}</el-col>
+            <el-col :span="5">
+              {{ scope.row.from.message }}
+            </el-col>
+            <el-col :span="5">
+              {{ scope.row.from.to }}
+            </el-col>
           </el-row>
         </div>
       </template>
@@ -68,7 +74,7 @@
         {{ formatDate(scope.row.from.date) }}
       </template>
     </el-table-column>
-    <el-table-column width="200"/>
+    <el-table-column width="200" />
   </el-table>
 </template>
 

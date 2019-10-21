@@ -9,9 +9,9 @@
       class="settings-card"
     >
       <div class="header_btn">
-        <slot name="header"/>
+        <slot name="header" />
       </div>
-      <slot name="content"/>
+      <slot name="content" />
     </el-card>
   </span>
 </template>

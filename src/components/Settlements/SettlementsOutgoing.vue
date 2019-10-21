@@ -14,7 +14,9 @@
         <template slot-scope="scope">
           <div class="transaction_details">
             <el-row>
-              <el-col :span="4">{{ formatDateLong(scope.row.from.date) }}</el-col>
+              <el-col :span="4">
+                {{ formatDateLong(scope.row.from.date) }}
+              </el-col>
               <el-col
                 :span="5"
                 class="transaction_details-amount"
@@ -27,8 +29,12 @@
               >
                 <p>Fee: {{ scope.row.from.fee }} {{ assetName(scope.row.from.assetId) }}</p>
               </el-col>
-              <el-col :span="5">{{ scope.row.from.message }}</el-col>
-              <el-col :span="5">{{ scope.row.from.to }}</el-col>
+              <el-col :span="5">
+                {{ scope.row.from.message }}
+              </el-col>
+              <el-col :span="5">
+                {{ scope.row.from.to }}
+              </el-col>
             </el-row>
           </div>
         </template>
@@ -98,7 +104,9 @@
           type="danger"
           class="fullwidth"
           @click="onReject"
-        >Reject</el-button>
+        >
+          Reject
+        </el-button>
       </div>
     </el-dialog>
   </section>

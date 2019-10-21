@@ -132,7 +132,7 @@
             style="margin-top: 40px;"
             @click="downloadSeveral({ date }, 'pdf')"
           >
-            <fa-icon icon="download"/>
+            <fa-icon icon="download" />
             PDF
           </el-button>
         </el-col>
@@ -145,7 +145,7 @@
             style="margin-top: 40px;"
             @click="downloadSeveral({ date, assets: selectedWallets }, 'csv')"
           >
-            <fa-icon icon="download"/>
+            <fa-icon icon="download" />
             CSV
           </el-button>
         </el-col>

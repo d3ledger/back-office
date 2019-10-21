@@ -49,14 +49,16 @@
                     v-if="address[1] * 1000 > Date.now()"
                     class="pending"
                     type="info"
-                  >Pending</el-tag>
+                  >
+                    Pending
+                  </el-tag>
                 </el-tooltip>
                 <el-button
                   data-cy="removeAddress"
                   class="settings-item_row-delete"
                   @click="removeAddressFormVisible = true; addressToRemove = address[0]"
                 >
-                  <fa-icon icon="trash-alt"/>
+                  <fa-icon icon="trash-alt" />
                 </el-button>
               </div>
             </div>
@@ -109,7 +111,8 @@
             :loading="addingNewAddress"
             class="dialog-form_buttons action"
             @click="addWhiteAddress"
-          >Add
+          >
+            Add
           </el-button>
           <el-button
             class="dialog-form_buttons close"
@@ -137,7 +140,8 @@
             :loading="removingAddress"
             class="dialog-form_buttons action"
             @click="removeWhiteAddress"
-          >Remove
+          >
+            Remove
           </el-button>
           <el-button
             class="dialog-form_buttons close"

@@ -4,8 +4,8 @@
 -->
 <template>
   <el-container
-    v-loading.fullscreen="isDashboardLoading"
     v-if="isDashboardLoading"
+    v-loading.fullscreen="isDashboardLoading"
   />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
@@ -17,7 +17,7 @@
           />
         </el-col>
         <el-col :span="8">
-          <dashboard-donut-chart :portfolio="portfolioPercent"/>
+          <dashboard-donut-chart :portfolio="portfolioPercent" />
         </el-col>
       </el-row>
       <el-row>
@@ -31,10 +31,10 @@
                 />
               </el-col>
               <el-col :span="1">
-                <div class="vertical_devider"/>
+                <div class="vertical_devider" />
               </el-col>
               <el-col :span="14">
-                <dashboard-chart :dashboard-chart-height="dashboardChartHeight"/>
+                <dashboard-chart :dashboard-chart-height="dashboardChartHeight" />
               </el-col>
             </el-card>
           </el-row>

@@ -15,9 +15,13 @@
     list-type="picture"
     accept=".bin"
   >
-    <i class="el-icon-plus image-uploader-icon"/>
-    <div class="message">Drop transaction here or <b>click to upload</b></div>
-    <div class="message-small">Transaction will be automatically send after validation</div>
+    <i class="el-icon-plus image-uploader-icon" />
+    <div class="message">
+      Drop transaction here or <b>click to upload</b>
+    </div>
+    <div class="message-small">
+      Transaction will be automatically send after validation
+    </div>
   </el-upload>
 </template>
 
