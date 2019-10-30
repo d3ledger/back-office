@@ -307,19 +307,31 @@ export default {
     },
 
     offerFeeAmount () {
-      return this.$_multiply(
-        this.exchangeForm.offer_amount,
-        this.currentOfferFee,
-        this.exchangeDialogOfferAssetPrecision
-      ).toString()
+      if (
+        this.exchangeFee[this.offerAsset] &&
+        this.exchangeFee[this.offerAsset].feeType === 'FRACTION'
+      ) {
+        return this.$_multiply(
+          this.exchangeForm.offer_amount,
+          this.currentOfferFee,
+          this.exchangeDialogOfferAssetPrecision
+        ).toString()
+      }
+      return this.currentOfferFee
     },
 
     requestFeeAmount () {
-      return this.$_multiply(
-        this.exchangeForm.request_amount,
-        this.currentRequestFee,
-        this.exchangeDialogRequestAssetPrecision
-      ).toString()
+      if (
+        this.exchangeFee[this.requestAsset] &&
+        this.exchangeFee[this.requestAsset].feeType === 'FRACTION'
+      ) {
+        return this.$_multiply(
+          this.exchangeForm.request_amount,
+          this.currentRequestFee,
+          this.exchangeDialogRequestAssetPrecision
+        ).toString()
+      }
+      return this.currentRequestFee
     },
 
     offerAsset () {

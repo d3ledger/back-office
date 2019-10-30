@@ -179,11 +179,17 @@ export default {
         : 0
     },
     transferFeeAmount () {
-      return this.$_multiply(
-        this.transferForm.amount,
-        this.currentTransferFee,
-        this.currentWalletPrecision
-      ).toString()
+      if (
+        this.transferFee[this.wallet.assetId] &&
+        this.transferFee[this.wallet.assetId].feeType === 'FRACTION'
+      ) {
+        return this.$_multiply(
+          this.transferForm.amount,
+          this.currentTransferFee,
+          this.currentWalletPrecision
+        ).toString()
+      }
+      return this.currentTransferFee
     }
   },
   methods: {
