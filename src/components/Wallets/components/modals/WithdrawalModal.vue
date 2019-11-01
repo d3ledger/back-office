@@ -178,11 +178,17 @@ export default {
         : 0
     },
     withdrawalFeeAmount () {
-      return this.$_multiply(
-        this.withdrawForm.amount,
-        this.currentWithdrawalFee,
-        this.currentWalletPrecision
-      ).toString()
+      if (
+        this.withdrawalFee[this.wallet.assetId] &&
+        this.withdrawalFee[this.wallet.assetId].feeType === 'FRACTION'
+      ) {
+        return this.$_multiply(
+          this.withdrawForm.amount,
+          this.currentWithdrawalFee,
+          this.currentWalletPrecision
+        ).toString()
+      }
+      return this.currentWithdrawalFee
     }
   },
   methods: {

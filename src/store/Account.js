@@ -401,8 +401,8 @@ const getters = {
 
   accountQuorum (state, getters) {
     // User quorum is based on amount of signatories
-    // return getters.accountSignatories.length
-    return state.accountQuorum
+    return getters.accountSignatories.length
+    // return state.accountQuorum
   },
 
   irohaQuorum (state, getters) {
@@ -413,6 +413,7 @@ const getters = {
   },
 
   accountSignatories (state) {
+    console.log(getBrvsAccount(state.accountId), state.accountInfo)
     const brvsUserSignatories = state.accountInfo[getBrvsAccount(state.accountId)]
       ? state.accountInfo[getBrvsAccount(state.accountId)].user_keys
       : null
