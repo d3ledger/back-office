@@ -4,8 +4,7 @@
  */
 import axios from 'axios'
 
-// const PROTOCOL = location.protocol
-const PROTOCOL = 'https://'
+const PROTOCOL = location.protocol
 
 const axiosNotaryRegistration = axios.create({
   baseURL: ''
