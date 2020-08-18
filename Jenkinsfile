@@ -54,12 +54,12 @@ pipeline {
                 currentBuild.result = 'FAILURE';
                 return var
               }
-              var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
-              if (var != 0) {
-                echo '[FAILURE] E2E tests failed'
-                currentBuild.result = 'FAILURE';
-                return var
-              }
+              // var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
+              // if (var != 0) {
+              //   echo '[FAILURE] E2E tests failed'
+              //   currentBuild.result = 'FAILURE';
+              //   return var
+              // }
             }
         }
       }
