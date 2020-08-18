@@ -6,7 +6,8 @@ import axios from 'axios'
 import querystring from 'querystring'
 
 // TODO: Need to create file where we can store such variables
-const PROTOCOL = location.protocol
+// const PROTOCOL = location.protocol
+const PROTOCOL = 'https://'
 
 const getCustodyUserReport = (url, params) => {
   const formattedString = querystring.stringify(params)

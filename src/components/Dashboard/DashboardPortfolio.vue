@@ -75,15 +75,16 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import dateFormat from '@/components/mixins/dateFormat'
 
+import LineChartPortfolio from '@/components/Dashboard/Charts/LineChartPortfolio.vue'
+
 export default {
   name: 'DashboardPortfolio',
   components: {
-    LineChartPortfolio: lazyComponent('Dashboard/Charts/LineChartPortfolio')
+    LineChartPortfolio
   },
   mixins: [
     numberFormat,

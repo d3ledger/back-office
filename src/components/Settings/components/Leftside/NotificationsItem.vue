@@ -76,13 +76,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
 import pushUtil from '@util/push-util'
+
+import SettingsItem from '@/components/Settings/components/Leftside/SettingsItem.vue'
 
 export default {
   name: 'NotificationItem',
   components: {
-    SettingsItem: lazyComponent('Settings/components/Leftside/SettingsItem')
+    SettingsItem
   },
   props: {
     openApprovalDialog: {

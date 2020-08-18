@@ -6,86 +6,99 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import irohaUtil from '@util/iroha'
 
-Vue.use(Router)
+import Home from '@/components/Home'
+import DashboardPage from '@/components/Dashboard/DashboardPage'
+import WalletsPage from '@/components/Wallets/WalletsPage'
+import Wallet from '@/components/Wallets/Wallet'
+import SettlementsPage from '@/components/Settlements/SettlementsPage'
+import SettlementsHistory from '@/components/Settlements/SettlementsHistory'
+import SettlementsIncoming from '@/components/Settlements/SettlementsIncoming'
+import SettlementsOutgoing from '@/components/Settlements/SettlementsOutgoing'
+import ReportsPage from '@/components/Reports/ReportsPage'
+import BillingReportsPage from '@/components/Reports/BillingReportsPage'
+import TransactionPage from '@/components/Transactions/TransactionPage'
+import SettingsPage from '@/components/Settings/SettingsPage'
+import Login from '@/components/Login'
+import Signup from '@/components/Signup'
 
-export const lazyComponent = (name) => () => import(`@/components/${name}.vue`)
+Vue.use(Router)
 
 const defaultRouter = new Router({
   mode: 'hash',
   routes: [
     {
       path: '/',
-      component: lazyComponent('Home'),
+      component: Home,
       children: [
         {
           path: '',
           name: 'dashboard',
-          component: lazyComponent('Dashboard/DashboardPage')
+          component: DashboardPage
         },
         {
           path: 'wallets',
           name: 'wallets',
-          component: lazyComponent('Wallets/WalletsPage'),
+          component: WalletsPage,
           children: [
             {
               path: ':walletId',
-              component: lazyComponent('Wallets/Wallet')
+              component: Wallet
             }
           ]
         },
         {
           path: 'settlements',
           name: 'settlements-page',
-          component: lazyComponent('Settlements/SettlementsPage'),
+          component: SettlementsPage,
           children: [
             {
               path: 'history',
               name: 'settlements-history',
-              component: lazyComponent('Settlements/SettlementsHistory')
+              component: SettlementsHistory
             },
             {
               path: 'incoming',
               name: 'settlements-incoming',
-              component: lazyComponent('Settlements/SettlementsIncoming')
+              component: SettlementsIncoming
             },
             {
               path: 'outgoing',
               name: 'settlements-outgoing',
-              component: lazyComponent('Settlements/SettlementsOutgoing')
+              component: SettlementsOutgoing
             }
           ]
         },
         {
           path: 'reports',
           name: 'reports',
-          component: lazyComponent('Reports/ReportsPage')
+          component: ReportsPage
         },
         {
           path: 'billing-reports',
           name: 'billing-reports',
-          component: lazyComponent('Reports/BillingReportsPage')
+          component: BillingReportsPage
         },
         {
           path: 'transactions',
           name: 'transactions',
-          component: lazyComponent('Transactions/TransactionPage')
+          component: TransactionPage
         },
         {
           path: 'settings',
           name: 'settings',
-          component: lazyComponent('Settings/SettingsPage')
+          component: SettingsPage
         }
       ]
     },
     {
       path: '/login',
       name: 'login',
-      component: lazyComponent('Login')
+      component: Login
     },
     {
       path: '/signup',
       name: 'signup',
-      component: lazyComponent('Signup')
+      component: Signup
     },
     {
       path: '*',

@@ -4,7 +4,8 @@
  */
 import axios from 'axios'
 
-const PROTOCOL = location.protocol
+// const PROTOCOL = location.protocol
+const PROTOCOL = 'https://'
 
 const getFullBillingData = (url) => {
   return axios({

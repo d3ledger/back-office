@@ -23,7 +23,8 @@ export const cache = {
 
 const DYNAMIC_URL = () => {
   const url = new URL(cache.nodeIp)
-  url.protocol = location.protocol
+  // url.protocol = location.protocol
+  url.protocol = 'https://'
   return url.origin
 }
 

@@ -51,13 +51,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
 import { WalletTypes } from '@/data/consts'
+
+import SettingsItem from '@/components/Settings/components/Leftside/SettingsItem.vue'
 
 export default {
   name: 'NetworkItem',
   components: {
-    SettingsItem: lazyComponent('Settings/components/Leftside/SettingsItem')
+    SettingsItem
   },
   props: {
     openApprovalDialog: {

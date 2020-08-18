@@ -41,12 +41,12 @@
 </template>
 
 <script>
-import { lazyComponent } from '@router'
+import DonutChart from '@/components/Dashboard/Charts/DonutChart.vue'
 
 export default {
   name: 'DashboardDonutChart',
   components: {
-    DonutChart: lazyComponent('Dashboard/Charts/DonutChart')
+    DonutChart
   },
   props: {
     portfolio: {

@@ -38,14 +38,16 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
 // import NOTIFICATIONS from '@/data/notifications'
+
+import TransferTab from '@/components/Transactions/components/TransferTab.vue'
+import SettingsTab from '@/components/Transactions/components/SettingsTab.vue'
 
 export default {
   name: 'TransactionPage',
   components: {
-    TransferTab: lazyComponent('Transactions/components/TransferTab'),
-    SettingsTab: lazyComponent('Transactions/components/SettingsTab')
+    TransferTab,
+    SettingsTab
   },
   data () {
     return {

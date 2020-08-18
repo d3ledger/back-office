@@ -320,7 +320,7 @@ const getters = {
 
   walletType (state) {
     const walletType = []
-    if (find('ethereum_wallet', state.accountInfo)) {
+    if (find('ethereum_relay', state.accountInfo)) {
       walletType.push(WalletTypes.ETH)
     }
 
@@ -332,9 +332,9 @@ const getters = {
   },
 
   ethWalletAddress (state) {
-    const ethWallet = find('ethereum_wallet', state.accountInfo)
+    const ethWallet = find('ethereum_relay', state.accountInfo)
 
-    return ethWallet ? ethWallet.ethereum_wallet : null
+    return ethWallet ? ethWallet.ethereum_relay : null
   },
 
   btcWalletAddress (state) {
@@ -413,7 +413,6 @@ const getters = {
   },
 
   accountSignatories (state) {
-    console.log(getBrvsAccount(state.accountId), state.accountInfo)
     const brvsUserSignatories = state.accountInfo[getBrvsAccount(state.accountId)]
       ? state.accountInfo[getBrvsAccount(state.accountId)].user_keys
       : null

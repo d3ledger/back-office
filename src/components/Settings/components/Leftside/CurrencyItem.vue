@@ -54,12 +54,13 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+
+import SettingsItem from '@/components/Settings/components/Leftside/SettingsItem.vue'
 
 export default {
   name: 'CurrencyItem',
   components: {
-    SettingsItem: lazyComponent('Settings/components/Leftside/SettingsItem')
+    SettingsItem
   },
   computed: {
     ...mapGetters([
