@@ -52,11 +52,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+import UploadTx from '@/components/common/UploadTx.vue'
 
 export default {
   components: {
-    UploadTx: lazyComponent('common/UploadTx')
+    UploadTx
   },
   data () {
     return {

@@ -43,20 +43,22 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { lazyComponent } from '@router'
-
 import { WalletTypes } from '@/data/consts'
 
-const settingsRightSidePath = 'Settings/components/Rightside'
+import WalletLimitsCard from '@/components/Settings/components/Rightside/WalletLimitsCard.vue'
+import QuorumCard from '@/components/Settings/components/Rightside/QuorumCard.vue'
+import PublicKeysCard from '@/components/Settings/components/Rightside/PublicKeysCard.vue'
+import WhiteListCard from '@/components/Settings/components/Rightside/WhiteListCard.vue'
+import CustomTxCard from '@/components/Settings/components/Rightside/CustomTxCard.vue'
 
 export default {
   name: 'SettingsRightSide',
   components: {
-    WalletLimitsCard: lazyComponent(`${settingsRightSidePath}/WalletLimitsCard`),
-    QuorumCard: lazyComponent(`${settingsRightSidePath}/QuorumCard`),
-    PublicKeysCard: lazyComponent(`${settingsRightSidePath}/PublicKeysCard`),
-    WhiteListCard: lazyComponent(`${settingsRightSidePath}/WhiteListCard`),
-    CustomTxCard: lazyComponent(`${settingsRightSidePath}/CustomTxCard`)
+    WalletLimitsCard,
+    QuorumCard,
+    PublicKeysCard,
+    WhiteListCard,
+    CustomTxCard
   },
   data () {
     return {

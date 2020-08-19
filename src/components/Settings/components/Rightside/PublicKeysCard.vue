@@ -170,17 +170,18 @@
 <script>
 import FileSaver from 'file-saver'
 import { mapActions, mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
 import { required } from 'vuelidate/lib/validators'
 import {
   _keyPattern,
   errorHandler
 } from '@/components/mixins/validation'
 
+import SettingsCard from '@/components/Settings/components/Rightside/SettingsCard.vue'
+
 export default {
   name: 'PublicKeysCard',
   components: {
-    SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard')
+    SettingsCard
   },
   mixins: [
     errorHandler

@@ -158,12 +158,13 @@
 <script>
 import dateFormat from '@/components/mixins/dateFormat'
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
 
 import { WalletTypes } from '@/data/consts'
 
 import { _wallet, errorHandler } from '@/components/mixins/validation'
 import { required } from 'vuelidate/lib/validators'
+
+import SettingsCard from '@/components/Settings/components/Rightside/SettingsCard.vue'
 
 const ETHEREUM_TITLE = 'Ethereum'
 const BITCOIN_TITLE = 'Bitcoin'
@@ -171,7 +172,7 @@ const BITCOIN_TITLE = 'Bitcoin'
 export default {
   name: 'WhiteListCard',
   components: {
-    SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard')
+    SettingsCard
   },
   mixins: [
     dateFormat,

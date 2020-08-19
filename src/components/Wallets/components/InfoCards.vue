@@ -232,11 +232,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
 import AssetIcon from '@/components/common/AssetIcon'
 import numberFormat from '@/components/mixins/numberFormat'
 import currencySymbol from '@/components/mixins/currencySymbol'
 import { BillingTypes } from '@/data/consts'
+
+import DepositModal from '@/components/Wallets/components/modals/DepositModal.vue'
+import TransferModal from '@/components/Wallets/components/modals/TransferModal.vue'
+import WithdrawalModal from '@/components/Wallets/components/modals/WithdrawalModal.vue'
 
 const MODAL_TYPES = {
   DEPOSIT: 'DEPOSIT',
@@ -249,9 +252,9 @@ export default {
   components: {
     AssetIcon,
 
-    DepositModal: lazyComponent('Wallets/components/modals/DepositModal'),
-    TransferModal: lazyComponent('Wallets/components/modals/TransferModal'),
-    WithdrawalModal: lazyComponent('Wallets/components/modals/WithdrawalModal')
+    DepositModal,
+    TransferModal,
+    WithdrawalModal
   },
   filters: {
     fitAmount (amount) {

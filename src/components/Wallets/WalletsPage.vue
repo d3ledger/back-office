@@ -72,14 +72,16 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
 import sortBy from 'lodash/fp/sortBy'
+
+import WalletMenuItem from '@/components/Wallets/WalletMenuItem.vue'
+import NoAssetsCard from '@/components/common/NoAssetsCard.vue'
 
 export default {
   name: 'WalletsPage',
   components: {
-    WalletMenuItem: lazyComponent('Wallets/WalletMenuItem'),
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+    WalletMenuItem,
+    NoAssetsCard
   },
 
   data () {

@@ -115,8 +115,8 @@
               prop="amount"
             >
               <el-input
-                v-model="limitForm.amount"
                 v-numeric
+                v-model="limitForm.amount"
                 type="number"
                 placeholder="0"
               />
@@ -184,8 +184,8 @@
             </el-form-item>
             <el-form-item label="Limit">
               <el-input
-                v-model="editLimitForm.amount"
                 v-numeric
+                v-model="editLimitForm.amount"
                 type="number"
                 placeholder="0"
               />
@@ -250,12 +250,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+import SettingsCard from '@/components/Settings/components/Rightside/SettingsCard.vue'
 
 export default {
   name: 'WalletLimitsCard',
   components: {
-    SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard')
+    SettingsCard
   },
   props: {
     activeTab: {

@@ -4,8 +4,8 @@
 -->
 <template>
   <el-container
-    v-if="isDashboardLoading"
     v-loading.fullscreen="isDashboardLoading"
+    v-if="isDashboardLoading"
   />
   <el-container v-else-if="hasNonEmptyWallets">
     <el-main class="column-fullheight">
@@ -64,17 +64,22 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
 import debounce from 'lodash/fp/debounce'
+
+import DashboardPortfolio from '@/components/Dashboard/DashboardPortfolio.vue'
+import DashboardDonutChart from '@/components/Dashboard/DashboardDonutChart.vue'
+import DashboardTable from '@/components/Dashboard/DashboardTable.vue'
+import DashboardChart from '@/components/Dashboard/DashboardChart.vue'
+import NoAssetsCard from '@/components/common/NoAssetsCard.vue'
 
 export default {
   name: 'DashboardPage',
   components: {
-    DashboardPortfolio: lazyComponent('Dashboard/DashboardPortfolio'),
-    DashboardDonutChart: lazyComponent('Dashboard/DashboardDonutChart'),
-    DashboardTable: lazyComponent('Dashboard/DashboardTable'),
-    DashboardChart: lazyComponent('Dashboard/DashboardChart'),
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+    DashboardPortfolio,
+    DashboardDonutChart,
+    DashboardTable,
+    DashboardChart,
+    NoAssetsCard
   },
   data () {
     return {

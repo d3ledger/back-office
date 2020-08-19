@@ -16,15 +16,19 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+
+import Menu from '@/components/Home/Menu.vue'
+import ConfirmModal from '@/components/common/modals/ConfirmModal.vue'
+import ExchangeModal from '@/components/common/modals/ExchangeModal.vue'
+import UploadTransactionModal from '@/components/common/modals/UploadTransactionModal.vue'
 
 export default {
   name: 'Home',
   components: {
-    Menu: lazyComponent('Home/Menu'),
-    ConfirmModal: lazyComponent('common/modals/ConfirmModal'),
-    ExchangeModal: lazyComponent('common/modals/ExchangeModal'),
-    UploadTransactionModal: lazyComponent('common/modals/UploadTransactionModal')
+    Menu,
+    ConfirmModal,
+    ExchangeModal,
+    UploadTransactionModal
   },
   data () {
     return {}

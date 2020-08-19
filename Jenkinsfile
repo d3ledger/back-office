@@ -54,12 +54,12 @@ pipeline {
                 currentBuild.result = 'FAILURE';
                 return var
               }
-              var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
-              if (var != 0) {
-                echo '[FAILURE] E2E tests failed'
-                currentBuild.result = 'FAILURE';
-                return var
-              }
+              // var = sh(returnStatus:true, script: "CYPRESS_baseUrl=http://d3-back-office:8080 CYPRESS_IROHA=http://grpcwebproxy:8080 cypress run")
+              // if (var != 0) {
+              //   echo '[FAILURE] E2E tests failed'
+              //   currentBuild.result = 'FAILURE';
+              //   return var
+              // }
             }
         }
       }
@@ -81,14 +81,14 @@ pipeline {
             }
           }
         }
-        always {
-          script {
-            withCredentials([usernamePassword(credentialsId: 'jenkins_nexus_creds', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
-              sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${DOCKER_NETWORK}/ \\;", returnStdout: true)
-              echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${DOCKER_NETWORK}/"
-            }
-          }
-        }
+        // always {
+        //   script {
+        //     withCredentials([usernamePassword(credentialsId: 'jenkins_nexus_creds', passwordVariable: 'NEXUS_PASS', usernameVariable: 'NEXUS_USER')]) {
+        //       sh(script: "find \$(pwd)/tests/e2e/videos/*.mp4 -type f -exec curl -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file {} https://nexus.iroha.tech/repository/back-office/crashes/${DOCKER_NETWORK}/ \\;", returnStdout: true)
+        //       echo "You can find all videos here: https://nexus.iroha.tech/service/rest/repository/browse/back-office/crashes/${DOCKER_NETWORK}/"
+        //     }
+        //   }
+        // }
         cleanup {
           sh "mkdir build-logs"
           sh """#!/bin/bash

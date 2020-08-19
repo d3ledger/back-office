@@ -178,12 +178,13 @@ import endOfToday from 'date-fns/end_of_today'
 import isWithinRange from 'date-fns/is_within_range'
 import addDays from 'date-fns/add_days'
 import cryptoCompareUtil from '@util/crypto-util'
-import { lazyComponent } from '@router'
+
+import NoAssetsCard from '@/components/common/NoAssetsCard.vue'
 
 export default {
   name: 'ReportsPage',
   components: {
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+    NoAssetsCard
   },
   mixins: [
     dateFormat,

@@ -26,15 +26,18 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+import CurrencyItem from '@/components/Settings/components/Leftside/CurrencyItem.vue'
+import NotificationsItem from '@/components/Settings/components/Leftside/NotificationsItem.vue'
+import NetworkItem from '@/components/Settings/components/Leftside/NetworkItem.vue'
+import TimeZoneItem from '@/components/Settings/components/Leftside/TimeZoneItem.vue'
 
 export default {
   name: 'SettingsLeftSide',
   components: {
-    CurrencyItem: lazyComponent('Settings/components/Leftside/CurrencyItem'),
-    NotificationsItem: lazyComponent('Settings/components/Leftside/NotificationsItem'),
-    NetworkItem: lazyComponent('Settings/components/Leftside/NetworkItem'),
-    TimeZoneItem: lazyComponent('Settings/components/Leftside/TimeZoneItem')
+    CurrencyItem,
+    NotificationsItem,
+    NetworkItem,
+    TimeZoneItem
   },
   methods: {
     ...mapActions([

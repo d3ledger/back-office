@@ -43,11 +43,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { lazyComponent } from '@router'
+import LineChartTable from '@/components/Dashboard/Charts/LineChartTable.vue'
 
 export default {
   components: {
-    LineChartTable: lazyComponent('Dashboard/Charts/LineChartTable')
+    LineChartTable
   },
   props: {
     dashboardChartHeight: {

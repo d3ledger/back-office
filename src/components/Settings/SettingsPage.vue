@@ -14,14 +14,16 @@
 </template>
 
 <script>
-import { lazyComponent } from '@router'
 import { mapActions } from 'vuex'
+
+import SettingsLeftSide from '@/components/Settings/SettingsLeftSide.vue'
+import SettingsRightSide from '@/components/Settings/SettingsRightSide.vue'
 
 export default {
   name: 'SettingsPage',
   components: {
-    SettingsLeftSide: lazyComponent('Settings/SettingsLeftSide'),
-    SettingsRightSide: lazyComponent('Settings/SettingsRightSide')
+    SettingsLeftSide,
+    SettingsRightSide
   },
   created () {
     this.updateAccount()

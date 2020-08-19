@@ -31,13 +31,15 @@
 </template>
 
 <script>
-import { lazyComponent } from '@router'
+
+import SettingsCard from '@/components/Settings/components/Rightside/SettingsCard.vue'
+import UploadTx from '@/components/common/UploadTx.vue'
 
 export default {
   name: 'CustomTxCard',
   components: {
-    SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard'),
-    UploadTx: lazyComponent('common/UploadTx')
+    SettingsCard,
+    UploadTx
   },
   props: {
     activeTab: {

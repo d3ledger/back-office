@@ -22,8 +22,8 @@
         prop="offer_amount"
       >
         <el-input
-          v-model="$v.exchangeForm.offer_amount.$model"
           v-numeric
+          v-model="$v.exchangeForm.offer_amount.$model"
           :class="[
             _isValid($v.exchangeForm.offer_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.offer_amount) ? 'border_fail' : ''
@@ -81,8 +81,8 @@
         prop="request_amount"
       >
         <el-input
-          v-model="$v.exchangeForm.request_amount.$model"
           v-numeric
+          v-model="$v.exchangeForm.request_amount.$model"
           :class="[
             _isValid($v.exchangeForm.request_amount) ? 'border_success' : '',
             _isError($v.exchangeForm.request_amount) ? 'border_fail' : ''
@@ -335,11 +335,13 @@ export default {
     },
 
     offerAsset () {
-      return this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset).assetId
+      const wallet = this.wallets.find(x => x.asset === this.exchangeDialogOfferAsset)
+      return wallet ? wallet.assetId : null
     },
 
     requestAsset () {
-      return this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset).assetId
+      const wallet = this.availableAssets.find(x => x.asset === this.exchangeDialogRequestAsset)
+      return wallet ? wallet.assetId : null
     },
 
     marketPrice () {

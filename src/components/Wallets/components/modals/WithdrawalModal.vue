@@ -21,8 +21,8 @@
         prop="amount"
       >
         <el-input
-          v-model="$v.withdrawForm.amount.$model"
           v-numeric
+          v-model="$v.withdrawForm.amount.$model"
           :class="[
             _isValid($v.withdrawForm.amount) ? 'border_success' : '',
             _isError($v.withdrawForm.amount) ? 'border_fail' : ''

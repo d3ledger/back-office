@@ -35,7 +35,7 @@ function binaryToTxList (bytes) {
 
 function saveTransaction (tx) {
   const date = format(new Date(), 'MM-DD-YYYY-HH-mm-ss')
-  const filename = `D3-Transaction-${date}.bin`
+  const filename = `D3-Transaction-${date}.draft`
   const binaryArray = transactionToBinary(tx)
   FileSaver.saveAs(new Blob([binaryArray]), filename)
 }

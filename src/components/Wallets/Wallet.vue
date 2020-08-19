@@ -20,14 +20,17 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+
+import InfoCards from '@/components/Wallets/components/InfoCards.vue'
+import HistoryTable from '@/components/Wallets/components/HistoryTable.vue'
+import NoAssetsCard from '@/components/common/NoAssetsCard.vue'
 
 export default {
   name: 'Wallet',
   components: {
-    InfoCards: lazyComponent('Wallets/components/InfoCards'),
-    HistoryTable: lazyComponent('Wallets/components/HistoryTable'),
-    NoAssetsCard: lazyComponent('common/NoAssetsCard')
+    InfoCards,
+    HistoryTable,
+    NoAssetsCard
   },
 
   computed: {

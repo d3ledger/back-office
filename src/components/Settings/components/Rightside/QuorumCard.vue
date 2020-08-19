@@ -14,12 +14,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { lazyComponent } from '@router'
+import SettingsCard from '@/components/Settings/components/Rightside/SettingsCard.vue'
 
 export default {
   name: 'QuorumCard',
   components: {
-    SettingsCard: lazyComponent('Settings/components/Rightside/SettingsCard')
+    SettingsCard
   },
   props: {
     openApprovalDialog: {

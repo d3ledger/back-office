@@ -32,12 +32,12 @@
 import { mapActions, mapGetters } from 'vuex'
 import dateFormat from '@/components/mixins/dateFormat'
 
-import { lazyComponent } from '@router'
+import SettingsItem from '@/components/Settings/components/Leftside/SettingsItem.vue'
 
 export default {
   name: 'TimezoneItem',
   components: {
-    SettingsItem: lazyComponent('Settings/components/Leftside/SettingsItem')
+    SettingsItem
   },
   mixins: [
     dateFormat
